@@ -3,6 +3,10 @@
     {
       "path": "/api/processar-notificacoes",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/agendar-relatorios",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
