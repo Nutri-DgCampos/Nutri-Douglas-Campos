@@ -1,0 +1,197 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Sidebar from "@/components/Sidebar";
+import { supabase } from "@/lib/supabase";
+
+type Paciente = {
+  id: string;
+  name: string;
+  phone: string | null;
+  objective: string | null;
+  plan: string;
+  payment_status: string;
+  important_note: string | null;
+  created_at: string;
+};
+
+export default function Home() {
+  const [pacientes, setPacientes] = useState<Paciente[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    async function carregarPacientes() {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        setErro("Não foi possível carregar os pacientes.");
+        setCarregando(false);
+        return;
+      }
+
+      setPacientes(data ?? []);
+      setCarregando(false);
+    }
+
+    carregarPacientes();
+  }, []);
+
+  
+const [pagamentosPendentes, setPagamentosPendentes] = useState(0);
+
+useEffect(() => {
+  async function carregarPagamentosPendentes() {
+    const { count, error } = await supabase
+      .from("payments")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "comprovante_enviado");
+
+    if (error) {
+      console.error("Erro ao contar pagamentos:", error);
+      return;
+    }
+
+    setPagamentosPendentes(count ?? 0);
+  }
+
+  carregarPagamentosPendentes();
+}, []);
+
+
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      <Sidebar />
+
+      <main className="flex-1 p-8">
+        <div className="mx-auto max-w-7xl">
+          <header className="mb-8">
+            <p className="text-sm font-medium text-blue-600">
+              Painel do nutricionista
+            </p>
+
+            <h1 className="text-3xl font-bold text-gray-900">
+              Olá, Douglas 👋
+            </h1>
+
+            <p className="mt-2 text-gray-600">
+              Aqui está o resumo dos seus pacientes.
+            </p>
+          </header>
+
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <Card
+              titulo="Pacientes"
+              valor={carregando ? "..." : String(pacientes.length)}
+            />
+
+            <Card titulo="Relatórios recebidos" valor="0" />
+
+            <Card titulo="Não responderam" valor="0" />
+
+            <Card
+              titulo="Pagamentos recebidos"
+              valor={carregando ? "..." : String(pagamentosPendentes)}
+            />
+          </section>
+
+          <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Pacientes
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Acompanhe seus pacientes em um só lugar.
+                </p>
+              </div>
+
+              <Link
+                href="/pacientes/novo"
+                className="rounded-xl bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
+              >
+                + Novo paciente
+              </Link>
+            </div>
+
+            <div className="mt-6 divide-y divide-gray-200">
+              {carregando && (
+                <p className="py-6 text-gray-500">
+                  Carregando pacientes...
+                </p>
+              )}
+
+              {!carregando && erro && (
+                <p className="py-6 text-red-600">{erro}</p>
+              )}
+
+              {!carregando && !erro && pacientes.length === 0 && (
+                <p className="py-6 text-gray-500">
+                  Nenhum paciente cadastrado.
+                </p>
+              )}
+
+{/*
+              {!carregando &&
+                !erro &&
+                pacientes.map((paciente) => (
+                  <div
+                    key={paciente.id}
+                    className="flex items-center justify-between py-4"
+                  >
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {paciente.name}
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        {paciente.objective || "Objetivo não informado"}
+                      </p>
+
+                      <p className="mt-1 text-xs text-gray-400">
+                        {paciente.plan} • Pagamento:{" "}
+                        {paciente.payment_status}
+                      </p>
+                    </div>
+
+                    <Link
+  href={`/pacientes/${paciente.id}`}
+  className="font-medium text-blue-600 hover:text-blue-800"
+>
+  Ver paciente →
+</Link>
+                  </div>
+                ))}
+                  */}
+                  
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function Card({
+  titulo,
+  valor,
+}: {
+  titulo: string;
+  valor: string;
+}) {
+  return (
+    <div className="rounded-2xl bg-white p-6 shadow-sm">
+      <p className="text-sm text-gray-500">{titulo}</p>
+
+      <p className="mt-2 text-3xl font-bold text-gray-900">
+        {valor}
+      </p>
+    </div>
+  );
+}
