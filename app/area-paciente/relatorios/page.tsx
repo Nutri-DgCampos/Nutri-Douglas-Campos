@@ -107,6 +107,37 @@ if (erroRelatorios) {
 }
 
 setRelatorios(relatoriosEnviados ?? []);
+
+const idsDevolutivas = (relatoriosEnviados ?? [])
+  .filter(
+    (relatorio) =>
+      typeof relatorio.feedback_text === "string" &&
+      relatorio.feedback_text.trim().length > 0
+  )
+  .map((relatorio) => relatorio.id);
+
+if (idsDevolutivas.length > 0) {
+  const { error: erroVisualizacao } = await supabase
+    .from("patient_update_views")
+    .upsert(
+      idsDevolutivas.map((id) => ({
+        patient_id: data.id,
+        update_type: "devolutiva",
+        reference_id: id,
+      })),
+      {
+        onConflict: "patient_id,update_type,reference_id",
+        ignoreDuplicates: true,
+      }
+    );
+
+  if (erroVisualizacao) {
+    console.error(
+      "Erro ao registrar visualização das devolutivas:",
+      erroVisualizacao
+    );
+  }
+}
 const { data: pesosAnteriores, error: erroPesos } = await supabase
   .from("patient_reports")
   .select("id, weight, created_at, cycle_id")

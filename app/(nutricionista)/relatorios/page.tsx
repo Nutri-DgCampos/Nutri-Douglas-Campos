@@ -3,9 +3,77 @@
 import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+function obterSegundaFeiraAtualBrasil() {
+  const partes = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
 
+  const ano = Number(partes.find((p) => p.type === "year")?.value);
+  const mes = Number(partes.find((p) => p.type === "month")?.value);
+  const dia = Number(partes.find((p) => p.type === "day")?.value);
+
+  const data = new Date(Date.UTC(ano, mes - 1, dia, 12));
+
+  const diasDesdeSegunda = (data.getUTCDay() + 6) % 7;
+
+  data.setUTCDate(data.getUTCDate() - diasDesdeSegunda);
+
+  return data.toISOString().slice(0, 10);
+}
+
+function estaNoPeriodoDeAtraso() {
+  const diaDaSemana = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "long",
+  }).format(new Date());
+
+  return [
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ].includes(diaDaSemana);
+}
+
+function calcularSemanaDoRelatorio(
+  inicioCiclo: string,
+  frequencia: string,
+  numeroRelatorio: number
+) {
+  const intervaloDias =
+    frequencia === "semanal"
+      ? 7
+      : frequencia === "quinzenal"
+      ? 15
+      : 30;
+
+  const dataPrevista = new Date(`${inicioCiclo}T12:00:00Z`);
+
+  dataPrevista.setUTCDate(
+    dataPrevista.getUTCDate() + intervaloDias * numeroRelatorio
+  );
+
+  const diaSemana = dataPrevista.getUTCDay();
+
+  const diasAteSegundaAnterior = (diaSemana + 6) % 7;
+  const diasAteSegundaSeguinte = 7 - diasAteSegundaAnterior;
+
+  const ajuste =
+    diasAteSegundaAnterior <= diasAteSegundaSeguinte
+      ? -diasAteSegundaAnterior
+      : diasAteSegundaSeguinte;
+
+  dataPrevista.setUTCDate(dataPrevista.getUTCDate() + ajuste);
+
+  return dataPrevista.toISOString().slice(0, 10);
+}
 export default function RelatoriosPage() {
      const [relatorios, setRelatorios] = useState<any[]>([]);
+     const [pacientesAtrasados, setPacientesAtrasados] = useState<any[]>([]);
      const [historicoPesos, setHistoricoPesos] = useState<any[]>([]);
      const [historicoAlcool, setHistoricoAlcool] = useState<any[]>([]);
      const [devolutivasIA, setDevolutivasIA] = useState<Record<string, string>>({});
@@ -25,6 +93,157 @@ const [gerandoIA, setGerandoIA] = useState<string | null>(null);
     }
 
     setRelatorios(data ?? []);
+    // Buscar ciclos ativos para verificar relatórios não enviados
+const { data: ciclosAtivos, error: erroCiclos } = await supabase
+  .from("diet_cycles")
+  .select(`
+    id,
+    patient_id,
+    start_date,
+    end_date,
+    followup_frequency,
+    cycle_number,
+    patients (
+      name
+    )
+  `)
+  .eq("status", "ativo");
+
+if (erroCiclos) {
+  console.error("Erro ao buscar ciclos ativos:", erroCiclos);
+} else {
+  console.log("Ciclos ativos para verificar atrasos:", ciclosAtivos);
+  // Buscar os relatórios de todos os ciclos ativos
+const idsCiclos = (ciclosAtivos ?? []).map((ciclo) => ciclo.id);
+
+if (idsCiclos.length > 0) {
+  const { data: relatoriosDosCiclos, error: erroRelatoriosDosCiclos } =
+    await supabase
+      .from("patient_reports")
+      .select("id, patient_id, cycle_id, cycle_report_number, scheduled_week_start, created_at, status")
+      .in("cycle_id", idsCiclos);
+
+  if (erroRelatoriosDosCiclos) {
+    console.error(
+      "Erro ao consultar relatórios dos ciclos:",
+      erroRelatoriosDosCiclos
+    );
+  } else {
+    console.log(
+      "Relatórios registrados nos ciclos ativos:",
+      relatoriosDosCiclos
+    );
+
+    const segundaAtual = obterSegundaFeiraAtualBrasil();
+
+const ciclosComRelatorioPrevisto = (ciclosAtivos ?? []).flatMap(
+  (ciclo) => {
+    const frequencia = ciclo.followup_frequency
+      ?.trim()
+      .toLowerCase();
+
+    const quantidadeRelatorios =
+      frequencia === "semanal"
+        ? 4
+        : frequencia === "quinzenal"
+        ? 2
+        : frequencia === "mensal"
+        ? 1
+        : 0;
+
+    const previstos: {
+  cicloId: string;
+  pacienteId: string;
+  numeroRelatorio: number;
+  segundaPrevista: string;
+}[] = [];
+
+    for (let numero = 1; numero <= quantidadeRelatorios; numero++) {
+      const segundaPrevista = calcularSemanaDoRelatorio(
+        ciclo.start_date,
+        frequencia,
+        numero
+      );
+
+      if (segundaPrevista === segundaAtual) {
+        previstos.push({
+          cicloId: ciclo.id,
+          pacienteId: ciclo.patient_id,
+          numeroRelatorio: numero,
+          segundaPrevista,
+        });
+      }
+    }
+
+    return previstos;
+  }
+);
+
+console.log(
+  "Relatórios previstos para esta semana:",
+  ciclosComRelatorioPrevisto
+);
+
+const inicioSemana = `${segundaAtual}T00:00:00-03:00`;
+
+const segundaSeguinte = new Date(`${segundaAtual}T12:00:00Z`);
+segundaSeguinte.setUTCDate(segundaSeguinte.getUTCDate() + 7);
+
+const fimSemana = `${segundaSeguinte.toISOString().slice(0, 10)}T00:00:00-03:00`;
+
+const relatoriosNaoEnviados = ciclosComRelatorioPrevisto.filter(
+  (previsto) => {
+    const jaEnviou = (relatoriosDosCiclos ?? []).some(
+  (relatorio) =>
+    relatorio.cycle_id === previsto.cicloId &&
+    (
+      relatorio.scheduled_week_start === previsto.segundaPrevista ||
+      (
+        relatorio.scheduled_week_start == null &&
+        relatorio.cycle_report_number === previsto.numeroRelatorio
+      )
+    )
+);
+
+    return !jaEnviou;
+  }
+);
+
+console.log(
+  "Relatórios não enviados nesta semana:",
+  relatoriosNaoEnviados
+);
+
+console.log("Período de atraso ativo:", estaNoPeriodoDeAtraso());
+
+if (estaNoPeriodoDeAtraso()) {
+  const atrasados = relatoriosNaoEnviados.map((previsto) => {
+    const ciclo = (ciclosAtivos ?? []).find(
+      (item) => item.id === previsto.cicloId
+    );
+
+    return {
+      ...previsto,
+      nome: (
+  Array.isArray(ciclo?.patients)
+    ? ciclo.patients[0]?.name
+    : (ciclo?.patients as unknown as { name?: string } | null)?.name
+) ?? "Paciente não identificado",
+    };
+  });
+
+  setPacientesAtrasados(atrasados);
+} else {
+  setPacientesAtrasados([]);
+}
+
+console.log(
+  "Estamos no período de atraso:",
+  estaNoPeriodoDeAtraso()
+);
+  }
+}
+}
     const { data: historico, error: erroHistorico } = await supabase
   .from("patient_reports")
   .select("patient_id, weight, created_at")
@@ -56,7 +275,15 @@ if (erroHistoricoAlcool) {
 }
   }
 
-  carregarRelatorios();
+    carregarRelatorios();
+
+  const intervaloAtualizacao = setInterval(() => {
+    carregarRelatorios();
+  }, 60000);
+
+  return () => {
+    clearInterval(intervaloAtualizacao);
+  };
 }, []);
 
 async function gerarDevolutivaIA(
@@ -93,7 +320,24 @@ offPlanFoods: relatorio.off_plan_foods ?? "",
       }),
     });
 
-    const dados = await resposta.json();
+    const textoResposta = await resposta.text();
+
+console.log("Status da API de IA:", resposta.status);
+console.log("Resposta da API de IA:", textoResposta);
+
+if (!resposta.ok) {
+  alert(`Erro ao gerar devolutiva. Código: ${resposta.status}`);
+  return;
+}
+
+let dados;
+
+try {
+  dados = JSON.parse(textoResposta);
+} catch {
+  alert("A API não retornou um JSON válido.");
+  return;
+}
 
     setDevolutivasIA((anterior) => ({
       ...anterior,
@@ -736,6 +980,39 @@ if (
     );
   })}
 </div>
+
+{pacientesAtrasados.length > 0 && (
+  <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-5">
+    <h2 className="text-lg font-bold text-red-800">
+      ⚠️ Pacientes com relatório atrasado
+    </h2>
+
+    <p className="mt-1 text-sm text-red-700">
+      Pacientes que não enviaram o relatório previsto para esta semana.
+    </p>
+
+    <div className="mt-4 space-y-3">
+      {pacientesAtrasados.map((paciente) => (
+        <div
+          key={`${paciente.cicloId}-${paciente.numeroRelatorio}`}
+          className="rounded-lg border border-red-200 bg-white p-4"
+        >
+          <p className="font-semibold text-gray-900">
+            {paciente.nome}
+          </p>
+
+          <p className="mt-1 text-sm text-gray-600">
+            Relatório nº {paciente.numeroRelatorio}
+          </p>
+
+          <p className="mt-1 text-sm font-semibold text-red-600">
+            Não enviado
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
       </main>
     </div>

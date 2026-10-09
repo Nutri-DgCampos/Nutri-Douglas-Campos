@@ -9,8 +9,13 @@ import { supabase } from "@/lib/supabase";
 export default function PagamentosPacientePage() {
     
   const [historico, setHistorico] = useState<
-    { id: string; confirmed_at: string }[]
-  >([]);
+  {
+    id: string;
+    status: string;
+    confirmed_at: string | null;
+    receipt_uploaded_at: string | null;
+  }[]
+>([]);
 
   const [carregandoHistorico, setCarregandoHistorico] =
     useState(true);
@@ -71,7 +76,7 @@ export default function PagamentosPacientePage() {
     .select("id")
     .eq("patient_id", paciente.id)
     .eq("status", "pendente")
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
 
@@ -152,21 +157,16 @@ export default function PagamentosPacientePage() {
       }
 
       const { data, error } = await supabase
-        .from("payments")
-        .select("id, confirmed_at")
-        .eq("status", "confirmado")
-        .not("confirmed_at", "is", null)
-        .order("confirmed_at", { ascending: false });
+  .from("payments")
+  .select("id, status, confirmed_at, receipt_uploaded_at")
+  .in("status", ["confirmado", "comprovante_enviado"])
+  .order("created_at", { ascending: false });
 
       if (error) {
         console.error(error);
         setErroHistorico("Não foi possível carregar o histórico.");
       } else {
-        setHistorico(
-          (data ?? []).filter(
-            (pagamento) => pagamento.confirmed_at !== null
-          )
-        );
+        setHistorico(data ?? []);
       }
 
       setCarregandoHistorico(false);
@@ -278,20 +278,38 @@ export default function PagamentosPacientePage() {
   </p>
 ) : (
   <div className="mt-4 space-y-3">
-    {historico.map((pagamento) => (
+  {historico.map((pagamento) => {
+    const confirmado = pagamento.status === "confirmado";
+
+    return (
       <div
         key={pagamento.id}
-        className="rounded-lg border border-green-200 bg-green-50 p-4"
+        className={`rounded-lg border p-4 ${
+          confirmado
+            ? "border-green-200 bg-green-50"
+            : "border-yellow-200 bg-yellow-50"
+        }`}
       >
-        <p className="text-sm font-semibold text-green-700">
-          ✓ Pagamento confirmado em{" "}
-          {new Date(pagamento.confirmed_at).toLocaleDateString(
-            "pt-BR"
-          )}
-        </p>
+        {confirmado ? (
+          <p className="text-sm font-semibold text-green-700">
+            ✓ Pagamento confirmado em{" "}
+            {pagamento.confirmed_at
+              ? new Date(pagamento.confirmed_at).toLocaleDateString("pt-BR")
+              : "data não informada"}
+          </p>
+        ) : (
+          <p className="text-sm font-semibold text-yellow-800">
+            ⏳ Comprovante enviado em{" "}
+            {pagamento.receipt_uploaded_at
+              ? new Date(pagamento.receipt_uploaded_at).toLocaleDateString("pt-BR")
+              : "data não informada"}
+            {" — "}aguardando confirmação do nutricionista.
+          </p>
+        )}
       </div>
-    ))}
-  </div>
+    );
+  })}
+</div>
 )}
 
         </div>

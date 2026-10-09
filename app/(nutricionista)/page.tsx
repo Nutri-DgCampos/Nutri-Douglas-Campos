@@ -21,6 +21,150 @@ export default function Home() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
+  const [naoResponderam, setNaoResponderam] = useState(0);
+const [carregandoAtrasados, setCarregandoAtrasados] = useState(true);
+
+useEffect(() => {
+  async function carregarNaoResponderam() {
+    setCarregandoAtrasados(true);
+
+    try {
+      const partes = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Sao_Paulo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).formatToParts(new Date());
+
+      const obterParte = (tipo: string) =>
+        partes.find((parte) => parte.type === tipo)?.value ?? "";
+
+      const hojeBrasil = [
+        obterParte("year"),
+        obterParte("month"),
+        obterParte("day"),
+      ].join("-");
+
+      const hoje = new Date(`${hojeBrasil}T12:00:00Z`);
+      const diasDesdeSegunda = (hoje.getUTCDay() + 6) % 7;
+
+      // Segunda e terça ainda não são consideradas atraso.
+      if (diasDesdeSegunda < 2) {
+        setNaoResponderam(0);
+        return;
+      }
+
+      const segunda = new Date(hoje);
+      segunda.setUTCDate(segunda.getUTCDate() - diasDesdeSegunda);
+
+      const segundaAtual = segunda.toISOString().slice(0, 10);
+
+      const { data: ciclos, error: erroCiclos } = await supabase
+        .from("diet_cycles")
+        .select("id, patient_id, start_date, end_date, followup_frequency")
+        .eq("status", "ativo");
+
+      if (erroCiclos) throw erroCiclos;
+
+      const { data: relatorios, error: erroRelatorios } =
+        await supabase
+          .from("patient_reports")
+          .select("cycle_id, scheduled_week_start")
+          .eq("scheduled_week_start", segundaAtual);
+
+      if (erroRelatorios) throw erroRelatorios;
+
+      const ciclosRespondidos = new Set(
+        (relatorios ?? []).map((relatorio) => relatorio.cycle_id)
+      );
+
+      const pacientesAtrasados = new Set<string>();
+
+      for (const ciclo of ciclos ?? []) {
+        if (
+          ciclo.start_date > hojeBrasil ||
+          (ciclo.end_date && ciclo.end_date < hojeBrasil)
+        ) {
+          continue;
+        }
+
+        const frequencia = String(
+          ciclo.followup_frequency ?? ""
+        ).trim().toLowerCase();
+
+        const configuracoes: Record<
+          string,
+          { intervalo: number; quantidade: number }
+        > = {
+          semanal: { intervalo: 7, quantidade: 4 },
+          quinzenal: { intervalo: 15, quantidade: 2 },
+          mensal: { intervalo: 30, quantidade: 1 },
+        };
+
+        const configuracao = configuracoes[frequencia];
+
+        if (!configuracao) continue;
+
+        for (
+          let numero = 1;
+          numero <= configuracao.quantidade;
+          numero++
+        ) {
+          const prevista = new Date(`${ciclo.start_date}T12:00:00Z`);
+
+          prevista.setUTCDate(
+            prevista.getUTCDate() + configuracao.intervalo * numero
+          );
+
+          const diaSemana = prevista.getUTCDay();
+          const distanciaSegunda = (diaSemana + 6) % 7;
+
+          const ajuste =
+            distanciaSegunda <= 3
+              ? -distanciaSegunda
+              : 7 - distanciaSegunda;
+
+          prevista.setUTCDate(prevista.getUTCDate() + ajuste);
+
+          if (
+            prevista.toISOString().slice(0, 10) === segundaAtual &&
+            !ciclosRespondidos.has(ciclo.id)
+          ) {
+            pacientesAtrasados.add(ciclo.patient_id);
+            break;
+          }
+        }
+      }
+
+      setNaoResponderam(pacientesAtrasados.size);
+    } catch (error) {
+      console.error("Erro ao contar pacientes atrasados:", error);
+    } finally {
+      setCarregandoAtrasados(false);
+    }
+  }
+
+    carregarNaoResponderam();
+
+  function atualizarAoVoltar() {
+    if (document.visibilityState === "visible") {
+      carregarNaoResponderam();
+    }
+  }
+
+  document.addEventListener(
+    "visibilitychange",
+    atualizarAoVoltar
+  );
+
+  return () => {
+    document.removeEventListener(
+      "visibilitychange",
+      atualizarAoVoltar
+    );
+  };
+}, []);
+
   useEffect(() => {
     async function carregarPacientes() {
       const { data, error } = await supabase
@@ -92,7 +236,10 @@ useEffect(() => {
 
             <Card titulo="Relatórios recebidos" valor="0" />
 
-            <Card titulo="Não responderam" valor="0" />
+            <Card
+  titulo="Não responderam"
+  valor={carregandoAtrasados ? "..." : String(naoResponderam)}
+/>
 
             <Card
               titulo="Pagamentos recebidos"

@@ -60,6 +60,33 @@ export default function MinhasDietasPage() {
   );
 
   setDietas(entregasComArquivos);
+
+const idsDietas = entregasComArquivos
+  .filter((entrega) => entrega.arquivos.length > 0)
+  .map((entrega) => entrega.id);
+
+if (idsDietas.length > 0) {
+  const { error: erroVisualizacao } = await supabase
+    .from("patient_update_views")
+    .upsert(
+      idsDietas.map((id) => ({
+        patient_id: paciente.id,
+        update_type: "dieta",
+        reference_id: id,
+      })),
+      {
+        onConflict: "patient_id,update_type,reference_id",
+        ignoreDuplicates: true,
+      }
+    );
+
+  if (erroVisualizacao) {
+    console.error(
+      "Erro ao registrar visualização das dietas:",
+      erroVisualizacao
+    );
+  }
+}
 }
 
       setCarregando(false);

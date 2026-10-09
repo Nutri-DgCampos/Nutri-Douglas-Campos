@@ -1,6 +1,11 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
+console.log(
+  "Chave OpenAI configurada:",
+  Boolean(process.env.OPENAI_API_KEY)
+);
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -34,6 +39,9 @@ Não prescreva medicamentos.
 Não mencione que você é uma inteligência artificial.
 Escreva uma mensagem curta, adequada para ser enviada por WhatsApp.
 Não use título.
+Não utilize formatação Markdown.
+Não utilize asteriscos, hashtags ou símbolos para destacar palavras.
+Escreva todo o conteúdo em texto simples, pronto para ser enviado ao paciente.
 
 Paciente: ${dados.paciente}
 Pontuação de adesão: ${dados.pontuacao}/100
@@ -62,11 +70,19 @@ ${dados.observacoes || "Nenhuma observação adicional."}
       texto: resposta.output_text,
     });
   } catch (error) {
-    console.error("Erro ao gerar devolutiva:", error);
+  console.error("Erro ao gerar devolutiva:", error);
 
-    return NextResponse.json(
-      { erro: "Não foi possível gerar a devolutiva." },
-      { status: 500 }
-    );
-  }
+  const mensagem =
+    error instanceof Error
+      ? error.message
+      : String(error);
+
+  return NextResponse.json(
+    {
+      erro: "Não foi possível gerar a devolutiva.",
+      detalhe: mensagem,
+    },
+    { status: 500 }
+  );
+}
 }

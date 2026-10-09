@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 function converterChaveVapid(chave: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (chave.length % 4)) % 4);
@@ -20,8 +21,13 @@ function converterChaveVapid(chave: string): Uint8Array<ArrayBuffer> {
 }
 
 export default function AreaPacientePage() {
+    const router = useRouter();
+
     const [paciente, setPaciente] = useState<any>(null);
     const [cicloAtivo, setCicloAtivo] = useState<any>(null);
+    const [dietaNaoVisualizada, setDietaNaoVisualizada] = useState(false);
+const [devolutivaNaoVisualizada, setDevolutivaNaoVisualizada] = useState(false);
+const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [numeroRelatorio, setNumeroRelatorio] = useState<number | null>(null);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
     const [mostrarPlanosRenovacao, setMostrarPlanosRenovacao] = useState(false);
@@ -89,6 +95,102 @@ if (error) {
 }
 
 setPaciente(data);
+// Verificar pagamentos atrasados do paciente
+const { data: pagamentos, error: erroPagamentos } = await supabase
+  .from("payments")
+  .select(`
+    id,
+    status,
+    receipt_uploaded_at,
+    diet_cycles (
+      start_date
+    )
+  `)
+  .eq("patient_id", data.id)
+  .eq("status", "pendente")
+  .is("receipt_uploaded_at", null)
+  .not("cycle_id", "is", null);
+
+if (erroPagamentos) {
+  console.error("Erro ao verificar pagamentos atrasados:", erroPagamentos);
+} else {
+  const hoje = new Date();
+
+  const existePagamentoAtrasado = (pagamentos ?? []).some((pagamento) => {
+    const ciclo = pagamento.diet_cycles as unknown as {
+      start_date: string;
+    } | null;
+
+    if (!ciclo?.start_date) return false;
+
+    const vencimento = new Date(`${ciclo.start_date}T12:00:00Z`);
+vencimento.setUTCDate(vencimento.getUTCDate() + 30);
+
+const dataHojeBrasil = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(hoje);
+
+const dataVencimento = vencimento.toISOString().slice(0, 10);
+
+return dataHojeBrasil >= dataVencimento;
+  });
+
+  setPagamentoAtrasado(existePagamentoAtrasado);
+}
+const { data: entregasDietas, error: erroDietas } = await supabase
+  .from("diet_deliveries")
+  .select("id")
+  .eq("patient_id", data.id);
+
+const { data: relatoriosPublicados, error: erroRelatorios } = await supabase
+  .from("patient_reports")
+  .select("id, feedback_text, created_at")
+  .eq("patient_id", data.id)
+  .eq("status", "enviado")
+  .order("created_at", { ascending: false })
+  .limit(4);
+
+const { data: visualizacoes, error: erroVisualizacoes } = await supabase
+  .from("patient_update_views")
+  .select("update_type, reference_id")
+  .eq("patient_id", data.id);
+
+if (erroDietas || erroRelatorios || erroVisualizacoes) {
+  console.error("Erro ao verificar atualizações:", {
+    erroDietas,
+    erroRelatorios,
+    erroVisualizacoes,
+  });
+} else {
+  const dietasVisualizadas = new Set(
+    (visualizacoes ?? [])
+      .filter((v) => v.update_type === "dieta")
+      .map((v) => v.reference_id)
+  );
+
+  const devolutivasVisualizadas = new Set(
+    (visualizacoes ?? [])
+      .filter((v) => v.update_type === "devolutiva")
+      .map((v) => v.reference_id)
+  );
+
+  setDietaNaoVisualizada(
+    (entregasDietas ?? []).some(
+      (dieta) => !dietasVisualizadas.has(dieta.id)
+    )
+  );
+
+  setDevolutivaNaoVisualizada(
+    (relatoriosPublicados ?? []).some(
+      (relatorio) =>
+        relatorio.feedback_text?.trim() &&
+        !devolutivasVisualizadas.has(relatorio.id)
+    )
+  );
+}
 
 const { data: ciclo } = await supabase
   .from("diet_cycles")
@@ -113,7 +215,7 @@ if (ciclo) {
  setNumeroRelatorio(ultimoRelatorio?.cycle_report_number ?? 1);
 
 const numeroAtual = ultimoRelatorio?.cycle_report_number ?? 1;
-const frequencia = data.plan?.trim().toLowerCase();
+const frequencia = ciclo.followup_frequency?.trim().toLowerCase();
 
 if (frequencia === "semanal") {
   setUltimoRelatorioDoCiclo(numeroAtual >= 4);
@@ -254,6 +356,16 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
 </div>
 
 {cicloAtivo && (
+  <button
+    type="button"
+    onClick={() => router.push("/area-paciente/acompanhamento")}
+    className="mt-6 w-full rounded-xl bg-blue-600 px-5 py-4 text-base font-bold text-white shadow-sm hover:bg-blue-700"
+  >
+    📝 Preencher relatório nutricional
+  </button>
+)}
+
+{cicloAtivo && (
   <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
     
     <p className="mt-1 text-lg font-bold text-gray-900">
@@ -262,33 +374,59 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
 
     <p className="mt-2 text-sm text-gray-600">
   {numeroRelatorio !== null && (() => {
-  const frequencia = paciente.plan
-    ?.trim()
-    .toLowerCase();
+  const frequencia = cicloAtivo.followup_frequency
+  ?.trim()
+  .toLowerCase();
 
-  if (frequencia === "semanal") {
-    const restantes = 4 - numeroRelatorio;
+  const dataInicio = new Date(`${cicloAtivo.start_date}T12:00:00Z`);
 
-    return restantes > 0
-      ? `Restam ${restantes} ${
-          restantes === 1 ? "semana" : "semanas"
-        } de acompanhamento`
-      : "Última semana de acompanhamento";
-  }
+const agora = new Date();
 
-  if (frequencia === "quinzenal") {
-    return numeroRelatorio < 2
-      ? "Resta 1 semana de acompanhamento"
-      : "Última semana de acompanhamento";
-  }
+const dataAtualBrasil = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(agora);
 
-  return "Último relatório deste acompanhamento";
+const dataAtual = new Date(`${dataAtualBrasil}T12:00:00Z`);
+
+const diasDecorridos = Math.max(
+  0,
+  Math.floor(
+    (dataAtual.getTime() - dataInicio.getTime()) /
+      (1000 * 60 * 60 * 24)
+  )
+);
+
+const dataEncerramento = new Date(
+  `${cicloAtivo.end_date}T12:00:00Z`
+);
+
+const diasRestantes = Math.max(
+  0,
+  Math.ceil(
+    (dataEncerramento.getTime() - dataAtual.getTime()) /
+      (1000 * 60 * 60 * 24)
+  )
+);
+
+if (diasRestantes === 0) {
+  return "Período de acompanhamento concluído";
+}
+
+if (diasRestantes === 1) {
+  return "Resta 1 dia de acompanhamento";
+}
+
+return `Restam ${diasRestantes} dias de acompanhamento`;
 })()}
 </p>
 
 {ultimoRelatorioDoCiclo && (
   <p className="mt-3 font-semibold text-blue-700">
-    Você chegou ao último relatório deste acompanhamento.
+    Você já enviou o último relatório programado deste acompanhamento.
+    Seu acompanhamento permanece ativo até a data de encerramento.
   </p>
 )}
 
@@ -356,38 +494,48 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
 <div className="mt-8 grid grid-cols-2 gap-4">
   <button
   onClick={() => window.location.href = "/area-paciente/dietas"}
-  className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
+  className="relative rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
 >
-    <span className="text-2xl">🍽️</span>
-    <p className="mt-3 font-semibold text-gray-900">Dieta</p>
-    <p className="mt-1 text-sm text-gray-500">Meu plano</p>
-  </button>
+  {dietaNaoVisualizada && (
+    <span className="absolute right-4 top-4 h-3 w-3 animate-pulse rounded-full bg-red-600" />
+  )}
 
-  <button
+  <span className="text-2xl">🍽️</span>
+  <p className="mt-3 font-semibold text-gray-900">Dieta</p>
+  <p className="mt-1 text-sm text-gray-500">Meu plano</p>
+</button>
+
+<button
   onClick={() => window.location.href = "/area-paciente/relatorios"}
-  className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
+  className="relative rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
 >
-    <span className="text-2xl">📋</span>
-    <p className="mt-3 font-semibold text-gray-900">Relatórios</p>
-    <p className="mt-1 text-sm text-gray-500">Acompanhamento</p>
-  </button>
+  {devolutivaNaoVisualizada && (
+    <span className="absolute right-4 top-4 h-3 w-3 animate-pulse rounded-full bg-red-600" />
+  )}
 
-  
+  <span className="text-2xl">📋</span>
+  <p className="mt-3 font-semibold text-gray-900">Relatórios</p>
+  <p className="mt-1 text-sm text-gray-500">Acompanhamento</p>
+</button>
+
 <button
   onClick={() => window.location.assign("/area-paciente/pagamentos")}
-  className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
+  className="relative rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
 >
+  {pagamentoAtrasado && (
+    <span className="absolute right-4 top-4 h-3 w-3 animate-pulse rounded-full bg-red-600" />
+  )}
 
-    <span className="text-2xl">💳</span>
-    <p className="mt-3 font-semibold text-gray-900">Pagamentos</p>
-    <p className="mt-1 text-sm text-gray-500">Comprovantes</p>
-  </button>
+  <span className="text-2xl">💳</span>
+  <p className="mt-3 font-semibold text-gray-900">Pagamentos</p>
+  <p className="mt-1 text-sm text-gray-500">Comprovantes</p>
+</button>
 
-  <button className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md">
-    <span className="text-2xl">🤝</span>
-    <p className="mt-3 font-semibold text-gray-900">Parceiros</p>
-    <p className="mt-1 text-sm text-gray-500">Benefícios e contatos</p>
-  </button>
+<button className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md">
+  <span className="text-2xl">🤝</span>
+  <p className="mt-3 font-semibold text-gray-900">Parceiros</p>
+  <p className="mt-1 text-sm text-gray-500">Benefícios e contatos</p>
+</button>
 </div>
 
           </div>

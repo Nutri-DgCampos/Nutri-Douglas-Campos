@@ -247,7 +247,7 @@ const pontosQualidadeSono =
   try {
     const { data: cicloAtivo, error: erroCiclo } = await supabase
   .from("diet_cycles")
-  .select("id")
+  .select("id, start_date, followup_frequency")
   .eq("patient_id", patientId)
   .eq("status", "ativo")
   .maybeSingle();
@@ -270,11 +270,212 @@ if (erroContagem) {
 }
 
 const numeroRelatorioCiclo = (quantidadeRelatorios ?? 0) + 1;
+const frequenciaCiclo = cicloAtivo.followup_frequency
+  ?.trim()
+  .toLowerCase();
 
+const intervaloDias =
+  frequenciaCiclo === "semanal"
+    ? 7
+    : frequenciaCiclo === "quinzenal"
+    ? 15
+    : frequenciaCiclo === "mensal"
+    ? 30
+    : null;
+    const calcularSegundaPrevista = (numero: number) => {
+  if (intervaloDias === null) return null;
+
+  const dataPrevista = new Date(
+    `${cicloAtivo.start_date}T12:00:00Z`
+  );
+
+  dataPrevista.setUTCDate(
+    dataPrevista.getUTCDate() + intervaloDias * numero
+  );
+
+  const diaSemana = dataPrevista.getUTCDay();
+  const diasDesdeSegunda = (diaSemana + 6) % 7;
+
+  const ajuste =
+    diasDesdeSegunda <= 3
+      ? -diasDesdeSegunda
+      : 7 - diasDesdeSegunda;
+
+  dataPrevista.setUTCDate(
+    dataPrevista.getUTCDate() + ajuste
+  );
+
+  return dataPrevista.toISOString().slice(0, 10);
+};
+
+const segundaPrevistaRelatorio =
+  calcularSegundaPrevista(numeroRelatorioCiclo);
+
+  const partesDataBrasil = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).formatToParts(new Date());
+
+const anoBrasil = Number(
+  partesDataBrasil.find((parte) => parte.type === "year")?.value
+);
+
+const mesBrasil = Number(
+  partesDataBrasil.find((parte) => parte.type === "month")?.value
+);
+
+const diaBrasil = Number(
+  partesDataBrasil.find((parte) => parte.type === "day")?.value
+);
+
+const segundaAtualBrasil = new Date(
+  Date.UTC(anoBrasil, mesBrasil - 1, diaBrasil, 12)
+);
+
+const diasDesdeSegundaAtual =
+  (segundaAtualBrasil.getUTCDay() + 6) % 7;
+
+segundaAtualBrasil.setUTCDate(
+  segundaAtualBrasil.getUTCDate() - diasDesdeSegundaAtual
+);
+
+const semanaAtualBrasil =
+  segundaAtualBrasil.toISOString().slice(0, 10);
+
+  const quantidadePrevista =
+  frequenciaCiclo === "semanal"
+    ? 4
+    : frequenciaCiclo === "quinzenal"
+    ? 2
+    : frequenciaCiclo === "mensal"
+    ? 1
+    : 0;
+
+let numeroPrevistoNestaSemana: number | null = null;
+
+for (let numero = 1; numero <= quantidadePrevista; numero++) {
+  const segundaPrevista = calcularSegundaPrevista(numero);
+
+  if (segundaPrevista === semanaAtualBrasil) {
+    numeroPrevistoNestaSemana = numero;
+    break;
+  }
+}
+
+const { data: semanasRespondidas, error: erroSemanas } =
+  await supabase
+    .from("patient_reports")
+    .select("scheduled_week_start")
+    .eq("cycle_id", cicloAtivo.id)
+    .not("scheduled_week_start", "is", null);
+
+if (erroSemanas) {
+  console.error(
+    "Erro ao consultar semanas respondidas:",
+    erroSemanas
+  );
+
+  alert("Não foi possível verificar os relatórios anteriores.");
+  return;
+}
+
+const semanasJaRespondidas = new Set(
+  (semanasRespondidas ?? []).map(
+    (relatorio) => relatorio.scheduled_week_start
+  )
+);
+const semanasFuturasDisponiveis = [];
+
+for (let numero = 1; numero <= quantidadePrevista; numero++) {
+  const segundaPrevista = calcularSegundaPrevista(numero);
+
+  if (
+    segundaPrevista !== null &&
+    segundaPrevista > semanaAtualBrasil &&
+    !semanasJaRespondidas.has(segundaPrevista)
+  ) {
+    semanasFuturasDisponiveis.push(segundaPrevista);
+  }
+}
+
+const semanaParaRegistrar =
+  numeroPrevistoNestaSemana !== null &&
+  !semanasJaRespondidas.has(semanaAtualBrasil)
+    ? semanaAtualBrasil
+    : semanasFuturasDisponiveis[0] ?? null;
+    let numeroProgramado: number | null = null;
+
+for (let numero = 1; numero <= quantidadePrevista; numero++) {
+  if (calcularSegundaPrevista(numero) === semanaParaRegistrar) {
+    numeroProgramado = numero;
+    break;
+  }
+}
+
+if (numeroProgramado === null) {
+  alert("Não foi possível identificar o número do relatório programado.");
+  return;
+}
+    if (semanaParaRegistrar === null) {
+  alert(
+    "Não há um relatório disponível para envio neste momento. " +
+    "Você já respondeu o acompanhamento desta semana " +
+    "ou não possui outro relatório programado."
+  );
+
+  return;
+}
+    if (semanaParaRegistrar !== null) {
+  const { data: relatorioExistente, error: erroVerificacao } =
+    await supabase
+      .from("patient_reports")
+      .select("id")
+      .eq("cycle_id", cicloAtivo.id)
+      .eq("scheduled_week_start", semanaParaRegistrar)
+      .limit(1)
+      .maybeSingle();
+
+  if (erroVerificacao) {
+    console.error(
+      "Erro ao verificar relatório da semana:",
+      erroVerificacao
+    );
+
+    alert("Não foi possível verificar o relatório desta semana.");
+    return;
+  }
+
+  if (relatorioExistente) {
+    alert(
+      "Você já enviou o relatório previsto para esta semana."
+    );
+    return;
+  }
+}
+
+console.log("Relatório previsto nesta semana:", {
+  semana: semanaAtualBrasil,
+  numero: numeroPrevistoNestaSemana,
+});
+
+for (let numero = 1; numero <= quantidadePrevista; numero++) {
+  if (calcularSegundaPrevista(numero) === semanaParaRegistrar) {
+    numeroProgramado = numero;
+    break;
+  }
+}
+
+if (numeroProgramado === null) {
+  alert("Não foi possível identificar o número do relatório programado.");
+  return;
+}
     const { error } = await supabase.from("patient_reports").insert({
   patient_id: patientId,
   cycle_id: cicloAtivo?.id ?? null,
-  cycle_report_number: numeroRelatorioCiclo,
+  cycle_report_number: numeroProgramado,
+    scheduled_week_start: semanaParaRegistrar,
 
   diet_days: diasPlanoAlimentar === "" ? null : Number(diasPlanoAlimentar),
   diet_score: pontosAlimentacao,
