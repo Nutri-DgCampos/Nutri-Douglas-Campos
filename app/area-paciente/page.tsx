@@ -29,6 +29,7 @@ export default function AreaPacientePage() {
 const [devolutivaNaoVisualizada, setDevolutivaNaoVisualizada] = useState(false);
 const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [numeroRelatorio, setNumeroRelatorio] = useState<number | null>(null);
+    const [relatorioDisponivel, setRelatorioDisponivel] = useState(false);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
     const [mostrarPlanosRenovacao, setMostrarPlanosRenovacao] = useState(false);
     async function sair() {
@@ -203,6 +204,42 @@ setCicloAtivo(ciclo);
 console.log("CICLO ATIVO:", ciclo);
 
 if (ciclo) {
+  const partesDataBrasil = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).formatToParts(new Date());
+
+const anoBrasil = Number(
+  partesDataBrasil.find((parte) => parte.type === "year")?.value
+);
+
+const mesBrasil = Number(
+  partesDataBrasil.find((parte) => parte.type === "month")?.value
+);
+
+const diaBrasil = Number(
+  partesDataBrasil.find((parte) => parte.type === "day")?.value
+);
+
+const dataHojeBrasil = new Date(
+  Date.UTC(anoBrasil, mesBrasil - 1, diaBrasil, 12)
+);
+
+const diaSemanaBrasil = dataHojeBrasil.getUTCDay();
+
+const segundaAtualBrasil = new Date(dataHojeBrasil);
+
+segundaAtualBrasil.setUTCDate(
+  segundaAtualBrasil.getUTCDate() - ((diaSemanaBrasil + 6) % 7)
+);
+
+const semanaAtualBrasil = segundaAtualBrasil
+  .toISOString()
+  .slice(0, 10);
+  const dentroDoPrazoRelatorio =
+  diaSemanaBrasil === 1 || diaSemanaBrasil === 2;
   const { data: ultimoRelatorio } = await supabase
     .from("patient_reports")
     .select("cycle_report_number")
@@ -212,10 +249,79 @@ if (ciclo) {
     .limit(1)
     .maybeSingle();
 
- setNumeroRelatorio(ultimoRelatorio?.cycle_report_number ?? 1);
-
+ 
 const numeroAtual = ultimoRelatorio?.cycle_report_number ?? 1;
 const frequencia = ciclo.followup_frequency?.trim().toLowerCase();
+const intervaloDias =
+  frequencia === "semanal"
+    ? 7
+    : frequencia === "quinzenal"
+    ? 15
+    : frequencia === "mensal"
+    ? 30
+    : null;
+
+const quantidadePrevista =
+  frequencia === "semanal"
+    ? 4
+    : frequencia === "quinzenal"
+    ? 2
+    : frequencia === "mensal"
+    ? 1
+    : 0;
+    const calcularSegundaPrevista = (numero: number) => {
+  if (intervaloDias === null) return null;
+
+  const dataPrevista = new Date(
+    `${ciclo.start_date}T12:00:00Z`
+  );
+
+  dataPrevista.setUTCDate(
+    dataPrevista.getUTCDate() + intervaloDias * numero
+  );
+
+  const diaSemana = dataPrevista.getUTCDay();
+  const diasDesdeSegunda = (diaSemana + 6) % 7;
+
+  const ajuste =
+    diasDesdeSegunda <= 3
+      ? -diasDesdeSegunda
+      : 7 - diasDesdeSegunda;
+
+  dataPrevista.setUTCDate(
+    dataPrevista.getUTCDate() + ajuste
+  );
+
+  return dataPrevista.toISOString().slice(0, 10);
+};
+let numeroPrevistoNestaSemana: number | null = null;
+
+for (let numero = 1; numero <= quantidadePrevista; numero++) {
+  if (calcularSegundaPrevista(numero) === semanaAtualBrasil) {
+    numeroPrevistoNestaSemana = numero;
+    break;
+  }
+}
+
+const { data: relatoriosRespondidos } = await supabase
+  .from("patient_reports")
+  .select("scheduled_week_start")
+  .eq("cycle_id", ciclo.id)
+  .eq("scheduled_week_start", semanaAtualBrasil);
+
+const relatorioJaRespondido =
+  (relatoriosRespondidos?.length ?? 0) > 0;
+
+setRelatorioDisponivel(
+  dentroDoPrazoRelatorio &&
+  numeroPrevistoNestaSemana !== null &&
+  !relatorioJaRespondido
+);
+setNumeroRelatorio(
+  numeroPrevistoNestaSemana ??
+    ultimoRelatorio?.cycle_report_number ??
+    1
+);
 
 if (frequencia === "semanal") {
   setUltimoRelatorioDoCiclo(numeroAtual >= 4);
@@ -358,9 +464,22 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
 {cicloAtivo && (
   <button
     type="button"
-    onClick={() => router.push("/area-paciente/acompanhamento")}
-    className="mt-6 w-full rounded-xl bg-blue-600 px-5 py-4 text-base font-bold text-white shadow-sm hover:bg-blue-700"
+    onClick={() => {
+      if (relatorioDisponivel) {
+        router.push("/area-paciente/acompanhamento");
+      } else {
+        alert("Não há relatório disponível para preenchimento neste momento.");
+      }
+    }}
+    className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-5 py-4 text-base font-bold text-white shadow-sm hover:bg-blue-700"
   >
+    {relatorioDisponivel && (
+      <span className="relative flex h-3 w-3">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
+        <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400"></span>
+      </span>
+    )}
+
     📝 Preencher relatório nutricional
   </button>
 )}
@@ -369,8 +488,10 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
   <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
     
     <p className="mt-1 text-lg font-bold text-gray-900">
-      Relatório {numeroRelatorio ?? 1}
-    </p>
+  {relatorioDisponivel
+    ? `Relatório ${numeroRelatorio ?? 1} disponível`
+    : "Nenhum relatório disponível no momento"}
+</p>
 
     <p className="mt-2 text-sm text-gray-600">
   {numeroRelatorio !== null && (() => {
@@ -531,10 +652,21 @@ return `Restam ${diasRestantes} dias de acompanhamento`;
   <p className="mt-1 text-sm text-gray-500">Comprovantes</p>
 </button>
 
-<button className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md">
+
+<button
+  type="button"
+  onClick={() =>
+    alert(
+      "🤝 Em breve, você terá acesso a benefícios e condições especiais oferecidos pelos nossos parceiros!"
+    )
+  }
+  className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
+>
   <span className="text-2xl">🤝</span>
   <p className="mt-3 font-semibold text-gray-900">Parceiros</p>
-  <p className="mt-1 text-sm text-gray-500">Benefícios e contatos</p>
+  <p className="mt-1 text-sm text-gray-500">
+    Benefícios e contatos
+  </p>
 </button>
 </div>
 

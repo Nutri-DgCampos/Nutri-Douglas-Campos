@@ -344,6 +344,13 @@ segundaAtualBrasil.setUTCDate(
 const semanaAtualBrasil =
   segundaAtualBrasil.toISOString().slice(0, 10);
 
+  const diaSemanaBrasil = new Date(
+  Date.UTC(anoBrasil, mesBrasil - 1, diaBrasil, 12)
+).getUTCDay();
+
+const dentroDoPrazoRelatorio =
+  diaSemanaBrasil === 1 || diaSemanaBrasil === 2;
+
   const quantidadePrevista =
   frequenciaCiclo === "semanal"
     ? 4
@@ -400,11 +407,22 @@ for (let numero = 1; numero <= quantidadePrevista; numero++) {
   }
 }
 
+if (!dentroDoPrazoRelatorio) {
+  alert(
+    "O prazo para responder ao relatório nutricional é somente " +
+    "às segundas e terças-feiras da semana programada. " +
+    "Se você perdeu esse prazo, deverá aguardar o próximo " +
+    "relatório previsto no seu acompanhamento."
+  );
+
+  return;
+}
+
 const semanaParaRegistrar =
   numeroPrevistoNestaSemana !== null &&
   !semanasJaRespondidas.has(semanaAtualBrasil)
     ? semanaAtualBrasil
-    : semanasFuturasDisponiveis[0] ?? null;
+    : null;
     let numeroProgramado: number | null = null;
 
 for (let numero = 1; numero <= quantidadePrevista; numero++) {
