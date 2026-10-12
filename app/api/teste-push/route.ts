@@ -78,6 +78,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const corpo = await request.json().catch(() => null);
+
+const patientId = corpo?.patientId;
+
+if (
+  typeof patientId !== "string" ||
+  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(patientId)
+) {
+  return NextResponse.json(
+    { error: "ID do paciente inválido ou não informado." },
+    { status: 400 }
+  );
+}
+
     const supabaseAdmin = criarSupabaseAdmin();
 
     const autorizado = await verificarNutricionista(
@@ -96,7 +110,7 @@ export async function POST(request: Request) {
   await supabaseAdmin
     .from("push_subscriptions")
     .select("id, patient_id, endpoint, p256dh, auth_key")
-    .eq("patient_id", "40e67941-394e-4fe3-846e-a5800dd6150d");
+    .eq("patient_id", patientId);
 
 if (erroInscricoes) {
   console.error("Erro ao consultar inscrições:", erroInscricoes);
@@ -140,7 +154,7 @@ for (const inscricao of inscricoes) {
 
     return NextResponse.json({
       success: true,
-      message: "Nutricionista autenticado e autorizado.",
+      message: "Notificação de teste enviada ao serviço de push.",
     });
   } catch (erro) {
     console.error("Erro na rota de teste push:", erro);
