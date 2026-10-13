@@ -83,6 +83,86 @@ async function testarFilaNotificacoes() {
 }
 
 export default function DietasPage() {
+
+  const [mensagemPersonalizada, setMensagemPersonalizada] = useState(
+  "Olá! Seu relatório nutricional está disponível para preenchimento. Acesse o Acompanhamento Nutricional e envie suas respostas dentro do prazo."
+);
+
+const [enviandoNotificacaoPersonalizada, setEnviandoNotificacaoPersonalizada] =
+  useState(false);
+  
+async function enviarNotificacaoPersonalizada() {
+  const mensagem = mensagemPersonalizada.trim();
+
+  if (!mensagem) {
+    alert("Digite uma mensagem antes de enviar.");
+    return;
+  }
+
+  if (mensagem.length > 300) {
+    alert("A mensagem deve ter no máximo 300 caracteres.");
+    return;
+  }
+
+  if (enviandoNotificacaoPersonalizada) {
+    return;
+  }
+
+  const confirmar = window.confirm(
+    "ATENÇÃO: esta mensagem será enviada para TODOS os pacientes " +
+      "com dispositivos cadastrados para notificações.\n\n" +
+      `Mensagem:\n${mensagem}\n\n` +
+      "Deseja confirmar o envio?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  setEnviandoNotificacaoPersonalizada(true);
+
+  try {
+    const {
+      data: { session },
+      error: erroSessao,
+    } = await supabase.auth.getSession();
+
+    if (erroSessao || !session?.access_token) {
+      alert("Faça login como nutricionista para enviar notificações.");
+      return;
+    }
+
+    const resposta = await fetch(
+      "/api/enviar-notificacao-personalizada",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mensagem }),
+      }
+    );
+
+    const resultado = await resposta.json();
+
+    if (!resposta.ok || !resultado.success) {
+      alert(resultado.error || "Não foi possível enviar a notificação.");
+      return;
+    }
+
+    alert(
+      resultado.message ||
+        "Solicitações de notificações enviadas com sucesso."
+    );
+  } catch (erro) {
+    console.error("Erro ao enviar notificação personalizada:", erro);
+    alert("Não foi possível realizar o envio.");
+  } finally {
+    setEnviandoNotificacaoPersonalizada(false);
+  }
+}
+
     const [pacientes, setPacientes] = useState<any[]>([]);
 const [busca, setBusca] = useState("");
 const [pacienteSelecionado, setPacienteSelecionado] = useState<any>(null);
@@ -969,21 +1049,45 @@ setArquivosDieta([]);
           Gerencie e envie as dietas dos pacientes.
         </p>
 
-        <button
-  type="button"
-  onClick={testarNotificacaoPush}
-  className="mt-4 rounded-xl bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
->
-  🔔 Testar notificação push
-</button>
+        
+<div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
+  <h3 className="text-base font-bold text-blue-900">
+    🔔 Enviar notificação personalizada
+  </h3>
 
-<button
-  type="button"
-  onClick={testarFilaNotificacoes}
-  className="ml-3 mt-4 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"
->
-  🔔 Testar fila de notificações
-</button>
+  <p className="mt-2 text-sm text-gray-600">
+    A mensagem será enviada para todos os pacientes com
+    notificações ativadas. Você pode editar o texto antes do envio.
+  </p>
+
+  <textarea
+    value={mensagemPersonalizada}
+    onChange={(e) => setMensagemPersonalizada(e.target.value)}
+    maxLength={300}
+    rows={4}
+    className="mt-3 w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 outline-none focus:border-blue-500"
+    placeholder="Digite a mensagem da notificação..."
+  />
+
+  <p className="mt-1 text-right text-xs text-gray-500">
+    {mensagemPersonalizada.length}/300 caracteres
+  </p>
+
+  <button
+    type="button"
+    onClick={enviarNotificacaoPersonalizada}
+    disabled={
+      enviandoNotificacaoPersonalizada ||
+      !mensagemPersonalizada.trim()
+    }
+    className="mt-3 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    {enviandoNotificacaoPersonalizada
+      ? "Enviando notificações..."
+      : "🔔 Enviar para todos os pacientes"}
+  </button>
+</div>
+
 
 <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
   <h2 className="text-xl font-bold text-gray-900">
