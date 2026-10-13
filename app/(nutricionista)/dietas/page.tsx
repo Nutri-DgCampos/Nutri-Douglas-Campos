@@ -160,7 +160,7 @@ useEffect(() => {
 
     supabase
       .from("renewal_requests")
-      .select("id, patient_id, status, requested_plan, created_at")
+      .select("id, patient_id, status, requested_plan, last_weight, created_at")
       .eq("status", "pendente"),
   ]);
 
@@ -257,7 +257,10 @@ const dietasPendentes = [
     tipo: "Primeira dieta",
     nome: paciente.name,
     pacienteId: paciente.id,
-    paciente,
+paciente,
+ultimoPeso: null,
+planoEscolhido: null,
+observacaoInterna: null,
   })),
 
   ...renovacoesPendentes
@@ -273,12 +276,15 @@ const dietasPendentes = [
       );
 
       return {
-        id: `renovacao-${renovacao.id}`,
-        tipo: "Renovação",
-        nome: paciente?.name ?? "Paciente não localizado",
-        pacienteId: renovacao.patient_id,
-        paciente,
-      };
+  id: `renovacao-${renovacao.id}`,
+  tipo: "Renovação",
+  nome: paciente?.name ?? "Paciente não localizado",
+  pacienteId: renovacao.patient_id,
+  paciente,
+  ultimoPeso: renovacao.last_weight ?? null,
+  planoEscolhido: renovacao.requested_plan ?? null,
+  observacaoInterna: paciente?.important_note ?? null,
+};
     }),
 
   ...solicitacoesCadastro.map((solicitacao) => ({
@@ -286,7 +292,10 @@ const dietasPendentes = [
     tipo: "Solicitação de cadastro",
     nome: solicitacao.name,
     pacienteId: null,
-    paciente: null,
+paciente: null,
+ultimoPeso: null,
+planoEscolhido: null,
+observacaoInterna: null,
   })),
 ];
 
@@ -1007,8 +1016,37 @@ setArquivosDieta([]);
             </p>
 
             <p className="mt-1 text-sm text-gray-600">
-              {pendencia.tipo}
-            </p>
+  {pendencia.tipo}
+</p>
+
+{pendencia.tipo === "Renovação" && (
+  <div className="mt-3 space-y-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm">
+    <p className="font-semibold text-blue-800">
+      🔄 Solicitação de renovação
+    </p>
+
+    <p className="text-gray-700">
+      <strong>Nome completo:</strong> {pendencia.nome}
+    </p>
+
+    <p className="text-gray-700">
+      <strong>Último peso:</strong>{" "}
+      {pendencia.ultimoPeso != null
+        ? `${pendencia.ultimoPeso} kg`
+        : "Não informado"}
+    </p>
+
+    <p className="text-gray-700">
+      <strong>Plano escolhido:</strong>{" "}
+      {pendencia.planoEscolhido || "Não informado"}
+    </p>
+
+    <p className="text-gray-700">
+      <strong>Observação interna:</strong>{" "}
+      {pendencia.observacaoInterna?.trim() || "Não informado"}
+    </p>
+  </div>
+)}
           </div>
 
           {pendencia.paciente ? (
