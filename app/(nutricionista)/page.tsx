@@ -17,6 +17,54 @@ type Paciente = {
 };
 
 export default function Home() {
+  async function enviarNotificacaoTeste() {
+  const { data: sessao, error: erroSessao } =
+    await supabase.auth.getSession();
+
+  if (erroSessao || !sessao.session) {
+    alert("Você precisa estar conectado como nutricionista.");
+    return;
+  }
+
+  const patientId = prompt("Cole o ID do paciente de teste:");
+
+if (!patientId?.trim()) {
+  alert("Teste cancelado: nenhum paciente informado.");
+  return;
+}
+
+try {
+  const resposta = await fetch("/api/teste-push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessao.session.access_token}`,
+    },
+    body: JSON.stringify({
+      patientId: patientId.trim(),
+    }),
+  });
+
+  const resultado = await resposta.json();
+
+  if (!resposta.ok) {
+    alert(
+      "Erro ao enviar notificação: " +
+        (resultado.error || "Erro desconhecido.")
+    );
+    return;
+  }
+
+  alert(
+    resultado.message ||
+      "Notificação enviada ao serviço de push!"
+  );
+} catch (erro) {
+  console.error("Erro no teste de notificação:", erro);
+  alert("Não foi possível conectar ao serviço de notificações.");
+}
+
+}
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -227,6 +275,16 @@ useEffect(() => {
               Aqui está o resumo dos seus pacientes.
             </p>
           </header>
+
+          <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
+  <button
+    type="button"
+    onClick={enviarNotificacaoTeste}
+    className="rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+  >
+    🔔 Enviar notificação de teste
+  </button>
+</div>
 
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <Card

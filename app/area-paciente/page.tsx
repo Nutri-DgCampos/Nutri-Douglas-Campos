@@ -272,13 +272,52 @@ const quantidadePrevista =
     const calcularSegundaPrevista = (numero: number) => {
   if (intervaloDias === null) return null;
 
-  const dataPrevista = new Date(
-    `${ciclo.start_date}T12:00:00Z`
-  );
+  const cadastroRetroativo =
+    Boolean(ciclo.retroactive_registered_at) &&
+    data.retroactive_registration === true &&
+    (data.retroactive_completed_weeks ?? 0) > 0;
 
-  dataPrevista.setUTCDate(
-    dataPrevista.getUTCDate() + intervaloDias * numero
-  );
+  let dataPrevista: Date;
+
+  if (cadastroRetroativo) {
+    const dataCadastro = new Date(
+      `${ciclo.retroactive_registered_at}T12:00:00Z`
+    );
+
+    const diasDesdeSegundaCadastro =
+      (dataCadastro.getUTCDay() + 6) % 7;
+
+    dataCadastro.setUTCDate(
+      dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
+    );
+
+    const diasJaConcluidos =
+      data.retroactive_completed_weeks * 7;
+
+    const intervaloRetroativoDias =
+      frequencia === "semanal"
+        ? 7
+        : frequencia === "quinzenal"
+        ? 14
+        : 28;
+
+    const diasParaRelatorio =
+      intervaloRetroativoDias * numero - diasJaConcluidos;
+
+    dataCadastro.setUTCDate(
+      dataCadastro.getUTCDate() + diasParaRelatorio
+    );
+
+    dataPrevista = dataCadastro;
+  } else {
+    dataPrevista = new Date(
+      `${ciclo.start_date}T12:00:00Z`
+    );
+
+    dataPrevista.setUTCDate(
+      dataPrevista.getUTCDate() + intervaloDias * numero
+    );
+  }
 
   const diaSemana = dataPrevista.getUTCDay();
   const diasDesdeSegunda = (diaSemana + 6) % 7;
@@ -318,9 +357,11 @@ setRelatorioDisponivel(
   !relatorioJaRespondido
 );
 setNumeroRelatorio(
-  numeroPrevistoNestaSemana ??
-    ultimoRelatorio?.cycle_report_number ??
+  Math.max(
+    numeroPrevistoNestaSemana ?? 0,
+    Number(ultimoRelatorio?.cycle_report_number ?? 0),
     1
+  )
 );
 
 if (frequencia === "semanal") {
@@ -461,35 +502,45 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
 </button>
 </div>
 
-{cicloAtivo && (
-  <button
-    type="button"
-    onClick={() => {
-      if (relatorioDisponivel) {
-        router.push("/area-paciente/acompanhamento");
-      } else {
-        alert("Não há relatório disponível para preenchimento neste momento.");
-      }
-    }}
-    className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-5 py-4 text-base font-bold text-white shadow-sm hover:bg-blue-700"
-  >
-    {relatorioDisponivel && (
-      <span className="relative flex h-3 w-3">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
-        <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400"></span>
-      </span>
-    )}
+<button
+  type="button"
+  disabled={!relatorioDisponivel}
+  onClick={() => {
+    router.push("/area-paciente/acompanhamento");
+  }}
+  className={`mt-6 flex w-full items-center justify-center gap-3 rounded-xl px-5 py-4 text-base font-bold shadow-sm transition ${
+    relatorioDisponivel
+      ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+      : "bg-gray-300 text-gray-600 cursor-not-allowed"
+  }`}
+>
+  {relatorioDisponivel && (
+    <span className="relative flex h-3 w-3">
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
+      <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400"></span>
+    </span>
+  )}
 
-    📝 Preencher relatório nutricional
-  </button>
-)}
+  📝 {relatorioDisponivel
+    ? "Preencher relatório nutricional"
+    : "Nenhum relatório disponível"}
+</button>
 
 {cicloAtivo && (
   <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
     
     <p className="mt-1 text-lg font-bold text-gray-900">
   {relatorioDisponivel
-    ? `Relatório ${numeroRelatorio ?? 1} disponível`
+    ? `${
+        Math.max(
+          0,
+          (cicloAtivo.followup_frequency?.trim().toLowerCase() === "semanal"
+            ? 4
+            : cicloAtivo.followup_frequency?.trim().toLowerCase() === "quinzenal"
+            ? 2
+            : 1) - (numeroRelatorio ?? 1) + 1
+        )
+      } relatório(s) restante(s) no acompanhamento`
     : "Nenhum relatório disponível no momento"}
 </p>
 
@@ -532,15 +583,81 @@ const diasRestantes = Math.max(
   )
 );
 
-if (diasRestantes === 0) {
-  return "Período de acompanhamento concluído";
+const totalRelatorios =
+  frequencia === "semanal"
+    ? 4
+    : frequencia === "quinzenal"
+    ? 2
+    : frequencia === "mensal"
+    ? 1
+    : 0;
+
+const semanasConcluidas =
+  cicloAtivo.retroactive_registered_at &&
+  paciente?.retroactive_registration
+    ? Number(paciente.retroactive_completed_weeks ?? 0)
+    : 0;
+
+const intervaloRetroativo =
+  frequencia === "semanal"
+    ? 1
+    : frequencia === "quinzenal"
+    ? 2
+    : 4;
+
+const relatoriosJaPassados = cicloAtivo.retroactive_registered_at
+  ? Math.min(
+      totalRelatorios,
+      Math.floor(semanasConcluidas / intervaloRetroativo)
+    )
+  : 0;
+
+const numeroAtual = numeroRelatorio ?? 1;
+
+const dataHojeBrasil = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(new Date());
+
+const dataInicioCiclo = new Date(
+  `${cicloAtivo.start_date}T12:00:00Z`
+);
+
+const dataHoje = new Date(`${dataHojeBrasil}T12:00:00Z`);
+
+const diasDesdeInicio = Math.floor(
+  (dataHoje.getTime() - dataInicioCiclo.getTime()) /
+    (1000 * 60 * 60 * 24)
+);
+
+const primeiroRelatorioAindaNaoChegou =
+  !cicloAtivo.retroactive_registered_at &&
+  diasDesdeInicio < (
+    frequencia === "semanal"
+      ? 7
+      : frequencia === "quinzenal"
+      ? 15
+      : 30
+  );
+
+const ultimoRelatorioPassado = primeiroRelatorioAindaNaoChegou
+  ? 0
+  : Math.max(relatoriosJaPassados, numeroAtual);
+
+const restantes = Math.max(
+  0,
+  totalRelatorios - ultimoRelatorioPassado
+);
+
+if (restantes === 0) {
+  return "Todos os relatórios deste acompanhamento foram concluídos ou tiveram seu prazo encerrado";
 }
 
-if (diasRestantes === 1) {
-  return "Resta 1 dia de acompanhamento";
-}
-
-return `Restam ${diasRestantes} dias de acompanhamento`;
+return restantes === 1
+  ? "Resta 1 relatório a ser preenchido"
+  : `Restam ${restantes} relatórios a serem preenchidos`;
 })()}
 </p>
 

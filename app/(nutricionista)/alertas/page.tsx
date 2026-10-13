@@ -470,12 +470,14 @@ async function reconhecerAlerta(alerta: any) {
 </p>
 
         <button
-          type="button"
-          onClick={() => aprovarRenovacao(renovacao)}
-          className="mt-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-        >
-          Aprovar renovação
-        </button>
+  type="button"
+  onClick={() => {
+    window.location.href = `/dietas?paciente=${renovacao.patient_id}`;
+  }}
+  className="mt-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+>
+  Preparar nova dieta →
+</button>
       </div>
     ))}
   </div>

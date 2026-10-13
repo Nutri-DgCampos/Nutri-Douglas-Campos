@@ -24,7 +24,9 @@ type Frequencia = "semanal" | "quinzenal" | "mensal";
 
 function calcularRelatoriosProgramados(
   dataInicio: string,
-  frequenciaInformada: string
+  frequenciaInformada: string,
+  dataCadastroRetroativo: string | null = null,
+  semanasRetroativasConcluidas = 0
 ) {
   const frequencia = frequenciaInformada.trim().toLowerCase();
 
@@ -48,13 +50,55 @@ function calcularRelatoriosProgramados(
     segundaPrevista: string;
   }[] = [];
 
-  for (let numero = 1; numero <= configuracao.quantidade; numero++) {
-    const dataPrevista = new Date(`${dataInicio}T12:00:00Z`);
+  const cadastroRetroativo =
+    Boolean(dataCadastroRetroativo) &&
+    semanasRetroativasConcluidas > 0;
 
-    dataPrevista.setUTCDate(
-      dataPrevista.getUTCDate() +
-        configuracao.intervaloDias * numero
-    );
+  for (
+    let numero = 1;
+    numero <= configuracao.quantidade;
+    numero++
+  ) {
+    let dataPrevista: Date;
+
+    if (cadastroRetroativo && dataCadastroRetroativo) {
+      const dataCadastro = new Date(
+        `${dataCadastroRetroativo}T12:00:00Z`
+      );
+
+      const diasDesdeSegundaCadastro =
+        (dataCadastro.getUTCDay() + 6) % 7;
+
+      dataCadastro.setUTCDate(
+        dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
+      );
+
+      const diasJaConcluidos =
+  semanasRetroativasConcluidas * 7;
+
+const intervaloRetroativoDias =
+  frequencia === "semanal"
+    ? 7
+    : frequencia === "quinzenal"
+    ? 14
+    : 28;
+
+const diasParaRelatorio =
+  intervaloRetroativoDias * numero - diasJaConcluidos;
+
+dataCadastro.setUTCDate(
+  dataCadastro.getUTCDate() + diasParaRelatorio
+);
+
+      dataPrevista = dataCadastro;
+    } else {
+      dataPrevista = new Date(`${dataInicio}T12:00:00Z`);
+
+      dataPrevista.setUTCDate(
+        dataPrevista.getUTCDate() +
+          configuracao.intervaloDias * numero
+      );
+    }
 
     const diaSemana = dataPrevista.getUTCDay();
     const diasDesdeSegunda = (diaSemana + 6) % 7;
@@ -131,8 +175,8 @@ async function consultarCiclosAtivos(
   const { data, error } = await supabaseAdmin
     .from("diet_cycles")
     .select(
-      "id, patient_id, start_date, end_date, followup_frequency"
-    )
+  "id, patient_id, start_date, end_date, followup_frequency, cycle_number, retroactive_registered_at"
+)
     .eq("status", "ativo");
 
   if (error) {
@@ -194,10 +238,33 @@ async function identificarRelatoriosPendentes(
       continue;
     }
 
+    const { data: pacienteRetroativo, error: erroPacienteRetroativo } =
+  await supabaseAdmin
+    .from("patients")
+    .select("retroactive_registration, retroactive_completed_weeks")
+    .eq("id", ciclo.patient_id)
+    .single();
+
+if (erroPacienteRetroativo) {
+  console.error(
+    "Erro ao consultar dados retroativos do paciente:",
+    erroPacienteRetroativo
+  );
+  throw new Error(
+    "Não foi possível consultar os dados retroativos do paciente."
+  );
+}
+
     const relatoriosProgramados = calcularRelatoriosProgramados(
-      ciclo.start_date,
-      ciclo.followup_frequency
-    );
+  ciclo.start_date,
+  ciclo.followup_frequency,
+  pacienteRetroativo?.retroactive_registration
+    ? ciclo.retroactive_registered_at
+    : null,
+  pacienteRetroativo?.retroactive_registration
+    ? (pacienteRetroativo.retroactive_completed_weeks ?? 0)
+    : 0
+);
 
     const relatoriosDestaSemana = relatoriosProgramados.filter(
       (relatorio) => relatorio.segundaPrevista === segundaAtual
@@ -207,12 +274,32 @@ async function identificarRelatoriosPendentes(
       continue;
     }
 
-    const semanasRespondidas = await consultarRelatoriosDoCiclo(
+        const semanasRespondidas = await consultarRelatoriosDoCiclo(
       supabaseAdmin,
       ciclo.id
     );
 
-    for (const relatorio of relatoriosDestaSemana) {
+        for (const relatorio of relatoriosDestaSemana) {
+      if (ciclo.retroactive_registered_at) {
+  const dataCadastro = new Date(
+    `${ciclo.retroactive_registered_at}T12:00:00Z`
+  );
+
+  const diasDesdeSegundaCadastro =
+    (dataCadastro.getUTCDay() + 6) % 7;
+
+  dataCadastro.setUTCDate(
+    dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
+  );
+
+  const semanaCadastro =
+    dataCadastro.toISOString().slice(0, 10);
+
+  if (relatorio.segundaPrevista < semanaCadastro) {
+    continue;
+  }
+}
+
       if (semanasRespondidas.has(relatorio.segundaPrevista)) {
         continue;
       }

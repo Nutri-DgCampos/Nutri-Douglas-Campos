@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 
+
 export async function POST(request: Request) {
   try {
     const authorization = request.headers.get("authorization");

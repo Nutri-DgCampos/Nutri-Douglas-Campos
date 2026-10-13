@@ -851,10 +851,16 @@ if (
   ))}
 </span>
   <span className="font-semibold">
-    {diferencaPeso === null
-      ? "Não disponível"
-      : `${diferencaPeso > 0 ? "+" : ""}${diferencaPeso.toFixed(1)} kg`}
+  {diferencaPeso === null
+    ? "Não disponível"
+    : `${diferencaPeso > 0 ? "+" : ""}${diferencaPeso.toFixed(1)} kg`}
+</span>
+
+{relatorio.weight != null && (
+  <span className="ml-2 font-semibold text-blue-700">
+    | Peso atual: {Number(relatorio.weight).toFixed(1)} kg
   </span>
+)}
 </p>
 
 {ultimasTendenciasAlcool.length > 0 && (

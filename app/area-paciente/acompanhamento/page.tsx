@@ -8,7 +8,10 @@ export default function RelatorioPage() {
   const router = useRouter();
   const [patientId, setPatientId] = useState<string | null>(null);
 
-  const [salvando, setSalvando] = useState(false);
+const [semanasRetroativasConcluidas, setSemanasRetroativasConcluidas] =
+  useState<number>(0);
+
+const [salvando, setSalvando] = useState(false);
 
   const [diasPlanoAlimentar, setDiasPlanoAlimentar] = useState("");
   const [alterouPlanoAlimentar, setAlterouPlanoAlimentar] = useState("");
@@ -80,7 +83,7 @@ useEffect(() => {
 
     const { data, error } = await supabase
       .from("patients")
-      .select("id, training_weekly_goal, cardio_weekly_goal, individual_goal")
+      .select("id, training_weekly_goal, cardio_weekly_goal, individual_goal, retroactive_registration, retroactive_completed_weeks")
       .eq("auth_user_id", user.id)
       .single();
 
@@ -90,6 +93,12 @@ useEffect(() => {
     }
 
     setPatientId(data.id);
+
+    setSemanasRetroativasConcluidas(
+  data.retroactive_registration
+    ? (data.retroactive_completed_weeks ?? 0)
+    : 0
+);
 
     const metaTreino = data.training_weekly_goal ?? 0;
 
@@ -247,7 +256,7 @@ const pontosQualidadeSono =
   try {
     const { data: cicloAtivo, error: erroCiclo } = await supabase
   .from("diet_cycles")
-  .select("id, start_date, followup_frequency")
+  .select("id, start_date, followup_frequency, retroactive_registered_at")
   .eq("patient_id", patientId)
   .eq("status", "ativo")
   .maybeSingle();
@@ -258,18 +267,6 @@ const pontosQualidadeSono =
   return;
 }
 
-const { count: quantidadeRelatorios, error: erroContagem } = await supabase
-  .from("patient_reports")
-  .select("id", { count: "exact", head: true })
-  .eq("cycle_id", cicloAtivo.id);
-
-if (erroContagem) {
-  alert("Não foi possível calcular o número deste relatório.");
-  setSalvando(false);
-  return;
-}
-
-const numeroRelatorioCiclo = (quantidadeRelatorios ?? 0) + 1;
 const frequenciaCiclo = cicloAtivo.followup_frequency
   ?.trim()
   .toLowerCase();
@@ -282,16 +279,57 @@ const intervaloDias =
     : frequenciaCiclo === "mensal"
     ? 30
     : null;
-    const calcularSegundaPrevista = (numero: number) => {
+   const calcularSegundaPrevista = (numero: number) => {
   if (intervaloDias === null) return null;
 
-  const dataPrevista = new Date(
-    `${cicloAtivo.start_date}T12:00:00Z`
-  );
+  const cadastroRetroativo =
+    Boolean(cicloAtivo.retroactive_registered_at) &&
+    semanasRetroativasConcluidas > 0;
 
-  dataPrevista.setUTCDate(
-    dataPrevista.getUTCDate() + intervaloDias * numero
-  );
+  let dataPrevista: Date;
+
+  if (cadastroRetroativo && cicloAtivo.retroactive_registered_at) {
+    const dataCadastro = new Date(
+      `${cicloAtivo.retroactive_registered_at}T12:00:00Z`
+    );
+
+    // Segunda-feira da semana do cadastro
+    const diasDesdeSegundaCadastro =
+      (dataCadastro.getUTCDay() + 6) % 7;
+
+    dataCadastro.setUTCDate(
+      dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
+    );
+
+    // O tempo já concluído é contado em semanas,
+    // independentemente da frequência dos relatórios.
+    const diasJaConcluidos =
+      semanasRetroativasConcluidas * 7;
+
+    const intervaloRetroativoDias =
+  frequenciaCiclo === "semanal"
+    ? 7
+    : frequenciaCiclo === "quinzenal"
+    ? 14
+    : 28;
+
+const diasParaRelatorio =
+  intervaloRetroativoDias * numero - diasJaConcluidos;
+
+    dataCadastro.setUTCDate(
+      dataCadastro.getUTCDate() + diasParaRelatorio
+    );
+
+    dataPrevista = dataCadastro;
+  } else {
+    dataPrevista = new Date(
+      `${cicloAtivo.start_date}T12:00:00Z`
+    );
+
+    dataPrevista.setUTCDate(
+      dataPrevista.getUTCDate() + intervaloDias * numero
+    );
+  }
 
   const diaSemana = dataPrevista.getUTCDay();
   const diasDesdeSegunda = (diaSemana + 6) % 7;
@@ -307,9 +345,6 @@ const intervaloDias =
 
   return dataPrevista.toISOString().slice(0, 10);
 };
-
-const segundaPrevistaRelatorio =
-  calcularSegundaPrevista(numeroRelatorioCiclo);
 
   const partesDataBrasil = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/Sao_Paulo",
@@ -418,6 +453,33 @@ if (!dentroDoPrazoRelatorio) {
   return;
 }
 
+if (cicloAtivo.retroactive_registered_at) {
+  const dataCadastro = new Date(
+    `${cicloAtivo.retroactive_registered_at}T12:00:00Z`
+  );
+
+  const diasDesdeSegundaCadastro =
+    (dataCadastro.getUTCDay() + 6) % 7;
+
+  dataCadastro.setUTCDate(
+    dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
+  );
+
+  const semanaCadastro =
+    dataCadastro.toISOString().slice(0, 10);
+
+  if (semanaAtualBrasil < semanaCadastro) {
+    alert(
+      "Este relatório pertence a uma semana anterior " +
+      "à semana do seu cadastro. " +
+      "Aguarde o próximo relatório programado."
+    );
+
+    setSalvando(false);
+    return;
+  }
+}
+
 const semanaParaRegistrar =
   numeroPrevistoNestaSemana !== null &&
   !semanasJaRespondidas.has(semanaAtualBrasil)
@@ -472,11 +534,6 @@ if (numeroProgramado === null) {
     return;
   }
 }
-
-console.log("Relatório previsto nesta semana:", {
-  semana: semanaAtualBrasil,
-  numero: numeroPrevistoNestaSemana,
-});
 
 for (let numero = 1; numero <= quantidadePrevista; numero++) {
   if (calcularSegundaPrevista(numero) === semanaParaRegistrar) {
@@ -664,8 +721,7 @@ if (error) {
   return;
 }
 
-alert("Relatório Enviado com sucesso!");
-router.push("/area-paciente");
+router.replace("/area-paciente");
   } finally {
     setSalvando(false);
   }

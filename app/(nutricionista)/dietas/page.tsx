@@ -1,7 +1,7 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 async function testarNotificacaoPush() {
@@ -96,27 +96,200 @@ const [historicoDietas, setHistoricoDietas] = useState<any[]>([]);
 const [carregandoHistorico, setCarregandoHistorico] = useState(false);
 const [mostrarHistorico, setMostrarHistorico] = useState(false);
 
+// Impede que dois envios sejam iniciados simultaneamente
+const envioEmAndamento = useRef(false);
+const [enviandoDieta, setEnviandoDieta] = useState(false);
+
+// Dados utilizados na lista de dietas pendentes
+const [entregasRegistradas, setEntregasRegistradas] = useState<any[]>([]);
+const [renovacoesPendentes, setRenovacoesPendentes] = useState<any[]>([]);
+const [solicitacoesCadastro, setSolicitacoesCadastro] = useState<any[]>([]);
+const [carregandoPendencias, setCarregandoPendencias] = useState(true);
+
 useEffect(() => {
   async function carregarPacientes() {
     const { data, error } = await supabase
       .from("patients")
-      .select("id, name, plan")
-      .order("name", { ascending: true });
+.select("id, name, plan, created_at, retroactive_registration")
+.order("name", { ascending: true });
 
     if (error) {
       console.error("Erro ao carregar pacientes:", error);
       return;
     }
 
-    setPacientes(data ?? []);
+        const listaPacientes = data ?? [];
+
+    setPacientes(listaPacientes);
+
+    // Selecionar automaticamente o paciente vindo da aba Alertas
+    const parametros = new URLSearchParams(window.location.search);
+    const pacienteId = parametros.get("paciente");
+
+    if (pacienteId) {
+      const pacienteEncontrado = listaPacientes.find(
+        (paciente) => paciente.id === pacienteId
+      );
+
+      if (pacienteEncontrado) {
+        setPacienteSelecionado(pacienteEncontrado);
+        setBusca(pacienteEncontrado.name);
+        setEhRevisao(false);
+      }
+    }
   }
 
   carregarPacientes();
 }, []);
 
+useEffect(() => {
+  async function carregarPendencias() {
+    setCarregandoPendencias(true);
+
+    const [resultadoEntregas, resultadoRenovacoes] =
+  await Promise.all([
+    supabase
+  .from("diet_deliveries")
+  .select(`
+    id,
+    patient_id,
+    created_at,
+    diet_delivery_files!inner(id)
+  `)
+  .eq("status", "concluida"),
+
+    supabase
+      .from("renewal_requests")
+      .select("id, patient_id, status, requested_plan, created_at")
+      .eq("status", "pendente"),
+  ]);
+
+    if (resultadoEntregas.error) {
+      console.error(
+        "Erro ao carregar entregas:",
+        resultadoEntregas.error
+      );
+    } else {
+      setEntregasRegistradas(resultadoEntregas.data ?? []);
+    }
+
+    if (resultadoRenovacoes.error) {
+      console.error(
+        "Erro ao carregar renovações:",
+        resultadoRenovacoes.error
+      );
+    } else {
+      setRenovacoesPendentes(resultadoRenovacoes.data ?? []);
+    }
+
+        // Consultar solicitações de novos pacientes
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        console.error("Sessão não encontrada.");
+        setSolicitacoesCadastro([]);
+      } else {
+        const resposta = await fetch("/api/solicitacoes-pacientes", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          cache: "no-store",
+        });
+
+        if (!resposta.ok) {
+          console.error(
+            "Erro ao carregar solicitações de cadastro:",
+            resposta.status
+          );
+          setSolicitacoesCadastro([]);
+        } else {
+          const resultado = await resposta.json();
+          setSolicitacoesCadastro(resultado.solicitacoes ?? []);
+        }
+      }
+        } catch (erro) {
+      console.error("Erro ao consultar solicitações:", erro);
+      setSolicitacoesCadastro([]);
+    }
+
+    setCarregandoPendencias(false);
+  }
+
+  carregarPendencias();
+}, []);
+
 const pacientesFiltrados = pacientes.filter((paciente) =>
   paciente.name.toLowerCase().includes(busca.toLowerCase())
 );
+
+// Pacientes novos que ainda não receberam a primeira dieta
+const inicioLancamento = new Date("2026-10-12T00:00:00-03:00");
+
+const pacientesPrimeiraDieta = pacientes.filter((paciente) => {
+  // Pacientes antigos não entram automaticamente
+  if (!paciente.created_at) return false;
+
+  if (new Date(paciente.created_at) < inicioLancamento) {
+    return false;
+  }
+
+  // Pacientes do cadastro especial já possuem dieta
+  if (paciente.retroactive_registration === true) {
+    return false;
+  }
+
+  // Não incluir quem já recebeu dieta pelo sistema
+  const jaRecebeuDieta = entregasRegistradas.some(
+    (entrega) => entrega.patient_id === paciente.id
+  );
+
+  return !jaRecebeuDieta;
+});
+
+// Lista única de dietas pendentes
+const dietasPendentes = [
+  ...pacientesPrimeiraDieta.map((paciente) => ({
+    id: `primeira-${paciente.id}`,
+    tipo: "Primeira dieta",
+    nome: paciente.name,
+    pacienteId: paciente.id,
+    paciente,
+  })),
+
+  ...renovacoesPendentes
+    .filter(
+      (renovacao) =>
+        !pacientesPrimeiraDieta.some(
+          (paciente) => paciente.id === renovacao.patient_id
+        )
+    )
+    .map((renovacao) => {
+      const paciente = pacientes.find(
+        (item) => item.id === renovacao.patient_id
+      );
+
+      return {
+        id: `renovacao-${renovacao.id}`,
+        tipo: "Renovação",
+        nome: paciente?.name ?? "Paciente não localizado",
+        pacienteId: renovacao.patient_id,
+        paciente,
+      };
+    }),
+
+  ...solicitacoesCadastro.map((solicitacao) => ({
+    id: `cadastro-${solicitacao.id}`,
+    tipo: "Solicitação de cadastro",
+    nome: solicitacao.name,
+    pacienteId: null,
+    paciente: null,
+  })),
+];
+
 useEffect(() => {
   async function carregarHistorico() {
     if (!pacienteSelecionado) {
@@ -169,7 +342,16 @@ async function abrirPDF(caminhoArquivo: string) {
   window.open(data.signedUrl, "_blank", "noopener,noreferrer");
 }
 async function enviarDieta() {
-  if (!pacienteSelecionado) {
+  // Impedir uma segunda execução enquanto houver envio em andamento
+  if (envioEmAndamento.current) {
+    return;
+  }
+
+  envioEmAndamento.current = true;
+  setEnviandoDieta(true);
+
+  try {
+    if (!pacienteSelecionado) {
     alert("Selecione um paciente.");
     return;
   }
@@ -225,6 +407,42 @@ const dataFimNovoCiclo = [
 console.log("INÍCIO DO NOVO CICLO:", dataDieta);
 console.log("FIM DO NOVO CICLO:", dataFimNovoCiclo);
 
+// Verificar se existe uma entrega anterior não concluída
+// antes de permitir um novo envio para este paciente.
+const { data: entregasIncompletas, error: erroVerificacaoEntrega } =
+  await supabase
+    .from("diet_deliveries")
+    .select("id, diet_date, created_at")
+    .eq("patient_id", pacienteSelecionado.id)
+    .eq("status", "em_andamento")
+    .limit(1);
+
+if (erroVerificacaoEntrega) {
+  console.error(
+    "Erro ao verificar entregas incompletas:",
+    erroVerificacaoEntrega
+  );
+
+  alert(
+    "Não foi possível verificar se existe uma entrega incompleta. O envio foi interrompido por segurança."
+  );
+
+  return;
+}
+
+if (entregasIncompletas && entregasIncompletas.length > 0) {
+  console.warn(
+    "Entrega incompleta encontrada:",
+    entregasIncompletas[0]
+  );
+
+  alert(
+    "Este paciente possui uma entrega de dieta que não foi concluída. Para evitar duplicações, verifique essa entrega antes de enviar novamente."
+  );
+
+  return;
+}
+
   // 1. Registrar a entrega da dieta
   const { data: entrega, error: erroEntrega } = await supabase
     .from("diet_deliveries")
@@ -236,13 +454,27 @@ console.log("FIM DO NOVO CICLO:", dataFimNovoCiclo);
     .single();
 
   if (erroEntrega || !entrega) {
-    console.error("Erro ao registrar entrega da dieta:", erroEntrega);
-    alert("Não foi possível registrar a entrega da dieta.");
+  console.error("Erro ao registrar entrega da dieta:", erroEntrega);
+
+  if (erroEntrega?.code === "23505") {
+    alert(
+      "Já existe uma entrega de dieta em andamento para este paciente. O novo envio foi bloqueado para evitar duplicações. Verifique a entrega anterior antes de tentar novamente."
+    );
     return;
   }
 
+  alert(
+    "Não foi possível registrar a entrega da dieta. Verifique o erro antes de tentar novamente."
+  );
+
+  return;
+}
+
   // 2. Enviar os PDFs e registrar cada arquivo
-  for (const arquivo of arquivosDieta) {
+// Controlar os arquivos concluídos para tratar falhas parciais
+let arquivosRegistradosComSucesso = 0;
+
+for (const arquivo of arquivosDieta) {
     const nomeSeguro = arquivo.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
     const caminhoArquivo =
@@ -253,10 +485,36 @@ console.log("FIM DO NOVO CICLO:", dataFimNovoCiclo);
       .upload(caminhoArquivo, arquivo);
 
     if (erroUpload) {
-      console.error("Erro ao enviar arquivo:", erroUpload);
-      alert(`Erro ao enviar o arquivo ${arquivo.name}.`);
+  console.error("Erro ao enviar arquivo:", erroUpload);
+
+  // Se nenhum PDF foi registrado, remover a entrega vazia.
+  if (arquivosRegistradosComSucesso === 0) {
+    const { error: erroLimpeza } = await supabase
+      .from("diet_deliveries")
+      .delete()
+      .eq("id", entrega.id);
+
+    if (erroLimpeza) {
+      console.error(
+        "Não foi possível remover a entrega incompleta:",
+        erroLimpeza
+      );
+
+      alert(
+        "O upload falhou e não foi possível remover o registro da entrega. Não tente enviar novamente antes de verificarmos."
+      );
       return;
     }
+  }
+
+  alert(
+    arquivosRegistradosComSucesso === 0
+      ? `Erro ao enviar ${arquivo.name}. A entrega vazia foi removida.`
+      : `Erro ao enviar ${arquivo.name}. Alguns PDFs já foram registrados. Não tente enviar novamente antes de verificarmos.`
+  );
+
+  return;
+}
 
     const { error: erroArquivo } = await supabase
       .from("diet_delivery_files")
@@ -267,18 +525,196 @@ console.log("FIM DO NOVO CICLO:", dataFimNovoCiclo);
       });
 
     if (erroArquivo) {
-      console.error("Erro ao registrar arquivo:", erroArquivo);
-      alert(`O arquivo ${arquivo.name} foi enviado, mas não pôde ser registrado.`);
+  console.error("Erro ao registrar arquivo:", erroArquivo);
+
+  // Remover do Storage o PDF que não foi registrado no banco.
+  const { error: erroRemocaoArquivo } = await supabase.storage
+    .from("dietas")
+    .remove([caminhoArquivo]);
+
+  if (erroRemocaoArquivo) {
+    console.error(
+      "Erro ao remover PDF sem registro:",
+      erroRemocaoArquivo
+    );
+
+    alert(
+      "O PDF foi enviado, mas não pôde ser registrado nem removido do Storage. Não tente enviar novamente antes de verificarmos."
+    );
+    return;
+  }
+
+  // Se nenhum PDF anterior foi registrado, remover a entrega vazia.
+  if (arquivosRegistradosComSucesso === 0) {
+    const { error: erroLimpeza } = await supabase
+      .from("diet_deliveries")
+      .delete()
+      .eq("id", entrega.id);
+
+    if (erroLimpeza) {
+      console.error(
+        "Erro ao remover entrega incompleta:",
+        erroLimpeza
+      );
+
+      alert(
+        "O PDF foi removido, mas não foi possível excluir o registro da entrega. Não tente enviar novamente antes de verificarmos."
+      );
       return;
     }
   }
+
+  alert(
+    arquivosRegistradosComSucesso === 0
+      ? `Não foi possível registrar ${arquivo.name}. O PDF e a entrega vazia foram removidos.`
+      : `Não foi possível registrar ${arquivo.name}. O PDF com erro foi removido, mas existem outros arquivos registrados. Não tente enviar novamente antes de verificarmos.`
+  );
+
+  return;
+}
+
+    arquivosRegistradosComSucesso += 1;
+    }
+
+// Confirmar que todos os PDFs selecionados foram registrados
+// antes de iniciar um novo ciclo ou concluir a entrega.
+if (arquivosRegistradosComSucesso !== arquivosDieta.length) {
+  console.error("Quantidade de PDFs não corresponde:", {
+    selecionados: arquivosDieta.length,
+    registrados: arquivosRegistradosComSucesso,
+    entregaId: entrega.id,
+  });
+
+  alert(
+    "Nem todos os PDFs foram registrados corretamente. A entrega continuará em andamento. Não envie novamente antes de verificarmos o problema."
+  );
+
+  return;
+}
+
+// Conferir diretamente no banco os PDFs desta entrega
+const {
+  data: pdfsRegistrados,
+  error: erroConferenciaPDFs,
+} = await supabase
+  .from("diet_delivery_files")
+  .select("id, storage_path")
+  .eq("delivery_id", entrega.id);
+
+const totalPDFsNoBanco = pdfsRegistrados?.length ?? 0;
+
+if (
+  erroConferenciaPDFs ||
+  totalPDFsNoBanco !== arquivosDieta.length
+) {
+  console.error("Falha na conferência dos PDFs:", {
+    erro: erroConferenciaPDFs,
+    esperados: arquivosDieta.length,
+    encontrados: totalPDFsNoBanco,
+    entregaId: entrega.id,
+  });
+
+  alert(
+    "Não foi possível confirmar todos os PDFs no banco de dados. A entrega permanecerá em andamento. Não tente enviar novamente antes de verificarmos."
+  );
+
+  return;
+}
+
+// Confirmar que os PDFs também existem no Storage
+const { data: arquivosNoStorage, error: erroConsultaStorage } =
+  await supabase.storage
+    .from("dietas")
+    .list(`${pacienteSelecionado.id}/${entrega.id}`, {
+      limit: 100,
+    });
+
+if (erroConsultaStorage) {
+  console.error(
+    "Erro ao verificar PDFs no Storage:",
+    erroConsultaStorage
+  );
+
+  alert(
+    "Não foi possível confirmar os PDFs no Storage. A entrega continuará em andamento. Não envie novamente antes de verificarmos."
+  );
+
+  return;
+}
+
+if (
+  !arquivosNoStorage ||
+  arquivosNoStorage.length !== arquivosDieta.length
+) {
+  console.error("Quantidade de PDFs no Storage não corresponde:", {
+    esperados: arquivosDieta.length,
+    encontrados: arquivosNoStorage?.length ?? 0,
+    entregaId: entrega.id,
+  });
+
+  alert(
+    "A quantidade de PDFs no Storage não corresponde à quantidade selecionada. A entrega continuará em andamento. Não envie novamente antes de verificarmos."
+  );
+
+  return;
+}
+
+// Comparar os caminhos registrados com os arquivos reais
+const nomesNoStorage = new Set(
+  (arquivosNoStorage ?? []).map((arquivo) => arquivo.name)
+);
+
+const prefixoEntrega =
+  `${pacienteSelecionado.id}/${entrega.id}/`;
+
+const todosArquivosCorrespondem = (pdfsRegistrados ?? []).every(
+  (pdf) => {
+    if (!pdf.storage_path.startsWith(prefixoEntrega)) {
+      return false;
+    }
+
+    const nomeArquivo = pdf.storage_path.slice(
+      prefixoEntrega.length
+    );
+
+    return nomesNoStorage.has(nomeArquivo);
+  }
+);
+
+if (!todosArquivosCorrespondem) {
+  console.error(
+    "Divergência entre PDFs registrados e arquivos no Storage:",
+    {
+      entregaId: entrega.id,
+      pdfsRegistrados,
+      arquivosNoStorage,
+    }
+  );
+
+  alert(
+    "Os arquivos encontrados no Storage não correspondem aos PDFs registrados no banco. A entrega continuará em andamento. Não tente enviar novamente antes de verificarmos."
+  );
+
+  return;
+}
+
 if (!ehRevisao) {
+  // Verificar se existe renovação com mudança de plano
+  const renovacaoPendente = renovacoesPendentes.find(
+    (renovacao) =>
+      renovacao.patient_id === pacienteSelecionado.id
+  );
+
+  const planoNovoCiclo =
+    renovacaoPendente?.requested_plan ||
+    pacienteSelecionado.plan;
+
   const { data: numeroNovoCiclo, error: erroNovoCiclo } =
     await supabase.rpc("iniciar_ciclo_dieta", {
       p_patient_id: pacienteSelecionado.id,
       p_start_date: dataDieta,
       p_end_date: dataFimNovoCiclo,
-      p_followup_frequency: pacienteSelecionado.plan,
+      p_followup_frequency: planoNovoCiclo,
     });
 
   if (erroNovoCiclo) {
@@ -289,12 +725,226 @@ if (!ehRevisao) {
     return;
   }
 
-  console.log("NOVO CICLO INICIADO:", numeroNovoCiclo);
-}
-  
-  alert("Dieta enviada ao paciente com sucesso!");
+    console.log("NOVO CICLO INICIADO:", numeroNovoCiclo);
 
-  setArquivosDieta([]);
+    // Localizar o ciclo que acabou de ser criado
+const { data: cicloCriado, error: erroBuscaCiclo } =
+  await supabase
+    .from("diet_cycles")
+    .select("id")
+    .eq("patient_id", pacienteSelecionado.id)
+    .eq("cycle_number", numeroNovoCiclo)
+    .eq("status", "ativo")
+    .single();
+
+if (erroBuscaCiclo || !cicloCriado) {
+  console.error("Erro ao localizar novo ciclo:", erroBuscaCiclo);
+
+  alert(
+    "O novo ciclo foi iniciado, mas não foi possível identificá-lo. Não envie novamente antes de verificarmos."
+  );
+
+  return;
+}
+
+// Vincular a entrega ao ciclo criado
+const { data: entregaVinculada, error: erroVinculoCiclo } =
+  await supabase
+    .from("diet_deliveries")
+    .update({
+      cycle_id: cicloCriado.id,
+    })
+    .eq("id", entrega.id)
+    .eq("status", "em_andamento")
+    .select("id, cycle_id")
+    .single();
+
+if (
+  erroVinculoCiclo ||
+  entregaVinculada?.cycle_id !== cicloCriado.id
+) {
+  console.error("Erro ao vincular entrega ao ciclo:", erroVinculoCiclo);
+
+  alert(
+    "O novo ciclo foi iniciado, mas não foi possível vinculá-lo à entrega. Não envie novamente antes de verificarmos."
+  );
+
+  return;
+}
+    
+    // Atualizar o plano cadastrado quando a renovação
+// solicitar uma frequência diferente.
+if (
+  renovacaoPendente?.requested_plan &&
+  renovacaoPendente.requested_plan !== pacienteSelecionado.plan
+) {
+  const { error: erroAtualizacaoPlano } = await supabase
+    .from("patients")
+    .update({
+      plan: renovacaoPendente.requested_plan,
+    })
+    .eq("id", pacienteSelecionado.id);
+
+  if (erroAtualizacaoPlano) {
+    console.error(
+      "Erro ao atualizar plano do paciente:",
+      erroAtualizacaoPlano
+    );
+
+    alert(
+      "A dieta foi enviada e o novo ciclo foi iniciado, mas não foi possível atualizar o plano do paciente. Não envie novamente antes de verificarmos o erro."
+    );
+    return;
+  }
+
+  setPacientes((anteriores) =>
+    anteriores.map((paciente) =>
+      paciente.id === pacienteSelecionado.id
+        ? {
+            ...paciente,
+            plan: renovacaoPendente.requested_plan,
+          }
+        : paciente
+    )
+  );
+
+  setPacienteSelecionado((anterior: any) =>
+    anterior
+      ? {
+          ...anterior,
+          plan: renovacaoPendente.requested_plan,
+        }
+      : anterior
+  );
+}
+
+  // Concluir a renovação somente após o envio
+  // da nova dieta e a criação do novo ciclo.
+  const renovacoesDoPaciente = renovacoesPendentes.filter(
+    (renovacao) =>
+      renovacao.patient_id === pacienteSelecionado.id
+  );
+
+  if (renovacoesDoPaciente.length > 0) {
+    const idsRenovacoes = renovacoesDoPaciente.map(
+      (renovacao) => renovacao.id
+    );
+
+    const { error: erroRenovacao } = await supabase
+      .from("renewal_requests")
+      .update({ status: "aprovada" })
+      .in("id", idsRenovacoes)
+      .eq("status", "pendente");
+
+    if (erroRenovacao) {
+      console.error(
+        "Erro ao concluir renovação:",
+        erroRenovacao
+      );
+
+      alert(
+        "A dieta foi enviada e o novo ciclo foi iniciado, mas a renovação continua pendente. Não envie a dieta novamente antes de verificarmos o erro."
+      );
+      return;
+    }
+
+    setRenovacoesPendentes((anteriores) =>
+      anteriores.filter(
+        (renovacao) =>
+          renovacao.patient_id !== pacienteSelecionado.id
+      )
+    );
+  }
+}
+
+// Revisões devem utilizar o ciclo já existente,
+// sem iniciar um novo ciclo.
+if (ehRevisao && cicloAtivo) {
+  const { data: revisaoVinculada, error: erroVinculoRevisao } =
+    await supabase
+      .from("diet_deliveries")
+      .update({
+        cycle_id: cicloAtivo.id,
+      })
+      .eq("id", entrega.id)
+      .eq("status", "em_andamento")
+      .select("id, cycle_id")
+      .single();
+
+  if (
+    erroVinculoRevisao ||
+    revisaoVinculada?.cycle_id !== cicloAtivo.id
+  ) {
+    console.error(
+      "Erro ao vincular revisão ao ciclo:",
+      erroVinculoRevisao
+    );
+
+    alert(
+      "Os PDFs foram enviados, mas não foi possível vincular a revisão ao ciclo existente. Não envie novamente antes de verificarmos."
+    );
+
+    return;
+  }
+}
+
+// Marcar a entrega como concluída somente após
+// todas as operações de envio terminarem com sucesso.
+const {
+  data: entregaConcluida,
+  error: erroConclusaoEntrega,
+} = await supabase
+  .from("diet_deliveries")
+  .update({
+    status: "concluida",
+  })
+  .eq("id", entrega.id)
+  .eq("status", "em_andamento")
+  .select("id, status")
+  .single();
+
+if (
+  erroConclusaoEntrega ||
+  !entregaConcluida ||
+  entregaConcluida.status !== "concluida"
+) {
+  console.error(
+    "Erro ao concluir a entrega da dieta:",
+    erroConclusaoEntrega
+  );
+
+  alert(
+    "Os PDFs foram enviados, mas não foi possível confirmar a conclusão da entrega. Não envie novamente antes de verificarmos o erro."
+  );
+
+  return;
+}
+
+// Atualizar as entregas registradas após o envio completo
+setEntregasRegistradas((anteriores) => [
+  ...anteriores,
+  {
+    id: entrega.id,
+    patient_id: pacienteSelecionado.id,
+    created_at: new Date().toISOString(),
+  },
+]);
+
+alert("Dieta enviada ao paciente com sucesso!");
+
+setArquivosDieta([]);
+
+  } catch (erro) {
+    console.error("Erro inesperado ao enviar dieta:", erro);
+
+    alert(
+      "Ocorreu um erro inesperado durante o envio. Verifique se a dieta foi registrada antes de tentar novamente."
+    );
+  } finally {
+    // Liberar a trava após sucesso, erro ou interrupção
+    envioEmAndamento.current = false;
+    setEnviandoDieta(false);
+  }
 }
 
   return (
@@ -325,6 +975,70 @@ if (!ehRevisao) {
 >
   🔔 Testar fila de notificações
 </button>
+
+<section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+  <h2 className="text-xl font-bold text-gray-900">
+    Dietas pendentes ({dietasPendentes.length})
+  </h2>
+
+  <p className="mt-2 text-sm text-gray-600">
+    Pacientes que precisam receber a primeira dieta, solicitaram
+    renovação ou estão aguardando cadastro.
+  </p>
+
+  {carregandoPendencias ? (
+    <p className="mt-5 text-gray-500">
+      Carregando pendências...
+    </p>
+  ) : dietasPendentes.length === 0 ? (
+    <p className="mt-5 text-green-700">
+      Nenhuma dieta pendente no momento.
+    </p>
+  ) : (
+    <div className="mt-5 space-y-3">
+      {dietasPendentes.map((pendencia) => (
+        <div
+          key={pendencia.id}
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4"
+        >
+          <div>
+            <p className="font-semibold text-gray-900">
+              {pendencia.nome}
+            </p>
+
+            <p className="mt-1 text-sm text-gray-600">
+              {pendencia.tipo}
+            </p>
+          </div>
+
+          {pendencia.paciente ? (
+            <button
+              type="button"
+              onClick={() => {
+                setPacienteSelecionado(pendencia.paciente);
+                setBusca(pendencia.nome);
+                setEhRevisao(false);
+              }}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              Preparar dieta →
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = "/pacientes";
+              }}
+              className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+            >
+              Ver solicitação →
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</section>
 
         <div className="mt-8 max-w-xl">
   <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -565,15 +1279,22 @@ if (!ehRevisao) {
         </button>
 
         <button
-          type="button"
-          onClick={() => {
-            setMostrarConfirmacao(false);
-            enviarDieta();
-          }}
-          className="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-        >
-          Confirmar envio
-        </button>
+  type="button"
+  disabled={enviandoDieta}
+  onClick={() => {
+    if (envioEmAndamento.current) return;
+
+    setMostrarConfirmacao(false);
+    enviarDieta();
+  }}
+  className={`rounded-xl px-4 py-2 font-semibold text-white ${
+    enviandoDieta
+      ? "cursor-not-allowed bg-gray-400"
+      : "bg-blue-600 hover:bg-blue-700"
+  }`}
+>
+  {enviandoDieta ? "Enviando dieta..." : "Confirmar envio"}
+</button>
       </div>
     </div>
   </div>

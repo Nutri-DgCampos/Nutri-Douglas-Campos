@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -11,6 +11,41 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+
+  const [textoBotaoCadastro, setTextoBotaoCadastro] = useState(
+  "Cadastro em preparação"
+);
+
+const [cadastroLiberado, setCadastroLiberado] = useState(false);
+
+useEffect(() => {
+  async function consultarCadastro() {
+    try {
+      const resposta = await fetch("/api/cadastro-paciente", {
+        cache: "no-store",
+      });
+
+      if (!resposta.ok) return;
+
+      const dados = await resposta.json();
+
+      if (dados.aguardandoLiberacao) {
+        setTextoBotaoCadastro("Cadastro em preparação");
+        setCadastroLiberado(false);
+      } else if (dados.cadastroEspecial) {
+        setTextoBotaoCadastro("Já sou paciente em acompanhamento");
+        setCadastroLiberado(true);
+      } else {
+        setTextoBotaoCadastro("Fazer meu cadastro");
+        setCadastroLiberado(true);
+      }
+    } catch (error) {
+      console.error("Erro ao consultar cadastro:", error);
+    }
+  }
+
+  consultarCadastro();
+}, []);
 
   async function entrar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -141,7 +176,26 @@ if (paciente) {
           >
             {carregando ? "Entrando..." : "Entrar"}
           </button>
-        </form>
+                </form>
+
+        <div className="mt-6 border-t border-gray-200 pt-6">
+          <p className="mb-3 text-center text-sm text-gray-600">
+            Ainda não possui cadastro?
+          </p>
+
+          {cadastroLiberado ? (
+  <a
+    href="/cadastro-paciente"
+    className="block w-full rounded-xl border-2 border-blue-600 px-4 py-3 text-center font-semibold text-blue-600 transition hover:bg-blue-50"
+  >
+    {textoBotaoCadastro}
+  </a>
+) : (
+  <div className="block w-full cursor-not-allowed rounded-xl border-2 border-gray-300 bg-gray-100 px-4 py-3 text-center font-semibold text-gray-500">
+    {textoBotaoCadastro}
+  </div>
+)}
+        </div>
       </div>
     </main>
   );
