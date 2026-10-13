@@ -65,6 +65,75 @@ try {
 }
 
 }
+
+
+const [mensagemPersonalizada, setMensagemPersonalizada] = useState(
+  "Olá! Seu relatório nutricional está disponível para preenchimento. Acesse o Acompanhamento Nutricional e envie suas respostas dentro do prazo."
+);
+
+const [enviandoNotificacaoPersonalizada, setEnviandoNotificacaoPersonalizada] =
+  useState(false);
+
+async function enviarNotificacaoPersonalizada() {
+  const mensagem = mensagemPersonalizada.trim();
+
+  if (!mensagem || mensagem.length > 300) {
+    alert("Informe uma mensagem de até 300 caracteres.");
+    return;
+  }
+
+  if (enviandoNotificacaoPersonalizada) return;
+
+  const confirmar = window.confirm(
+    "Esta mensagem será enviada para TODOS os pacientes com notificações ativadas.\n\n" +
+      mensagem +
+      "\n\nDeseja confirmar o envio?"
+  );
+
+  if (!confirmar) return;
+
+  setEnviandoNotificacaoPersonalizada(true);
+
+  try {
+    const {
+      data: { session },
+      error: erroSessao,
+    } = await supabase.auth.getSession();
+
+    if (erroSessao || !session?.access_token) {
+      alert("Faça login como nutricionista.");
+      return;
+    }
+
+    const resposta = await fetch(
+      "/api/enviar-notificacao-personalizada",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mensagem }),
+      }
+    );
+
+    const resultado = await resposta.json();
+
+    if (!resposta.ok || !resultado.success) {
+      alert(resultado.error || "Erro ao enviar notificações.");
+      return;
+    }
+
+    alert(resultado.message || "Envio concluído.");
+  } catch (erro) {
+    console.error("Erro ao enviar notificações:", erro);
+    alert("Não foi possível enviar as notificações.");
+  } finally {
+    setEnviandoNotificacaoPersonalizada(false);
+  }
+}
+
+
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
@@ -276,15 +345,7 @@ useEffect(() => {
             </p>
           </header>
 
-          <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
-  <button
-    type="button"
-    onClick={enviarNotificacaoTeste}
-    className="rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
-  >
-    🔔 Enviar notificação de teste
-  </button>
-</div>
+          
 
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <Card
