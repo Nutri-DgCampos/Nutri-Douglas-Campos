@@ -66,8 +66,18 @@ ${dados.observacoes || "Nenhuma observação adicional."}
 `,
 });
 
+        const mensagemWhatsApp = `
+
+💚 Ficou com alguma dúvida sobre sua devolutiva ou precisa de alguma orientação? Estou à disposição!
+
+📲 Fale comigo pelo WhatsApp:
+https://wa.me/551499106600`;
+
+    const devolutivaFinal =
+      resposta.output_text.trim() + mensagemWhatsApp;
+
     return NextResponse.json({
-      texto: resposta.output_text,
+      texto: devolutivaFinal,
     });
   } catch (error) {
   console.error("Erro ao gerar devolutiva:", error);
