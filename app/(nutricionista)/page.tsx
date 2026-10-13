@@ -366,12 +366,49 @@ useEffect(() => {
             />
           </section>
 
+                    <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-blue-900">
+              🔔 Enviar notificação personalizada
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-600">
+              Escreva uma mensagem para enviar aos pacientes que possuem
+              notificações ativadas.
+            </p>
+
+            <textarea
+              value={mensagemPersonalizada}
+              onChange={(e) => setMensagemPersonalizada(e.target.value)}
+              maxLength={300}
+              rows={4}
+              className="mt-4 w-full rounded-xl border border-blue-200 bg-white p-4 text-gray-900 outline-none focus:border-blue-500"
+              placeholder="Digite sua mensagem..."
+            />
+
+            <p className="mt-1 text-right text-xs text-gray-500">
+              {mensagemPersonalizada.length}/300 caracteres
+            </p>
+
+            <button
+              type="button"
+              onClick={enviarNotificacaoPersonalizada}
+              disabled={enviandoNotificacaoPersonalizada}
+              className="mt-4 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+            >
+              {enviandoNotificacaoPersonalizada
+                ? "Enviando notificações..."
+                : "🔔 Enviar para todos os pacientes"}
+            </button>
+          </section>
+
           <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
                   Pacientes
                 </h2>
+
+                
 
                 <p className="mt-1 text-sm text-gray-500">
                   Acompanhe seus pacientes em um só lugar.
