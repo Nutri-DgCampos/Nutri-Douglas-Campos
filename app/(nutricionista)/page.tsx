@@ -138,6 +138,60 @@ async function enviarNotificacaoPersonalizada() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
+  const [relatoriosRecebidos, setRelatoriosRecebidos] = useState(0);
+  const [carregandoRelatorios, setCarregandoRelatorios] = useState(true);
+  const [erroRelatorios, setErroRelatorios] = useState("");
+
+  useEffect(() => {
+    let ativo = true;
+    let consultaEmAndamento = false;
+
+    async function carregarRelatoriosRecebidos() {
+      if (consultaEmAndamento) return;
+      consultaEmAndamento = true;
+
+      try {
+        const { count, error } = await supabase
+          .from("patient_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pendente");
+
+        if (error) throw error;
+
+        if (ativo) {
+          setRelatoriosRecebidos(count ?? 0);
+          setErroRelatorios("");
+        }
+      } catch (error) {
+        console.error("Erro ao contar relatórios recebidos:", error);
+        if (ativo) {
+          setErroRelatorios("Não foi possível atualizar os relatórios recebidos.");
+        }
+      } finally {
+        consultaEmAndamento = false;
+        if (ativo) setCarregandoRelatorios(false);
+      }
+    }
+
+    function atualizarAoVoltar() {
+      if (document.visibilityState === "visible") {
+        carregarRelatoriosRecebidos();
+      }
+    }
+
+    carregarRelatoriosRecebidos();
+    const intervalo = setInterval(atualizarAoVoltar, 60000);
+    document.addEventListener("visibilitychange", atualizarAoVoltar);
+    window.addEventListener("focus", atualizarAoVoltar);
+
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+      document.removeEventListener("visibilitychange", atualizarAoVoltar);
+      window.removeEventListener("focus", atualizarAoVoltar);
+    };
+  }, []);
+
   const [naoResponderam, setNaoResponderam] = useState(0);
 const [carregandoAtrasados, setCarregandoAtrasados] = useState(true);
 
@@ -273,8 +327,12 @@ useEffect(() => {
     "visibilitychange",
     atualizarAoVoltar
   );
+  window.addEventListener("focus", atualizarAoVoltar);
+  const intervalo = setInterval(atualizarAoVoltar, 60000);
 
   return () => {
+    clearInterval(intervalo);
+    window.removeEventListener("focus", atualizarAoVoltar);
     document.removeEventListener(
       "visibilitychange",
       atualizarAoVoltar
@@ -353,7 +411,16 @@ useEffect(() => {
               valor={carregando ? "..." : String(pacientes.length)}
             />
 
-            <Card titulo="Relatórios recebidos" valor="0" />
+            <Card
+              titulo="Relatórios recebidos"
+              valor={
+                carregandoRelatorios
+                  ? "..."
+                  : erroRelatorios
+                    ? "—"
+                    : String(relatoriosRecebidos)
+              }
+            />
 
             <Card
   titulo="Não responderam"
@@ -365,6 +432,12 @@ useEffect(() => {
               valor={carregando ? "..." : String(pagamentosPendentes)}
             />
           </section>
+
+          {erroRelatorios && (
+            <p role="alert" className="mt-3 text-sm text-red-600">
+              {erroRelatorios}
+            </p>
+          )}
 
                     <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm">
             <h2 className="text-xl font-bold text-blue-900">
