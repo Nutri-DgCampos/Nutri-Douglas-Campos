@@ -531,17 +531,8 @@ alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
     
     <p className="mt-1 text-lg font-bold text-gray-900">
   {relatorioDisponivel
-    ? `${
-        Math.max(
-          0,
-          (cicloAtivo.followup_frequency?.trim().toLowerCase() === "semanal"
-            ? 4
-            : cicloAtivo.followup_frequency?.trim().toLowerCase() === "quinzenal"
-            ? 2
-            : 1) - (numeroRelatorio ?? 1) + 1
-        )
-      } relatório(s) restante(s) no acompanhamento`
-    : "Nenhum relatório disponível no momento"}
+  ? "Relatório nutricional disponível para preenchimento"
+  : "Nenhum relatório disponível no momento"}
 </p>
 
     <p className="mt-2 text-sm text-gray-600">
