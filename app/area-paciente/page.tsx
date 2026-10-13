@@ -250,7 +250,7 @@ const semanaAtualBrasil = segundaAtualBrasil
     .maybeSingle();
 
  
-const numeroAtual = ultimoRelatorio?.cycle_report_number ?? 1;
+const numeroAtual = Number(ultimoRelatorio?.cycle_report_number ?? 0);
 const frequencia = ciclo.followup_frequency?.trim().toLowerCase();
 const intervaloDias =
   frequencia === "semanal"
@@ -663,7 +663,7 @@ return restantes === 1
 
 {ultimoRelatorioDoCiclo && (
   <p className="mt-3 font-semibold text-blue-700">
-    Você já enviou o último relatório programado deste acompanhamento.
+    Você chegou à etapa final dos relatórios deste acompanhamento.
     Seu acompanhamento permanece ativo até a data de encerramento.
   </p>
 )}

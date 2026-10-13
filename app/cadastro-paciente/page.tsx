@@ -89,6 +89,7 @@ setEnviando(true);
     }
 
     alert("Cadastro realizado com sucesso!");
+window.location.replace("/login");
   } catch (error) {
   console.error("Erro ao enviar cadastro:", error);
   alert("Erro de conexão. Tente novamente.");
