@@ -664,14 +664,36 @@ return restantes === 1
   </div>
 )}
 
-{!cicloAtivo && (
+{(() => {
+  const hojeBrasil = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
+  const inicioUltimaSemana = cicloAtivo?.end_date
+    ? new Date(`${cicloAtivo.end_date}T12:00:00Z`)
+    : null;
+
+  inicioUltimaSemana?.setUTCDate(
+    inicioUltimaSemana.getUTCDate() - 7
+  );
+
+  const podeRenovar =
+    !cicloAtivo ||
+    (inicioUltimaSemana !== null &&
+      hojeBrasil >= inicioUltimaSemana.toISOString().slice(0, 10));
+
+  return podeRenovar && (
+
   <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
     <p className="text-sm font-semibold text-blue-600">
       🔄 Continuidade do acompanhamento
     </p>
 
     <h2 className="mt-2 text-lg font-semibold text-gray-900">
-      Seu acompanhamento foi concluído
+      Renove seu acompanhamento nutricional
     </h2>
 
     <p className="mt-1 text-sm text-gray-600">
@@ -719,8 +741,9 @@ return restantes === 1
     </div>
   </div>
 )}
-  </div>
-)}
+    </div>
+  );
+})()}
 
 <div className="mt-8 grid grid-cols-2 gap-4">
   <button
