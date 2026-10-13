@@ -643,7 +643,9 @@ const restantes = Math.max(
 );
 
 if (restantes === 0) {
-  return "Todos os relatórios deste acompanhamento foram concluídos ou tiveram seu prazo encerrado";
+  return relatorioDisponivel
+    ? "Você tem um relatório nutricional disponível para preencher."
+    : "Todos os relatórios deste acompanhamento foram concluídos ou tiveram seu prazo encerrado";
 }
 
 return restantes === 1
