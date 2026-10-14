@@ -2,8 +2,13 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { pedirConfirmacao } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import Selecao from "@/components/Selecao";
+import { InputTextarea } from "primereact/inputtextarea";
+import BotaoVoltar from "@/components/BotaoVoltar";
 
 export default function EditarPaciente() {
   const params = useParams();
@@ -117,7 +122,7 @@ async function redefinirSenhaPaciente() {
     return;
   }
 
-  const confirmado = window.confirm(
+  const confirmado = await pedirConfirmacao(
     "Deseja realmente redefinir a senha deste paciente? A senha anterior deixará de funcionar."
   );
 
@@ -172,10 +177,9 @@ async function redefinirSenhaPaciente() {
 }
   if (carregando) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Sidebar />
+      <div>
 
-        <main className="flex-1 p-8">
+        <main className="min-w-0 flex-1 p-4 lg:p-8">
           <p>Carregando paciente...</p>
         </main>
       </div>
@@ -183,26 +187,15 @@ async function redefinirSenhaPaciente() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
+      <main className="min-w-0 flex-1 p-4 lg:p-8">
         <div className="mx-auto max-w-5xl">
 
-          <button
-            type="button"
-            onClick={() => router.push(`/pacientes/${id}`)}
-            className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-800"
-          >
-            ← Voltar para o paciente
-          </button>
+          <BotaoVoltar rotulo="Voltar para o paciente" onClick={() => router.push(`/pacientes/${id}`)} />
 
           <div className="mb-8">
-            <p className="text-sm font-medium text-blue-600">
-              Paciente
-            </p>
-
-            <h1 className="mt-1 text-3xl font-bold text-gray-900">
+<h1 className="text-3xl font-bold text-gray-900">
               Editar paciente
             </h1>
 
@@ -211,18 +204,18 @@ async function redefinirSenhaPaciente() {
             </p>
           </div>
 
-<div className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
-  <button
+<div className="mb-6 cartao p-5 lg:p-6">
+  <Button
     type="button"
     onClick={() => {
       setMostrarRedefinirSenha(!mostrarRedefinirSenha);
       setErroSenha("");
       setSucessoSenha("");
     }}
-    className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+   
   >
-    🔑 Redefinir senha do paciente
-  </button>
+    Redefinir senha do paciente
+  </Button>
 
   {mostrarRedefinirSenha && (
     <div className="mt-5">
@@ -231,22 +224,22 @@ async function redefinirSenhaPaciente() {
       </p>
 
       <div className="flex max-w-md gap-2">
-        <input
+        <InputText
           type={mostrarNovaSenha ? "text" : "password"}
           value={novaSenha}
           onChange={(e) => setNovaSenha(e.target.value)}
           placeholder="Nova senha (mínimo 6 caracteres)"
           autoComplete="new-password"
-          className="min-w-0 flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+          className="flex-1 flex-1"
         />
 
-        <button
+        <Button severity="secondary" outlined size="small"
           type="button"
           onClick={() => setMostrarNovaSenha(!mostrarNovaSenha)}
-          className="rounded-xl border border-gray-300 px-3 text-sm text-gray-700"
+         
         >
           {mostrarNovaSenha ? "Ocultar" : "Mostrar"}
-        </button>
+        </Button>
       </div>
 
       {erroSenha && (
@@ -261,20 +254,20 @@ async function redefinirSenhaPaciente() {
         A nova senha substituirá a senha anterior após a confirmação.
       </p>
 
-      <button
+      <Button severity="warning"
   type="button"
   onClick={redefinirSenhaPaciente}
   disabled={redefinindoSenha || novaSenha.length < 6}
-  className="mt-4 rounded-xl bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
+  className="mt-4"
 >
   {redefinindoSenha ? "Redefinindo..." : "Confirmar nova senha"}
-</button>
+</Button>
     </div>
   )}
 </div>
           <form
             onSubmit={salvarPaciente}
-            className="rounded-2xl bg-white p-8 shadow-sm"
+            className="cartao p-5 lg:p-8"
           >
             <div className="grid gap-6 md:grid-cols-2">
 
@@ -325,15 +318,15 @@ async function redefinirSenhaPaciente() {
                   Plano contratado
                 </label>
 
-                <select
+                <Selecao
                   value={plan}
                   onChange={(e) => setPlan(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 >
                   <option value="Semanal">Semanal</option>
                   <option value="Quinzenal">Quinzenal</option>
                   <option value="Mensal">Mensal</option>
-                </select>
+                </Selecao>
               </div>
 
               <div>
@@ -341,15 +334,15 @@ async function redefinirSenhaPaciente() {
                   Status do pagamento
                 </label>
 
-                <select
+                <Selecao
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 >
                   <option value="Ativo">Ativo</option>
                   <option value="Pendente">Pendente</option>
                   <option value="Cancelado">Cancelado</option>
-                </select>
+                </Selecao>
               </div>
 
             </div>
@@ -359,11 +352,11 @@ async function redefinirSenhaPaciente() {
                 Lembrete importante
               </label>
 
-              <textarea
+              <InputTextarea autoResize
                 value={importantNote}
                 onChange={(e) => setImportantNote(e.target.value)}
                 rows={4}
-                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                className="w-full"
               />
             </div>
 
@@ -375,21 +368,21 @@ async function redefinirSenhaPaciente() {
 
             <div className="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
 
-              <button
+              <Button severity="secondary" outlined
                 type="button"
                 onClick={() => router.push(`/pacientes/${id}`)}
-                className="rounded-xl border border-gray-300 px-5 py-3 font-medium text-gray-700 hover:bg-gray-50"
+               
               >
                 Cancelar
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="submit"
                 disabled={salvando}
-                className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700 disabled:opacity-50"
+               
               >
                 {salvando ? "Salvando..." : "Salvar alterações"}
-              </button>
+              </Button>
 
             </div>
           </form>
@@ -415,11 +408,11 @@ function Campo({
         {titulo}
       </label>
 
-      <input
+      <InputText
         type="text"
         value={valor}
         onChange={(e) => alterar(e.target.value)}
-        className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+        className="w-full"
       />
     </div>
   );

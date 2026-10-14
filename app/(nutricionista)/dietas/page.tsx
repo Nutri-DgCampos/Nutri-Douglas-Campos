@@ -1,8 +1,10 @@
 "use client";
 
-import Sidebar from "@/components/Sidebar";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
 
 async function testarNotificacaoPush() {
   const {
@@ -11,7 +13,7 @@ async function testarNotificacaoPush() {
   } = await api.auth.getSession();
 
   if (erroSessao || !session) {
-    alert("Faça login como nutricionista para testar as notificações.");
+    avisar("Faça login como nutricionista para testar as notificações.");
     return;
   }
 
@@ -23,14 +25,14 @@ async function testarNotificacaoPush() {
     const resultado = await resposta.json();
 
     if (!resposta.ok) {
-      alert(resultado.error || "Erro ao enviar notificação.");
+      avisar(resultado.error || "Erro ao enviar notificação.");
       return;
     }
 
-    alert("Notificação de teste enviada!");
+    avisar("Notificação de teste enviada!");
   } catch (erro) {
     console.error("Erro ao testar notificação:", erro);
-    alert("Não foi possível realizar o teste.");
+    avisar("Não foi possível realizar o teste.");
   }
 }
 
@@ -41,11 +43,11 @@ async function testarFilaNotificacoes() {
   } = await api.auth.getSession();
 
   if (erroSessao || !session) {
-    alert("Faça login como nutricionista para testar a fila.");
+    avisar("Faça login como nutricionista para testar a fila.");
     return;
   }
 
-  const confirmar = window.confirm(
+  const confirmar = await pedirConfirmacao(
     "Deseja processar uma notificação pendente da fila? Isso poderá enviar uma notificação real ao dispositivo cadastrado."
   );
 
@@ -61,7 +63,7 @@ async function testarFilaNotificacoes() {
     const resultado = await resposta.json();
 
     if (!resposta.ok || !resultado.success) {
-      alert(
+      avisar(
         resultado.error ||
           resultado.message ||
           "Não foi possível processar a notificação."
@@ -69,10 +71,10 @@ async function testarFilaNotificacoes() {
       return;
     }
 
-    alert(resultado.message || "Processamento concluído.");
+    avisar(resultado.message || "Processamento concluído.");
   } catch (erro) {
     console.error("Erro ao testar fila:", erro);
-    alert("Não foi possível testar a fila de notificações.");
+    avisar("Não foi possível testar a fila de notificações.");
   }
 }
 
@@ -89,12 +91,12 @@ async function enviarNotificacaoPersonalizada() {
   const mensagem = mensagemPersonalizada.trim();
 
   if (!mensagem) {
-    alert("Digite uma mensagem antes de enviar.");
+    avisar("Digite uma mensagem antes de enviar.");
     return;
   }
 
   if (mensagem.length > 300) {
-    alert("A mensagem deve ter no máximo 300 caracteres.");
+    avisar("A mensagem deve ter no máximo 300 caracteres.");
     return;
   }
 
@@ -102,7 +104,7 @@ async function enviarNotificacaoPersonalizada() {
     return;
   }
 
-  const confirmar = window.confirm(
+  const confirmar = await pedirConfirmacao(
     "ATENÇÃO: esta mensagem será enviada para TODOS os pacientes " +
       "com dispositivos cadastrados para notificações.\n\n" +
       `Mensagem:\n${mensagem}\n\n` +
@@ -122,7 +124,7 @@ async function enviarNotificacaoPersonalizada() {
     } = await api.auth.getSession();
 
     if (erroSessao || !session) {
-      alert("Faça login como nutricionista para enviar notificações.");
+      avisar("Faça login como nutricionista para enviar notificações.");
       return;
     }
 
@@ -140,17 +142,17 @@ async function enviarNotificacaoPersonalizada() {
     const resultado = await resposta.json();
 
     if (!resposta.ok || !resultado.success) {
-      alert(resultado.error || "Não foi possível enviar a notificação.");
+      avisar(resultado.error || "Não foi possível enviar a notificação.");
       return;
     }
 
-    alert(
+    avisar(
       resultado.message ||
         "Solicitações de notificações enviadas com sucesso."
     );
   } catch (erro) {
     console.error("Erro ao enviar notificação personalizada:", erro);
-    alert("Não foi possível realizar o envio.");
+    avisar("Não foi possível realizar o envio.");
   } finally {
     setEnviandoNotificacaoPersonalizada(false);
   }
@@ -414,7 +416,7 @@ async function abrirPDF(caminhoArquivo: string) {
 
   if (error || !data?.signedUrl) {
     console.error("Erro ao abrir PDF:", error);
-    alert("Não foi possível abrir o PDF.");
+    avisar("Não foi possível abrir o PDF.");
     return;
   }
 
@@ -431,22 +433,22 @@ async function enviarDieta() {
 
   try {
     if (!pacienteSelecionado) {
-    alert("Selecione um paciente.");
+    avisar("Selecione um paciente.");
     return;
   }
 
   if (arquivosDieta.length === 0) {
-    alert("Selecione pelo menos um arquivo PDF.");
+    avisar("Selecione pelo menos um arquivo PDF.");
     return;
   }
 
   if (arquivosDieta.length > 6) {
-    alert("Você pode enviar no máximo 6 arquivos.");
+    avisar("Você pode enviar no máximo 6 arquivos.");
     return;
   }
 
   if (!dataDieta) {
-    alert("Informe a data da dieta.");
+    avisar("Informe a data da dieta.");
     return;
   }
 
@@ -459,14 +461,14 @@ async function enviarDieta() {
 
 if (erroCiclo) {
   console.error("Erro ao consultar ciclo ativo:", erroCiclo);
-  alert("Não foi possível verificar o ciclo do paciente.");
+  avisar("Não foi possível verificar o ciclo do paciente.");
   return;
 }
 
 console.log("CICLO ATIVO:", cicloAtivo);
 console.log("É REVISÃO:", ehRevisao);
 if (ehRevisao && !cicloAtivo) {
-  alert(
+  avisar(
     "Este paciente não possui um ciclo ativo. Para enviar a dieta, desmarque a opção de revisão."
   );
   return;
@@ -502,7 +504,7 @@ if (erroVerificacaoEntrega) {
     erroVerificacaoEntrega
   );
 
-  alert(
+  avisar(
     "Não foi possível verificar se existe uma entrega incompleta. O envio foi interrompido por segurança."
   );
 
@@ -515,7 +517,7 @@ if (entregasIncompletas && entregasIncompletas.length > 0) {
     entregasIncompletas[0]
   );
 
-  alert(
+  avisar(
     "Este paciente possui uma entrega de dieta que não foi concluída. Para evitar duplicações, verifique essa entrega antes de enviar novamente."
   );
 
@@ -536,13 +538,13 @@ if (entregasIncompletas && entregasIncompletas.length > 0) {
   console.error("Erro ao registrar entrega da dieta:", erroEntrega);
 
   if (erroEntrega?.code === "23505") {
-    alert(
+    avisar(
       "Já existe uma entrega de dieta em andamento para este paciente. O novo envio foi bloqueado para evitar duplicações. Verifique a entrega anterior antes de tentar novamente."
     );
     return;
   }
 
-  alert(
+  avisar(
     "Não foi possível registrar a entrega da dieta. Verifique o erro antes de tentar novamente."
   );
 
@@ -579,14 +581,14 @@ for (const arquivo of arquivosDieta) {
         erroLimpeza
       );
 
-      alert(
+      avisar(
         "O upload falhou e não foi possível remover o registro da entrega. Não tente enviar novamente antes de verificarmos."
       );
       return;
     }
   }
 
-  alert(
+  avisar(
     arquivosRegistradosComSucesso === 0
       ? `Erro ao enviar ${arquivo.name}. A entrega vazia foi removida.`
       : `Erro ao enviar ${arquivo.name}. Alguns PDFs já foram registrados. Não tente enviar novamente antes de verificarmos.`
@@ -617,7 +619,7 @@ for (const arquivo of arquivosDieta) {
       erroRemocaoArquivo
     );
 
-    alert(
+    avisar(
       "O PDF foi enviado, mas não pôde ser registrado nem removido do Storage. Não tente enviar novamente antes de verificarmos."
     );
     return;
@@ -636,14 +638,14 @@ for (const arquivo of arquivosDieta) {
         erroLimpeza
       );
 
-      alert(
+      avisar(
         "O PDF foi removido, mas não foi possível excluir o registro da entrega. Não tente enviar novamente antes de verificarmos."
       );
       return;
     }
   }
 
-  alert(
+  avisar(
     arquivosRegistradosComSucesso === 0
       ? `Não foi possível registrar ${arquivo.name}. O PDF e a entrega vazia foram removidos.`
       : `Não foi possível registrar ${arquivo.name}. O PDF com erro foi removido, mas existem outros arquivos registrados. Não tente enviar novamente antes de verificarmos.`
@@ -664,7 +666,7 @@ if (arquivosRegistradosComSucesso !== arquivosDieta.length) {
     entregaId: entrega.id,
   });
 
-  alert(
+  avisar(
     "Nem todos os PDFs foram registrados corretamente. A entrega continuará em andamento. Não envie novamente antes de verificarmos o problema."
   );
 
@@ -693,7 +695,7 @@ if (
     entregaId: entrega.id,
   });
 
-  alert(
+  avisar(
     "Não foi possível confirmar todos os PDFs no banco de dados. A entrega permanecerá em andamento. Não tente enviar novamente antes de verificarmos."
   );
 
@@ -714,7 +716,7 @@ if (erroConsultaStorage) {
     erroConsultaStorage
   );
 
-  alert(
+  avisar(
     "Não foi possível confirmar os PDFs no Storage. A entrega continuará em andamento. Não envie novamente antes de verificarmos."
   );
 
@@ -731,7 +733,7 @@ if (
     entregaId: entrega.id,
   });
 
-  alert(
+  avisar(
     "A quantidade de PDFs no Storage não corresponde à quantidade selecionada. A entrega continuará em andamento. Não envie novamente antes de verificarmos."
   );
 
@@ -770,7 +772,7 @@ if (!todosArquivosCorrespondem) {
     }
   );
 
-  alert(
+  avisar(
     "Os arquivos encontrados no Storage não correspondem aos PDFs registrados no banco. A entrega continuará em andamento. Não tente enviar novamente antes de verificarmos."
   );
 
@@ -798,7 +800,7 @@ if (!ehRevisao) {
 
   if (erroNovoCiclo) {
     console.error("Erro ao iniciar novo ciclo:", erroNovoCiclo);
-    alert(
+    avisar(
       "Os PDFs foram enviados, mas não foi possível iniciar o novo ciclo. Não envie novamente antes de verificarmos o erro."
     );
     return;
@@ -819,7 +821,7 @@ const { data: cicloCriado, error: erroBuscaCiclo } =
 if (erroBuscaCiclo || !cicloCriado) {
   console.error("Erro ao localizar novo ciclo:", erroBuscaCiclo);
 
-  alert(
+  avisar(
     "O novo ciclo foi iniciado, mas não foi possível identificá-lo. Não envie novamente antes de verificarmos."
   );
 
@@ -844,7 +846,7 @@ if (
 ) {
   console.error("Erro ao vincular entrega ao ciclo:", erroVinculoCiclo);
 
-  alert(
+  avisar(
     "O novo ciclo foi iniciado, mas não foi possível vinculá-lo à entrega. Não envie novamente antes de verificarmos."
   );
 
@@ -870,7 +872,7 @@ if (
       erroAtualizacaoPlano
     );
 
-    alert(
+    avisar(
       "A dieta foi enviada e o novo ciclo foi iniciado, mas não foi possível atualizar o plano do paciente. Não envie novamente antes de verificarmos o erro."
     );
     return;
@@ -921,7 +923,7 @@ if (
         erroRenovacao
       );
 
-      alert(
+      avisar(
         "A dieta foi enviada e o novo ciclo foi iniciado, mas a renovação continua pendente. Não envie a dieta novamente antes de verificarmos o erro."
       );
       return;
@@ -959,7 +961,7 @@ if (ehRevisao && cicloAtivo) {
       erroVinculoRevisao
     );
 
-    alert(
+    avisar(
       "Os PDFs foram enviados, mas não foi possível vincular a revisão ao ciclo existente. Não envie novamente antes de verificarmos."
     );
 
@@ -992,7 +994,7 @@ if (
     erroConclusaoEntrega
   );
 
-  alert(
+  avisar(
     "Os PDFs foram enviados, mas não foi possível confirmar a conclusão da entrega. Não envie novamente antes de verificarmos o erro."
   );
 
@@ -1009,14 +1011,14 @@ setEntregasRegistradas((anteriores) => [
   },
 ]);
 
-alert("Dieta enviada ao paciente com sucesso!");
+avisar("Dieta enviada ao paciente com sucesso!");
 
 setArquivosDieta([]);
 
   } catch (erro) {
     console.error("Erro inesperado ao enviar dieta:", erro);
 
-    alert(
+    avisar(
       "Ocorreu um erro inesperado durante o envio. Verifique se a dieta foi registrada antes de tentar novamente."
     );
   } finally {
@@ -1027,10 +1029,9 @@ setArquivosDieta([]);
 }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
+      <main className="mx-auto min-w-0 max-w-5xl flex-1 p-4 lg:p-8">
         <h1 className="text-3xl font-bold text-gray-900">
           Dietas
         </h1>
@@ -1040,7 +1041,7 @@ setArquivosDieta([]);
         </p>
 
         
-<section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+<section className="mt-8 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
     Dietas pendentes ({dietasPendentes.length})
   </h2>
@@ -1075,9 +1076,9 @@ setArquivosDieta([]);
 </p>
 
 {pendencia.tipo === "Renovação" && (
-  <div className="mt-3 space-y-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm">
-    <p className="font-semibold text-blue-800">
-      🔄 Solicitação de renovação
+  <div className="mt-3 space-y-2 rounded-lg border border-primary-100 bg-primary-50 p-3 text-sm">
+    <p className="font-semibold text-primary-800">
+      Solicitação de renovação
     </p>
 
     <p className="text-gray-700">
@@ -1105,27 +1106,27 @@ setArquivosDieta([]);
           </div>
 
           {pendencia.paciente ? (
-            <button
+            <Button size="small"
               type="button"
               onClick={() => {
                 setPacienteSelecionado(pendencia.paciente);
                 setBusca(pendencia.nome);
                 setEhRevisao(false);
               }}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+             
             >
-              Preparar dieta →
-            </button>
+              Preparar dieta
+            </Button>
           ) : (
-            <button
+            <Button severity="warning" size="small"
               type="button"
               onClick={() => {
                 window.location.href = "/pacientes";
               }}
-              className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+             
             >
-              Ver solicitação →
-            </button>
+              Ver solicitação
+            </Button>
           )}
         </div>
       ))}
@@ -1138,17 +1139,17 @@ setArquivosDieta([]);
     Buscar paciente
   </label>
 
-  <input
+  <InputText
     type="text"
     value={busca}
     onChange={(e) => setBusca(e.target.value)}
     placeholder="Digite o nome do paciente..."
-    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+    className="w-full"
   />
 </div>
 
 {busca.trim() !== "" && (
-  <div className="mt-3 max-w-xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+  <div className="mt-3 max-w-xl overflow-hidden cartao">
     {pacientesFiltrados.length === 0 ? (
       <p className="p-4 text-sm text-gray-500">
         Nenhum paciente encontrado.
@@ -1174,7 +1175,7 @@ setArquivosDieta([]);
 
 {pacienteSelecionado && (
     <>
-  <div className="mt-8 max-w-xl rounded-2xl bg-white p-6 shadow-sm">
+  <div className="mt-8 max-w-xl cartao p-5 lg:p-6">
     <h2 className="text-lg font-bold text-gray-900">
       Dieta de {pacienteSelecionado.name}
     </h2>
@@ -1190,7 +1191,7 @@ setArquivosDieta([]);
     const arquivos = Array.from(e.target.files ?? []);
 
     if (arquivos.length > 6) {
-      alert("Você pode anexar no máximo 6 arquivos.");
+      avisar("Você pode anexar no máximo 6 arquivos.");
       e.target.value = "";
       return;
     }
@@ -1211,7 +1212,7 @@ setArquivosDieta([]);
           key={`${arquivo.name}-${index}`}
           className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700"
         >
-          📎 {arquivo.name}
+          {arquivo.name}
         </div>
       ))}
     </div>
@@ -1223,11 +1224,11 @@ setArquivosDieta([]);
     Data da dieta
   </label>
 
-  <input
+  <InputText
     type="date"
     value={dataDieta}
     onChange={(e) => setDataDieta(e.target.value)}
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+    className="w-full"
   />
 
   <p className="mt-2 text-xs text-gray-500">
@@ -1235,19 +1236,19 @@ setArquivosDieta([]);
   </p>
 </div>
 
-<button
+<Button
   type="button"
   onClick={() => {
   setEhRevisao(false);
   setMostrarConfirmacao(true);
 }}
-  className="mt-6 w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
+  className="mt-6 w-full"
 >
   Enviar dieta ao paciente
-</button>
+</Button>
   </div>
 
-  <div className="mt-6 max-w-xl rounded-2xl bg-white p-6 shadow-sm">
+  <div className="mt-6 max-w-xl cartao p-5 lg:p-6">
     <h2 className="text-lg font-bold text-gray-900">
       Última dieta enviada
     </h2>
@@ -1274,16 +1275,16 @@ setArquivosDieta([]);
   className="rounded-lg border border-gray-200 p-3"
 >
   <p className="text-sm text-gray-800">
-    📄 {arquivo.file_name}
+    {arquivo.file_name}
   </p>
 
-  <button
+  <Button size="small"
     type="button"
     onClick={() => abrirPDF(arquivo.storage_path)}
-    className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+    className="mt-2"
   >
     Abrir PDF
-  </button>
+  </Button>
 </div>
           ))}
         </div>
@@ -1291,17 +1292,17 @@ setArquivosDieta([]);
     )}
   </div>
 {historicoDietas.length > 1 && (
-  <div className="mt-4 max-w-xl rounded-2xl bg-white p-6 shadow-sm">
-    <button
+  <div className="mt-4 max-w-xl cartao p-5 lg:p-6">
+    <Button severity="secondary" text
       type="button"
       onClick={() => setMostrarHistorico(!mostrarHistorico)}
-      className="flex w-full items-center justify-between font-semibold text-gray-900"
+      className="w-full"
     >
       <span>Histórico de dietas</span>
       <span className="text-2xl">
         {mostrarHistorico ? "−" : "+"}
       </span>
-    </button>
+    </Button>
 
     {mostrarHistorico && (
       <div className="mt-4 space-y-4 border-t border-gray-200 pt-4">
@@ -1322,16 +1323,16 @@ setArquivosDieta([]);
   className="rounded-lg border border-gray-200 p-3"
 >
   <p className="text-sm text-gray-700">
-    📄 {arquivo.file_name}
+    {arquivo.file_name}
   </p>
 
-  <button
+  <Button size="small"
     type="button"
     onClick={() => abrirPDF(arquivo.storage_path)}
-    className="mt-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+    className="mt-2"
   >
     Abrir PDF
-  </button>
+  </Button>
 </div>
               ))}
             </div>
@@ -1363,13 +1364,13 @@ setArquivosDieta([]);
       </label>
 
       <div className="mt-8 flex justify-end gap-3">
-        <button
+        <Button severity="secondary" outlined size="small"
           type="button"
           onClick={() => setMostrarConfirmacao(false)}
-          className="rounded-xl border border-gray-300 px-4 py-2 text-gray-700"
+         
         >
           Cancelar
-        </button>
+        </Button>
 
         <button
   type="button"
@@ -1383,7 +1384,7 @@ setArquivosDieta([]);
   className={`rounded-xl px-4 py-2 font-semibold text-white ${
     enviandoDieta
       ? "cursor-not-allowed bg-gray-400"
-      : "bg-blue-600 hover:bg-blue-700"
+      : "bg-primary-600 hover:bg-primary-700"
   }`}
 >
   {enviandoDieta ? "Enviando dieta..." : "Confirmar envio"}

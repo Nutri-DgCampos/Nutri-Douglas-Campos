@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { avisar } from "@/lib/avisos";
+import { Button } from "primereact/button";
 
 export default function AlertasPage() {
   const [renovacoes, setRenovacoes] = useState<any[]>([]);
@@ -296,7 +298,7 @@ verificarAusenciaSemanal();
 
 async function aprovarRenovacao(renovacao: any) {
   if (!renovacao?.patient_id || !renovacao?.requested_plan) {
-    alert("Dados da renovação incompletos.");
+    avisar("Dados da renovação incompletos.");
     return;
   }
   
@@ -312,7 +314,7 @@ async function aprovarRenovacao(renovacao: any) {
 
 if (erroUltimoCiclo) {
   console.error("Erro ao buscar último ciclo:", erroUltimoCiclo);
-  alert("Não foi possível localizar o último ciclo do paciente.");
+  avisar("Não foi possível localizar o último ciclo do paciente.");
   return;
 }
 
@@ -340,7 +342,7 @@ const { error: erroNovoCiclo } = await api
 
 if (erroNovoCiclo) {
   console.error("Erro ao criar novo ciclo:", erroNovoCiclo);
-  alert("Não foi possível criar o novo ciclo.");
+  avisar("Não foi possível criar o novo ciclo.");
   return;
 }
 
@@ -355,7 +357,7 @@ const { error: erroPlano } = await api
 
 if (erroPlano) {
   console.error("Erro ao atualizar plano:", erroPlano);
-  alert("Não foi possível atualizar o plano do paciente.");
+  avisar("Não foi possível atualizar o plano do paciente.");
   return;
 }
 
@@ -370,7 +372,7 @@ const { error: erroSolicitacao } = await api
 
 if (erroSolicitacao) {
   console.error("Erro ao concluir solicitação:", erroSolicitacao);
-  alert("Novo ciclo criado, mas houve erro ao concluir a solicitação.");
+  avisar("Novo ciclo criado, mas houve erro ao concluir a solicitação.");
   return;
 }
 
@@ -378,7 +380,7 @@ setRenovacoes((anteriores) =>
   anteriores.filter((item) => item.id !== renovacao.id)
 );
 
-alert("Renovação aprovada com sucesso!");
+avisar("Renovação aprovada com sucesso!");
 
 }
 
@@ -393,7 +395,7 @@ async function reconhecerAlerta(alerta: any) {
 
   if (error) {
     console.error("Erro ao reconhecer alerta:", error);
-    alert("Não foi possível concluir o alerta.");
+    avisar("Não foi possível concluir o alerta.");
     return;
   }
 
@@ -403,20 +405,11 @@ async function reconhecerAlerta(alerta: any) {
 }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
+    <main className="p-4 lg:p-8">
       <div className="mx-auto max-w-5xl">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Alertas
-          <button
-  type="button"
-  onClick={() => window.history.back()}
-  className="mb-4 text-sm font-semibold text-blue-600 hover:text-blue-700"
->
-  ← Voltar
-</button>
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900">Alertas</h1>
 
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="mt-1 text-gray-600">
           Acompanhe renovações e pacientes que precisam de atenção.
         </p>
 
@@ -427,13 +420,13 @@ async function reconhecerAlerta(alerta: any) {
           </h2>
 
           {carregando ? (
-  <div className="mt-3 rounded-2xl bg-white p-5 shadow-sm">
+  <div className="mt-3 cartao p-5">
     <p className="text-sm text-gray-500">
       Carregando renovações...
     </p>
   </div>
 ) : renovacoes.length === 0 ? (
-  <div className="mt-3 rounded-2xl bg-white p-5 shadow-sm">
+  <div className="mt-3 cartao p-5">
     <p className="text-sm text-gray-500">
       Nenhuma solicitação de renovação pendente.
     </p>
@@ -443,7 +436,7 @@ async function reconhecerAlerta(alerta: any) {
     {renovacoes.map((renovacao) => (
       <div
         key={renovacao.id}
-        className="rounded-2xl bg-white p-5 shadow-sm"
+        className="cartao p-5"
       >
         <h3 className="font-semibold text-gray-900">
           {renovacao.patients?.name}
@@ -469,15 +462,15 @@ async function reconhecerAlerta(alerta: any) {
   {renovacao.ultimo_comentario || "Nenhum comentário"}
 </p>
 
-        <button
+        <Button size="small"
   type="button"
   onClick={() => {
     window.location.href = `/dietas?paciente=${renovacao.patient_id}`;
   }}
-  className="mt-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+  className="mt-4"
 >
-  Preparar nova dieta →
-</button>
+  Preparar nova dieta
+</Button>
       </div>
     ))}
   </div>
@@ -491,7 +484,7 @@ async function reconhecerAlerta(alerta: any) {
           </h2>
 
           {alertasPacientes.length === 0 ? (
-  <div className="mt-3 rounded-2xl bg-white p-5 shadow-sm">
+  <div className="mt-3 cartao p-5">
     <p className="text-sm text-gray-500">
       Nenhum alerta no momento.
     </p>
@@ -501,7 +494,7 @@ async function reconhecerAlerta(alerta: any) {
     {alertasPacientes.map((alerta) => (
       <div
         key={alerta.id}
-        className="rounded-2xl bg-white p-5 shadow-sm"
+        className="cartao p-5"
       >
         <h3 className="font-semibold text-gray-900">
           {alerta.patients?.name}
@@ -511,13 +504,13 @@ async function reconhecerAlerta(alerta: any) {
           {alerta.message}
         </p>
 
-        <button
+        <Button severity="secondary" outlined size="small"
           type="button"
           onClick={() => reconhecerAlerta(alerta)}
-          className="mt-4 rounded-xl bg-gray-800 px-4 py-2 font-semibold text-white hover:bg-gray-900"
+          className="mt-4"
         >
           OK
-        </button>
+        </Button>
       </div>
     ))}
   </div>

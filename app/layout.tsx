@@ -1,15 +1,18 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import "primeicons/primeicons.css";
 import "./globals.css";
+import Provedores from "@/components/Provedores";
 import RegistrarServiceWorker from "./RegistrarServiceWorker";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Corpo do texto e títulos. As fontes são baixadas no build e servidas pelo próprio app.
+const fonteCorpo = Figtree({
+  variable: "--fonte-corpo",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fonteTitulo = Bricolage_Grotesque({
+  variable: "--fonte-titulo",
   subsets: ["latin"],
 });
 
@@ -25,16 +28,26 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Usa a área atrás do entalhe e da barra de gestos (aplicativo instalado).
+  viewportFit: "cover",
+  themeColor: "#06372b",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fonteCorpo.variable} ${fonteTitulo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-  <RegistrarServiceWorker />
-  {children}
-</body>
+        <Provedores>
+          <RegistrarServiceWorker />
+          {children}
+        </Provedores>
+      </body>
     </html>
   );
 }

@@ -5,22 +5,27 @@ import { obterContexto } from "./sessao";
 
 // Verificações comuns às rotas de API.
 
-// Endereço público do sistema. Atrás do nginx, request.url mostra o endereço
-// interno do container; por isso vale o cabeçalho repassado pelo proxy.
+// Endereço público do sistema, usado nos links enviados por e-mail.
 export function enderecoPublico(request: Request) {
   if (process.env.APP_URL) {
     return process.env.APP_URL.replace(/\/+$/, "");
   }
 
-  const url = new URL(request.url);
-  const host =
+  const protocolo =
+    request.headers.get("x-forwarded-proto") ??
+    new URL(request.url).protocol.replace(":", "");
+
+  return `${protocolo}://${hostDaRequisicao(request)}`;
+}
+
+// Host pelo qual o navegador chegou. Atrás do nginx, request.url mostra o
+// endereço interno do container; por isso vale o cabeçalho repassado pelo proxy.
+function hostDaRequisicao(request: Request) {
+  return (
     request.headers.get("x-forwarded-host") ??
     request.headers.get("host") ??
-    url.host;
-  const protocolo =
-    request.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
-
-  return `${protocolo}://${host}`;
+    new URL(request.url).host
+  );
 }
 
 // Recusa requisições disparadas por outros sites usando o cookie do usuário.
@@ -32,7 +37,9 @@ export function origemPermitida(request: Request) {
   }
 
   try {
-    return new URL(origem).host === new URL(enderecoPublico(request)).host;
+    // Compara com o host da própria requisição (e não com APP_URL), para o
+    // sistema funcionar por qualquer endereço que aponte para ele.
+    return new URL(origem).host === hostDaRequisicao(request);
   } catch {
     return false;
   }

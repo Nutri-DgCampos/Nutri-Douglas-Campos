@@ -4,6 +4,12 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { avisar } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { Message } from "primereact/message";
+import { Skeleton } from "primereact/skeleton";
+import { Tag } from "primereact/tag";
+import CabecalhoPagina from "@/components/CabecalhoPagina";
 
 
 export default function PagamentosPacientePage() {
@@ -31,7 +37,7 @@ export default function PagamentosPacientePage() {
 
   async function enviarComprovante() {
     if (!arquivoComprovante) {
-      alert("Selecione um comprovante primeiro.");
+      avisar("Selecione um comprovante primeiro.");
       return;
     }
 
@@ -45,7 +51,7 @@ export default function PagamentosPacientePage() {
       !tiposPermitidos.includes(arquivoComprovante.type) ||
       arquivoComprovante.size > 20 * 1024 * 1024
     ) {
-      alert("Selecione um PDF, JPG ou PNG de até 20 MB.");
+      avisar("Selecione um PDF, JPG ou PNG de até 20 MB.");
       return;
     }
 
@@ -126,10 +132,10 @@ export default function PagamentosPacientePage() {
       }
 
       setArquivoComprovante(null);
-      alert("Comprovante enviado com sucesso!");
+      avisar("Comprovante enviado com sucesso!");
     } catch (erro) {
       console.error(erro);
-      alert(
+      avisar(
         erro instanceof Error
           ? erro.message
           : "Erro ao enviar comprovante."
@@ -177,142 +183,127 @@ export default function PagamentosPacientePage() {
 
 
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Pagamentos
-          
-<button
-  type="button"
-  onClick={() => window.location.assign("/area-paciente")}
-  className="mb-6 flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-200"
->
-  ← Voltar
-</button>
+    <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6">
+      <div className="mx-auto max-w-md">
+        <CabecalhoPagina
+          titulo="Pagamentos"
+          descricao="Envie seu comprovante e acompanhe seus pagamentos."
+        />
 
-        </h1>
+        <section className="cartao mt-6 p-5">
+          <h2 className="text-lg font-bold text-gray-900">Enviar comprovante</h2>
 
-        <p className="mt-2 text-gray-600">
-          Envie seu comprovante e acompanhe seus pagamentos.
-        </p>
+          <label
+            htmlFor="arquivo-comprovante"
+            className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed p-4 transition ${
+              arquivoComprovante
+                ? "border-primary-400 bg-primary-50"
+                : "border-gray-300 hover:border-primary-400 hover:bg-gray-50"
+            }`}
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-primary-700">
+              <i
+                className={`pi ${arquivoComprovante ? "pi-check" : "pi-upload"} text-lg`}
+                aria-hidden
+              />
+            </span>
 
-        <div className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900">
-            Enviar comprovante
-          </h2>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-semibold text-gray-900">
+                {arquivoComprovante
+                  ? arquivoComprovante.name
+                  : "Selecionar comprovante"}
+              </span>
+              <span className="block text-sm text-gray-500">
+                PDF, JPG ou PNG. Máximo de 20 MB.
+              </span>
+            </span>
 
-          <p className="mt-2 text-sm text-gray-600">
-            Anexe seu comprovante de pagamento.
-          </p>
+            <input
+              id="arquivo-comprovante"
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              className="sr-only"
+              onChange={(e) => {
+                const arquivo = e.target.files?.[0] ?? null;
 
-          
-<div className="mt-4">
-  <label
-    htmlFor="arquivo-comprovante"
-    className="mb-2 block text-sm font-semibold text-gray-700"
-  >
-    Selecionar comprovante
-  </label>
+                if (arquivo && arquivo.size > 20 * 1024 * 1024) {
+                  avisar("O arquivo deve ter no máximo 20 MB.");
+                  e.target.value = "";
+                  setArquivoComprovante(null);
+                  return;
+                }
 
-  <input
-    id="arquivo-comprovante"
-    type="file"
-    accept=".pdf,.jpg,.jpeg,.png"
-    onChange={(e) => {
-      const arquivo = e.target.files?.[0] ?? null;
+                setArquivoComprovante(arquivo);
+              }}
+            />
+          </label>
 
-      if (arquivo && arquivo.size > 20 * 1024 * 1024) {
-        alert("O arquivo deve ter no máximo 20 MB.");
-        e.target.value = "";
-        setArquivoComprovante(null);
-        return;
-      }
+          <Button
+            type="button"
+            onClick={enviarComprovante}
+            disabled={!arquivoComprovante}
+            loading={enviandoComprovante}
+            label={
+              enviandoComprovante ? "Enviando comprovante..." : "Enviar comprovante"
+            }
+            className="mt-4 w-full"
+          />
+        </section>
 
-      setArquivoComprovante(arquivo);
-    }}
-    className="block w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-700"
-  />
-
-  {arquivoComprovante && (
-    <p className="mt-3 text-sm text-green-700">
-      ✓ Arquivo selecionado: {arquivoComprovante.name}
-    </p>
-  )}
-
-  <p className="mt-2 text-xs text-gray-500">
-    Formatos aceitos: PDF, JPG e PNG. Máximo de 20 MB.
-  </p>
-</div>
-
-<button
-  type="button"
-  onClick={enviarComprovante}
-  disabled={!arquivoComprovante || enviandoComprovante}
-  className="mt-5 rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
->
-  {enviandoComprovante
-    ? "Enviando comprovante..."
-    : "Enviar comprovante"}
-</button>
-
-
-        </div>
-
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+        <section className="cartao mt-4 p-5">
           <h2 className="text-lg font-bold text-gray-900">
             Histórico de pagamentos
           </h2>
 
-          
-{carregandoHistorico ? (
-  <p className="mt-3 text-sm text-gray-500">
-    Carregando histórico...
-  </p>
-) : erroHistorico ? (
-  <p className="mt-3 text-sm text-red-600">
-    {erroHistorico}
-  </p>
-) : historico.length === 0 ? (
-  <p className="mt-3 text-sm text-gray-500">
-    Nenhum pagamento confirmado até o momento.
-  </p>
-) : (
-  <div className="mt-4 space-y-3">
-  {historico.map((pagamento) => {
-    const confirmado = pagamento.status === "confirmado";
+          {carregandoHistorico ? (
+            <Skeleton height="3.5rem" borderRadius="12px" className="mt-4" />
+          ) : erroHistorico ? (
+            <Message
+              severity="error"
+              text={erroHistorico}
+              className="mt-4 w-full justify-start"
+            />
+          ) : historico.length === 0 ? (
+            <p className="mt-3 text-sm text-gray-500">
+              Nenhum pagamento confirmado até o momento.
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-gray-200">
+              {historico.map((pagamento) => {
+                const confirmado = pagamento.status === "confirmado";
+                const data = confirmado
+                  ? pagamento.confirmed_at
+                  : pagamento.receipt_uploaded_at;
 
-    return (
-      <div
-        key={pagamento.id}
-        className={`rounded-lg border p-4 ${
-          confirmado
-            ? "border-green-200 bg-green-50"
-            : "border-yellow-200 bg-yellow-50"
-        }`}
-      >
-        {confirmado ? (
-          <p className="text-sm font-semibold text-green-700">
-            ✓ Pagamento confirmado em{" "}
-            {pagamento.confirmed_at
-              ? new Date(pagamento.confirmed_at).toLocaleDateString("pt-BR")
-              : "data não informada"}
-          </p>
-        ) : (
-          <p className="text-sm font-semibold text-yellow-800">
-            ⏳ Comprovante enviado em{" "}
-            {pagamento.receipt_uploaded_at
-              ? new Date(pagamento.receipt_uploaded_at).toLocaleDateString("pt-BR")
-              : "data não informada"}
-            {" — "}aguardando confirmação do nutricionista.
-          </p>
-        )}
-      </div>
-    );
-  })}
-</div>
-)}
+                return (
+                  <li
+                    key={pagamento.id}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900">
+                        {confirmado ? "Pagamento confirmado" : "Comprovante enviado"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {data
+                          ? new Date(data).toLocaleDateString("pt-BR")
+                          : "data não informada"}
+                        {!confirmado && ", aguardando confirmação do nutricionista"}
+                      </p>
+                    </div>
 
-        </div>
+                    <Tag
+                      value={confirmado ? "Confirmado" : "Em análise"}
+                      severity={confirmado ? "success" : "warning"}
+                      className="selo-status"
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
       </div>
     </main>
   );

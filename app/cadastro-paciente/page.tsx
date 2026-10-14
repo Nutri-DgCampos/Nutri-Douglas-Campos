@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PainelDeEntrada from "@/components/PainelDeEntrada";
+import { avisar } from "@/lib/avisos";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import Selecao from "@/components/Selecao";
 
 export default function CadastroPaciente() {
   const [nome, setNome] = useState("");
@@ -84,15 +89,15 @@ setEnviando(true);
     const resultado = await resposta.json();
 
     if (!resposta.ok) {
-      alert(resultado.erro || "Não foi possível realizar o cadastro.");
+      avisar(resultado.erro || "Não foi possível realizar o cadastro.");
       return;
     }
 
-    alert("Cadastro realizado com sucesso!");
+    avisar("Cadastro realizado com sucesso!");
 window.location.replace("/login");
   } catch (error) {
   console.error("Erro ao enviar cadastro:", error);
-  alert("Erro de conexão. Tente novamente.");
+  avisar("Erro de conexão. Tente novamente.");
 } finally {
   setEnviando(false);
 }
@@ -123,15 +128,15 @@ async function enviarSolicitacao(
     const resultado = await resposta.json();
 
     if (!resposta.ok) {
-      alert(resultado.erro || "Não foi possível enviar a solicitação.");
+      avisar(resultado.erro || "Não foi possível enviar a solicitação.");
       return;
     }
 
     setSolicitacaoEnviada(true);
-    alert("Solicitação enviada com sucesso!");
+    avisar("Solicitação enviada com sucesso!");
   } catch (error) {
     console.error("Erro ao enviar solicitação:", error);
-    alert("Erro de conexão. Tente novamente.");
+    avisar("Erro de conexão. Tente novamente.");
   } finally {
     setEnviandoSolicitacao(false);
   }
@@ -139,17 +144,17 @@ async function enviarSolicitacao(
 
 if (consultandoPeriodo) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
+    <PainelDeEntrada>
       <p className="text-gray-600">
         Carregando cadastro...
       </p>
-    </main>
+    </PainelDeEntrada>
   );
 }
 
 if (aguardandoLiberacao) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-6">
+    <PainelDeEntrada>
       <h1 className="text-xl font-bold text-gray-900">
         Cadastro em preparação
       </h1>
@@ -160,18 +165,18 @@ if (aguardandoLiberacao) {
 
       <Link
         href="/login"
-        className="mt-6 font-medium text-blue-600"
+        className="mt-6 font-medium text-primary-600"
       >
         Voltar para o login
       </Link>
-    </main>
+    </PainelDeEntrada>
   );
 }
 
 if (!cadastroEspecial) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-md">
+    <PainelDeEntrada>
+      <div className="w-full">
         <h1 className="mb-2 text-2xl font-bold text-gray-900">
           Solicitar acompanhamento nutricional
         </h1>
@@ -181,55 +186,55 @@ if (!cadastroEspecial) {
         </p>
 
         <form onSubmit={enviarSolicitacao} className="space-y-4">
-          <input
+          <InputText
             type="text"
             placeholder="Nome completo"
             value={nome}
             onChange={(event) => setNome(event.target.value)}
             required
-            className="w-full rounded-lg border p-3"
+            className="w-full"
           />
 
-          <input
+          <InputText
             type="tel"
             placeholder="Telefone"
             value={telefone}
             onChange={(event) => setTelefone(event.target.value)}
             maxLength={14}
             required
-            className="w-full rounded-lg border p-3"
+            className="w-full"
           />
 
-          <input
+          <InputText
             type="text"
             placeholder="Objetivo"
             value={objetivo}
             onChange={(event) => setObjetivo(event.target.value)}
             required
-            className="w-full rounded-lg border p-3"
+            className="w-full"
           />
 
-          <button
+          <Button
   type="submit"
   disabled={enviandoSolicitacao || solicitacaoEnviada}
-  className="w-full rounded-lg bg-blue-600 p-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+  className="w-full"
 >
   {solicitacaoEnviada
     ? "Solicitação enviada!"
     : enviandoSolicitacao
     ? "Enviando..."
     : "Enviar solicitação"}
-</button>
+</Button>
         </form>
 
               </div>
-    </main>
+    </PainelDeEntrada>
   );
 }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-sm">
+    <PainelDeEntrada>
+      <div className="w-full max-w-2xl cartao p-5 lg:p-8">
         <h1 className="text-2xl font-bold text-gray-900">
           Já sou paciente em acompanhamento
         </h1>
@@ -246,13 +251,13 @@ if (!cadastroEspecial) {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Nome completo
             </label>
-            <input
+            <InputText
               type="text"
               required
               value={nome}
               onChange={(event) => setNome(event.target.value)}
               placeholder="Digite seu nome completo"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+              className="w-full"
             />
           </div>
 
@@ -260,13 +265,13 @@ if (!cadastroEspecial) {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Telefone
             </label>
-            <input
+            <InputText
               type="tel"
               required
               value={telefone}
               onChange={(event) => setTelefone(event.target.value)}
               placeholder="(14) 99999-9999"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+              className="w-full"
             />
           </div>
 
@@ -274,13 +279,13 @@ if (!cadastroEspecial) {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               E-mail
             </label>
-            <input
+            <InputText
               type="email"
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="seu@email.com"
-              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+              className="w-full"
             />
           </div>
 
@@ -288,7 +293,7 @@ if (!cadastroEspecial) {
             <label className="mb-2 block text-sm font-medium text-gray-700">
               Senha
             </label>
-            <input
+            <InputText
   type="password"
   required
   minLength={6}
@@ -298,7 +303,7 @@ if (!cadastroEspecial) {
   value={senha}
   onChange={(event) => setSenha(event.target.value)}
   placeholder="Crie um PIN de 6 números"
-  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+  className="w-full"
 />
 </div>
 
@@ -306,7 +311,7 @@ if (!cadastroEspecial) {
   <label className="mb-2 block text-sm font-medium text-gray-700">
     Peso inicial (kg)
   </label>
-  <input
+  <InputText
     type="number"
     step="0.1"
     min="1"
@@ -314,7 +319,7 @@ if (!cadastroEspecial) {
     value={pesoInicial}
     onChange={(event) => setPesoInicial(event.target.value)}
     placeholder="Ex.: 80.5"
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+    className="w-full"
   />
 </div>
 
@@ -322,13 +327,13 @@ if (!cadastroEspecial) {
   <label className="mb-2 block text-sm font-medium text-gray-700">
     Objetivo
   </label>
-  <input
+  <InputText
     type="text"
     required
     value={objetivo}
     onChange={(event) => setObjetivo(event.target.value)}
     placeholder="Ex.: Emagrecimento"
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+    className="w-full"
   />
 </div>
 
@@ -336,29 +341,29 @@ if (!cadastroEspecial) {
   <label className="mb-2 block text-sm font-medium text-gray-700">
     Plano contratado
   </label>
-  <select
+  <Selecao
     value={plano}
     onChange={(event) => setPlano(event.target.value)}
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+    className="w-full"
   >
     <option value="Semanal">Semanal</option>
     <option value="Quinzenal">Quinzenal</option>
     <option value="Mensal">Mensal</option>
-  </select>
+  </Selecao>
 </div>
 
 <div>
   <label className="mb-2 block text-sm font-medium text-gray-700">
     Treinos por semana
   </label>
-  <input
+  <InputText
     type="number"
     min="0"
     max="14"
     required
     value={treinosSemana}
     onChange={(event) => setTreinosSemana(event.target.value)}
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+    className="w-full"
   />
 </div>
 
@@ -366,14 +371,14 @@ if (!cadastroEspecial) {
   <label className="mb-2 block text-sm font-medium text-gray-700">
     Aeróbicos por semana
   </label>
-  <input
+  <InputText
     type="number"
     min="0"
     max="14"
     required
     value={aerobicosSemana}
     onChange={(event) => setAerobicosSemana(event.target.value)}
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+    className="w-full"
   />
 </div>
 
@@ -381,34 +386,34 @@ if (!cadastroEspecial) {
   <label className="mb-2 block text-sm font-medium text-gray-700">
     Em qual semana do acompanhamento você está?
   </label>
-  <select
+  <Selecao
     value={semanaAtual}
     onChange={(event) => setSemanaAtual(event.target.value)}
-    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900"
+    className="w-full"
   >
     <option value="1">Semana 1</option>
     <option value="2">Semana 2</option>
     <option value="3">Semana 3</option>
     <option value="4">Semana 4</option>
-  </select>
+  </Selecao>
 </div>
 
-          <button
+          <Button
   type="submit"
   disabled={enviando}
-  className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+  className="w-full"
 >
   {enviando ? "Cadastrando..." : "Continuar cadastro"}
-</button>
+</Button>
         </form>
 
         <Link
           href="/login"
-          className="mt-6 inline-block text-sm font-medium text-blue-600 hover:text-blue-700"
+          className="mt-6 inline-block text-sm font-medium text-primary-600 hover:text-primary-700"
         >
-          ← Voltar para o login
+          Voltar para o login
         </Link>
       </div>
-    </main>
+    </PainelDeEntrada>
   );
 }

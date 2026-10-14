@@ -2,8 +2,11 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
+import BotaoVoltar from "@/components/BotaoVoltar";
 
 export default function EvolucaoPage() {
   const params = useParams();
@@ -86,10 +89,9 @@ export default function EvolucaoPage() {
 
   if (carregando) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Sidebar />
+      <div>
 
-        <main className="flex-1 p-8">
+        <main className="min-w-0 flex-1 p-4 lg:p-8">
           <div className="mx-auto max-w-4xl">
             <p className="text-gray-600">Carregando...</p>
           </div>
@@ -99,26 +101,15 @@ export default function EvolucaoPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
+      <main className="min-w-0 flex-1 p-4 lg:p-8">
         <div className="mx-auto max-w-4xl">
 
-          <button
-            type="button"
-            onClick={() => router.push(`/pacientes/${id}`)}
-            className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-800"
-          >
-            ← Voltar para o paciente
-          </button>
+          <BotaoVoltar rotulo="Voltar para o paciente" onClick={() => router.push(`/pacientes/${id}`)} />
 
           <header className="mb-8">
-            <p className="text-sm font-medium text-blue-600">
-              Evolução
-            </p>
-
-            <h1 className="mt-1 text-3xl font-bold text-gray-900">
+<h1 className="text-3xl font-bold text-gray-900">
               Registrar evolução
             </h1>
 
@@ -129,7 +120,7 @@ export default function EvolucaoPage() {
 
           <form
             onSubmit={salvarEvolucao}
-            className="rounded-2xl bg-white p-8 shadow-sm"
+            className="cartao p-5 lg:p-8"
           >
             {erro && (
               <div className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -144,12 +135,12 @@ export default function EvolucaoPage() {
                   Data da avaliação
                 </label>
 
-                <input
+                <InputText
                   type="date"
                   value={data}
                   onChange={(event) => setData(event.target.value)}
                   required
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 />
               </div>
 
@@ -158,14 +149,14 @@ export default function EvolucaoPage() {
                   Peso (kg)
                 </label>
 
-                <input
+                <InputText
                   type="text"
                   inputMode="decimal"
                   value={peso}
                   onChange={(event) => setPeso(event.target.value)}
                   placeholder="Ex.: 82,5"
                   required
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 />
               </div>
 
@@ -176,32 +167,32 @@ export default function EvolucaoPage() {
                 Observações
               </label>
 
-              <textarea
+              <InputTextarea autoResize
                 value={observacoes}
                 onChange={(event) => setObservacoes(event.target.value)}
                 placeholder="Ex.: Paciente apresentou boa adesão ao plano alimentar."
                 rows={5}
-                className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                className="w-full"
               />
             </div>
 
             <div className="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
 
-              <button
+              <Button severity="secondary" outlined
                 type="button"
                 onClick={() => router.push(`/pacientes/${id}`)}
-                className="rounded-xl border border-gray-300 px-5 py-3 font-medium text-gray-700 hover:bg-gray-50"
+               
               >
                 Cancelar
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="submit"
                 disabled={salvando}
-                className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+               
               >
                 {salvando ? "Salvando..." : "Salvar evolução"}
-              </button>
+              </Button>
 
             </div>
           </form>

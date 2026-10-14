@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "primereact/button";
+import AnelDeAdesao from "@/components/AnelDeAdesao";
 import { api } from "@/lib/api";
+import { avisar } from "@/lib/avisos";
 function converterChaveVapid(chave: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (chave.length % 4)) % 4);
 
@@ -32,6 +35,25 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [relatorioDisponivel, setRelatorioDisponivel] = useState(false);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
     const [mostrarPlanosRenovacao, setMostrarPlanosRenovacao] = useState(false);
+    const [ultimoScore, setUltimoScore] = useState<number | null>(null);
+    const [ativandoNotificacoes, setAtivandoNotificacoes] = useState(false);
+    const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
+
+    // Se este aparelho já está inscrito, não oferece a ativação de novo.
+    useEffect(() => {
+      if (
+        !("Notification" in window) ||
+        !("serviceWorker" in navigator) ||
+        Notification.permission !== "granted"
+      ) {
+        return;
+      }
+
+      navigator.serviceWorker.ready
+        .then((registro) => registro.pushManager.getSubscription())
+        .then((inscricao) => setNotificacoesAtivas(inscricao !== null))
+        .catch(() => {});
+    }, []);
     async function sair() {
   await api.auth.signOut();
   window.location.href = "/login";
@@ -51,7 +73,7 @@ async function solicitarRenovacao(planoEscolhido: string) {
 
 if (error) {
   console.error("Erro ao buscar último peso:", error);
-  alert("Não foi possível solicitar a renovação.");
+  avisar("Não foi possível solicitar a renovação.");
   return;
 }
 
@@ -68,11 +90,11 @@ const { error: erroRenovacao } = await api
 
 if (erroRenovacao) {
   console.error("Erro ao solicitar renovação:", erroRenovacao);
-  alert("Não foi possível solicitar a renovação.");
+  avisar("Não foi possível solicitar a renovação.");
   return;
 }
 
-alert("Solicitação de renovação enviada com sucesso!");
+avisar("Solicitação de renovação enviada com sucesso!");
 }
 
     useEffect(() => {
@@ -96,6 +118,18 @@ if (error) {
 }
 
 setPaciente(data);
+
+// Score do relatório mais recente, mostrado no anel da tela inicial.
+const { data: relatorioRecente } = await api
+  .from("patient_reports")
+  .select("adherence_score")
+  .eq("patient_id", data.id)
+  .not("adherence_score", "is", null)
+  .order("created_at", { ascending: false })
+  .limit(1)
+  .maybeSingle();
+
+setUltimoScore(relatorioRecente?.adherence_score ?? null);
 // Verificar pagamentos atrasados do paciente
 const { data: pagamentos, error: erroPagamentos } = await api
   .from("payments")
@@ -381,55 +415,23 @@ console.log("PACIENTE ENCONTRADO:", data);
 carregarPaciente();
 }, []);
 
-  return (
-    <main className="min-h-screen bg-gray-100 p-6">
-      <div className="mx-auto max-w-md">
-        <p className="text-sm font-medium text-blue-600">
-          Área do paciente
-        </p>
+  async function ativarNotificacoes() {
+    setAtivandoNotificacoes(true);
 
-        <h1 className="mt-1 text-3xl font-bold text-gray-900">
-  Olá, {paciente?.name ?? "Paciente"} 👋
-</h1>
-
-        <p className="mt-2 text-gray-600">
-          Acompanhe sua evolução e seu plano nutricional.
-        </p>
-
-        <button
-  onClick={sair}
-  className="mt-4 text-sm font-semibold text-red-600 hover:text-red-700"
->
-  Sair
-</button>
-
-<div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5">
-  <h2 className="text-lg font-bold text-gray-900">
-    🔔 Notificações do acompanhamento
-  </h2>
-
-  <p className="mt-2 text-sm text-gray-600">
-    Receba um aviso no celular quando chegar o momento de
-    responder ao seu relatório nutricional.
-  </p>
-
-  <button
-  type="button"
-  onClick={async () => {
     try {
       if (
         !("Notification" in window) ||
         !("serviceWorker" in navigator) ||
         !("PushManager" in window)
       ) {
-        alert("Este navegador não oferece suporte a notificações push.");
+        avisar("Este navegador não oferece suporte a notificações push.");
         return;
       }
 
       const permissao = await Notification.requestPermission();
 
       if (permissao !== "granted") {
-        alert("As notificações não foram autorizadas.");
+        avisar("As notificações não foram autorizadas.");
         return;
       }
 
@@ -437,373 +439,400 @@ carregarPaciente();
 
       const chavePublica = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
-if (!chavePublica) {
-  alert("A chave pública das notificações não foi configurada.");
-  return;
-}
+      if (!chavePublica) {
+        avisar("A chave pública das notificações não foi configurada.");
+        return;
+      }
 
-if (!paciente?.id) {
-  alert("Não foi possível identificar o paciente.");
-  return;
-}
+      if (!paciente?.id) {
+        avisar("Não foi possível identificar o paciente.");
+        return;
+      }
 
-const inscricaoExistente =
-  await registro.pushManager.getSubscription();
+      const inscricaoExistente = await registro.pushManager.getSubscription();
 
-const inscricao =
-  inscricaoExistente ??
-  (await registro.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: converterChaveVapid(chavePublica),
-  }));
+      const inscricao =
+        inscricaoExistente ??
+        (await registro.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: converterChaveVapid(chavePublica),
+        }));
 
-const dadosInscricao = inscricao.toJSON();
+      const dadosInscricao = inscricao.toJSON();
 
-if (
-  !dadosInscricao.endpoint ||
-  !dadosInscricao.keys?.p256dh ||
-  !dadosInscricao.keys?.auth
-) {
-  alert("Não foi possível obter os dados da inscrição push.");
-  return;
-}
+      if (
+        !dadosInscricao.endpoint ||
+        !dadosInscricao.keys?.p256dh ||
+        !dadosInscricao.keys?.auth
+      ) {
+        avisar("Não foi possível obter os dados da inscrição push.");
+        return;
+      }
 
-const { error: erroCadastro } = await api
-  .from("push_subscriptions")
-  .upsert(
-    {
-      patient_id: paciente.id,
-      endpoint: dadosInscricao.endpoint,
-      p256dh: dadosInscricao.keys.p256dh,
-      auth_key: dadosInscricao.keys.auth,
-      updated_at: new Date().toISOString(),
-    },
-    {
-      onConflict: "endpoint",
-    }
-  );
+      const { error: erroCadastro } = await api
+        .from("push_subscriptions")
+        .upsert(
+          {
+            patient_id: paciente.id,
+            endpoint: dadosInscricao.endpoint,
+            p256dh: dadosInscricao.keys.p256dh,
+            auth_key: dadosInscricao.keys.auth,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "endpoint",
+          }
+        );
 
-if (erroCadastro) {
-  console.error("Erro ao cadastrar dispositivo:", erroCadastro);
-  alert("Não foi possível cadastrar este dispositivo.");
-  return;
-}
+      if (erroCadastro) {
+        console.error("Erro ao cadastrar dispositivo:", erroCadastro);
+        avisar("Não foi possível cadastrar este dispositivo.");
+        return;
+      }
 
-alert("Notificações ativadas e dispositivo cadastrado com sucesso!");
-
+      setNotificacoesAtivas(true);
+      avisar("Notificações ativadas e dispositivo cadastrado com sucesso!");
     } catch (erro) {
       console.error("Erro ao preparar notificações:", erro);
-      alert("Não foi possível preparar as notificações.");
+      avisar("Não foi possível preparar as notificações.");
+    } finally {
+      setAtivandoNotificacoes(false);
     }
-  }}
-  className="mt-4 rounded-lg bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700"
->
-  🔔 Ativar notificações
-</button>
-</div>
-
-<button
-  type="button"
-  disabled={!relatorioDisponivel}
-  onClick={() => {
-    router.push("/area-paciente/acompanhamento");
-  }}
-  className={`mt-6 flex w-full items-center justify-center gap-3 rounded-xl px-5 py-4 text-base font-bold shadow-sm transition ${
-    relatorioDisponivel
-      ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-      : "bg-gray-300 text-gray-600 cursor-not-allowed"
-  }`}
->
-  {relatorioDisponivel && (
-    <span className="relative flex h-3 w-3">
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
-      <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400"></span>
-    </span>
-  )}
-
-  📝 {relatorioDisponivel
-    ? "Preencher relatório nutricional"
-    : "Nenhum relatório disponível"}
-</button>
-
-{cicloAtivo && (
-  <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
-    
-    <p className="mt-1 text-lg font-bold text-gray-900">
-  {relatorioDisponivel
-  ? "Relatório nutricional disponível para preenchimento"
-  : "Nenhum relatório disponível no momento"}
-</p>
-
-    <p className="mt-2 text-sm text-gray-600">
-  {numeroRelatorio !== null && (() => {
-  const frequencia = cicloAtivo.followup_frequency
-  ?.trim()
-  .toLowerCase();
-
-  const dataInicio = new Date(`${cicloAtivo.start_date}T12:00:00Z`);
-
-const agora = new Date();
-
-const dataAtualBrasil = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Sao_Paulo",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-}).format(agora);
-
-const dataAtual = new Date(`${dataAtualBrasil}T12:00:00Z`);
-
-const diasDecorridos = Math.max(
-  0,
-  Math.floor(
-    (dataAtual.getTime() - dataInicio.getTime()) /
-      (1000 * 60 * 60 * 24)
-  )
-);
-
-const dataEncerramento = new Date(
-  `${cicloAtivo.end_date}T12:00:00Z`
-);
-
-const diasRestantes = Math.max(
-  0,
-  Math.ceil(
-    (dataEncerramento.getTime() - dataAtual.getTime()) /
-      (1000 * 60 * 60 * 24)
-  )
-);
-
-const totalRelatorios =
-  frequencia === "semanal"
-    ? 4
-    : frequencia === "quinzenal"
-    ? 2
-    : frequencia === "mensal"
-    ? 1
-    : 0;
-
-const semanasConcluidas =
-  cicloAtivo.retroactive_registered_at &&
-  paciente?.retroactive_registration
-    ? Number(paciente.retroactive_completed_weeks ?? 0)
-    : 0;
-
-const intervaloRetroativo =
-  frequencia === "semanal"
-    ? 1
-    : frequencia === "quinzenal"
-    ? 2
-    : 4;
-
-const relatoriosJaPassados = cicloAtivo.retroactive_registered_at
-  ? Math.min(
-      totalRelatorios,
-      Math.floor(semanasConcluidas / intervaloRetroativo)
-    )
-  : 0;
-
-const numeroAtual = numeroRelatorio ?? 1;
-
-const dataHojeBrasil = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Sao_Paulo",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-}).format(new Date());
-
-const dataInicioCiclo = new Date(
-  `${cicloAtivo.start_date}T12:00:00Z`
-);
-
-const dataHoje = new Date(`${dataHojeBrasil}T12:00:00Z`);
-
-const diasDesdeInicio = Math.floor(
-  (dataHoje.getTime() - dataInicioCiclo.getTime()) /
-    (1000 * 60 * 60 * 24)
-);
-
-const primeiroRelatorioAindaNaoChegou =
-  !cicloAtivo.retroactive_registered_at &&
-  diasDesdeInicio < (
-    frequencia === "semanal"
-      ? 7
-      : frequencia === "quinzenal"
-      ? 15
-      : 30
-  );
-
-const ultimoRelatorioPassado = primeiroRelatorioAindaNaoChegou
-  ? 0
-  : Math.max(relatoriosJaPassados, numeroAtual);
-
-const restantes = Math.max(
-  0,
-  totalRelatorios - ultimoRelatorioPassado
-);
-
-if (restantes === 0) {
-  return relatorioDisponivel
-    ? "Você tem um relatório nutricional disponível para preencher."
-    : "Todos os relatórios deste acompanhamento foram concluídos ou tiveram seu prazo encerrado";
-}
-
-return restantes === 1
-  ? "Resta 1 relatório a ser preenchido"
-  : `Restam ${restantes} relatórios a serem preenchidos`;
-})()}
-</p>
-
-{ultimoRelatorioDoCiclo && (
-  <p className="mt-3 font-semibold text-blue-700">
-    Você chegou à etapa final dos relatórios deste acompanhamento.
-    Seu acompanhamento permanece ativo até a data de encerramento.
-  </p>
-)}
-
-  </div>
-)}
-
-{(() => {
-  const hojeBrasil = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Sao_Paulo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-
-  const inicioUltimaSemana = cicloAtivo?.end_date
-    ? new Date(`${cicloAtivo.end_date}T12:00:00Z`)
-    : null;
-
-  inicioUltimaSemana?.setUTCDate(
-    inicioUltimaSemana.getUTCDate() - 7
-  );
-
-  const podeRenovar =
-    !cicloAtivo ||
-    (inicioUltimaSemana !== null &&
-      hojeBrasil >= inicioUltimaSemana.toISOString().slice(0, 10));
-
-  return podeRenovar && (
-
-  <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
-    <p className="text-sm font-semibold text-blue-600">
-      🔄 Continuidade do acompanhamento
-    </p>
-
-    <h2 className="mt-2 text-lg font-semibold text-gray-900">
-      Renove seu acompanhamento nutricional
-    </h2>
-
-    <p className="mt-1 text-sm text-gray-600">
-      Deseja renovar seu acompanhamento nutricional?
-    </p>
-
-    <button
-      type="button"
-      onClick={() => setMostrarPlanosRenovacao(true)}
-      className="mt-4 font-bold text-red-600 underline hover:text-red-700"
-    >
-      CLIQUE AQUI para renovar →
-    </button>
-
-    {mostrarPlanosRenovacao && (
-  <div className="mt-5 border-t border-gray-200 pt-4">
-    <p className="font-semibold text-gray-900">
-      Qual plano deseja renovar?
-    </p>
-
-    <div className="mt-3 flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={() => solicitarRenovacao("Semanal")}
-        className="rounded-xl border border-blue-200 px-4 py-3 text-left font-semibold text-blue-700 hover:bg-blue-50"
-      >
-        Semanal
-      </button>
-
-      <button
-        type="button"
-        onClick={() => solicitarRenovacao("Quinzenal")}
-        className="rounded-xl border border-blue-200 px-4 py-3 text-left font-semibold text-blue-700 hover:bg-blue-50"
-      >
-        Quinzenal
-      </button>
-
-      <button
-        type="button"
-        onClick={() => solicitarRenovacao("Mensal")}
-        className="rounded-xl border border-blue-200 px-4 py-3 text-left font-semibold text-blue-700 hover:bg-blue-50"
-      >
-        Mensal
-      </button>
-    </div>
-  </div>
-)}
-    </div>
-  );
-})()}
-
-<div className="mt-8 grid grid-cols-2 gap-4">
-  <button
-  onClick={() => window.location.href = "/area-paciente/dietas"}
-  className="relative rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
->
-  {dietaNaoVisualizada && (
-    <span className="absolute right-4 top-4 h-3 w-3 animate-pulse rounded-full bg-red-600" />
-  )}
-
-  <span className="text-2xl">🍽️</span>
-  <p className="mt-3 font-semibold text-gray-900">Dieta</p>
-  <p className="mt-1 text-sm text-gray-500">Meu plano</p>
-</button>
-
-<button
-  onClick={() => window.location.href = "/area-paciente/relatorios"}
-  className="relative rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
->
-  {devolutivaNaoVisualizada && (
-    <span className="absolute right-4 top-4 h-3 w-3 animate-pulse rounded-full bg-red-600" />
-  )}
-
-  <span className="text-2xl">📋</span>
-  <p className="mt-3 font-semibold text-gray-900">Relatórios</p>
-  <p className="mt-1 text-sm text-gray-500">Acompanhamento</p>
-</button>
-
-<button
-  onClick={() => window.location.assign("/area-paciente/pagamentos")}
-  className="relative rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
->
-  {pagamentoAtrasado && (
-    <span className="absolute right-4 top-4 h-3 w-3 animate-pulse rounded-full bg-red-600" />
-  )}
-
-  <span className="text-2xl">💳</span>
-  <p className="mt-3 font-semibold text-gray-900">Pagamentos</p>
-  <p className="mt-1 text-sm text-gray-500">Comprovantes</p>
-</button>
-
-
-<button
-  type="button"
-  onClick={() =>
-    alert(
-      "🤝 Em breve, você terá acesso a benefícios e condições especiais oferecidos pelos nossos parceiros!"
-    )
   }
-  className="rounded-2xl bg-white p-5 text-left shadow-sm transition hover:shadow-md"
->
-  <span className="text-2xl">🤝</span>
-  <p className="mt-3 font-semibold text-gray-900">Parceiros</p>
-  <p className="mt-1 text-sm text-gray-500">
-    Benefícios e contatos
-  </p>
-</button>
-</div>
 
+  // Quantos relatórios ainda faltam neste ciclo, em texto.
+  function descreverRelatoriosRestantes(): string | null {
+    if (!cicloAtivo || numeroRelatorio === null) {
+      return null;
+    }
+
+    const frequencia = cicloAtivo.followup_frequency?.trim().toLowerCase();
+
+    const totalRelatorios =
+      frequencia === "semanal"
+        ? 4
+        : frequencia === "quinzenal"
+        ? 2
+        : frequencia === "mensal"
+        ? 1
+        : 0;
+
+    const semanasConcluidas =
+      cicloAtivo.retroactive_registered_at && paciente?.retroactive_registration
+        ? Number(paciente.retroactive_completed_weeks ?? 0)
+        : 0;
+
+    const intervaloRetroativo =
+      frequencia === "semanal" ? 1 : frequencia === "quinzenal" ? 2 : 4;
+
+    const relatoriosJaPassados = cicloAtivo.retroactive_registered_at
+      ? Math.min(
+          totalRelatorios,
+          Math.floor(semanasConcluidas / intervaloRetroativo)
+        )
+      : 0;
+
+    const numeroAtual = numeroRelatorio ?? 1;
+
+    const dataHojeBrasil = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
+    const dataInicioCiclo = new Date(`${cicloAtivo.start_date}T12:00:00Z`);
+    const dataHoje = new Date(`${dataHojeBrasil}T12:00:00Z`);
+
+    const diasDesdeInicio = Math.floor(
+      (dataHoje.getTime() - dataInicioCiclo.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    const primeiroRelatorioAindaNaoChegou =
+      !cicloAtivo.retroactive_registered_at &&
+      diasDesdeInicio <
+        (frequencia === "semanal" ? 7 : frequencia === "quinzenal" ? 15 : 30);
+
+    const ultimoRelatorioPassado = primeiroRelatorioAindaNaoChegou
+      ? 0
+      : Math.max(relatoriosJaPassados, numeroAtual);
+
+    const restantes = Math.max(0, totalRelatorios - ultimoRelatorioPassado);
+
+    if (restantes === 0) {
+      return relatorioDisponivel
+        ? "Você tem um relatório nutricional disponível para preencher."
+        : "Todos os relatórios deste acompanhamento foram concluídos ou tiveram seu prazo encerrado";
+    }
+
+    return restantes === 1
+      ? "Resta 1 relatório a ser preenchido"
+      : `Restam ${restantes} relatórios a serem preenchidos`;
+  }
+
+  // A renovação é oferecida sem ciclo ativo ou na última semana do ciclo.
+  function podeRenovar(): boolean {
+    const hojeBrasil = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
+    const inicioUltimaSemana = cicloAtivo?.end_date
+      ? new Date(`${cicloAtivo.end_date}T12:00:00Z`)
+      : null;
+
+    inicioUltimaSemana?.setUTCDate(inicioUltimaSemana.getUTCDate() - 7);
+
+    return (
+      !cicloAtivo ||
+      (inicioUltimaSemana !== null &&
+        hojeBrasil >= inicioUltimaSemana.toISOString().slice(0, 10))
+    );
+  }
+
+  const primeiroNome = paciente?.name?.trim().split(/\s+/)[0];
+  const relatoriosRestantes = descreverRelatoriosRestantes();
+
+  const atalhos = [
+    {
+      rotulo: "Dieta",
+      descricao: dietaNaoVisualizada ? "Você tem uma dieta nova" : "Meu plano alimentar",
+      icone: "pi-book",
+      destino: "/area-paciente/dietas",
+      novidade: dietaNaoVisualizada,
+    },
+    {
+      rotulo: "Relatórios",
+      descricao: devolutivaNaoVisualizada
+        ? "Chegou uma devolutiva do nutricionista"
+        : "Minhas devolutivas e evolução",
+      icone: "pi-chart-bar",
+      destino: "/area-paciente/relatorios",
+      novidade: devolutivaNaoVisualizada,
+    },
+    {
+      rotulo: "Pagamentos",
+      descricao: pagamentoAtrasado ? "Há um pagamento em atraso" : "Comprovantes",
+      icone: "pi-credit-card",
+      destino: "/area-paciente/pagamentos",
+      novidade: pagamentoAtrasado,
+    },
+  ];
+
+  return (
+    <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6">
+      <div className="mx-auto max-w-md">
+        <header className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm text-gray-500">Área do paciente</p>
+            <h1 className="mt-0.5 truncate text-3xl font-bold text-gray-900">
+              Olá, {primeiroNome ?? "Paciente"}
+            </h1>
           </div>
+
+          <Button
+            type="button"
+            icon="pi pi-sign-out"
+            label="Sair"
+            text
+            severity="secondary"
+            size="small"
+            onClick={sair}
+          />
+        </header>
+
+        {/* Relatório da semana: a ação principal do paciente. */}
+        <section
+          className={`mt-6 rounded-2xl p-5 ${
+            relatorioDisponivel
+              ? "bg-primary-800 text-white"
+              : "cartao text-gray-900"
+          }`}
+        >
+          <div className="flex items-center gap-4">
+            <AnelDeAdesao
+              valor={ultimoScore}
+              tamanho={88}
+              claro={relatorioDisponivel}
+              rotulo={ultimoScore === null ? "sem score" : "último score"}
+            />
+
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold leading-snug">
+                {relatorioDisponivel
+                  ? "Relatório nutricional disponível para preenchimento"
+                  : "Nenhum relatório disponível no momento"}
+              </h2>
+
+              {relatoriosRestantes && (
+                <p
+                  className={`mt-1 text-sm ${
+                    relatorioDisponivel ? "text-white/75" : "text-gray-600"
+                  }`}
+                >
+                  {relatoriosRestantes}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {relatorioDisponivel && (
+            <Button
+              type="button"
+              onClick={() => router.push("/area-paciente/acompanhamento")}
+              label="Preencher relatório nutricional"
+              icon="pi pi-file-edit"
+              className="mt-5 w-full"
+              pt={{
+                root: {
+                  className:
+                    "border-white bg-white text-primary-800 hover:bg-primary-50",
+                },
+              }}
+            />
+          )}
+
+          {ultimoRelatorioDoCiclo && (
+            <p
+              className={`mt-4 text-sm ${
+                relatorioDisponivel ? "text-white/85" : "text-primary-700"
+              }`}
+            >
+              Você chegou à etapa final dos relatórios deste acompanhamento.
+              Seu acompanhamento permanece ativo até a data de encerramento.
+            </p>
+          )}
+        </section>
+
+        <nav className="cartao mt-4 divide-y divide-gray-200" aria-label="Atalhos">
+          {atalhos.map((atalho) => (
+            <button
+              key={atalho.destino}
+              type="button"
+              onClick={() => router.push(atalho.destino)}
+              className="flex w-full items-center gap-4 px-4 py-4 text-left first:rounded-t-2xl last:rounded-b-2xl hover:bg-gray-50"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                <i className={`pi ${atalho.icone} text-lg`} aria-hidden />
+              </span>
+
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-gray-900">
+                  {atalho.rotulo}
+                </span>
+                <span
+                  className={`block truncate text-sm ${
+                    atalho.novidade
+                      ? "font-medium text-atencao-700"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {atalho.descricao}
+                </span>
+              </span>
+
+              {atalho.novidade && <span className="ponto-novidade" aria-hidden />}
+              <i className="pi pi-chevron-right text-sm text-gray-400" aria-hidden />
+            </button>
+          ))}
+        </nav>
+
+        {podeRenovar() && (
+          <section className="cartao mt-4 p-5">
+            <h2 className="text-lg font-bold text-gray-900">
+              Renove seu acompanhamento nutricional
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-600">
+              Deseja renovar seu acompanhamento nutricional?
+            </p>
+
+            {!mostrarPlanosRenovacao ? (
+              <Button
+                type="button"
+                label="Renovar acompanhamento"
+                icon="pi pi-refresh"
+                className="mt-4 w-full"
+                onClick={() => setMostrarPlanosRenovacao(true)}
+              />
+            ) : (
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <p className="font-semibold text-gray-900">
+                  Qual plano deseja renovar?
+                </p>
+
+                <div className="mt-3 flex flex-col gap-2">
+                  {["Semanal", "Quinzenal", "Mensal"].map((plano) => (
+                    <Button
+                      key={plano}
+                      type="button"
+                      label={plano}
+                      outlined
+                      className="w-full justify-start"
+                      onClick={() => solicitarRenovacao(plano)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        <section className="cartao mt-4 flex items-center gap-4 p-4">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-atencao-50 text-atencao-700">
+            <i className="pi pi-bell text-lg" aria-hidden />
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <h2 className="font-semibold text-gray-900">
+              Notificações do acompanhamento
+            </h2>
+            <p className="text-sm text-gray-500">
+              {notificacoesAtivas
+                ? "Este aparelho já recebe os avisos."
+                : "Receba um aviso no celular quando chegar o momento de responder ao seu relatório nutricional."}
+            </p>
+
+            {!notificacoesAtivas && (
+              <Button
+                type="button"
+                label="Ativar notificações"
+                size="small"
+                outlined
+                loading={ativandoNotificacoes}
+                className="mt-3"
+                onClick={ativarNotificacoes}
+              />
+            )}
+          </div>
+        </section>
+
+        <button
+          type="button"
+          onClick={() =>
+            avisar(
+              "Em breve, você terá acesso a benefícios e condições especiais oferecidos pelos nossos parceiros!",
+              "info"
+            )
+          }
+          className="cartao mt-4 flex w-full items-center gap-4 p-4 text-left hover:bg-gray-50"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+            <i className="pi pi-users text-lg" aria-hidden />
+          </span>
+
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold text-gray-900">Parceiros</span>
+            <span className="block text-sm text-gray-500">
+              Benefícios e contatos
+            </span>
+          </span>
+
+          <i className="pi pi-chevron-right text-sm text-gray-400" aria-hidden />
+        </button>
+      </div>
     </main>
   );
 }

@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { avisar } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { Skeleton } from "primereact/skeleton";
+import { Tag } from "primereact/tag";
+import CabecalhoPagina from "@/components/CabecalhoPagina";
 
 export default function MinhasDietasPage() {
   const [dietas, setDietas] = useState<any[]>([]);
@@ -102,7 +107,7 @@ if (idsDietas.length > 0) {
 
   if (error || !data?.signedUrl) {
     console.error("Erro ao abrir PDF:", error);
-    alert("Não foi possível abrir o PDF.");
+    avisar("Não foi possível abrir o PDF.");
     return;
   }
 
@@ -110,75 +115,77 @@ if (idsDietas.length > 0) {
 }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
+    <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6">
       <div className="mx-auto max-w-md">
-        <button
-  type="button"
-  onClick={() => (window.location.href = "/area-paciente")}
-  className="mb-6 flex items-center gap-2 rounded-lg bg-white px-4 py-2 font-medium text-gray-700 shadow-sm transition hover:bg-gray-200"
->
-  ← Voltar
-</button>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Meus arquivos
-        </h1>
-
-        <p className="mt-2 text-gray-600">
-          Consulte suas atualizações.
-        </p>
+        <CabecalhoPagina
+          titulo="Meu plano"
+          descricao="As dietas mais recentes enviadas pelo seu nutricionista."
+        />
 
         {carregando ? (
-          <p className="mt-6 text-gray-600">Carregando dietas...</p>
+          <div className="mt-6 space-y-4">
+            <Skeleton height="8rem" borderRadius="16px" />
+            <Skeleton height="8rem" borderRadius="16px" />
+          </div>
+        ) : dietas.length === 0 ? (
+          <div className="cartao mt-6 p-6 text-center">
+            <i className="pi pi-book text-3xl text-gray-400" aria-hidden />
+            <p className="mt-3 font-semibold text-gray-900">
+              Nenhuma dieta recebida até o momento.
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Quando o nutricionista enviar seu plano, ele aparece aqui.
+            </p>
+          </div>
         ) : (
           <div className="mt-6 space-y-4">
-  {dietas.length === 0 ? (
-    <p className="text-gray-600">
-      Nenhuma dieta recebida até o momento.
-    </p>
-  ) : (
-    dietas.map((dieta, index) => (
-      <div
-        key={dieta.id}
-        className="rounded-2xl bg-white p-5 shadow-sm"
-      >
-        <h2 className="font-bold text-gray-900">
-          Dieta {index + 1}
-        </h2>
+            {dietas.map((dieta, index) => (
+              <section key={dieta.id} className="cartao p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    Dieta {index + 1}
+                  </h2>
 
-        <p className="mt-1 text-sm text-gray-500">
-          Data da dieta:{" "}
-          {dieta.diet_date.split("-").reverse().join("/")}
-        </p>
+                  {index === 0 && <Tag value="Mais recente" severity="success" />}
+                </div>
 
-        <div className="mt-4 space-y-2">
-          {dieta.arquivos?.length > 0 ? (
-            dieta.arquivos.map((arquivo: any) => (
-              <div
-                key={arquivo.id}
-                className="rounded-xl border border-gray-200 p-3"
-              >
-                <span className="text-sm text-gray-800">
-                  📄 {arquivo.file_name}
-                </span>
-                <button
-  type="button"
-  onClick={() => abrirPDF(arquivo.storage_path)}
-  className="mt-3 block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
->
-  Abrir PDF
-</button>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">
-              Nenhum PDF encontrado nesta entrega.
-            </p>
-          )}
-        </div>
-      </div>
-    ))
-  )}
-</div>
+                <p className="mt-1 text-sm text-gray-500">
+                  Data da dieta: {dieta.diet_date.split("-").reverse().join("/")}
+                </p>
+
+                <div className="mt-4 space-y-2">
+                  {dieta.arquivos?.length > 0 ? (
+                    dieta.arquivos.map((arquivo: any) => (
+                      <div
+                        key={arquivo.id}
+                        className="flex items-center gap-3 rounded-xl border border-gray-200 p-3"
+                      >
+                        <i
+                          className="pi pi-file-pdf text-xl text-primary-700"
+                          aria-hidden
+                        />
+
+                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-800">
+                          {arquivo.file_name}
+                        </span>
+
+                        <Button
+                          type="button"
+                          label="Abrir PDF"
+                          size="small"
+                          onClick={() => abrirPDF(arquivo.storage_path)}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      Nenhum PDF encontrado nesta entrega.
+                    </p>
+                  )}
+                </div>
+              </section>
+            ))}
+          </div>
         )}
       </div>
     </main>

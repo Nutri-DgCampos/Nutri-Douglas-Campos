@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import BotaoVoltar from "@/components/BotaoVoltar";
+import { Tag } from "primereact/tag";
 
 type Paciente = {
   id: string;
@@ -60,7 +63,7 @@ export default function PacientePage() {
   async function solicitarReativacao() {
   if (!paciente || ativandoPaciente) return;
 
-  const confirmar = window.confirm(
+  const confirmar = await pedirConfirmacao(
     `Deseja colocar ${paciente.name} na lista de pagamentos para reativação?`
   );
 
@@ -79,7 +82,7 @@ export default function PacientePage() {
 
     if (erroConsulta) {
       console.error("Erro ao consultar pagamentos:", erroConsulta);
-      alert("Não foi possível verificar os pagamentos.");
+      avisar("Não foi possível verificar os pagamentos.");
       return;
     }
 
@@ -95,7 +98,7 @@ export default function PacientePage() {
 
       if (erroPagamento) {
         console.error("Erro ao criar pagamento:", erroPagamento);
-        alert("Não foi possível incluir o paciente nos pagamentos.");
+        avisar("Não foi possível incluir o paciente nos pagamentos.");
         return;
       }
     }
@@ -110,11 +113,11 @@ export default function PacientePage() {
 
     if (erroReativacao) {
       console.error("Erro ao registrar reativação:", erroReativacao);
-      alert("Pagamento pendente registrado, mas houve erro na solicitação.");
+      avisar("Pagamento pendente registrado, mas houve erro na solicitação.");
       return;
     }
 
-    alert("Paciente incluído na lista de pagamentos com sucesso!");
+    avisar("Paciente incluído na lista de pagamentos com sucesso!");
     router.push("/pagamentos");
   } finally {
     setAtivandoPaciente(false);
@@ -194,10 +197,9 @@ buscarRelatorios();
 
   if (carregando) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Sidebar />
+      <div>
 
-        <main className="flex-1 p-8">
+        <main className="min-w-0 flex-1 p-4 lg:p-8">
           <p>Carregando paciente...</p>
         </main>
       </div>
@@ -206,10 +208,9 @@ buscarRelatorios();
 
   if (!paciente) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Sidebar />
+      <div>
 
-        <main className="flex-1 p-8">
+        <main className="min-w-0 flex-1 p-4 lg:p-8">
           <h1 className="text-2xl font-bold">Paciente não encontrado</h1>
         </main>
       </div>
@@ -217,26 +218,16 @@ buscarRelatorios();
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
-        <div className="mx-auto max-w-7xl">
+      <main className="min-w-0 flex-1 p-4 lg:p-8">
+        <div className="mx-auto max-w-5xl">
 
-          <button
-            onClick={() => router.push("/")}
-            className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-800"
-          >
-            ← Voltar para pacientes
-          </button>
+          <BotaoVoltar rotulo="Voltar para pacientes" onClick={() => router.push("/pacientes")} />
 
-          <div className="mb-8 flex items-start justify-between">
+          <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
   <div>
-    <p className="text-sm font-medium text-blue-600">
-      Paciente
-    </p>
-
-    <h1 className="mt-1 text-3xl font-bold text-gray-900">
+<h1 className="text-3xl font-bold text-gray-900">
       {paciente.name}
     </h1>
 
@@ -245,15 +236,15 @@ buscarRelatorios();
     </p>
   </div>
 
-  <div className="flex gap-3">
-  <button
+  <div className="flex flex-wrap gap-2">
+  <Button icon="pi pi-plus"
     type="button"
     onClick={() => router.push(`/pacientes/${paciente.id}/evolucao`)}
-    className="rounded-xl border border-blue-600 px-5 py-3 font-medium text-blue-600 transition hover:bg-blue-50"
+   
   >
-    + Registrar evolução
-  </button>
-<button
+  Registrar evolução
+</Button>
+<Button outlined
   type="button"
   onClick={solicitarReativacao}
   disabled={
@@ -263,26 +254,26 @@ buscarRelatorios();
       15 * 24 * 60 * 60 * 1000 >
       Date.now()
   }
-  className="rounded-xl border border-blue-600 px-5 py-3 font-medium text-blue-600 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+ 
 >
   {ativandoPaciente ? "Solicitando..." : "Ativar paciente"}
-</button>
+</Button>
 
-  <button
+  <Button outlined icon="pi pi-pencil"
     type="button"
     onClick={() => router.push(`/pacientes/${paciente.id}/editar`)}
-    className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
+   
   >
     Editar paciente
-  </button>
+  </Button>
 </div>
 </div>
 
 {cicloAtivo && (
-  <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+  <div className="mb-6 rounded-2xl border border-primary-100 bg-primary-50 p-5">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-sm font-semibold text-blue-600">
+        <p className="text-sm font-semibold text-primary-600">
           Ciclo de acompanhamento
         </p>
 
@@ -291,14 +282,12 @@ buscarRelatorios();
         </p>
       </div>
 
-      <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
-        Ativo
-      </span>
+      <Tag value="Ativo" severity="success" className="selo-status" />
     </div>
   </div>
 )}
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
 
             <Card
               titulo="Telefone"
@@ -327,7 +316,7 @@ buscarRelatorios();
 
           </div>
 
-          <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+          <section className="mt-6 cartao p-5 lg:p-6">
             <h2 className="text-xl font-bold text-gray-900">
               Lembrete importante
             </h2>
@@ -338,7 +327,7 @@ buscarRelatorios();
               </p>
             </div>
           </section>
-          <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+          <section className="mt-6 cartao p-5 lg:p-6">
   <div className="flex items-center justify-between">
     <div>
       <h2 className="text-xl font-bold text-gray-900">
@@ -349,13 +338,13 @@ buscarRelatorios();
       </p>
     </div>
 
-    <button
+    <Button icon="pi pi-plus" size="small"
       type="button"
       onClick={() => router.push(`/pacientes/${paciente.id}/evolucao`)}
-      className="rounded-xl bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
+     
     >
-      + Registrar evolução
-    </button>
+  Registrar evolução
+</Button>
   </div>
 
   <div className="mt-6">
@@ -398,7 +387,7 @@ buscarRelatorios();
   </div>
 </section>
 
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
     Histórico de relatórios
   </h2>
@@ -428,7 +417,7 @@ buscarRelatorios();
         Score de Adesão
       </p>
 
-           <p className="mt-1 text-2xl font-bold text-blue-600">
+           <p className="mt-1 text-2xl font-bold text-primary-600">
         {relatorio.adherence_score} / 100
       </p>
 
@@ -462,15 +451,15 @@ buscarRelatorios();
   </p>
 )}
 
-<button
+<Button size="small"
   type="button"
   onClick={() =>
     router.push(`/pacientes/${paciente.id}/relatorio/${relatorio.id}`)
   }
-  className="mt-4 rounded-xl border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+  className="mt-4"
 >
   Ver relatório
-</button>
+</Button>
 
     </div>
   ))}
@@ -494,12 +483,12 @@ function Card({
   valor: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm">
+    <div className="cartao p-4 lg:p-5">
       <p className="text-sm text-gray-500">
         {titulo}
       </p>
 
-      <p className="mt-2 text-xl font-semibold text-gray-900">
+      <p className="mt-1 break-words font-semibold text-gray-900 lg:text-lg">
         {valor}
       </p>
     </div>

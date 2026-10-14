@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { avisar } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { Tag } from "primereact/tag";
+import AnelDeAdesao from "@/components/AnelDeAdesao";
+import CabecalhoPagina from "@/components/CabecalhoPagina";
 
 export default function RelatoriosPacientePage() {
 
@@ -21,7 +26,7 @@ const nomeArquivo = `${nomePaciente} - ${dataFormatada}`;
   const relatorio = document.getElementById(`relatorio-${relatorioId}`);
 
   if (!relatorio) {
-    alert("Não foi possível localizar o relatório.");
+    avisar("Não foi possível localizar o relatório.");
     return;
   }
 
@@ -30,7 +35,7 @@ const nomeArquivo = `${nomePaciente} - ${dataFormatada}`;
   const janelaImpressao = window.open("", "_blank");
 
   if (!janelaImpressao) {
-    alert("Não foi possível abrir a janela de impressão.");
+    avisar("Não foi possível abrir a janela de impressão.");
     return;
   }
 
@@ -175,23 +180,12 @@ console.log("RELATÓRIOS ENVIADOS:", relatoriosEnviados);
 }, []);
 
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
+    <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6">
       <div className="mx-auto max-w-md">
-        <button
-  type="button"
-  onClick={() => window.location.href = "/area-paciente"}
-  className="text-sm font-medium text-blue-600 hover:underline"
->
-  ← Voltar para área do paciente
-</button>
-
-        <h1 className="mt-1 text-3xl font-bold text-gray-900">
-          Relatórios
-        </h1>
-
-        <p className="mt-2 text-gray-600">
-          Acompanhe suas devolutivas.
-        </p>
+        <CabecalhoPagina
+          titulo="Relatórios"
+          descricao="Seus resultados e as devolutivas do nutricionista."
+        />
 
         <div className="mt-6 space-y-4">
   {relatorios.map((relatorio) => {
@@ -540,136 +534,177 @@ if (
   );
 }
 
+  const classificacao =
+    relatorio.adherence_score >= 80
+      ? "Ótima adesão"
+      : relatorio.adherence_score >= 60
+      ? "Boa adesão"
+      : relatorio.adherence_score >= 40
+      ? "Baixa adesão"
+      : "Adesão muito baixa";
+
   return (
-    <div
-      key={relatorio.id}
-      id={`relatorio-${relatorio.id}`}
-      className="rounded-2xl bg-white p-5 shadow-sm"
-    >
-      <h2 className="text-lg font-bold text-gray-900">
-        Relatório {relatorio.cycle_report_number ?? "-"}
-      </h2>
+    <section key={relatorio.id} className="cartao p-5">
+      <div className="flex items-center gap-4" aria-hidden>
+        <AnelDeAdesao
+          valor={relatorio.adherence_score ?? null}
+          tamanho={84}
+          rotulo="de 100"
+        />
 
-{diferencaPeso !== null && (
-  <p className="mt-2 text-sm text-gray-700">
-    Variação de peso:{" "}
-    <span className="mr-2">
-  {tendenciasPeso.map((tendencia, index) => (
-    <span
-      key={index}
-      className={
-  tendencia === "↑"
-    ? "font-semibold text-red-600"
-    : tendencia === "↓"
-    ? "font-semibold text-green-600"
-    : "font-semibold text-gray-500"
-}
-    >
-{tendencia}{" "}
-    </span>
-  ))}
-</span>
-    <span className="font-semibold">
-      {diferencaPeso > 0 ? "+" : ""}
-      {diferencaPeso.toFixed(1).replace(".", ",")} kg
-    </span>
-  </p>
-)}
+        <div className="min-w-0">
+          <p className="font-[family-name:var(--fonte-titulo)] text-xl font-bold text-gray-900">
+            Relatório {relatorio.cycle_report_number ?? "-"}
+          </p>
 
-{tendenciasAlcool.length > 0 && (
-  <p className="mt-1 text-sm text-gray-700">
-    Consumo de álcool:{" "}
-    {tendenciasAlcool.map((tendencia, index) => (
-      <span
-        key={index}
-        className={
-          tendencia === "↓"
-  ? "font-semibold text-green-600"
-  : "font-semibold text-red-600"
+          <Tag
+            value={classificacao}
+            severity={
+              relatorio.adherence_score >= 80
+                ? "success"
+                : relatorio.adherence_score >= 60
+                ? "warning"
+                : "danger"
+            }
+            className="mt-1"
+          />
+        </div>
+      </div>
+
+      {/* Conteúdo usado também para gerar o PDF: título e score em texto. */}
+      <div id={`relatorio-${relatorio.id}`}>
+        <h2 className="sr-only">
+          Relatório {relatorio.cycle_report_number ?? "-"}
+        </h2>
+
+        <p className="sr-only">
+          Score: {relatorio.adherence_score} / 100 ({classificacao})
+        </p>
+
+        {(diferencaPeso !== null || tendenciasAlcool.length > 0) && (
+          <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            {diferencaPeso !== null && (
+              <div className="rounded-xl bg-gray-50 p-3">
+                <dt className="text-gray-500">Variação de peso</dt>
+                <dd className="mt-0.5 font-semibold text-gray-900">
+                  {tendenciasPeso.map((tendencia, index) => (
+                    <span
+                      key={index}
+                      className={
+                        tendencia === "↑"
+                          ? "text-red-600"
+                          : tendencia === "↓"
+                          ? "text-green-600"
+                          : "text-gray-500"
+                      }
+                    >
+                      {tendencia}{" "}
+                    </span>
+                  ))}
+                  {diferencaPeso > 0 ? "+" : ""}
+                  {diferencaPeso.toFixed(1).replace(".", ",")} kg
+                </dd>
+              </div>
+            )}
+
+            {tendenciasAlcool.length > 0 && (
+              <div className="rounded-xl bg-gray-50 p-3">
+                <dt className="text-gray-500">Consumo de álcool</dt>
+                <dd className="mt-0.5 font-semibold">
+                  {tendenciasAlcool.map((tendencia, index) => (
+                    <span
+                      key={index}
+                      className={
+                        tendencia === "↓" ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      {tendencia}{" "}
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
+
+        {pontosPositivos.length > 0 && (
+          <div className="mt-5">
+            <p className="font-semibold text-primary-700">Pontos positivos</p>
+
+            <ul className="mt-2 space-y-2 text-sm text-gray-700">
+              {pontosPositivos.map((ponto, index) => (
+                <li key={index} className="flex gap-2">
+                  <i
+                    className="pi pi-check-circle mt-0.5 text-primary-600"
+                    aria-hidden
+                  />
+                  <span>{ponto}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {pontosAtencao.length > 0 && (
+          <div className="mt-5">
+            <p className="font-semibold text-atencao-700">Pontos de atenção</p>
+
+            <ul className="mt-2 space-y-2 text-sm text-gray-700">
+              {pontosAtencao.map((ponto, index) => (
+                <li key={index} className="flex gap-2">
+                  <i
+                    className="pi pi-exclamation-circle mt-0.5 text-atencao-600"
+                    aria-hidden
+                  />
+                  <span>{ponto}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {relatorio.feedback_text && (
+          <div className="mt-5 rounded-xl bg-primary-50 p-4">
+            <p className="font-semibold text-primary-800">
+              Devolutiva do nutricionista
+            </p>
+
+            <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-gray-700">
+              {relatorio.feedback_text}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <Button
+        type="button"
+        label="Baixar relatório em PDF"
+        icon="pi pi-download"
+        outlined
+        className="mt-5 w-full"
+        onClick={() =>
+          baixarRelatorio(
+            relatorio.id,
+            relatorio.report_date ?? relatorio.created_at
+          )
         }
-      >
-        {tendencia}{" "}
-      </span>
-    ))}
-  </p>
-)}
-
-      <p className="mt-2 font-semibold text-gray-900">
-        Score: {relatorio.adherence_score} / 100
-      </p>
-
-      <p className="mt-1 text-sm text-gray-600">
-  {relatorio.adherence_score >= 80
-    ? "Ótima adesão"
-    : relatorio.adherence_score >= 60
-    ? "Boa adesão"
-    : relatorio.adherence_score >= 40
-    ? "Baixa adesão"
-    : "Adesão muito baixa"}
-</p>
-
-{pontosPositivos.length > 0 && (
-  <div className="mt-4">
-    <p className="font-semibold text-green-700">
-      Pontos positivos
-    </p>
-
-    <ul className="mt-2 space-y-1 text-sm text-gray-700">
-      {pontosPositivos.map((ponto, index) => (
-        <li key={index}>
-          • {ponto}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
-{pontosAtencao.length > 0 && (
-  <div className="mt-4">
-    <p className="font-semibold text-red-700">
-      Pontos de atenção
-    </p>
-
-    <ul className="mt-2 space-y-1 text-sm text-gray-700">
-      {pontosAtencao.map((ponto, index) => (
-        <li key={index}>
-          • {ponto}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
-{relatorio.feedback_text && (
-  <div className="mt-5 border-t border-gray-200 pt-4">
-    <p className="font-semibold text-blue-700">
-      Devolutiva do nutricionista
-    </p>
-
-    <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-gray-700">
-      {relatorio.feedback_text}
-    </p>
-  </div>
-)}
-
-<button
-  type="button"
-  onClick={() =>
-  baixarRelatorio(
-    relatorio.id,
-    relatorio.report_date ?? relatorio.created_at
-  )
-}
-  className="mt-5 w-full rounded-xl border border-blue-600 px-4 py-3 font-semibold text-blue-600 transition hover:bg-blue-50"
->
-  Baixar relatório em PDF
-</button>
-
-    </div>
-    );
+      />
+    </section>
+  );
 })}
-</div>
-
+          {relatorios.length === 0 && (
+            <div className="cartao p-6 text-center">
+              <i className="pi pi-chart-bar text-3xl text-gray-400" aria-hidden />
+              <p className="mt-3 font-semibold text-gray-900">
+                Nenhuma devolutiva por enquanto.
+              </p>
+              <p className="mt-1 text-sm text-gray-500">
+                Depois que o nutricionista responder ao seu relatório, a
+                devolutiva aparece aqui.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );

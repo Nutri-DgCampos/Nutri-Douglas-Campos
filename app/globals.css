@@ -1,26 +1,382 @@
+/* Ordem das camadas: o tema do PrimeReact fica abaixo dos utilitários do
+   Tailwind, para que uma classe utilitária consiga ajustar um componente. */
+@layer theme, base, primereact, components, utilities;
+
 @import "tailwindcss";
+@import "./estilo/primereact-tema.css" layer(primereact);
+
+/* ------------------------------------------------------------------------
+   Identidade visual
+   Verde-pinho como cor da marca, laranja para o que pede atenção,
+   neutros levemente esverdeados. Mesma paleta do tema do PrimeReact
+   (scripts/gerar-tema.mjs).
+   ------------------------------------------------------------------------ */
+@theme inline {
+  --font-sans: var(--fonte-corpo), system-ui, sans-serif;
+}
+
+/* "static" mantém as variáveis no CSS mesmo quando nenhuma classe as usa. */
+@theme static {
+  --color-primary-50: #eef6f2;
+  --color-primary-100: #dcede5;
+  --color-primary-200: #b9dbcb;
+  --color-primary-300: #8cc3ac;
+  --color-primary-400: #55a387;
+  --color-primary-500: #23866a;
+  --color-primary-600: #0e6b56;
+  --color-primary-700: #0a5846;
+  --color-primary-800: #084536;
+  --color-primary-900: #06372b;
+
+  --color-atencao-50: #fef4e8;
+  --color-atencao-100: #fce3c6;
+  --color-atencao-500: #e8791d;
+  --color-atencao-600: #c9620f;
+  --color-atencao-700: #a14e0c;
+
+  --color-gray-50: #f6f9f7;
+  --color-gray-100: #edf2ef;
+  --color-gray-200: #dde5e0;
+  --color-gray-300: #c9d4ce;
+  --color-gray-400: #93a19b;
+  --color-gray-500: #5c6b65;
+  --color-gray-600: #3a4843;
+  --color-gray-700: #26332e;
+  --color-gray-800: #1b2924;
+  --color-gray-900: #16241f;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --altura-barra-inferior: 4.25rem;
+  --largura-menu: 15.5rem;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background: var(--color-gray-100);
+    color: var(--color-gray-900);
+    font-family: var(--fonte-corpo), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--fonte-titulo), var(--fonte-corpo), system-ui, sans-serif;
+    letter-spacing: -0.015em;
+  }
+
+  /* Campos nativos seguem o mesmo desenho dos campos do PrimeReact. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.p-inputtext),
+  select,
+  textarea:not(.p-inputtext) {
+    background-color: #fff;
+    min-height: 2.875rem;
+    font-size: 1rem; /* evita o zoom automático do iOS ao focar */
+  }
+
+  input:not(.p-inputtext):focus,
+  select:focus,
+  textarea:not(.p-inputtext):focus {
+    outline: none;
+    border-color: var(--color-primary-600);
+    box-shadow: 0 0 0 3px var(--color-primary-200);
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary-600);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------------
+   Ajustes do PrimeReact
+   ------------------------------------------------------------------------ */
+@layer components {
+  .p-component,
+  .p-inputtext,
+  .p-button {
+    font-family: var(--fonte-corpo), system-ui, sans-serif;
+  }
+
+  .p-button {
+    font-weight: 600;
+    min-height: 2.875rem;
+  }
+
+  .p-button.p-button-sm {
+    min-height: 2.25rem;
+  }
+
+  .p-button:not(.p-button-icon-only) {
+    gap: 0.5rem;
+  }
+
+  .p-button .p-button-icon-left {
+    margin-right: 0;
+  }
+
+  .p-button .p-button-icon-right {
+    margin-left: 0;
+  }
+
+  .p-inputtext {
+    min-height: 2.875rem;
+    font-size: 1rem;
+  }
+
+  .p-toast {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .p-toast .p-toast-message {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px -12px rgb(22 36 31 / 0.35);
+  }
+
+  .p-dialog {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .p-dialog .p-dialog-header .p-dialog-title {
+    font-family: var(--fonte-titulo), var(--fonte-corpo), system-ui, sans-serif;
+  }
+
+  /* Selos de status: mesma largura, qualquer que seja o texto. */
+  .p-tag.selo-status {
+    min-width: 5.25rem;
+    justify-content: center;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  @media (min-width: 40rem) {
+    .p-tag.selo-status {
+      min-width: 6.5rem;
+    }
+  }
+
+  /* Selos em tom suave, na paleta do sistema. */
+  .p-tag {
+    font-weight: 600;
+    background: var(--color-primary-100);
+    color: var(--color-primary-800);
+  }
+
+  .p-tag.p-tag-success {
+    background: var(--color-primary-100);
+    color: var(--color-primary-800);
+  }
+
+  .p-tag.p-tag-warning {
+    background: var(--color-atencao-100);
+    color: var(--color-atencao-700);
+  }
+
+  .p-tag.p-tag-danger {
+    background: #fbe3e0;
+    color: #9c2a22;
+  }
+
+  .p-tag.p-tag-info,
+  .p-tag.p-tag-secondary {
+    background: var(--color-gray-100);
+    color: var(--color-gray-600);
+  }
+
+  /* ----------------------------------------------------------------------
+     Estrutura: nutricionista
+     Celular: barra superior + barra inferior de navegação.
+     Computador: menu lateral fixo.
+     ---------------------------------------------------------------------- */
+  .estrutura-nutri {
+    min-height: 100dvh;
+    padding-top: 3.5rem;
+    padding-bottom: calc(var(--altura-barra-inferior) + env(safe-area-inset-bottom));
+  }
+
+  .estrutura-nutri__conteudo > * {
+    min-height: auto;
+  }
+
+  .barra-superior {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 40;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    background: var(--color-primary-900);
+    color: #fff;
+  }
+
+  .menu-lateral {
+    display: none;
+  }
+
+  .barra-inferior {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 40;
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: #fff;
+    border-top: 1px solid var(--color-gray-200);
+  }
+
+  .barra-inferior__item {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    height: var(--altura-barra-inferior);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-gray-500);
+  }
+
+  .barra-inferior__item .pi {
+    font-size: 1.25rem;
+  }
+
+  .barra-inferior__item[aria-current="page"] {
+    color: var(--color-primary-600);
+  }
+
+  .barra-inferior__item[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 2.5rem;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--color-primary-600);
+  }
+
+  @media (min-width: 64rem) {
+    .estrutura-nutri {
+      padding: 0 0 0 var(--largura-menu);
+    }
+
+    .estrutura-nutri .barra-superior,
+    .estrutura-nutri .barra-inferior {
+      display: none;
+    }
+
+    .menu-lateral {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 40;
+      width: var(--largura-menu);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      background: var(--color-primary-900);
+      color: #fff;
+    }
+  }
+
+  .menu-lateral__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.875rem;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: rgb(255 255 255 / 0.72);
+    text-align: left;
+    transition: background-color 0.15s, color 0.15s;
+  }
+
+  .menu-lateral__item:hover {
+    background: rgb(255 255 255 / 0.08);
+    color: #fff;
+  }
+
+  .menu-lateral__item[aria-current="page"] {
+    background: #fff;
+    color: var(--color-primary-800);
+    font-weight: 700;
+  }
+
+  /* ----------------------------------------------------------------------
+     Estrutura: paciente (sempre com barra inferior, como um aplicativo)
+     ---------------------------------------------------------------------- */
+  .estrutura-paciente {
+    min-height: 100dvh;
+    padding-bottom: calc(var(--altura-barra-inferior) + env(safe-area-inset-bottom));
+  }
+
+  .estrutura-paciente > main,
+  .estrutura-paciente > div {
+    min-height: auto;
+  }
+
+  @media (min-width: 40rem) {
+    .estrutura-paciente .barra-inferior {
+      left: 50%;
+      right: auto;
+      bottom: 1rem;
+      width: 30rem;
+      transform: translateX(-50%);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 18px;
+      box-shadow: 0 12px 32px -16px rgb(22 36 31 / 0.35);
+      overflow: hidden;
+    }
+
+    .estrutura-paciente {
+      padding-bottom: calc(var(--altura-barra-inferior) + 2rem);
+    }
+  }
+
+  /* ----------------------------------------------------------------------
+     Peças reutilizadas
+     ---------------------------------------------------------------------- */
+  .cartao {
+    background: #fff;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 16px;
+  }
+
+  .ponto-novidade {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: var(--color-atencao-500);
+    box-shadow: 0 0 0 3px #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

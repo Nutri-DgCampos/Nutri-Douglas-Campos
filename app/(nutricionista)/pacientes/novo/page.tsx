@@ -2,8 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import Selecao from "@/components/Selecao";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 
 export default function NovoPaciente() {
   const router = useRouter();
@@ -125,17 +128,12 @@ router.refresh();
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
+      <main className="min-w-0 flex-1 p-4 lg:p-8">
         <div className="mx-auto max-w-4xl">
           <div className="mb-8">
-            <p className="text-sm font-medium text-blue-600">
-              Pacientes
-            </p>
-
-            <h1 className="text-3xl font-bold text-gray-900">
+<h1 className="text-3xl font-bold text-gray-900">
               Novo paciente
             </h1>
 
@@ -146,7 +144,7 @@ router.refresh();
 
           <form
             onSubmit={cadastrarPaciente}
-            className="rounded-2xl bg-white p-8 shadow-sm"
+            className="cartao p-5 lg:p-8"
           >
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <Campo
@@ -205,15 +203,15 @@ router.refresh();
                   Plano contratado
                 </label>
 
-                <select
+                <Selecao
                   value={plano}
                   onChange={(e) => setPlano(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 >
                   <option value="Semanal">Semanal</option>
                   <option value="Quinzenal">Quinzenal</option>
                   <option value="Mensal">Mensal</option>
-                </select>
+                </Selecao>
               </div>
 
               <div>
@@ -221,15 +219,15 @@ router.refresh();
                   Status do pagamento
                 </label>
 
-                <select
+                <Selecao
                   value={pagamento}
                   onChange={(e) => setPagamento(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 >
                   <option value="Ativo">Ativo</option>
                   <option value="Pendente">Pendente</option>
                   <option value="Cancelado">Cancelado</option>
-                </select>
+                </Selecao>
               </div>
 
                             <div>
@@ -237,18 +235,18 @@ router.refresh();
                   Acesso do paciente
                 </label>
 
-                <button
+                <Button
                   type="button"
                   onClick={() => setMostrarFormularioAcesso(!mostrarFormularioAcesso)}
-                  className="w-full rounded-xl bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-700"
+                  className="w-full"
                 >
-                  🔑 Criar acesso
-                </button>
+                  Criar acesso
+                </Button>
                 
               </div>
 
               {mostrarFormularioAcesso && (
-  <div className="md:col-span-2 rounded-xl border border-blue-200 bg-blue-50 p-4">
+  <div className="md:col-span-2 rounded-xl border border-primary-200 bg-primary-50 p-4">
     <h3 className="mb-4 font-semibold text-gray-900">
       Criar acesso do paciente
     </h3>
@@ -259,13 +257,13 @@ router.refresh();
           E-mail de acesso
         </label>
 
-        <input
+        <InputText
           type="email"
           value={emailAcesso}
           onChange={(e) => setEmailAcesso(e.target.value)}
           placeholder="paciente@email.com"
           autoComplete="off"
-          className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+          className="w-full"
         />
       </div>
 
@@ -275,22 +273,22 @@ router.refresh();
         </label>
 
         <div className="flex gap-2">
-          <input
+          <InputText
             type={mostrarSenha ? "text" : "password"}
             value={senhaProvisoria}
             onChange={(e) => setSenhaProvisoria(e.target.value)}
             placeholder="Mínimo de 8 caracteres"
             autoComplete="new-password"
-            className="min-w-0 flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900"
+            className="flex-1 flex-1"
           />
 
-          <button
+          <Button severity="secondary" outlined size="small"
             type="button"
             onClick={() => setMostrarSenha(!mostrarSenha)}
-            className="rounded-xl border border-gray-300 bg-white px-3 text-sm text-gray-700"
+           
           >
             {mostrarSenha ? "Ocultar" : "Mostrar"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -306,12 +304,12 @@ router.refresh();
                   Lembrete importante
                 </label>
 
-                <textarea
+                <InputTextarea autoResize
                   value={lembrete}
                   onChange={(e) => setLembrete(e.target.value)}
                   placeholder="Ex.: Paciente diabético. Realizar exames em 15/12."
                   rows={4}
-                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+                  className="w-full"
                 />
               </div>
             </div>
@@ -323,21 +321,21 @@ router.refresh();
             )}
 
             <div className="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
-              <button
+              <Button severity="secondary" outlined
                 type="button"
                 onClick={() => router.push("/")}
-                className="rounded-xl border border-gray-300 px-5 py-3 font-medium text-gray-700"
+               
               >
                 Cancelar
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="submit"
                 disabled={salvando}
-                className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+               
               >
                 {salvando ? "Cadastrando..." : "Cadastrar paciente"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
@@ -365,13 +363,13 @@ function Campo({
         {titulo}
       </label>
 
-      <input
+      <InputText
         type="text"
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
+        className="w-full"
       />
     </div>
   );

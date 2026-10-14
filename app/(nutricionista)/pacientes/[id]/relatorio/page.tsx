@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { avisar } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import Selecao from "@/components/Selecao";
+import { InputTextarea } from "primereact/inputtextarea";
+import { InputText } from "primereact/inputtext";
+import BotaoVoltar from "@/components/BotaoVoltar";
 
 export default function RelatorioPage() {
   const params = useParams();
@@ -399,32 +404,25 @@ weight:
 
 if (error) {
   console.error("Erro ao salvar relatório:", error);
-  alert("Erro ao salvar relatório.");
+  avisar("Erro ao salvar relatório.");
   return;
 }
 
-alert("Relatório salvo com sucesso!");
+avisar("Relatório salvo com sucesso!");
   } finally {
     setSalvando(false);
   }
 }
 
     return (
-  <div className="flex min-h-screen bg-gray-50">
-    <Sidebar />
+  <div>
 
-    <main className="flex-1 p-8">
+    <main className="min-w-0 flex-1 p-4 lg:p-8">
       <div className="mx-auto max-w-4xl">
-        <button
-            type="button"
-            onClick={() => router.push(`/pacientes/${params.id}`)}
-            className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-700"
-          >
-            ← Voltar para o paciente
-          </button>
+        <BotaoVoltar rotulo="Voltar para o paciente" onClick={() => router.push(`/pacientes/${params.id}`)} />
 
-          <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <div className="cartao p-5 lg:p-6">
+            <h1 className="text-3xl font-bold text-gray-900">
               Relatório de acompanhamento Nutricional
             </h1>
 
@@ -433,13 +431,13 @@ alert("Relatório salvo com sucesso!");
             </p>
           </div>
 
-          <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="mt-6 cartao p-5 lg:p-6">
   <p className="text-sm font-medium text-gray-500">
     Score de Adesão
   </p>
 
   <div className="mt-2 flex items-end gap-2">
-    <span className="text-4xl font-bold text-blue-600">
+    <span className="text-4xl font-bold text-primary-600">
       {scoreFinal}
     </span>
     <span className="mb-1 text-lg font-medium text-gray-400">
@@ -452,10 +450,10 @@ alert("Relatório salvo com sucesso!");
 
 </div>
 
-          <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+          <section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      🍽️ Alimentação
+      Alimentação
     </h2>
 
 {/*
@@ -463,7 +461,7 @@ alert("Relatório salvo com sucesso!");
       Adesão ao plano alimentar
     </p>
     {diasPlanoAlimentar !== "" && (
-  <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+  <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
     Pontuação: {pontosAlimentacao} / 30
   </div>
 )}
@@ -477,10 +475,10 @@ alert("Relatório salvo com sucesso!");
       seguir corretamente o plano alimentar proposto pelo nutricionista?
     </label>
 
-    <select
+    <Selecao
   value={diasPlanoAlimentar}
   onChange={(e) => setDiasPlanoAlimentar(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="7">7 dias</option>
@@ -491,7 +489,7 @@ alert("Relatório salvo com sucesso!");
       <option value="2">2 dias</option>
       <option value="1">1 dia</option>
       <option value="0">Nenhum dia</option>
-    </select>
+    </Selecao>
   </div>
   <div className="mt-6">
   <label className="font-medium text-gray-900">
@@ -499,15 +497,15 @@ alert("Relatório salvo com sucesso!");
     durante esta semana?
   </label>
 
-  <select
+  <Selecao
   value={alterouPlanoAlimentar}
   onChange={(e) => setAlterouPlanoAlimentar(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
     <option value="">Selecione uma opção</option>
     <option value="nao">Não</option>
     <option value="sim">Sim</option>
-  </select>
+  </Selecao>
 </div>
 
 {alterouPlanoAlimentar === "sim" && (
@@ -516,15 +514,15 @@ alert("Relatório salvo com sucesso!");
       A alteração foi feita utilizando um alimento da lista de equivalências?
     </label>
 
-    <select
+    <Selecao
       value={alteracaoEquivalente}
       onChange={(e) => setAlteracaoEquivalente(e.target.value)}
-      className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+      className="w-full"
     >
       <option value="">Selecione uma opção</option>
       <option value="sim">Sim</option>
       <option value="nao">Não</option>
-    </select>
+    </Selecao>
   </div>
 )}
 
@@ -534,12 +532,12 @@ alert("Relatório salvo com sucesso!");
     Se realizou alguma alteração, conte o que alterou e por quê.
   </label>
 
-  <textarea
+  <InputTextarea autoResize
     rows={3}
     value={observacaoAlteracaoAlimentar}
     onChange={(e) => setObservacaoAlteracaoAlimentar(e.target.value)}
     placeholder="Ex.: Não consegui realizar o lanche da tarde por causa do trabalho."
-    className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+    className="w-full mt-3"
   />
 </div>
 )}
@@ -549,19 +547,19 @@ alert("Relatório salvo com sucesso!");
     Qual foi sua maior dificuldade para seguir o plano alimentar nesta semana?
   </label>
 
-  <textarea
+  <InputTextarea autoResize
     rows={3}
     value={dificuldadeAlimentar}
 onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     placeholder="Conte aqui sua principal dificuldade."
-    className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+    className="w-full mt-3"
   />
 </div>
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      💧 Hidratação
+      Hidratação
     </h2>
 
     {/*
@@ -572,7 +570,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     
     {/*
     {diasMetaAgua !== "" && (
-  <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+  <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
     Pontuação: {pontosHidratacao} / 15
   </div>
 )}
@@ -587,10 +585,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       de água definida pelo nutricionista?
     </label>
 
-    <select
+    <Selecao
   value={diasMetaAgua}
   onChange={(e) => setDiasMetaAgua(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="7">7 dias</option>
@@ -601,7 +599,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       <option value="2">2 dias</option>
       <option value="1">1 dia</option>
       <option value="0">Nenhum dia</option>
-    </select>
+    </Selecao>
   </div>
 
   {/*
@@ -611,14 +609,14 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     </label>
 
     <div className="mt-3 flex items-center gap-3">
-      <input
+      <InputText
         type="number"
         min="0"
         step="0.1"
         value={litrosAgua}
         onChange={(e) => setLitrosAgua(e.target.value)}
         placeholder="Ex.: 2.5"
-        className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+        className="w-full"
       />
 
       <span className="font-medium text-gray-600">
@@ -633,10 +631,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Qual tem sido predominantemente a coloração da sua urina?
     </label>
 
-    <select
+    <Selecao
   value={corUrina}
   onChange={(e) => setCorUrina(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="transparente">Transparente</option>
@@ -644,13 +642,13 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       <option value="amarelada">Amarelada</option>
       <option value="muito_amarela">Muito amarela</option>
       <option value="turva">Turva</option>
-    </select>
+    </Selecao>
   </div>
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      🏋️ Atividade física
+      Atividade física
     </h2>
 
 {/*
@@ -668,7 +666,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 {/*
 {temPlanejamentoTreino === "sim" &&
   treinosPlanejados !== "" && (
-    <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+    <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
       Pontuação: {pontosTreino} / 10
     </div>
   )}
@@ -685,17 +683,17 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Existe planejamento de treino para este paciente?
       </label>
 
-      <select
+      <Selecao
   value={temPlanejamentoTreino}
   onChange={(e) => setTemPlanejamentoTreino(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
         <option value="">Selecione uma opção</option>
         <option value="sim">Sim</option>
         <option value="nao">
           Não se aplica / não há planejamento de treino
         </option>
-      </select>
+      </Selecao>
     </div>
     */}
 
@@ -707,13 +705,13 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
           Quantos treinos estavam planejados?
         </label>
 
-        <input
+        <InputText
           type="number"
           min="0"
           value={treinosPlanejados}
           onChange={(e) => setTreinosPlanejados(e.target.value)}
           placeholder="Ex.: 5"
-          className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+          className="w-full mt-3"
         />
       </div>
       */}
@@ -724,13 +722,13 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
           Quantos treinos você realizou?
         </label>
 
-        <input
+        <InputText
           type="number"
           min="0"
           value={treinosRealizados}
           onChange={(e) => setTreinosRealizados(e.target.value)}
           placeholder="Ex.: 4"
-          className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+          className="w-full mt-3"
         />
       </div>
 )}
@@ -743,10 +741,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Qual foi a intensidade média dos seus treinos nesta semana?
       </label>
 
-      <select
+      <Selecao
   value={intensidadeTreino}
   onChange={(e) => setIntensidadeTreino(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
         <option value="">Selecione uma opção</option>
         <option value="sem_treino">Não realizei treino</option>
@@ -759,7 +757,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         <option value="cansativo">Cansativo</option>
         <option value="muito_cansativo">Muito cansativo</option>
         <option value="exaustivo">Exaustivo</option>
-      </select>
+      </Selecao>
     </div>
 
     <div className="mt-6">
@@ -767,30 +765,30 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Há quanto tempo você está realizando o mesmo programa de treino?
       </label>
 
-      <select
+      <Selecao
   value={tempoMesmoTreino}
   onChange={(e) => setTempoMesmoTreino(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
         <option value="">Selecione uma opção</option>
         <option value="1_4_semanas">1 a 4 semanas</option>
         <option value="5_8_semanas">5 a 8 semanas</option>
         <option value="mais_8_semanas">Mais de 8 semanas</option>
         <option value="nao_se_aplica">Não se aplica</option>
-      </select>
+      </Selecao>
     </div>
     */}
     
   </div>
   <div className="mt-8 border-t border-gray-200 pt-6">
   <h3 className="font-semibold text-gray-900">
-    🏃 Aeróbico
+    Aeróbico
   </h3>
 
 {/*
 {temPlanejamentoAerobico === "sim" &&
   aerobicosPlanejados !== "" && (
-    <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+    <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
       Pontuação: {pontosAerobico} / 5
     </div>
   )}
@@ -807,17 +805,17 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Existe planejamento de exercício aeróbico para este paciente?
     </label>
 
-    <select
+    <Selecao
   value={temPlanejamentoAerobico}
   onChange={(e) => setTemPlanejamentoAerobico(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="sim">Sim</option>
       <option value="nao">
         Não se aplica / não há planejamento de aeróbico
       </option>
-    </select>
+    </Selecao>
   </div>
   */}
 
@@ -829,13 +827,13 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Quantas sessões de aeróbico estavam planejadas?
       </label>
 
-      <input
+      <InputText
         type="number"
         min="0"
         value={aerobicosPlanejados}
         onChange={(e) => setAerobicosPlanejados(e.target.value)}
         placeholder="Ex.: 3"
-        className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+        className="w-full mt-3"
       />
     </div>
     */}
@@ -846,13 +844,13 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Quantas sessões de aeróbico você realizou?
       </label>
 
-      <input
+      <InputText
         type="number"
         min="0"
         value={aerobicosRealizados}
         onChange={(e) => setAerobicosRealizados(e.target.value)}
         placeholder="Ex.: 2"
-        className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+        className="w-full mt-3"
       />
     </div>
     )}
@@ -860,10 +858,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
   </div>
 </div>
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      😴 Sono
+      Sono
     </h2>
 
     <p className="mt-1 text-sm text-gray-500">
@@ -872,7 +870,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 
     {/*
     {(diasMetaSono !== "" || qualidadeSono !== "") && (
-  <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+  <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
     Pontuação: {pontosSono} / 10
   </div>
 )}
@@ -886,17 +884,17 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Existe uma meta de sono definida para este paciente?
     </label>
 
-    <select
+    <Selecao
   value={temMetaSono}
   onChange={(e) => setTemMetaSono(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="sim">Sim</option>
       <option value="nao">
         Não se aplica / não há meta de sono definida
       </option>
-    </select>
+    </Selecao>
   </div>
   */}
 
@@ -905,7 +903,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     Em média, quantas horas você dormiu por noite nesta semana?
   </label>
 
-  <input
+  <InputText
     type="number"
     step="0.5"
     min="0"
@@ -913,7 +911,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     value={horasSono}
     onChange={(e) => setHorasSono(e.target.value)}
     placeholder="Ex.: 7.5"
-    className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+    className="w-full mt-3"
   />
 </div>
 
@@ -924,10 +922,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     de horas de sono?
   </label>
 
-  <select
+  <Selecao
     value={diasMetaSono}
     onChange={(e) => setDiasMetaSono(e.target.value)}
-    className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+    className="w-full"
   >
     <option value="">Selecione uma opção</option>
     <option value="7">7 dias</option>
@@ -938,7 +936,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     <option value="2">2 dias</option>
     <option value="1">1 dia</option>
     <option value="0">Nenhum dia</option>
-  </select>
+  </Selecao>
 
   <p className="mt-2 text-sm text-gray-500">
     Esta resposta corresponde a até 5 pontos do Score.
@@ -952,10 +950,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       nesta semana?
     </label>
 
-    <select
+    <Selecao
   value={qualidadeSono}
   onChange={(e) => setQualidadeSono(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="muito_boa">Muito boa</option>
@@ -963,7 +961,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 <option value="normal">Normal</option>
 <option value="ruim">Ruim</option>
 <option value="muito_ruim">Muito ruim</option>
-    </select>
+    </Selecao>
 
     {/*
 <p className="mt-2 text-sm text-gray-500">
@@ -983,17 +981,17 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Você teve dificuldade para dormir nesta semana?
       </label>
 
-      <select
+      <Selecao
   value={dificuldadeSono}
   onChange={(e) => setDificuldadeSono(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
         <option value="">Selecione uma opção</option>
         <option value="nao">Não</option>
         <option value="1_2_dias">Em 1 a 2 dias</option>
         <option value="3_4_dias">Em 3 a 4 dias</option>
         <option value="5_mais_dias">Em 5 dias ou mais</option>
-      </select>
+      </Selecao>
     </div>
 
     <div className="mt-6">
@@ -1001,10 +999,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Como você tem acordado na maior parte dos dias?
       </label>
 
-      <select
+      <Selecao
   value={disposicaoAoAcordar}
   onChange={(e) => setDisposicaoAoAcordar(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
         <option value="">Selecione uma opção</option>
         <option value="muito_indisposto">Muito indisposto</option>
@@ -1012,14 +1010,14 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         <option value="normal">Normal</option>
         <option value="disposto">Disposto</option>
         <option value="muito_disposto">Muito disposto</option>
-      </select>
+      </Selecao>
     </div>
   </div>
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      🍕 Refeições fora do planejamento
+      Refeições fora do planejamento
     </h2>
 
     <p className="mt-1 text-sm text-gray-500">
@@ -1028,7 +1026,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 
 {/*
 {refeicoesForaPlano !== "" && (
-  <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+  <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
     Pontuação: {pontosRefeicoesForaPlano} / 15
   </div>
 )}
@@ -1046,10 +1044,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Não considere refeições livres que já estavam previstas no seu plano.
     </p>
 
-    <select
+    <Selecao
   value={refeicoesForaPlano}
   onChange={(e) => setRefeicoesForaPlano(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="0">Nenhuma vez</option>
@@ -1058,7 +1056,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       <option value="3">3 vezes</option>
       <option value="4">4 vezes</option>
       <option value="5">5 vezes ou mais</option>
-    </select>
+    </Selecao>
   </div>
 
 {refeicoesForaPlano !== "" && Number(refeicoesForaPlano) > 0 && (
@@ -1068,12 +1066,12 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Se consumiu algo fora do planejamento, o que foi?
     </label>
 
-    <textarea
+    <InputTextarea autoResize
       rows={3}
       value={alimentosForaPlano}
       onChange={(e) => setAlimentosForaPlano(e.target.value)}
       placeholder="Ex.: Pizza no sábado à noite e chocolate na terça-feira."
-      className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+      className="w-full mt-3"
     />
   </div>
 
@@ -1082,10 +1080,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Qual foi o principal motivo?
     </label>
 
-    <select
+    <Selecao
   value={motivoForaPlano}
   onChange={(e) => setMotivoForaPlano(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="nao_se_aplica">Não se aplica</option>
@@ -1102,7 +1100,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       </option>
       <option value="viagem_trabalho">Viagem / trabalho</option>
       <option value="outro">Outro</option>
-    </select>
+    </Selecao>
   </div>
     </>
 )}
@@ -1113,15 +1111,15 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     Consumiu bebida alcoólica nos últimos 7 dias?
   </label>
 
-  <select
+  <Selecao
   value={consumiuAlcool}
   onChange={(e) => setConsumiuAlcool(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
     <option value="">Selecione uma opção</option>
     <option value="nao">Não</option>
     <option value="sim">Sim</option>
-  </select>
+  </Selecao>
 </div>
 
 {consumiuAlcool === "sim" && (
@@ -1130,14 +1128,14 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     Quantas doses de bebida alcoólica você consumiu aproximadamente?
   </label>
 
-  <input
+  <InputText
   type="number"
   min="1"
   step="1"
   value={quantidadeAlcool}
   onChange={(e) => setQuantidadeAlcool(e.target.value)}
   placeholder="Ex.: 3"
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full mt-3"
 />
 
 <p className="mt-2 text-sm text-gray-500">
@@ -1147,10 +1145,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 )}
 
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      💊 Suplementos e manipulados
+      Suplementos e manipulados
     </h2>
 
     <p className="mt-1 text-sm text-gray-500">
@@ -1159,7 +1157,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 
     {/*
     {temSuplementos === "sim" && diasSuplementos !== "" && (
-  <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+  <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
     Pontuação: {pontosSuplementos} / 5
   </div>
 )}
@@ -1173,17 +1171,17 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       atualmente?
     </label>
 
-    <select
+    <Selecao
   value={temSuplementos}
   onChange={(e) => setTemSuplementos(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="sim">Sim</option>
       <option value="nao">
         Não se aplica / não tenho suplementos ou manipulados orientados
       </option>
-    </select>
+    </Selecao>
   </div>
 
 {temSuplementos === "sim" && (
@@ -1194,10 +1192,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       suplementos ou manipulados orientados?
     </label>
 
-    <select
+    <Selecao
   value={diasSuplementos}
   onChange={(e) => setDiasSuplementos(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="7">7 dias</option>
@@ -1208,7 +1206,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       <option value="2">2 dias</option>
       <option value="1">1 dia</option>
       <option value="0">Nenhum dia</option>
-    </select>
+    </Selecao>
   </div>
 
   <div className="mt-6">
@@ -1216,10 +1214,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Se não utilizou corretamente, qual foi o principal motivo?
     </label>
 
-    <select
+    <Selecao
   value={motivoSuplementos}
   onChange={(e) => setMotivoSuplementos(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="nao_se_aplica">Não se aplica</option>
@@ -1230,15 +1228,15 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       <option value="horarios">Dificuldade com os horários</option>
       <option value="decidi_nao_usar">Decidi não utilizar</option>
       <option value="outro">Outro motivo</option>
-    </select>
+    </Selecao>
   </div>
     </>
 )}
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      🎯 Meta individual
+      Meta individual
     </h2>
 
     <p className="mt-1 text-sm text-gray-500">
@@ -1249,7 +1247,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
     {temMetaIndividual === "sim" &&
   metaPlanejada !== "" &&
   metaCumprida !== "" && (
-    <div className="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700">
+    <div className="mt-3 inline-flex rounded-lg bg-primary-50 px-3 py-2 text-sm font-semibold text-primary-700">
       Pontuação: {pontosMetaIndividual} / 10
     </div>
   )}
@@ -1263,17 +1261,17 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Foi definida uma meta individual para este período?
     </label>
 
-    <select
+    <Selecao
   value={temMetaIndividual}
   onChange={(e) => setTemMetaIndividual(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
       <option value="">Selecione uma opção</option>
       <option value="sim">Sim</option>
       <option value="nao">
         Não se aplica / não foi definida uma meta individual
       </option>
-    </select>
+    </Selecao>
   </div>
 
   <div className="mt-6">
@@ -1281,18 +1279,18 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Qual foi a meta definida?
     </label>
 
-    <textarea
+    <InputTextarea autoResize
       rows={2}
       value={descricaoMetaIndividual}
       onChange={(e) => setDescricaoMetaIndividual(e.target.value)}
       placeholder="Ex.: Levar marmita para o trabalho pelo menos 5 dias."
-      className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+      className="w-full mt-3"
     />
   </div>
   */}
 
   {temMetaIndividual === "sim" ? (
-  <div className="mt-6 rounded-xl bg-blue-50 p-4">
+  <div className="mt-6 rounded-xl bg-primary-50 p-4">
     <p className="text-sm text-gray-600">
       Sua meta individual:
     </p>
@@ -1313,13 +1311,13 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Quantas vezes estavam planejadas?
       </label>
 
-      <input
+      <InputText
         type="number"
         min="0"
         value={metaPlanejada}
         placeholder="Ex.: 5"
         onChange={(e) => setMetaPlanejada(e.target.value)}
-        className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+        className="w-full mt-3"
       />
     </div>
     */}
@@ -1329,10 +1327,10 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
         Em quantos dos últimos 7 dias você conseguiu cumprir essa meta?
       </label>
 
-      <select
+      <Selecao
   value={metaCumprida}
   onChange={(e) => setMetaCumprida(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
   <option value="">Selecione uma opção</option>
   <option value="7">7 dias</option>
@@ -1343,7 +1341,7 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
   <option value="2">2 dias</option>
   <option value="1">1 dia</option>
   <option value="0">Nenhum dia</option>
-</select>
+</Selecao>
     </div>
   </div>
 
@@ -1352,19 +1350,19 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
       Teve alguma dificuldade para cumprir essa meta?
     </label>
 
-    <textarea
+    <InputTextarea autoResize
       rows={3}
       value={dificuldadeMetaIndividual}
 onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
       placeholder="Se não teve dificuldades, deixe este campo em branco e siga para a próxima pergunta."
-      className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+      className="w-full mt-3"
     />
   </div>
 </section>
-<section className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<section className="mt-6 cartao p-5 lg:p-6">
   <div className="mb-6">
     <h2 className="text-xl font-bold text-gray-900">
-      🩺 Indicadores clínicos
+      Indicadores clínicos
     </h2>
 
     <p className="mt-1 text-sm text-gray-500">
@@ -1379,14 +1377,14 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
     </label>
 
     <div className="mt-3 flex items-center gap-3">
-      <input
+      <InputText
         type="number"
         min="0"
         step="0.1"
         value={pesoAtual}
         onChange={(e) => setPesoAtual(e.target.value)}
         placeholder="Ex.: 80.5"
-        className="w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+        className="w-full"
       />
 
       <span className="font-medium text-gray-600">
@@ -1400,10 +1398,10 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
       Como está a consistência das suas fezes predominantemente?
     </label>
 
-<select
+<Selecao
   value={consistenciaFezes}
   onChange={(e) => setConsistenciaFezes(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
           <option value="">Selecione uma opção</option>
 <option value="tipo_1">Tipo 1 — Bolinhas duras e separadas</option>
@@ -1413,7 +1411,7 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
 <option value="tipo_5">Tipo 5 — Pedaços macios e bem definidos</option>
 <option value="tipo_6">Tipo 6 — Pedaços pastosos, com bordas irregulares</option>
 <option value="tipo_7">Tipo 7 — Líquida, sem partes sólidas</option>
-    </select>
+    </Selecao>
   </div>
 
   {/*
@@ -1422,10 +1420,10 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
     Como estão a acne e a queda de cabelo em relação ao seu normal?
   </label>
 
-  <select
+  <Selecao
   value={acneQuedaCabelo}
   onChange={(e) => setAcneQuedaCabelo(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
     <option value="">Selecione uma opção</option>
     <option value="normal">Não, tudo normal</option>
@@ -1435,7 +1433,7 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
     <option value="aumentou">
       Sim, aumentou significativamente
     </option>
-  </select>
+  </Selecao>
 </div>
 */}
 
@@ -1445,35 +1443,35 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
     Como está sua libido em relação ao seu normal?
   </label>
 
-  <select
+  <Selecao
   value={libido}
   onChange={(e) => setLibido(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
     <option value="">Selecione uma opção</option>
     <option value="baixa">Abaixo do meu normal</option>
     <option value="normal">Normal para mim</option>
     <option value="alta">Acima do meu normal</option>
-  </select>
+  </Selecao>
 </div>
 */}
 
 <div className="mt-6">
   <label className="font-medium text-gray-900">
-    💉 Houve alguma mudança no uso de medicamentos nesta semana?
+    Houve alguma mudança no uso de medicamentos nesta semana?
   </label>
 
-  <select
+  <Selecao
   value={mudancaMedicamentos}
   onChange={(e) => setMudancaMedicamentos(e.target.value)}
-  className="mt-3 w-full rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+  className="w-full"
 >
     <option value="">Selecione uma opção</option>
 
 <option value="nao_se_aplica">Não se aplica / não utilizo </option>
 <option value="nao">Não houve mudança</option>
 <option value="sim">Sim, houve mudança</option>
-  </select>
+  </Selecao>
 </div>
 
 {mudancaMedicamentos === "sim" && (
@@ -1482,39 +1480,39 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
     Se houve alguma mudança, descreva qual.
   </label>
 
-  <textarea
+  <InputTextarea autoResize
     rows={2}
     value={descricaoMudancaMedicamentos}
     onChange={(e) => setDescricaoMudancaMedicamentos(e.target.value)}
     placeholder="Informe o medicamento e o que mudou."
-    className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+    className="w-full mt-3"
   />
 </div>
 )}
 
 <div className="mt-8 border-t border-gray-200 pt-6">
   <label className="font-medium text-gray-900">
-    📝 Observações do paciente
+    Observações do paciente
   </label>
 
-  <textarea
+  <InputTextarea autoResize
     rows={4}
     value={observacoesGerais}
     onChange={(e) => setObservacoesGerais(e.target.value)}
     placeholder="Conte qualquer outra informação que considere importante nesta semana."
-    className="mt-3 w-full resize-none rounded-xl border border-gray-300 bg-white p-3 text-gray-900"
+    className="w-full mt-3"
   />
 </div>
 </section>
 
-<button
+<Button
   type="button"
   onClick={salvarRelatorio}
   disabled={salvando}
-  className="mt-8 w-full rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+  className="mt-8 w-full"
 >
   {salvando ? "Salvando..." : "Salvar relatório"}
-</button>
+</Button>
 
         </div>
       </main>

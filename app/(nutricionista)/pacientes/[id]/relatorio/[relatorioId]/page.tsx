@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { Button } from "primereact/button";
+import BotaoVoltar from "@/components/BotaoVoltar";
 
 export default function VisualizarRelatorioPage() {
   const params = useParams();
@@ -31,22 +32,14 @@ export default function VisualizarRelatorioPage() {
 }, [params.relatorioId]);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
-        <h1 className="text-2xl font-bold text-gray-900">
+      <main className="mx-auto min-w-0 max-w-3xl flex-1 p-4 lg:p-8">
+        <BotaoVoltar rotulo="Voltar" onClick={() => router.back()} />
 
-          <button
-  type="button"
-  onClick={() => router.back()}
-  className="mb-6 text-sm font-medium text-blue-600 hover:text-blue-700"
->
-  ← Voltar
-</button>
-
+        <h1 className="text-3xl font-bold text-gray-900">
           Relatório de acompanhamento
-          </h1>
+        </h1>
 
             {relatorio && (
   <>
@@ -55,7 +48,7 @@ export default function VisualizarRelatorioPage() {
     </p>
 
     {/*
-    <p className="mt-2 text-lg font-semibold text-blue-600">
+    <p className="mt-2 text-lg font-semibold text-primary-600">
       Score: {relatorio.adherence_score} / 100
     </p>
 
@@ -81,9 +74,9 @@ export default function VisualizarRelatorioPage() {
   </p>
 )}
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    🍽️ Alimentação
+    Alimentação
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -132,9 +125,9 @@ export default function VisualizarRelatorioPage() {
 
 </div>
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    💧 Hidratação
+    Hidratação
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -183,9 +176,9 @@ export default function VisualizarRelatorioPage() {
 </div>
 
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    🏋️ Atividade física
+    Atividade física
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -268,9 +261,9 @@ export default function VisualizarRelatorioPage() {
 </p>
 */}
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    😴 Sono
+    Sono
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -349,9 +342,9 @@ export default function VisualizarRelatorioPage() {
 
 </div>
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    🍕 Refeições fora do planejamento
+    Refeições fora do planejamento
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -419,9 +412,9 @@ export default function VisualizarRelatorioPage() {
 </p>
 </div>
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    💊 Suplementos e manipulados
+    Suplementos e manipulados
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -463,9 +456,9 @@ export default function VisualizarRelatorioPage() {
   */}
 </div>
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    🎯 Meta individual
+    Meta individual
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -502,9 +495,9 @@ export default function VisualizarRelatorioPage() {
   */}
 </div>
 
-<div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+<div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
-    🩺 Indicadores clínicos
+    Indicadores clínicos
   </h2>
 
   <p className="mt-4 text-sm text-gray-600">
@@ -597,7 +590,7 @@ export default function VisualizarRelatorioPage() {
   <div className="mt-4 border-t border-gray-200 pt-4">
     <p className="text-sm text-gray-600">
       <span className="font-semibold text-gray-900">
-        📝 Observações do paciente:
+        Observações do paciente:
       </span>{" "}
       {relatorio.general_notes}
     </p>

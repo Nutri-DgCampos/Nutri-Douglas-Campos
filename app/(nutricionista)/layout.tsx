@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { NavegacaoNutri } from "@/components/Navegacao";
 import { api } from "@/lib/api";
 
 export default function NutricionistaLayout({
@@ -12,30 +13,35 @@ export default function NutricionistaLayout({
   const router = useRouter();
 
   useEffect(() => {
-  async function verificarAcesso() {
-    const {
-      data: { user },
-    } = await api.auth.getUser();
+    async function verificarAcesso() {
+      const {
+        data: { user },
+      } = await api.auth.getUser();
 
-    if (!user) {
-      router.push("/login");
-      return;
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const { data: paciente } = await api
+        .from("patients")
+        .select("id")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
+
+      if (paciente) {
+        router.push("/area-paciente");
+        return;
+      }
     }
 
-    const { data: paciente } = await api
-      .from("patients")
-      .select("id")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
+    verificarAcesso();
+  }, [router]);
 
-    if (paciente) {
-      router.push("/area-paciente");
-      return;
-    }
-  }
-
-  verificarAcesso();
-}, [router]);
-
-  return <>{children}</>;
+  return (
+    <div className="estrutura-nutri">
+      <NavegacaoNutri />
+      <div className="estrutura-nutri__conteudo">{children}</div>
+    </div>
+  );
 }

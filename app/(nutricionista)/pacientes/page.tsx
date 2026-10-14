@@ -1,9 +1,16 @@
 "use client";
 
-import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
+import { InputText } from "primereact/inputtext";
+import { Skeleton } from "primereact/skeleton";
+import { Tag } from "primereact/tag";
+import CabecalhoPagina from "@/components/CabecalhoPagina";
 
 export default function PacientesPage() {
     const [pacientes, setPacientes] = useState<any[]>([]);
@@ -26,7 +33,7 @@ const [carregandoSolicitacoes, setCarregandoSolicitacoes] =
 const router = useRouter();
 
 async function concluirSolicitacao(id: string) {
-  const confirmou = window.confirm(
+  const confirmou = await pedirConfirmacao(
     "Você já cadastrou este paciente? A solicitação será marcada como concluída."
   );
 
@@ -38,7 +45,7 @@ async function concluirSolicitacao(id: string) {
     } = await api.auth.getSession();
 
     if (!session) {
-      alert("Sua sessão expirou. Entre novamente.");
+      avisar("Sua sessão expirou. Entre novamente.");
       return;
     }
 
@@ -56,7 +63,7 @@ async function concluirSolicitacao(id: string) {
     const resultado = await resposta.json();
 
     if (!resposta.ok) {
-      alert(resultado.erro || "Não foi possível concluir a solicitação.");
+      avisar(resultado.erro || "Não foi possível concluir a solicitação.");
       return;
     }
 
@@ -64,10 +71,10 @@ async function concluirSolicitacao(id: string) {
       anteriores.filter((solicitacao) => solicitacao.id !== id)
     );
 
-    alert("Solicitação concluída com sucesso!");
+    avisar("Solicitação concluída com sucesso!");
   } catch (error) {
     console.error("Erro ao concluir solicitação:", error);
-    alert("Erro de conexão. Tente novamente.");
+    avisar("Erro de conexão. Tente novamente.");
   }
 }
 
@@ -140,123 +147,147 @@ try {
   carregarPacientes();
 }, []);
 
+  const pacientesFiltrados = pacientes.filter((paciente) =>
+    paciente.name?.toLowerCase().includes(busca.toLowerCase())
+  );
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <main className="p-4 lg:p-8">
+      <div className="mx-auto max-w-5xl">
+        <CabecalhoPagina
+          titulo="Pacientes"
+          descricao="Gerencie seus pacientes."
+          acao={
+            <Button
+              type="button"
+              label="Novo paciente"
+              icon="pi pi-plus"
+              onClick={() => router.push("/pacientes/novo")}
+            />
+          }
+        />
 
-      <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Pacientes
-        </h1>
+        {(carregandoSolicitacoes || solicitacoes.length > 0) && (
+          <section className="cartao mt-6 p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-bold text-gray-900">
+                Solicitações de novos pacientes
+              </h2>
 
-        <p className="mt-2 text-gray-600">
-          Gerencie seus pacientes.
-        </p>
-
-        <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-  <h2 className="text-xl font-bold text-gray-900">
-    Solicitações de novos pacientes
-  </h2>
-
-  <p className="mt-2 text-sm text-gray-600">
-    Pessoas que solicitaram acompanhamento e ainda não foram cadastradas.
-  </p>
-
-  {carregandoSolicitacoes ? (
-    <p className="mt-4 text-gray-500">
-      Carregando solicitações...
-    </p>
-  ) : solicitacoes.length === 0 ? (
-    <p className="mt-4 text-gray-500">
-      Nenhuma solicitação pendente.
-    </p>
-  ) : (
-    <div className="mt-5 space-y-3">
-      {solicitacoes.map((solicitacao) => (
-        <div
-          key={solicitacao.id}
-          className="rounded-xl border border-gray-200 bg-gray-50 p-4"
-        >
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-gray-900">
-                {solicitacao.name}
-              </p>
-
-              <p className="mt-1 text-sm text-gray-700">
-                Telefone: {solicitacao.phone}
-              </p>
-
-              <p className="mt-1 text-sm text-gray-700">
-                Objetivo: {solicitacao.objective}
-              </p>
+              {solicitacoes.length > 0 && (
+                <Tag value={String(solicitacoes.length)} severity="warning" rounded />
+              )}
             </div>
 
-            <div className="flex flex-col items-end gap-3">
-  <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-    Pendente
-  </span>
+            <p className="mt-1 text-sm text-gray-600">
+              Pessoas que solicitaram acompanhamento e ainda não foram
+              cadastradas.
+            </p>
 
-  <button
-    type="button"
-    onClick={() => concluirSolicitacao(solicitacao.id)}
-    className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
-  >
-    Marcar como concluído
-  </button>
-</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )}
-</section>
+            {carregandoSolicitacoes ? (
+              <Skeleton height="4rem" borderRadius="12px" className="mt-4" />
+            ) : (
+              <ul className="mt-4 divide-y divide-gray-200">
+                {solicitacoes.map((solicitacao) => (
+                  <li
+                    key={solicitacao.id}
+                    className="flex flex-wrap items-center justify-between gap-3 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900">
+                        {solicitacao.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Telefone: {solicitacao.phone}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Objetivo: {solicitacao.objective}
+                      </p>
+                    </div>
 
-        <input
-  type="text"
-  placeholder="Buscar paciente pelo nome..."
-  value={busca}
-  onChange={(e) => setBusca(e.target.value)}
-  className="mt-6 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-blue-500"
-/>
+                    <Button
+                      type="button"
+                      label="Marcar como concluído"
+                      icon="pi pi-check"
+                      size="small"
+                      outlined
+                      onClick={() => concluirSolicitacao(solicitacao.id)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
-        <div className="mt-8 space-y-3">
-  {pacientes
-  .filter((paciente) =>
-    paciente.name
-      ?.toLowerCase()
-      .includes(busca.toLowerCase())
-  )
-  .map((paciente) => (
-    <div
-      key={paciente.id}
-       className="flex items-center justify-between rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
-    >
-      <div>
-      <p className="font-semibold text-gray-900">
-        {paciente.name}
-      </p>
+        <IconField iconPosition="left" className="mt-6">
+          <InputIcon className="pi pi-search" />
+          <InputText
+            type="search"
+            placeholder="Buscar paciente pelo nome..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="w-full"
+          />
+        </IconField>
 
-      <p className="mt-1 text-sm text-gray-600">
-  {paciente.objective}
-</p>
+        <ul className="cartao mt-4 divide-y divide-gray-200">
+          {pacientesFiltrados.map((paciente) => (
+            <li key={paciente.id}>
+              <button
+                type="button"
+                onClick={() => router.push(`/pacientes/${paciente.id}`)}
+                className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-gray-50 sm:gap-4"
+              >
+                <span
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-50 font-[family-name:var(--fonte-titulo)] font-bold text-primary-800"
+                  aria-hidden
+                >
+                  {(paciente.name ?? "?")
+                    .trim()
+                    .split(/\s+/)
+                    .slice(0, 2)
+                    .map((parte: string) => parte[0]?.toUpperCase())
+                    .join("")}
+                </span>
 
-<p className="mt-1 text-xs text-gray-500">
-  {paciente.plan} · Pagamento: {paciente.payment_status}
-</p>
-</div>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold leading-snug text-gray-900 sm:truncate">
+                    {paciente.name}
+                  </span>
+                  <span className="block truncate text-sm text-gray-500">
+                    {[paciente.objective, `Plano ${String(paciente.plan ?? "").toLowerCase()}`]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </span>
+                </span>
 
-<button
-  onClick={() => router.push(`/pacientes/${paciente.id}`)}
-  className="ml-4 cursor-pointer whitespace-nowrap text-blue-600 hover:underline"
->
-  Ver paciente →
-</button>
-    </div>
-  ))}
-</div>
+                <Tag
+                  value={paciente.payment_status}
+                  severity={
+                    paciente.payment_status === "Ativo"
+                      ? "success"
+                      : paciente.payment_status === "Pendente"
+                      ? "warning"
+                      : "danger"
+                  }
+                  className="selo-status"
+                />
 
-      </main>
-    </div>
+                <i className="pi pi-chevron-right text-sm text-gray-400" aria-hidden />
+              </button>
+            </li>
+          ))}
+
+          {pacientesFiltrados.length === 0 && (
+            <li className="p-6 text-center text-gray-500">
+              {pacientes.length === 0
+                ? "Nenhum paciente cadastrado ainda."
+                : "Nenhum paciente encontrado com esse nome."}
+            </li>
+          )}
+        </ul>
+      </div>
+    </main>
   );
 }

@@ -1,9 +1,11 @@
 
 "use client";
 
-import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { Tag } from "primereact/tag";
 
 
 
@@ -37,7 +39,7 @@ type Pagamento = {
 export default function PagamentosPage() {
     
   async function confirmarPagamento(pagamentoId: string) {
-    const confirmar = window.confirm(
+    const confirmar = await pedirConfirmacao(
       "Deseja confirmar o recebimento deste pagamento?"
     );
 
@@ -55,7 +57,7 @@ export default function PagamentosPage() {
 
     if (error || !data || data.length !== 1) {
       console.error(error);
-      alert("Não foi possível confirmar o pagamento.");
+      avisar("Não foi possível confirmar o pagamento.");
       return;
     }
 
@@ -65,13 +67,13 @@ export default function PagamentosPage() {
       )
     );
 
-    alert("Pagamento confirmado com sucesso!");
+    avisar("Pagamento confirmado com sucesso!");
   }
 
     
   async function abrirComprovante(caminho: string | null) {
     if (!caminho) {
-      alert("Comprovante não encontrado.");
+      avisar("Comprovante não encontrado.");
       return;
     }
 
@@ -81,7 +83,7 @@ export default function PagamentosPage() {
 
     if (error || !data?.signedUrl) {
       console.error(error);
-      alert("Não foi possível abrir o comprovante.");
+      avisar("Não foi possível abrir o comprovante.");
       return;
     }
 
@@ -89,7 +91,7 @@ export default function PagamentosPage() {
   }
 
   async function confirmarPagamentoDinheiro(pagamentoId: string) {
-    const confirmar = window.confirm(
+    const confirmar = await pedirConfirmacao(
       "Você recebeu este pagamento em dinheiro? Deseja confirmar?"
     );
 
@@ -108,7 +110,7 @@ export default function PagamentosPage() {
 
     if (error || !data || data.length !== 1) {
       console.error(error);
-      alert("Não foi possível confirmar o pagamento em dinheiro.");
+      avisar("Não foi possível confirmar o pagamento em dinheiro.");
       return;
     }
 
@@ -118,7 +120,7 @@ export default function PagamentosPage() {
       )
     );
 
-    alert("Pagamento em dinheiro confirmado com sucesso!");
+    avisar("Pagamento em dinheiro confirmado com sucesso!");
   }
 
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
@@ -175,19 +177,18 @@ setPagamentos(data ?? []);
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div>
 
-      <main className="flex-1 p-8">
+      <main className="mx-auto min-w-0 max-w-5xl flex-1 p-4 lg:p-8">
         <h1 className="text-3xl font-bold text-gray-900">
           Pagamentos
         </h1>
 
-        <p className="mt-2 text-gray-600">
+        <p className="mt-1 text-gray-600">
           Gerencie os comprovantes de pagamento dos pacientes.
         </p>
 
-        <div className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="mt-6 cartao p-5 lg:p-6">
           <h2 className="text-lg font-bold text-gray-900">
             Comprovantes aguardando conferência
           </h2>
@@ -216,8 +217,7 @@ setPagamentos(data ?? []);
                   className="rounded-xl border border-gray-200 p-4"
                 >
                   
-<p className="text-sm font-semibold text-gray-900">
-  Paciente:{" "}
+<p className="font-semibold text-gray-900">
 
 
 {(() => {
@@ -248,39 +248,31 @@ setPagamentos(data ?? []);
     : "Data não informada"}
 </p>
 
-<p className="mt-1 text-sm font-medium text-orange-600">
-  Aguardando conferência
-</p>
+<Tag value="Em análise" severity="warning" className="selo-status mt-2 flex w-fit" />
 
 
 {pagamento.status === "comprovante_enviado" ? (
   <>
-    <button
+    <div className="mt-3 flex flex-wrap gap-2">
+    <Button size="small" outlined icon="pi pi-eye" label="Ver comprovante"
       type="button"
       onClick={() =>
         abrirComprovante(pagamento.receipt_file_path)
       }
-      className="mt-3 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-    >
-      Ver comprovante
-    </button>
+      />
 
-    <button
+    <Button size="small" icon="pi pi-check" label="Confirmar pagamento"
       type="button"
       onClick={() => confirmarPagamento(pagamento.id)}
-      className="ml-3 mt-3 rounded-lg bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700"
-    >
-      ✓ OK
-    </button>
+      />
+    </div>
   </>
 ) : pagamento.status === "pendente" ? (
-  <button
+  <Button size="small" outlined icon="pi pi-money-bill" label="Recebi em dinheiro"
     type="button"
     onClick={() => confirmarPagamentoDinheiro(pagamento.id)}
-    className="mt-3 rounded-lg bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700"
-  >
-    💵 Recebi em dinheiro
-  </button>
+    className="mt-3"
+  />
 ) : null}
 
 
@@ -290,7 +282,7 @@ setPagamentos(data ?? []);
             </div>
           )}
         </div>
-        <div className="mt-6 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-lg font-bold text-gray-900">
     Pagamentos pendentes
   </h2>
@@ -349,21 +341,17 @@ const paciente = Array.isArray(pacientes)
               key={pagamento.id}
               className="rounded-xl border border-gray-200 p-4"
             >
-              <p className="text-sm font-semibold text-gray-900">
-                Paciente: {paciente?.name ?? "Paciente não identificado"}
+              <p className="font-semibold text-gray-900">
+                {paciente?.name ?? "Paciente não identificado"}
               </p>
 
-              <p className="mt-1 text-sm font-medium text-orange-600">
-                Pagamento pendente
-              </p>
+              <Tag value="Pendente" severity="warning" className="selo-status mt-2 flex w-fit" />
 
-              <button
+              <Button size="small" outlined icon="pi pi-money-bill" label="Recebi em dinheiro"
                 type="button"
                 onClick={() => confirmarPagamentoDinheiro(pagamento.id)}
-                className="mt-3 rounded-lg bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700"
-              >
-                💵 Recebi em dinheiro
-              </button>
+                className="mt-3"
+              />
             </div>
           );
         })}

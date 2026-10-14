@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Sidebar from "@/components/Sidebar";
 import { api } from "@/lib/api";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { Button } from "primereact/button";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Message } from "primereact/message";
+import CabecalhoPagina from "@/components/CabecalhoPagina";
 
 type Paciente = {
   id: string;
@@ -22,14 +26,14 @@ export default function Home() {
     await api.auth.getSession();
 
   if (erroSessao || !sessao.session) {
-    alert("Você precisa estar conectado como nutricionista.");
+    avisar("Você precisa estar conectado como nutricionista.");
     return;
   }
 
   const patientId = prompt("Cole o ID do paciente de teste:");
 
 if (!patientId?.trim()) {
-  alert("Teste cancelado: nenhum paciente informado.");
+  avisar("Teste cancelado: nenhum paciente informado.");
   return;
 }
 
@@ -47,20 +51,20 @@ try {
   const resultado = await resposta.json();
 
   if (!resposta.ok) {
-    alert(
+    avisar(
       "Erro ao enviar notificação: " +
         (resultado.error || "Erro desconhecido.")
     );
     return;
   }
 
-  alert(
+  avisar(
     resultado.message ||
       "Notificação enviada ao serviço de push!"
   );
 } catch (erro) {
   console.error("Erro no teste de notificação:", erro);
-  alert("Não foi possível conectar ao serviço de notificações.");
+  avisar("Não foi possível conectar ao serviço de notificações.");
 }
 
 }
@@ -77,13 +81,13 @@ async function enviarNotificacaoPersonalizada() {
   const mensagem = mensagemPersonalizada.trim();
 
   if (!mensagem || mensagem.length > 300) {
-    alert("Informe uma mensagem de até 300 caracteres.");
+    avisar("Informe uma mensagem de até 300 caracteres.");
     return;
   }
 
   if (enviandoNotificacaoPersonalizada) return;
 
-  const confirmar = window.confirm(
+  const confirmar = await pedirConfirmacao(
     "Esta mensagem será enviada para TODOS os pacientes com notificações ativadas.\n\n" +
       mensagem +
       "\n\nDeseja confirmar o envio?"
@@ -100,7 +104,7 @@ async function enviarNotificacaoPersonalizada() {
     } = await api.auth.getSession();
 
     if (erroSessao || !session) {
-      alert("Faça login como nutricionista.");
+      avisar("Faça login como nutricionista.");
       return;
     }
 
@@ -118,14 +122,14 @@ async function enviarNotificacaoPersonalizada() {
     const resultado = await resposta.json();
 
     if (!resposta.ok || !resultado.success) {
-      alert(resultado.error || "Erro ao enviar notificações.");
+      avisar(resultado.error || "Erro ao enviar notificações.");
       return;
     }
 
-    alert(resultado.message || "Envio concluído.");
+    avisar(resultado.message || "Envio concluído.");
   } catch (erro) {
     console.error("Erro ao enviar notificações:", erro);
-    alert("Não foi possível enviar as notificações.");
+    avisar("Não foi possível enviar as notificações.");
   } finally {
     setEnviandoNotificacaoPersonalizada(false);
   }
@@ -382,190 +386,147 @@ useEffect(() => {
 
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <main className="p-4 lg:p-8">
+      <div className="mx-auto max-w-5xl">
+        <CabecalhoPagina
+          titulo="Olá, Douglas"
+          descricao="Aqui está o resumo dos seus pacientes."
+          acao={
+            <Link
+              href="/pacientes/novo"
+              className="p-button p-component no-underline"
+            >
+              <span className="p-button-icon p-button-icon-left pi pi-plus" />
+              <span className="p-button-label">Novo paciente</span>
+            </Link>
+          }
+        />
 
-      <main className="flex-1 p-8">
-        <div className="mx-auto max-w-7xl">
-          <header className="mb-8">
-            <p className="text-sm font-medium text-blue-600">
-              Painel do nutricionista
-            </p>
+        <section className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+          <Card
+            titulo="Pacientes"
+            valor={carregando ? "..." : String(pacientes.length)}
+            icone="pi-users"
+            destino="/pacientes"
+          />
 
-            <h1 className="text-3xl font-bold text-gray-900">
-              Olá, Douglas 👋
-            </h1>
+          <Card
+            titulo="Relatórios recebidos"
+            valor={
+              carregandoRelatorios
+                ? "..."
+                : erroRelatorios
+                  ? "—"
+                  : String(relatoriosRecebidos)
+            }
+            icone="pi-chart-bar"
+            destino="/relatorios"
+          />
 
-            <p className="mt-2 text-gray-600">
-              Aqui está o resumo dos seus pacientes.
-            </p>
-          </header>
+          <Card
+            titulo="Não responderam"
+            valor={carregandoAtrasados ? "..." : String(naoResponderam)}
+            icone="pi-clock"
+            destino="/alertas"
+            atencao={!carregandoAtrasados && naoResponderam > 0}
+          />
 
-          
+          <Card
+            titulo="Pagamentos recebidos"
+            valor={carregando ? "..." : String(pagamentosPendentes)}
+            icone="pi-wallet"
+            destino="/pagamentos"
+          />
+        </section>
 
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <Card
-              titulo="Pacientes"
-              valor={carregando ? "..." : String(pacientes.length)}
-            />
+        {erro && (
+          <Message severity="error" text={erro} className="mt-4 w-full justify-start" />
+        )}
 
-            <Card
-              titulo="Relatórios recebidos"
-              valor={
-                carregandoRelatorios
-                  ? "..."
-                  : erroRelatorios
-                    ? "—"
-                    : String(relatoriosRecebidos)
-              }
-            />
+        {erroRelatorios && (
+          <Message
+            severity="error"
+            text={erroRelatorios}
+            className="mt-4 w-full justify-start"
+          />
+        )}
 
-            <Card
-  titulo="Não responderam"
-  valor={carregandoAtrasados ? "..." : String(naoResponderam)}
-/>
+        <section className="cartao mt-6 p-5 lg:p-6">
+          <h2 className="text-xl font-bold text-gray-900">
+            Enviar notificação personalizada
+          </h2>
 
-            <Card
-              titulo="Pagamentos recebidos"
-              valor={carregando ? "..." : String(pagamentosPendentes)}
-            />
-          </section>
+          <p className="mt-1 text-sm text-gray-600">
+            Escreva uma mensagem para enviar aos pacientes que possuem
+            notificações ativadas.
+          </p>
 
-          {erroRelatorios && (
-            <p role="alert" className="mt-3 text-sm text-red-600">
-              {erroRelatorios}
-            </p>
-          )}
+          <InputTextarea
+            value={mensagemPersonalizada}
+            onChange={(e) => setMensagemPersonalizada(e.target.value)}
+            maxLength={300}
+            rows={4}
+            autoResize
+            className="mt-4 w-full"
+            placeholder="Digite sua mensagem..."
+          />
 
-                    <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-blue-900">
-              🔔 Enviar notificação personalizada
-            </h2>
-
-            <p className="mt-2 text-sm text-gray-600">
-              Escreva uma mensagem para enviar aos pacientes que possuem
-              notificações ativadas.
-            </p>
-
-            <textarea
-              value={mensagemPersonalizada}
-              onChange={(e) => setMensagemPersonalizada(e.target.value)}
-              maxLength={300}
-              rows={4}
-              className="mt-4 w-full rounded-xl border border-blue-200 bg-white p-4 text-gray-900 outline-none focus:border-blue-500"
-              placeholder="Digite sua mensagem..."
-            />
-
-            <p className="mt-1 text-right text-xs text-gray-500">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs tabular-nums text-gray-500">
               {mensagemPersonalizada.length}/300 caracteres
             </p>
 
-            <button
+            <Button
               type="button"
               onClick={enviarNotificacaoPersonalizada}
-              disabled={enviandoNotificacaoPersonalizada}
-              className="mt-4 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
-            >
-              {enviandoNotificacaoPersonalizada
-                ? "Enviando notificações..."
-                : "🔔 Enviar para todos os pacientes"}
-            </button>
-          </section>
-
-          <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  Pacientes
-                </h2>
-
-                
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Acompanhe seus pacientes em um só lugar.
-                </p>
-              </div>
-
-              <Link
-                href="/pacientes/novo"
-                className="rounded-xl bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
-              >
-                + Novo paciente
-              </Link>
-            </div>
-
-            <div className="mt-6 divide-y divide-gray-200">
-              {carregando && (
-                <p className="py-6 text-gray-500">
-                  Carregando pacientes...
-                </p>
-              )}
-
-              {!carregando && erro && (
-                <p className="py-6 text-red-600">{erro}</p>
-              )}
-
-              {!carregando && !erro && pacientes.length === 0 && (
-                <p className="py-6 text-gray-500">
-                  Nenhum paciente cadastrado.
-                </p>
-              )}
-
-{/*
-              {!carregando &&
-                !erro &&
-                pacientes.map((paciente) => (
-                  <div
-                    key={paciente.id}
-                    className="flex items-center justify-between py-4"
-                  >
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {paciente.name}
-                      </p>
-
-                      <p className="text-sm text-gray-500">
-                        {paciente.objective || "Objetivo não informado"}
-                      </p>
-
-                      <p className="mt-1 text-xs text-gray-400">
-                        {paciente.plan} • Pagamento:{" "}
-                        {paciente.payment_status}
-                      </p>
-                    </div>
-
-                    <Link
-  href={`/pacientes/${paciente.id}`}
-  className="font-medium text-blue-600 hover:text-blue-800"
->
-  Ver paciente →
-</Link>
-                  </div>
-                ))}
-                  */}
-                  
-            </div>
-          </section>
-        </div>
-      </main>
-    </div>
+              loading={enviandoNotificacaoPersonalizada}
+              icon="pi pi-send"
+              label={
+                enviandoNotificacaoPersonalizada
+                  ? "Enviando notificações..."
+                  : "Enviar para todos os pacientes"
+              }
+            />
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
 
 function Card({
   titulo,
   valor,
+  icone,
+  destino,
+  atencao = false,
 }: {
   titulo: string;
   valor: string;
+  icone: string;
+  destino: string;
+  atencao?: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm">
-      <p className="text-sm text-gray-500">{titulo}</p>
+    <Link
+      href={destino}
+      className="cartao block p-4 no-underline transition hover:border-primary-300 lg:p-5"
+    >
+      <span
+        className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+          atencao
+            ? "bg-atencao-50 text-atencao-700"
+            : "bg-primary-50 text-primary-700"
+        }`}
+      >
+        <i className={`pi ${icone}`} aria-hidden />
+      </span>
 
-      <p className="mt-2 text-3xl font-bold text-gray-900">
+      <p className="mt-3 font-[family-name:var(--fonte-titulo)] text-3xl font-bold tabular-nums text-gray-900">
         {valor}
       </p>
-    </div>
+
+      <p className="mt-0.5 text-sm text-gray-500">{titulo}</p>
+    </Link>
   );
 }
