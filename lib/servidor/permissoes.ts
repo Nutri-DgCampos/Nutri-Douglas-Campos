@@ -110,7 +110,8 @@ export function criarRegras(contexto: Contexto): Regras {
     },
 
     renewal_requests: {
-      select: nutricionista ? TUDO : null,
+      // O paciente vê as próprias solicitações (para não pedir de novo).
+      select: nutricionista ? TUDO : { usando: doPaciente },
       insert: paciente
         ? { verificando: (v) => `${v}.patient_id = ${paciente}` }
         : null,

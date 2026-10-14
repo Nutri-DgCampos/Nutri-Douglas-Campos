@@ -281,6 +281,8 @@ if (!cadastroEspecial) {
             </label>
             <InputText
               type="email"
+              name="email-novo-paciente"
+              autoComplete="off"
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -295,6 +297,8 @@ if (!cadastroEspecial) {
             </label>
             <InputText
   type="password"
+  name="pin-novo-paciente"
+  autoComplete="new-password"
   required
   minLength={6}
   maxLength={6}

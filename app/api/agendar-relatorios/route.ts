@@ -2,10 +2,9 @@ import { banco } from "@/lib/servidor/banco";
 import { autorizadoPorCron } from "@/lib/servidor/http";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
+import { segundasPrevistas } from "@/lib/cronograma";
 
 export const runtime = "nodejs";
-
-type Frequencia = "semanal" | "quinzenal" | "mensal";
 
 function calcularRelatoriosProgramados(
   dataInicio: string,
@@ -13,97 +12,18 @@ function calcularRelatoriosProgramados(
   dataCadastroRetroativo: string | null = null,
   semanasRetroativasConcluidas = 0
 ) {
-  const frequencia = frequenciaInformada.trim().toLowerCase();
-
-  const configuracoes: Record<
-    Frequencia,
-    { intervaloDias: number; quantidade: number }
-  > = {
-    semanal: { intervaloDias: 7, quantidade: 4 },
-    quinzenal: { intervaloDias: 15, quantidade: 2 },
-    mensal: { intervaloDias: 30, quantidade: 1 },
-  };
-
-  if (!(frequencia in configuracoes)) {
-    return [];
-  }
-
-  const configuracao = configuracoes[frequencia as Frequencia];
-
-  const relatorios: {
-    numero: number;
-    segundaPrevista: string;
-  }[] = [];
-
-  const cadastroRetroativo =
-    Boolean(dataCadastroRetroativo) &&
-    semanasRetroativasConcluidas > 0;
-
-  for (
-    let numero = 1;
-    numero <= configuracao.quantidade;
-    numero++
-  ) {
-    let dataPrevista: Date;
-
-    if (cadastroRetroativo && dataCadastroRetroativo) {
-      const dataCadastro = new Date(
-        `${dataCadastroRetroativo}T12:00:00Z`
-      );
-
-      const diasDesdeSegundaCadastro =
-        (dataCadastro.getUTCDay() + 6) % 7;
-
-      dataCadastro.setUTCDate(
-        dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
-      );
-
-      const diasJaConcluidos =
-  semanasRetroativasConcluidas * 7;
-
-const intervaloRetroativoDias =
-  frequencia === "semanal"
-    ? 7
-    : frequencia === "quinzenal"
-    ? 14
-    : 28;
-
-const diasParaRelatorio =
-  intervaloRetroativoDias * numero - diasJaConcluidos;
-
-dataCadastro.setUTCDate(
-  dataCadastro.getUTCDate() + diasParaRelatorio
-);
-
-      dataPrevista = dataCadastro;
-    } else {
-      dataPrevista = new Date(`${dataInicio}T12:00:00Z`);
-
-      dataPrevista.setUTCDate(
-        dataPrevista.getUTCDate() +
-          configuracao.intervaloDias * numero
-      );
-    }
-
-    const diaSemana = dataPrevista.getUTCDay();
-    const diasDesdeSegunda = (diaSemana + 6) % 7;
-
-    const ajuste =
-      diasDesdeSegunda <= 3
-        ? -diasDesdeSegunda
-        : 7 - diasDesdeSegunda;
-
-    dataPrevista.setUTCDate(
-      dataPrevista.getUTCDate() + ajuste
-    );
-
-    relatorios.push({
-      numero,
-      segundaPrevista: dataPrevista.toISOString().slice(0, 10),
-    });
-  }
-
-  return relatorios;
+  // Regra única em lib/cronograma.ts.
+  return segundasPrevistas(
+    {
+      start_date: dataInicio,
+      followup_frequency: frequenciaInformada,
+      retroactive_registered_at: dataCadastroRetroativo,
+    },
+    semanasRetroativasConcluidas
+  ).map((previsto) => ({
+    numero: previsto.numero,
+    segundaPrevista: previsto.segunda,
+  }));
 }
 
 function obterHorariosNotificacao(segundaPrevista: string) {

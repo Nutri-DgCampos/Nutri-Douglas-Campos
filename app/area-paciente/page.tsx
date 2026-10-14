@@ -6,6 +6,13 @@ import { Button } from "primereact/button";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
+import {
+  hojeNoBrasil,
+  relatorioAbertoHoje,
+  segundasPrevistas,
+  situacaoDosRelatorios,
+  type SituacaoDosRelatorios,
+} from "@/lib/cronograma";
 function converterChaveVapid(chave: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (chave.length % 4)) % 4);
 
@@ -36,6 +43,9 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
     const [mostrarPlanosRenovacao, setMostrarPlanosRenovacao] = useState(false);
     const [ultimoScore, setUltimoScore] = useState<number | null>(null);
+    const [situacao, setSituacao] = useState<SituacaoDosRelatorios | null>(null);
+    const [renovacaoSolicitada, setRenovacaoSolicitada] = useState(false);
+    const [enviandoRenovacao, setEnviandoRenovacao] = useState(false);
     const [ativandoNotificacoes, setAtivandoNotificacoes] = useState(false);
     const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
 
@@ -59,8 +69,8 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
   window.location.href = "/login";
 }
 
-async function solicitarRenovacao(planoEscolhido: string) {
-  if (!paciente) return;
+async function solicitarRenovacao(planoEscolhido: string): Promise<boolean> {
+  if (!paciente) return false;
 
   const { data: ultimoRelatorio, error } = await api
   .from("patient_reports")
@@ -74,7 +84,7 @@ async function solicitarRenovacao(planoEscolhido: string) {
 if (error) {
   console.error("Erro ao buscar último peso:", error);
   avisar("Não foi possível solicitar a renovação.");
-  return;
+  return false;
 }
 
 console.log("ÚLTIMO PESO:", ultimoRelatorio?.weight);
@@ -91,10 +101,25 @@ const { error: erroRenovacao } = await api
 if (erroRenovacao) {
   console.error("Erro ao solicitar renovação:", erroRenovacao);
   avisar("Não foi possível solicitar a renovação.");
-  return;
+  return false;
 }
 
 avisar("Solicitação de renovação enviada com sucesso!");
+return true;
+}
+
+// Uma solicitação por vez: os botões somem assim que ela é registrada.
+async function pedirRenovacao(planoEscolhido: string) {
+  if (enviandoRenovacao || renovacaoSolicitada) return;
+
+  setEnviandoRenovacao(true);
+  const registrada = await solicitarRenovacao(planoEscolhido);
+  setEnviandoRenovacao(false);
+
+  if (registrada) {
+    setRenovacaoSolicitada(true);
+    setMostrarPlanosRenovacao(false);
+  }
 }
 
     useEffect(() => {
@@ -130,6 +155,15 @@ const { data: relatorioRecente } = await api
   .maybeSingle();
 
 setUltimoScore(relatorioRecente?.adherence_score ?? null);
+
+const { data: renovacoesPendentes } = await api
+  .from("renewal_requests")
+  .select("id")
+  .eq("patient_id", data.id)
+  .eq("status", "pendente")
+  .limit(1);
+
+setRenovacaoSolicitada((renovacoesPendentes ?? []).length > 0);
 // Verificar pagamentos atrasados do paciente
 const { data: pagamentos, error: erroPagamentos } = await api
   .from("payments")
@@ -238,175 +272,46 @@ setCicloAtivo(ciclo);
 console.log("CICLO ATIVO:", ciclo);
 
 if (ciclo) {
-  const partesDataBrasil = new Intl.DateTimeFormat("en-US", {
-  timeZone: "America/Sao_Paulo",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-}).formatToParts(new Date());
-
-const anoBrasil = Number(
-  partesDataBrasil.find((parte) => parte.type === "year")?.value
-);
-
-const mesBrasil = Number(
-  partesDataBrasil.find((parte) => parte.type === "month")?.value
-);
-
-const diaBrasil = Number(
-  partesDataBrasil.find((parte) => parte.type === "day")?.value
-);
-
-const dataHojeBrasil = new Date(
-  Date.UTC(anoBrasil, mesBrasil - 1, diaBrasil, 12)
-);
-
-const diaSemanaBrasil = dataHojeBrasil.getUTCDay();
-
-const segundaAtualBrasil = new Date(dataHojeBrasil);
-
-segundaAtualBrasil.setUTCDate(
-  segundaAtualBrasil.getUTCDate() - ((diaSemanaBrasil + 6) % 7)
-);
-
-const semanaAtualBrasil = segundaAtualBrasil
-  .toISOString()
-  .slice(0, 10);
-  const dentroDoPrazoRelatorio =
-  diaSemanaBrasil === 1 || diaSemanaBrasil === 2;
-  const { data: ultimoRelatorio } = await api
-    .from("patient_reports")
-    .select("cycle_report_number")
-    .eq("cycle_id", ciclo.id)
-    .not("cycle_report_number", "is", null)
-    .order("cycle_report_number", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
- 
-const numeroAtual = Number(ultimoRelatorio?.cycle_report_number ?? 0);
-const frequencia = ciclo.followup_frequency?.trim().toLowerCase();
-const intervaloDias =
-  frequencia === "semanal"
-    ? 7
-    : frequencia === "quinzenal"
-    ? 15
-    : frequencia === "mensal"
-    ? 30
-    : null;
-
-const quantidadePrevista =
-  frequencia === "semanal"
-    ? 4
-    : frequencia === "quinzenal"
-    ? 2
-    : frequencia === "mensal"
-    ? 1
+  // Agenda dos relatórios (regra única em lib/cronograma.ts).
+  const semanasConcluidas = data.retroactive_registration
+    ? Number(data.retroactive_completed_weeks ?? 0)
     : 0;
-    const calcularSegundaPrevista = (numero: number) => {
-  if (intervaloDias === null) return null;
 
-  const cadastroRetroativo =
-    Boolean(ciclo.retroactive_registered_at) &&
-    data.retroactive_registration === true &&
-    (data.retroactive_completed_weeks ?? 0) > 0;
+  const hoje = hojeNoBrasil();
+  const previstos = segundasPrevistas(ciclo, semanasConcluidas);
 
-  let dataPrevista: Date;
+  const { data: respondidos } = await api
+    .from("patient_reports")
+    .select("scheduled_week_start, cycle_report_number")
+    .eq("cycle_id", ciclo.id);
 
-  if (cadastroRetroativo) {
-    const dataCadastro = new Date(
-      `${ciclo.retroactive_registered_at}T12:00:00Z`
-    );
-
-    const diasDesdeSegundaCadastro =
-      (dataCadastro.getUTCDay() + 6) % 7;
-
-    dataCadastro.setUTCDate(
-      dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
-    );
-
-    const diasJaConcluidos =
-      data.retroactive_completed_weeks * 7;
-
-    const intervaloRetroativoDias =
-      frequencia === "semanal"
-        ? 7
-        : frequencia === "quinzenal"
-        ? 14
-        : 28;
-
-    const diasParaRelatorio =
-      intervaloRetroativoDias * numero - diasJaConcluidos;
-
-    dataCadastro.setUTCDate(
-      dataCadastro.getUTCDate() + diasParaRelatorio
-    );
-
-    dataPrevista = dataCadastro;
-  } else {
-    dataPrevista = new Date(
-      `${ciclo.start_date}T12:00:00Z`
-    );
-
-    dataPrevista.setUTCDate(
-      dataPrevista.getUTCDate() + intervaloDias * numero
-    );
-  }
-
-  const diaSemana = dataPrevista.getUTCDay();
-  const diasDesdeSegunda = (diaSemana + 6) % 7;
-
-  const ajuste =
-    diasDesdeSegunda <= 3
-      ? -diasDesdeSegunda
-      : 7 - diasDesdeSegunda;
-
-  dataPrevista.setUTCDate(
-    dataPrevista.getUTCDate() + ajuste
+  const semanasRespondidas = new Set<string>(
+    (respondidos ?? [])
+      .map((relatorio) => relatorio.scheduled_week_start)
+      .filter(Boolean)
   );
 
-  return dataPrevista.toISOString().slice(0, 10);
-};
-let numeroPrevistoNestaSemana: number | null = null;
+  setRelatorioDisponivel(
+    relatorioAbertoHoje(
+      previstos,
+      hoje,
+      semanasRespondidas,
+      ciclo.retroactive_registered_at
+    ) !== null
+  );
 
-for (let numero = 1; numero <= quantidadePrevista; numero++) {
-  if (calcularSegundaPrevista(numero) === semanaAtualBrasil) {
-    numeroPrevistoNestaSemana = numero;
-    break;
-  }
-}
+  setSituacao(
+    situacaoDosRelatorios(ciclo, semanasConcluidas, hoje, semanasRespondidas)
+  );
 
-const { data: relatoriosRespondidos } = await api
-  .from("patient_reports")
-  .select("scheduled_week_start")
-  .eq("cycle_id", ciclo.id)
-  .eq("scheduled_week_start", semanaAtualBrasil);
+  const ultimoNumeroRespondido = Math.max(
+    0,
+    ...(respondidos ?? []).map((relatorio) => Number(relatorio.cycle_report_number ?? 0))
+  );
 
-const relatorioJaRespondido =
-  (relatoriosRespondidos?.length ?? 0) > 0;
-
-setRelatorioDisponivel(
-  dentroDoPrazoRelatorio &&
-  numeroPrevistoNestaSemana !== null &&
-  !relatorioJaRespondido
-);
-setNumeroRelatorio(
-  Math.max(
-    numeroPrevistoNestaSemana ?? 0,
-    Number(ultimoRelatorio?.cycle_report_number ?? 0),
-    1
-  )
-);
-
-if (frequencia === "semanal") {
-  setUltimoRelatorioDoCiclo(numeroAtual >= 4);
-} else if (frequencia === "quinzenal") {
-  setUltimoRelatorioDoCiclo(numeroAtual >= 2);
-} else if (frequencia === "mensal") {
-  setUltimoRelatorioDoCiclo(numeroAtual >= 1);
-}
-
-console.log("ÚLTIMO RELATÓRIO:", ultimoRelatorio);
+  setUltimoRelatorioDoCiclo(
+    previstos.length > 0 && ultimoNumeroRespondido >= previstos.length
+  );
 }
 
 console.log("PACIENTE ENCONTRADO:", data);
@@ -500,100 +405,8 @@ carregarPaciente();
     }
   }
 
-  // Quantos relatórios ainda faltam neste ciclo, em texto.
-  function descreverRelatoriosRestantes(): string | null {
-    if (!cicloAtivo || numeroRelatorio === null) {
-      return null;
-    }
-
-    const frequencia = cicloAtivo.followup_frequency?.trim().toLowerCase();
-
-    const totalRelatorios =
-      frequencia === "semanal"
-        ? 4
-        : frequencia === "quinzenal"
-        ? 2
-        : frequencia === "mensal"
-        ? 1
-        : 0;
-
-    const semanasConcluidas =
-      cicloAtivo.retroactive_registered_at && paciente?.retroactive_registration
-        ? Number(paciente.retroactive_completed_weeks ?? 0)
-        : 0;
-
-    const intervaloRetroativo =
-      frequencia === "semanal" ? 1 : frequencia === "quinzenal" ? 2 : 4;
-
-    const relatoriosJaPassados = cicloAtivo.retroactive_registered_at
-      ? Math.min(
-          totalRelatorios,
-          Math.floor(semanasConcluidas / intervaloRetroativo)
-        )
-      : 0;
-
-    const numeroAtual = numeroRelatorio ?? 1;
-
-    const dataHojeBrasil = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Sao_Paulo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date());
-
-    const dataInicioCiclo = new Date(`${cicloAtivo.start_date}T12:00:00Z`);
-    const dataHoje = new Date(`${dataHojeBrasil}T12:00:00Z`);
-
-    const diasDesdeInicio = Math.floor(
-      (dataHoje.getTime() - dataInicioCiclo.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    const primeiroRelatorioAindaNaoChegou =
-      !cicloAtivo.retroactive_registered_at &&
-      diasDesdeInicio <
-        (frequencia === "semanal" ? 7 : frequencia === "quinzenal" ? 15 : 30);
-
-    const ultimoRelatorioPassado = primeiroRelatorioAindaNaoChegou
-      ? 0
-      : Math.max(relatoriosJaPassados, numeroAtual);
-
-    const restantes = Math.max(0, totalRelatorios - ultimoRelatorioPassado);
-
-    if (restantes === 0) {
-      return relatorioDisponivel
-        ? "Você tem um relatório nutricional disponível para preencher."
-        : "Todos os relatórios deste acompanhamento foram concluídos ou tiveram seu prazo encerrado";
-    }
-
-    return restantes === 1
-      ? "Resta 1 relatório a ser preenchido"
-      : `Restam ${restantes} relatórios a serem preenchidos`;
-  }
-
-  // A renovação é oferecida sem ciclo ativo ou na última semana do ciclo.
-  function podeRenovar(): boolean {
-    const hojeBrasil = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Sao_Paulo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date());
-
-    const inicioUltimaSemana = cicloAtivo?.end_date
-      ? new Date(`${cicloAtivo.end_date}T12:00:00Z`)
-      : null;
-
-    inicioUltimaSemana?.setUTCDate(inicioUltimaSemana.getUTCDate() - 7);
-
-    return (
-      !cicloAtivo ||
-      (inicioUltimaSemana !== null &&
-        hojeBrasil >= inicioUltimaSemana.toISOString().slice(0, 10))
-    );
-  }
-
   const primeiroNome = paciente?.name?.trim().split(/\s+/)[0];
-  const relatoriosRestantes = descreverRelatoriosRestantes();
+  const relatoriosRestantes = situacao?.mensagem ?? null;
 
   const atalhos = [
     {
@@ -739,7 +552,7 @@ carregarPaciente();
           ))}
         </nav>
 
-        {podeRenovar() && (
+        {paciente && (!cicloAtivo || situacao?.podeRenovar) && (
           <section className="cartao mt-4 p-5">
             <h2 className="text-lg font-bold text-gray-900">
               Renove seu acompanhamento nutricional
@@ -749,7 +562,15 @@ carregarPaciente();
               Deseja renovar seu acompanhamento nutricional?
             </p>
 
-            {!mostrarPlanosRenovacao ? (
+            {renovacaoSolicitada ? (
+              <p className="mt-4 flex items-start gap-2 rounded-xl bg-primary-50 p-3 text-sm font-medium text-primary-800">
+                <i className="pi pi-check-circle mt-0.5" aria-hidden />
+                <span>
+                  Solicitação de renovação enviada. Aguarde o contato do
+                  nutricionista.
+                </span>
+              </p>
+            ) : !mostrarPlanosRenovacao ? (
               <Button
                 type="button"
                 label="Renovar acompanhamento"
@@ -771,7 +592,8 @@ carregarPaciente();
                       label={plano}
                       outlined
                       className="w-full justify-start"
-                      onClick={() => solicitarRenovacao(plano)}
+                      disabled={enviandoRenovacao}
+                      onClick={() => pedirRenovacao(plano)}
                     />
                   ))}
                 </div>

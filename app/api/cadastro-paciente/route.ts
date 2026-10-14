@@ -532,6 +532,10 @@ if (!limitePermitido) {
 // Esses identificadores serão usados para desfazer
 // uma tentativa incompleta, se necessário.
 
+// "Semana N" quer dizer que o paciente está na semana N: N - 1 semanas
+// já concluídas antes do cadastro.
+const semanasConcluidas = semanaAtual - 1;
+
 const cadastroPaciente = {
   name: nome,
   phone: telefone,
@@ -542,16 +546,16 @@ const cadastroPaciente = {
   cardio_weekly_goal: aerobicosSemana,
   current_followup_week: semanaAtual,
   retroactive_registration: true,
-  retroactive_completed_weeks: semanaAtual,
+  retroactive_completed_weeks: semanasConcluidas,
   payment_status: "Pendente",
 };
 
-const inicioRetroativo = calcularInicioRetroativo(semanaAtual);
+const inicioRetroativo = calcularInicioRetroativo(semanasConcluidas);
 const fimRetroativo = calcularFimCiclo(inicioRetroativo);
 
 console.log("Cadastro especial validado:", {
   plano: cadastroPaciente.plan,
-  semanaConcluida: semanaAtual,
+  semanaConcluida: semanasConcluidas,
   inicioRetroativo,
   fimRetroativo,
 });
@@ -568,7 +572,7 @@ pacienteCriadoId = await salvarCadastroPaciente(
 await criarCicloRetroativo(
   pacienteCriadoId!,
   plano,
-  semanaAtual
+  semanasConcluidas
 );
 
     return NextResponse.json(

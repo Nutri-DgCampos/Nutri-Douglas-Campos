@@ -8,6 +8,7 @@ import Selecao from "@/components/Selecao";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { segundasPrevistas } from "@/lib/cronograma";
 
 export default function RelatorioPage() {
   const router = useRouter();
@@ -272,84 +273,11 @@ const pontosQualidadeSono =
   return;
 }
 
-const frequenciaCiclo = cicloAtivo.followup_frequency
-  ?.trim()
-  .toLowerCase();
+// Datas dos relatórios do ciclo (regra única em lib/cronograma.ts).
+const previstos = segundasPrevistas(cicloAtivo, semanasRetroativasConcluidas);
 
-const intervaloDias =
-  frequenciaCiclo === "semanal"
-    ? 7
-    : frequenciaCiclo === "quinzenal"
-    ? 15
-    : frequenciaCiclo === "mensal"
-    ? 30
-    : null;
-   const calcularSegundaPrevista = (numero: number) => {
-  if (intervaloDias === null) return null;
-
-  const cadastroRetroativo =
-    Boolean(cicloAtivo.retroactive_registered_at) &&
-    semanasRetroativasConcluidas > 0;
-
-  let dataPrevista: Date;
-
-  if (cadastroRetroativo && cicloAtivo.retroactive_registered_at) {
-    const dataCadastro = new Date(
-      `${cicloAtivo.retroactive_registered_at}T12:00:00Z`
-    );
-
-    // Segunda-feira da semana do cadastro
-    const diasDesdeSegundaCadastro =
-      (dataCadastro.getUTCDay() + 6) % 7;
-
-    dataCadastro.setUTCDate(
-      dataCadastro.getUTCDate() - diasDesdeSegundaCadastro
-    );
-
-    // O tempo já concluído é contado em semanas,
-    // independentemente da frequência dos relatórios.
-    const diasJaConcluidos =
-      semanasRetroativasConcluidas * 7;
-
-    const intervaloRetroativoDias =
-  frequenciaCiclo === "semanal"
-    ? 7
-    : frequenciaCiclo === "quinzenal"
-    ? 14
-    : 28;
-
-const diasParaRelatorio =
-  intervaloRetroativoDias * numero - diasJaConcluidos;
-
-    dataCadastro.setUTCDate(
-      dataCadastro.getUTCDate() + diasParaRelatorio
-    );
-
-    dataPrevista = dataCadastro;
-  } else {
-    dataPrevista = new Date(
-      `${cicloAtivo.start_date}T12:00:00Z`
-    );
-
-    dataPrevista.setUTCDate(
-      dataPrevista.getUTCDate() + intervaloDias * numero
-    );
-  }
-
-  const diaSemana = dataPrevista.getUTCDay();
-  const diasDesdeSegunda = (diaSemana + 6) % 7;
-
-  const ajuste =
-    diasDesdeSegunda <= 3
-      ? -diasDesdeSegunda
-      : 7 - diasDesdeSegunda;
-
-  dataPrevista.setUTCDate(
-    dataPrevista.getUTCDate() + ajuste
-  );
-
-  return dataPrevista.toISOString().slice(0, 10);
-};
+const calcularSegundaPrevista = (numero: number) =>
+  previstos.find((item) => item.numero === numero)?.segunda ?? null;
 
   const partesDataBrasil = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/Sao_Paulo",
@@ -391,14 +319,7 @@ const semanaAtualBrasil =
 const dentroDoPrazoRelatorio =
   diaSemanaBrasil === 1 || diaSemanaBrasil === 2;
 
-  const quantidadePrevista =
-  frequenciaCiclo === "semanal"
-    ? 4
-    : frequenciaCiclo === "quinzenal"
-    ? 2
-    : frequenciaCiclo === "mensal"
-    ? 1
-    : 0;
+  const quantidadePrevista = previstos.length;
 
 let numeroPrevistoNestaSemana: number | null = null;
 

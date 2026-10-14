@@ -8,6 +8,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
+import { segundasPrevistas, somarDias } from "@/lib/cronograma";
 function obterSegundaFeiraAtualBrasil() {
   const partes = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Sao_Paulo",
@@ -44,38 +45,6 @@ function estaNoPeriodoDeAtraso() {
   ].includes(diaDaSemana);
 }
 
-function calcularSemanaDoRelatorio(
-  inicioCiclo: string,
-  frequencia: string,
-  numeroRelatorio: number
-) {
-  const intervaloDias =
-    frequencia === "semanal"
-      ? 7
-      : frequencia === "quinzenal"
-      ? 15
-      : 30;
-
-  const dataPrevista = new Date(`${inicioCiclo}T12:00:00Z`);
-
-  dataPrevista.setUTCDate(
-    dataPrevista.getUTCDate() + intervaloDias * numeroRelatorio
-  );
-
-  const diaSemana = dataPrevista.getUTCDay();
-
-  const diasAteSegundaAnterior = (diaSemana + 6) % 7;
-  const diasAteSegundaSeguinte = 7 - diasAteSegundaAnterior;
-
-  const ajuste =
-    diasAteSegundaAnterior <= diasAteSegundaSeguinte
-      ? -diasAteSegundaAnterior
-      : diasAteSegundaSeguinte;
-
-  dataPrevista.setUTCDate(dataPrevista.getUTCDate() + ajuste);
-
-  return dataPrevista.toISOString().slice(0, 10);
-}
 export default function RelatoriosPage() {
      const [relatorios, setRelatorios] = useState<any[]>([]);
      const [pacientesAtrasados, setPacientesAtrasados] = useState<any[]>([]);
@@ -108,8 +77,11 @@ const { data: ciclosAtivos, error: erroCiclos } = await api
     end_date,
     followup_frequency,
     cycle_number,
+    retroactive_registered_at,
     patients (
-      name
+      name,
+      retroactive_registration,
+      retroactive_completed_weeks
     )
   `)
   .eq("status", "ativo");
@@ -143,39 +115,36 @@ if (idsCiclos.length > 0) {
 
 const ciclosComRelatorioPrevisto = (ciclosAtivos ?? []).flatMap(
   (ciclo) => {
-    const frequencia = ciclo.followup_frequency
-      ?.trim()
-      .toLowerCase();
+    const pacienteDoCiclo = (
+      Array.isArray(ciclo.patients) ? ciclo.patients[0] : ciclo.patients
+    ) as
+      | { retroactive_registration?: boolean; retroactive_completed_weeks?: number }
+      | null;
 
-    const quantidadeRelatorios =
-      frequencia === "semanal"
-        ? 4
-        : frequencia === "quinzenal"
-        ? 2
-        : frequencia === "mensal"
-        ? 1
-        : 0;
+    const semanasConcluidas = pacienteDoCiclo?.retroactive_registration
+      ? Number(pacienteDoCiclo.retroactive_completed_weeks ?? 0)
+      : 0;
 
     const previstos: {
-  cicloId: string;
-  pacienteId: string;
-  numeroRelatorio: number;
-  segundaPrevista: string;
-}[] = [];
+      cicloId: string;
+      pacienteId: string;
+      numeroRelatorio: number;
+      segundaPrevista: string;
+    }[] = [];
 
-    for (let numero = 1; numero <= quantidadeRelatorios; numero++) {
-      const segundaPrevista = calcularSemanaDoRelatorio(
-        ciclo.start_date,
-        frequencia,
-        numero
-      );
+    // Regra única em lib/cronograma.ts.
+    for (const previsto of segundasPrevistas(ciclo, semanasConcluidas)) {
+      // Relatório cujo prazo terminou antes do cadastro não conta como atraso.
+      const anteriorAoCadastro =
+        Boolean(ciclo.retroactive_registered_at) &&
+        somarDias(previsto.segunda, 1) < (ciclo.retroactive_registered_at as string);
 
-      if (segundaPrevista === segundaAtual) {
+      if (previsto.segunda === segundaAtual && !anteriorAoCadastro) {
         previstos.push({
           cicloId: ciclo.id,
           pacienteId: ciclo.patient_id,
-          numeroRelatorio: numero,
-          segundaPrevista,
+          numeroRelatorio: previsto.numero,
+          segundaPrevista: previsto.segunda,
         });
       }
     }
