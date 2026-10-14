@@ -176,6 +176,8 @@ export function situacaoDosRelatorios(
       restantes === 1
         ? "Resta 1 relatório a ser preenchido."
         : `Restam ${restantes} relatórios a serem preenchidos.`;
+  } else if (frequencia === "quinzenal" && semana === 2) {
+    mensagem = "Resta 1 semana.";
   } else {
     mensagem = "Aguarde, em breve seu relatório ficará disponível.";
   }
