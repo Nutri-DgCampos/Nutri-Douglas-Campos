@@ -363,6 +363,31 @@
     border-radius: 16px;
   }
 
+  /* Botão que pulsa para chamar atenção (ex.: "Planos disponíveis"). */
+  .botao-destaque {
+    background: var(--color-atencao-500);
+    border-color: var(--color-atencao-500);
+    color: #fff;
+    animation: pulso-destaque 1.6s ease-in-out infinite;
+  }
+
+  .botao-destaque:hover {
+    background: var(--color-atencao-600);
+    border-color: var(--color-atencao-600);
+  }
+
+  @keyframes pulso-destaque {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgb(232 121 29 / 0.55);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgb(232 121 29 / 0);
+      transform: scale(1.02);
+    }
+  }
+
   .ponto-novidade {
     width: 0.625rem;
     height: 0.625rem;

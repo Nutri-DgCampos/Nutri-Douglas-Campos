@@ -3,7 +3,7 @@ import path from "node:path";
 import { obterPool } from "./banco";
 import type { Contexto } from "./permissoes";
 
-// Arquivos enviados (dietas em PDF e comprovantes de pagamento).
+// Arquivos enviados (dietas em PDF, comprovantes de pagamento e exames de sangue).
 // Ficam em disco, em um volume do Docker, organizados por "bucket".
 
 type Bucket = {
@@ -18,6 +18,14 @@ export const BUCKETS: Record<string, Bucket> = {
     tipos: { "application/pdf": ["pdf"] },
   },
   comprovantes: {
+    tamanhoMaximo: 20 * 1024 * 1024,
+    tipos: {
+      "application/pdf": ["pdf"],
+      "image/jpeg": ["jpg", "jpeg"],
+      "image/png": ["png"],
+    },
+  },
+  exames: {
     tamanhoMaximo: 20 * 1024 * 1024,
     tipos: {
       "application/pdf": ["pdf"],
@@ -77,6 +85,11 @@ export function podeEnviar(
     return contexto.papel === "nutricionista";
   }
 
+  // Exame de sangue: o paciente grava na pasta do próprio cadastro.
+  if (bucket === "exames") {
+    return Boolean(contexto.pacienteId) && caminho.startsWith(`${contexto.pacienteId}/`);
+  }
+
   // Comprovante: cada usuário só grava dentro da própria pasta.
   return caminho.startsWith(`${contexto.usuarioId}/`);
 }
@@ -96,6 +109,10 @@ export async function podeBaixar(
 
   if (bucket === "comprovantes") {
     return caminho.startsWith(`${contexto.usuarioId}/`);
+  }
+
+  if (bucket === "exames") {
+    return Boolean(contexto.pacienteId) && caminho.startsWith(`${contexto.pacienteId}/`);
   }
 
   if (!contexto.pacienteId) {
@@ -155,6 +172,15 @@ export async function listarArquivos(pasta: string) {
     }
 
     throw erro;
+  }
+}
+
+// Remove a pasta inteira de um paciente ou usuário dentro de um bucket.
+export async function removerPasta(bucket: string, pasta: string) {
+  const destino = resolverCaminho(bucket, pasta);
+
+  if (destino) {
+    await fs.rm(destino, { recursive: true, force: true });
   }
 }
 

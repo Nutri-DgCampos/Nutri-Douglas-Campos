@@ -39,6 +39,32 @@ export async function criarUsuario(email: string, senha: string) {
   }
 }
 
+export async function emailDoUsuario(id: string) {
+  const resultado = await obterPool().query<{ email: string }>(
+    "select email from public.users where id = $1",
+    [id]
+  );
+
+  return resultado.rows[0]?.email ?? null;
+}
+
+export async function definirEmail(id: string, email: string) {
+  try {
+    const resultado = await obterPool().query(
+      "update public.users set email = $2, updated_at = now() where id = $1",
+      [id, email.trim().toLowerCase()]
+    );
+
+    return resultado.rowCount === 1;
+  } catch (erro) {
+    if (erro && typeof erro === "object" && "code" in erro && erro.code === "23505") {
+      throw new EmailJaCadastrado();
+    }
+
+    throw erro;
+  }
+}
+
 export async function excluirUsuario(id: string) {
   await obterPool().query("delete from public.users where id = $1", [id]);
 }

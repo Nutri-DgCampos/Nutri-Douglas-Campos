@@ -206,6 +206,17 @@ export default function Login() {
             className="w-full"
           />
         )}
+
+        {/* Abre em outra aba, para quem ainda está conhecendo os planos. */}
+        <a
+          href="/planos"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="botao-destaque p-button p-component mt-4 w-full justify-center gap-2 no-underline"
+        >
+          <i className="pi pi-star-fill" aria-hidden />
+          <span className="p-button-label">Planos disponíveis</span>
+        </a>
       </div>
     </PainelDeEntrada>
   );

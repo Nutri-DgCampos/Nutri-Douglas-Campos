@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Sidebar } from "primereact/sidebar";
 import { api } from "@/lib/api";
 
 type Item = {
@@ -47,19 +49,27 @@ function useSair() {
 // Nutricionista
 // ------------------------------------------------------------------------
 
-const ITENS_NUTRI: Item[] = [
-  { rotulo: "Início", icone: "pi-home", destino: "/" },
-  { rotulo: "Pacientes", icone: "pi-users", destino: "/pacientes" },
-  { rotulo: "Relatórios", icone: "pi-chart-bar", destino: "/relatorios" },
-  { rotulo: "Dietas", icone: "pi-book", destino: "/dietas" },
-  { rotulo: "Pagamentos", icone: "pi-wallet", destino: "/pagamentos" },
-];
-
+const INICIO: Item = { rotulo: "Início", icone: "pi-home", destino: "/" };
+const PACIENTES: Item = { rotulo: "Pacientes", icone: "pi-users", destino: "/pacientes" };
+const RELATORIOS: Item = { rotulo: "Relatórios", icone: "pi-chart-bar", destino: "/relatorios" };
+const DIETAS: Item = { rotulo: "Dietas", icone: "pi-book", destino: "/dietas" };
 const ALERTAS: Item = { rotulo: "Alertas", icone: "pi-bell", destino: "/alertas" };
+const PAGAMENTOS: Item = { rotulo: "Pagamentos", icone: "pi-wallet", destino: "/pagamentos" };
+const EXAMES: Item = { rotulo: "Exames de sangue", icone: "pi-heart", destino: "/exames" };
+const PARCEIROS: Item = { rotulo: "Parceiros", icone: "pi-briefcase", destino: "/parceiros" };
+
+// Menu lateral (computador): todos os itens.
+const MENU_LATERAL = [INICIO, PACIENTES, RELATORIOS, DIETAS, ALERTAS, PAGAMENTOS, EXAMES, PARCEIROS];
+
+// Barra inferior (celular): quatro abas e "Mais" com o restante.
+const ABAS_CELULAR = [INICIO, PACIENTES, RELATORIOS, DIETAS];
+const MENU_MAIS = [PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
 
 export function NavegacaoNutri() {
   const caminho = usePathname();
   const sair = useSair();
+  const [maisAberto, setMaisAberto] = useState(false);
+  const algumDoMaisAtual = MENU_MAIS.some((item) => atual(caminho, item));
 
   return (
     <>
@@ -93,7 +103,7 @@ export function NavegacaoNutri() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1" aria-label="Principal">
-          {[...ITENS_NUTRI.slice(0, 4), ALERTAS, ITENS_NUTRI[4]].map((item) => (
+          {MENU_LATERAL.map((item) => (
             <Link
               key={item.destino}
               href={item.destino}
@@ -113,7 +123,7 @@ export function NavegacaoNutri() {
       </aside>
 
       <nav className="barra-inferior" aria-label="Principal">
-        {ITENS_NUTRI.map((item) => (
+        {ABAS_CELULAR.map((item) => (
           <Link
             key={item.destino}
             href={item.destino}
@@ -124,7 +134,41 @@ export function NavegacaoNutri() {
             {item.rotulo}
           </Link>
         ))}
+
+        <button
+          type="button"
+          onClick={() => setMaisAberto(true)}
+          aria-current={algumDoMaisAtual ? "page" : undefined}
+          aria-haspopup="dialog"
+          className="barra-inferior__item"
+        >
+          <i className="pi pi-bars" aria-hidden />
+          Mais
+        </button>
       </nav>
+
+      <Sidebar
+        visible={maisAberto}
+        position="bottom"
+        onHide={() => setMaisAberto(false)}
+        header={<span className="font-[family-name:var(--fonte-titulo)] text-lg font-bold">Mais opções</span>}
+        className="h-auto rounded-t-2xl"
+      >
+        <nav className="flex flex-col gap-1 pb-[env(safe-area-inset-bottom)]" aria-label="Mais opções">
+          {MENU_MAIS.map((item) => (
+            <Link
+              key={item.destino}
+              href={item.destino}
+              onClick={() => setMaisAberto(false)}
+              aria-current={atual(caminho, item) ? "page" : undefined}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 font-semibold text-gray-800 hover:bg-gray-100 aria-[current=page]:bg-primary-50 aria-[current=page]:text-primary-800"
+            >
+              <i className={`pi ${item.icone} text-lg text-primary-700`} aria-hidden />
+              {item.rotulo}
+            </Link>
+          ))}
+        </nav>
+      </Sidebar>
     </>
   );
 }
@@ -138,7 +182,7 @@ const ITENS_PACIENTE: Item[] = [
     rotulo: "Início",
     icone: "pi-home",
     destino: "/area-paciente",
-    prefixos: ["/area-paciente/acompanhamento"],
+    prefixos: ["/area-paciente/acompanhamento", "/area-paciente/parceiros"],
   },
   { rotulo: "Dieta", icone: "pi-book", destino: "/area-paciente/dietas" },
   { rotulo: "Relatórios", icone: "pi-chart-bar", destino: "/area-paciente/relatorios" },

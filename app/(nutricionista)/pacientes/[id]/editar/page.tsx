@@ -3,12 +3,12 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { pedirConfirmacao } from "@/lib/avisos";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import Selecao from "@/components/Selecao";
 import { InputTextarea } from "primereact/inputtextarea";
 import BotaoVoltar from "@/components/BotaoVoltar";
+import AcessoDoPaciente from "@/components/AcessoDoPaciente";
 
 export default function EditarPaciente() {
   const params = useParams();
@@ -27,12 +27,6 @@ export default function EditarPaciente() {
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
-  const [mostrarRedefinirSenha, setMostrarRedefinirSenha] = useState(false);
-const [novaSenha, setNovaSenha] = useState("");
-const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
-const [redefinindoSenha, setRedefinindoSenha] = useState(false);
-const [erroSenha, setErroSenha] = useState("");
-const [sucessoSenha, setSucessoSenha] = useState("");
 
   const id = params.id as string;
 
@@ -113,68 +107,6 @@ setIndividualGoal(
     router.push(`/pacientes/${id}`);
     router.refresh();
   }
-async function redefinirSenhaPaciente() {
-  setErroSenha("");
-  setSucessoSenha("");
-
-  if (novaSenha.length < 6) {
-    setErroSenha("A nova senha deve ter pelo menos 6 caracteres.");
-    return;
-  }
-
-  const confirmado = await pedirConfirmacao(
-    "Deseja realmente redefinir a senha deste paciente? A senha anterior deixará de funcionar."
-  );
-
-  if (!confirmado) return;
-
-  setRedefinindoSenha(true);
-
-  try {
-    const {
-      data: { session },
-      error: erroSessao,
-    } = await api.auth.getSession();
-
-    if (erroSessao || !session) {
-      throw new Error("Sua sessão expirou. Entre novamente no sistema.");
-    }
-
-    const resposta = await fetch("/api/acesso-paciente", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        acao: "redefinir_senha",
-        pacienteId: id,
-        senha: novaSenha,
-      }),
-    });
-
-    const resultado = await resposta.json();
-
-    if (!resposta.ok) {
-      throw new Error(
-        resultado.erro || "Não foi possível redefinir a senha."
-      );
-    }
-
-    setSucessoSenha("Senha redefinida com sucesso!");
-    setNovaSenha("");
-    setMostrarNovaSenha(false);
-  } catch (error) {
-    console.error("Erro ao redefinir senha:", error);
-
-    setErroSenha(
-      error instanceof Error
-        ? error.message
-        : "Ocorreu um erro ao redefinir a senha."
-    );
-  } finally {
-    setRedefinindoSenha(false);
-  }
-}
   if (carregando) {
     return (
       <div>
@@ -204,67 +136,8 @@ async function redefinirSenhaPaciente() {
             </p>
           </div>
 
-<div className="mb-6 cartao p-5 lg:p-6">
-  <Button
-    type="button"
-    onClick={() => {
-      setMostrarRedefinirSenha(!mostrarRedefinirSenha);
-      setErroSenha("");
-      setSucessoSenha("");
-    }}
-   
-  >
-    Redefinir senha do paciente
-  </Button>
+<AcessoDoPaciente pacienteId={id} nome={name} />
 
-  {mostrarRedefinirSenha && (
-    <div className="mt-5">
-      <p className="mb-3 text-sm text-gray-600">
-        Informe uma nova senha provisória para este paciente.
-      </p>
-
-      <div className="flex max-w-md gap-2">
-        <InputText
-          type={mostrarNovaSenha ? "text" : "password"}
-          value={novaSenha}
-          onChange={(e) => setNovaSenha(e.target.value)}
-          placeholder="Nova senha (mínimo 6 caracteres)"
-          autoComplete="new-password"
-          className="flex-1 flex-1"
-        />
-
-        <Button severity="secondary" outlined size="small"
-          type="button"
-          onClick={() => setMostrarNovaSenha(!mostrarNovaSenha)}
-         
-        >
-          {mostrarNovaSenha ? "Ocultar" : "Mostrar"}
-        </Button>
-      </div>
-
-      {erroSenha && (
-        <p className="mt-3 text-sm text-red-600">{erroSenha}</p>
-      )}
-
-      {sucessoSenha && (
-        <p className="mt-3 text-sm text-green-700">{sucessoSenha}</p>
-      )}
-
-      <p className="mt-3 text-xs text-gray-500">
-        A nova senha substituirá a senha anterior após a confirmação.
-      </p>
-
-      <Button severity="warning"
-  type="button"
-  onClick={redefinirSenhaPaciente}
-  disabled={redefinindoSenha || novaSenha.length < 6}
-  className="mt-4"
->
-  {redefinindoSenha ? "Redefinindo..." : "Confirmar nova senha"}
-</Button>
-    </div>
-  )}
-</div>
           <form
             onSubmit={salvarPaciente}
             className="cartao p-5 lg:p-8"

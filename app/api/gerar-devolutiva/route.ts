@@ -75,7 +75,7 @@ ${dados.observacoes || "Nenhuma observação adicional."}
 💚 Ficou com alguma dúvida sobre sua devolutiva ou precisa de alguma orientação? Estou à disposição!
 
 📲 Fale comigo pelo WhatsApp:
-https://wa.me/551499106600`;
+https://wa.me/5514991066000`;
 
     const devolutivaFinal =
       resposta.output_text.trim() + mensagemWhatsApp;

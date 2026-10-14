@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
+import EnvioExame from "@/components/EnvioExame";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
 import {
@@ -552,6 +553,8 @@ carregarPaciente();
           ))}
         </nav>
 
+        {paciente && <EnvioExame pacienteId={paciente.id} />}
+
         {paciente && (!cicloAtivo || situacao?.podeRenovar) && (
           <section className="cartao mt-4 p-5">
             <h2 className="text-lg font-bold text-gray-900">
@@ -633,12 +636,7 @@ carregarPaciente();
 
         <button
           type="button"
-          onClick={() =>
-            avisar(
-              "Em breve, você terá acesso a benefícios e condições especiais oferecidos pelos nossos parceiros!",
-              "info"
-            )
-          }
+          onClick={() => router.push("/area-paciente/parceiros")}
           className="cartao mt-4 flex w-full items-center gap-4 p-4 text-left hover:bg-gray-50"
         >
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-600">

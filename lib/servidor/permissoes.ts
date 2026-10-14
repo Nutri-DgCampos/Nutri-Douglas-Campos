@@ -162,6 +162,22 @@ export function criarRegras(contexto: Contexto): Regras {
       delete: { usando: doPaciente },
     },
 
+    // Visíveis a todos os usuários conectados; só o nutricionista altera.
+    parceiros: {
+      select: TUDO,
+      insert: nutricionista ? TUDO : null,
+      update: nutricionista ? TUDO : null,
+      delete: nutricionista ? TUDO : null,
+    },
+
+    // A análise por IA é só do nutricionista. O paciente envia e lista os
+    // próprios exames pela rota /api/exames, que não devolve a análise.
+    blood_exams: {
+      select: nutricionista ? TUDO : null,
+      update: nutricionista ? TUDO : null,
+      delete: nutricionista ? TUDO : null,
+    },
+
     patient_update_views: {
       select: { usando: doPaciente },
       // A visualização precisa apontar para uma dieta ou devolutiva do próprio paciente.
