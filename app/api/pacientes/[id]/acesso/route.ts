@@ -110,7 +110,7 @@ export async function PATCH(
     }
 
     if (senha) {
-      await definirSenha(paciente.auth_user_id, senha);
+      await definirSenha(paciente.auth_user_id, senha, true);
     }
 
     return NextResponse.json({ sucesso: true });

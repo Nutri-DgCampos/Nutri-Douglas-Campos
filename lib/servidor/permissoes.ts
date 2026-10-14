@@ -13,6 +13,8 @@ export type Contexto = {
   papel: string | null;
   // Cadastro de paciente vinculado ao usuário, quando existe.
   pacienteId: string | null;
+  // Senha provisória: precisa ser trocada antes de usar o sistema.
+  deveTrocarSenha: boolean;
 };
 
 type Operacao = "select" | "insert" | "update" | "delete";

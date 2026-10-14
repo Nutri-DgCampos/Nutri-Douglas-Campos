@@ -64,7 +64,13 @@ export async function encerrarSessao() {
 
 // Quem está chamando, com papel e cadastro de paciente lidos do banco a cada
 // requisição (um acesso removido deixa de valer na hora).
-export async function obterContexto(): Promise<Contexto | null> {
+//
+// Quem está com senha provisória é tratado como não autenticado em todo o
+// sistema, exceto nas rotas que passam permitirSenhaProvisoria (consultar a
+// sessão e trocar a senha).
+export async function obterContexto(
+  opcoes: { permitirSenhaProvisoria?: boolean } = {}
+): Promise<Contexto | null> {
   const token = (await cookies()).get(COOKIE)?.value;
 
   if (!token) {
@@ -81,8 +87,10 @@ export async function obterContexto(): Promise<Contexto | null> {
     email: string;
     papel: string | null;
     paciente_id: string | null;
+    deve_trocar_senha: boolean;
   }>(
     `select u.email,
+            u.must_change_password as deve_trocar_senha,
             p.role as papel,
             (select pa.id from public.patients pa
               where pa.auth_user_id = u.id
@@ -97,6 +105,10 @@ export async function obterContexto(): Promise<Contexto | null> {
   const usuario = resultado.rows[0];
 
   if (!usuario) {
+    return null;
+  }
+
+  if (usuario.deve_trocar_senha && !opcoes.permitirSenhaProvisoria) {
     return null;
   }
 
@@ -117,5 +129,6 @@ export async function obterContexto(): Promise<Contexto | null> {
     email: usuario.email,
     papel: usuario.papel,
     pacienteId: usuario.paciente_id,
+    deveTrocarSenha: usuario.deve_trocar_senha,
   };
 }

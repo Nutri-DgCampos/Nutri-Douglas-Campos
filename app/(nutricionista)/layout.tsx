@@ -23,6 +23,11 @@ export default function NutricionistaLayout({
         return;
       }
 
+      if (user.deveTrocarSenha) {
+        router.replace("/trocar-senha");
+        return;
+      }
+
       const { data: paciente } = await api
         .from("patients")
         .select("id")

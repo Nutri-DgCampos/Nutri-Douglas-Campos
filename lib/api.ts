@@ -8,7 +8,8 @@ import {
 // Acesso do navegador ao servidor do próprio sistema: dados, sessão e arquivos.
 // A sessão vai em cookie httpOnly, então nenhuma chamada precisa enviar token.
 
-type Usuario = { id: string; email: string };
+// deveTrocarSenha: senha provisória, que precisa ser trocada antes de usar o sistema.
+type Usuario = { id: string; email: string; deveTrocarSenha: boolean };
 
 async function chamar(
   caminho: string,
@@ -67,7 +68,9 @@ async function executar(consulta: Consulta): Promise<Resultado> {
 async function usuarioAtual(): Promise<Usuario | null> {
   const { dados } = await chamar("/api/auth/sessao");
 
-  return dados?.usuario ?? null;
+  return dados?.usuario
+    ? { ...dados.usuario, deveTrocarSenha: dados.deveTrocarSenha === true }
+    : null;
 }
 
 function arquivos(bucket: string) {
@@ -198,6 +201,15 @@ export const api = {
       });
 
       return dados?.valido === true;
+    },
+
+    async trocarSenha(senhaAtual: string, novaSenha: string) {
+      const { erro } = await enviarJson("/api/auth/trocar-senha", {
+        senhaAtual,
+        novaSenha,
+      });
+
+      return { error: erro };
     },
 
     async redefinirSenha(token: string, senha: string) {

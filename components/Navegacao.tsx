@@ -116,6 +116,11 @@ export function NavegacaoNutri() {
           ))}
         </nav>
 
+        <Link href="/trocar-senha" className="menu-lateral__item">
+          <i className="pi pi-key" aria-hidden />
+          Alterar senha
+        </Link>
+
         <button type="button" onClick={sair} className="menu-lateral__item">
           <i className="pi pi-sign-out" aria-hidden />
           Sair
@@ -167,6 +172,15 @@ export function NavegacaoNutri() {
               {item.rotulo}
             </Link>
           ))}
+
+          <Link
+            href="/trocar-senha"
+            onClick={() => setMaisAberto(false)}
+            className="flex items-center gap-3 rounded-xl px-3 py-3 font-semibold text-gray-800 hover:bg-gray-100"
+          >
+            <i className="pi pi-key text-lg text-primary-700" aria-hidden />
+            Alterar senha
+          </Link>
         </nav>
       </Sidebar>
     </>

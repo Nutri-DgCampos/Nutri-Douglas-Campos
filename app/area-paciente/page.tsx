@@ -446,15 +446,26 @@ carregarPaciente();
             </h1>
           </div>
 
-          <Button
-            type="button"
-            icon="pi pi-sign-out"
-            label="Sair"
-            text
-            severity="secondary"
-            size="small"
-            onClick={sair}
-          />
+          <div className="flex shrink-0 flex-col items-end">
+            <Button
+              type="button"
+              icon="pi pi-sign-out"
+              label="Sair"
+              text
+              severity="secondary"
+              size="small"
+              onClick={sair}
+            />
+            <Button
+              type="button"
+              icon="pi pi-key"
+              label="Alterar senha"
+              text
+              severity="secondary"
+              size="small"
+              onClick={() => router.push("/trocar-senha")}
+            />
+          </div>
         </header>
 
         {/* Relatório da semana: a ação principal do paciente. */}

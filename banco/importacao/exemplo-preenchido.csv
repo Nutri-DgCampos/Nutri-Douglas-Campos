@@ -1,0 +1,7 @@
+﻿nome;email;telefone;plano;inicio_acompanhamento;objetivo;peso_inicial_kg;treinos_por_semana;aerobicos_por_semana;meta_individual;status_pagamento;lembrete_importante
+Ana Carolina Ribeiro;ana.ribeiro@example.com;(14) 99999-1001;Semanal;05/10/2026;Emagrecimento;68,4;4;3;Beber 2,5 litros de água por dia;Ativo;Intolerância à lactose
+Bruno Henrique Matos;bruno.matos@example.com;(14) 99999-1002;Quinzenal;28/09/2026;Ganho de massa;81;5;1;Fazer 5 refeições por dia;Ativo;
+Carla Fernanda Lopes;carla.lopes@example.com;(14) 99999-1003;Mensal;21/09/2026;Definição;59,2;5;4;;Ativo;Realizar exame de sangue em 15/12
+Daniel Augusto Pires;daniel.pires@example.com;(14) 99999-1004;Semanal;;Reeducação alimentar;95,7;0;2;Não comer doces durante a semana;Pendente;Começa após a primeira consulta
+Eduarda Martins Costa;eduarda.costa@example.com;(14) 99999-1005;Quinzenal;12/10/2026;Emagrecimento;77;3;3;Levar marmita para o trabalho pelo menos 5 dias;Ativo;
+Felipe Gomes Andrade;felipe.andrade@example.com;;Mensal;;;;;;;Cancelado;Pausou o acompanhamento em setembro

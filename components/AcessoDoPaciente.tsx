@@ -60,7 +60,8 @@ export default function AcessoDoPaciente({
     const confirmado = await pedirConfirmacao(
       [
         trocarEmail && `O e-mail de acesso passará a ser ${novoEmail}.`,
-        senha && "A senha anterior deixará de funcionar.",
+        senha &&
+          "A senha anterior deixará de funcionar. No próximo acesso, o paciente terá de criar uma senha própria.",
         "Deseja continuar?",
       ]
         .filter(Boolean)
@@ -179,7 +180,7 @@ export default function AcessoDoPaciente({
 
           <div>
             <label htmlFor="acesso-senha" className="mb-2 block text-sm font-semibold text-gray-700">
-              Nova senha
+              Nova senha provisória
             </label>
             <Password
               inputId="acesso-senha"

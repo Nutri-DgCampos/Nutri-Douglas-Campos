@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!(await definirSenha(paciente.auth_user_id, novaSenha))) {
+  if (!(await definirSenha(paciente.auth_user_id, novaSenha, true))) {
     console.error("Erro ao redefinir senha: usuário não encontrado.");
 
     return NextResponse.json(
@@ -129,7 +129,7 @@ if (paciente.auth_user_id) {
 let novoUsuarioId: string;
 
 try {
-  novoUsuarioId = await criarUsuario(email, senha);
+  novoUsuarioId = await criarUsuario(email, senha, true);
 } catch (erroCriacao) {
   console.error("Erro ao criar acesso:", erroCriacao);
 

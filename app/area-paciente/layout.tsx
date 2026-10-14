@@ -17,6 +17,8 @@ export default function AreaPacienteLayout({
     api.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         router.replace("/login");
+      } else if (user.deveTrocarSenha) {
+        router.replace("/trocar-senha");
       }
     });
   }, [router]);

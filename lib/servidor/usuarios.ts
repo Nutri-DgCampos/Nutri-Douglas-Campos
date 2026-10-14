@@ -15,13 +15,15 @@ export class EmailJaCadastrado extends Error {
   }
 }
 
-export async function criarUsuario(email: string, senha: string) {
+// provisoria: senha definida por outra pessoa (nutricionista, importação),
+// que o usuário precisa trocar no primeiro acesso.
+export async function criarUsuario(email: string, senha: string, provisoria = false) {
   try {
     const resultado = await obterPool().query<{ id: string }>(
-      `insert into public.users (email, password_hash)
-       values ($1, $2)
+      `insert into public.users (email, password_hash, must_change_password)
+       values ($1, $2, $3)
        returning id`,
-      [email.trim().toLowerCase(), await bcrypt.hash(senha, CUSTO)]
+      [email.trim().toLowerCase(), await bcrypt.hash(senha, CUSTO), provisoria]
     );
 
     return resultado.rows[0].id;
@@ -69,15 +71,25 @@ export async function excluirUsuario(id: string) {
   await obterPool().query("delete from public.users where id = $1", [id]);
 }
 
-export async function definirSenha(id: string, senha: string) {
+export async function definirSenha(id: string, senha: string, provisoria = false) {
   const resultado = await obterPool().query(
     `update public.users
-        set password_hash = $2, updated_at = now()
+        set password_hash = $2, must_change_password = $3, updated_at = now()
       where id = $1`,
-    [id, await bcrypt.hash(senha, CUSTO)]
+    [id, await bcrypt.hash(senha, CUSTO), provisoria]
   );
 
   return resultado.rowCount === 1;
+}
+
+export async function senhaConfere(id: string, senha: string) {
+  const resultado = await obterPool().query<{ password_hash: string }>(
+    "select password_hash from public.users where id = $1",
+    [id]
+  );
+
+  const hash = resultado.rows[0]?.password_hash;
+  return hash ? bcrypt.compare(senha, hash) : false;
 }
 
 // Um hash qualquer, para gastar o mesmo tempo quando o e-mail não existe.

@@ -83,6 +83,11 @@ export default function Login() {
       return;
     }
 
+    if (user.deveTrocarSenha) {
+      router.push("/trocar-senha");
+      return;
+    }
+
     const { data: paciente } = await api
       .from("patients")
       .select("id")
