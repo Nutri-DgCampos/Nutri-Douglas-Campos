@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { exigirNutricionista } from "@/lib/servidor/http";
 import { NextResponse } from "next/server";
 import webpush from "web-push";
 
@@ -16,66 +17,12 @@ if (vapidPublicKey && vapidPrivateKey && vapidSubject) {
   );
 }
 
-function criarSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const chave = process.env.SUPABASE_SECRET_KEY;
-
-  if (!url || !chave) {
-    throw new Error("Configuração do Supabase incompleta.");
-  }
-
-  return createClient(url, chave, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
-
-async function verificarNutricionista(
-  token: string,
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>
-) {
-  const {
-    data: { user },
-    error: erroUsuario,
-  } = await supabaseAdmin.auth.getUser(token);
-
-  if (erroUsuario || !user) {
-    return false;
-  }
-
-  const { data: perfil, error: erroPerfil } = await supabaseAdmin
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (erroPerfil || perfil?.role !== "nutricionista") {
-    return false;
-  }
-
-  return true;
-}
-
 export async function POST(request: Request) {
   try {
-    const autorizacao = request.headers.get("authorization");
+    const contexto = await exigirNutricionista(request);
 
-    if (!autorizacao?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { error: "Autenticação necessária." },
-        { status: 401 }
-      );
-    }
-
-    const token = autorizacao.slice(7).trim();
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Token não informado." },
-        { status: 401 }
-      );
+    if (contexto instanceof NextResponse) {
+      return contexto;
     }
 
     const corpo = await request.json().catch(() => null);
@@ -92,22 +39,9 @@ if (
   );
 }
 
-    const supabaseAdmin = criarSupabaseAdmin();
-
-    const autorizado = await verificarNutricionista(
-      token,
-      supabaseAdmin
-    );
-
-    if (!autorizado) {
-      return NextResponse.json(
-        { error: "Acesso permitido somente ao nutricionista." },
-        { status: 403 }
-      );
-    }
 
     const { data: inscricoes, error: erroInscricoes } =
-  await supabaseAdmin
+  await banco
     .from("push_subscriptions")
     .select("id, patient_id, endpoint, p256dh, auth_key")
     .eq("patient_id", patientId);

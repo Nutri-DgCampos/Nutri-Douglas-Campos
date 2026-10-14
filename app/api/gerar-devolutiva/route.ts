@@ -1,20 +1,24 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
+import { exigirNutricionista } from "@/lib/servidor/http";
 
-console.log(
-  "Chave OpenAI configurada:",
-  Boolean(process.env.OPENAI_API_KEY)
-);
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    const contexto = await exigirNutricionista(request);
+
+    if (contexto instanceof NextResponse) {
+      return contexto;
+    }
+
+    // Criado a cada chamada: a chave só existe em tempo de execução, não no build.
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const dados = await request.json();
 
-console.log("Dados recebidos para a IA:", dados);
     const resposta = await openai.responses.create({
   model: "gpt-5.4-mini",
   input: `

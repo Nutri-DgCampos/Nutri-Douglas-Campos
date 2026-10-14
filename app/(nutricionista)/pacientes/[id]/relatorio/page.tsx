@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function RelatorioPage() {
   const params = useParams();
@@ -70,7 +70,7 @@ const [disposicaoAoAcordar, setDisposicaoAoAcordar] = useState("");
 
 useEffect(() => {
   async function carregarMetaTreino() {
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patients")
       .select("training_weekly_goal, cardio_weekly_goal, individual_goal")
       .eq("id", params.id)
@@ -231,7 +231,7 @@ const pontosQualidadeSono =
   setSalvando(true);
 
   try {
-    const { error } = await supabase.from("patient_reports").insert({
+    const { error } = await api.from("patient_reports").insert({
   patient_id: params.id,
 
   diet_days: diasPlanoAlimentar === "" ? null : Number(diasPlanoAlimentar),

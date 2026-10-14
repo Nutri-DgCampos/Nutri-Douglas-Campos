@@ -2,15 +2,15 @@
 
 import Sidebar from "@/components/Sidebar";
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 async function testarNotificacaoPush() {
   const {
     data: { session },
     error: erroSessao,
-  } = await supabase.auth.getSession();
+  } = await api.auth.getSession();
 
-  if (erroSessao || !session?.access_token) {
+  if (erroSessao || !session) {
     alert("Faça login como nutricionista para testar as notificações.");
     return;
   }
@@ -18,9 +18,6 @@ async function testarNotificacaoPush() {
   try {
     const resposta = await fetch("/api/teste-push", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
     });
 
     const resultado = await resposta.json();
@@ -41,9 +38,9 @@ async function testarFilaNotificacoes() {
   const {
     data: { session },
     error: erroSessao,
-  } = await supabase.auth.getSession();
+  } = await api.auth.getSession();
 
-  if (erroSessao || !session?.access_token) {
+  if (erroSessao || !session) {
     alert("Faça login como nutricionista para testar a fila.");
     return;
   }
@@ -59,9 +56,6 @@ async function testarFilaNotificacoes() {
   try {
     const resposta = await fetch("/api/processar-notificacoes", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
     });
 
     const resultado = await resposta.json();
@@ -125,9 +119,9 @@ async function enviarNotificacaoPersonalizada() {
     const {
       data: { session },
       error: erroSessao,
-    } = await supabase.auth.getSession();
+    } = await api.auth.getSession();
 
-    if (erroSessao || !session?.access_token) {
+    if (erroSessao || !session) {
       alert("Faça login como nutricionista para enviar notificações.");
       return;
     }
@@ -137,7 +131,6 @@ async function enviarNotificacaoPersonalizada() {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ mensagem }),
@@ -188,7 +181,7 @@ const [carregandoPendencias, setCarregandoPendencias] = useState(true);
 
 useEffect(() => {
   async function carregarPacientes() {
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patients")
 .select("id, name, plan, created_at, retroactive_registration")
 .order("name", { ascending: true });
@@ -228,7 +221,7 @@ useEffect(() => {
 
     const [resultadoEntregas, resultadoRenovacoes] =
   await Promise.all([
-    supabase
+    api
   .from("diet_deliveries")
   .select(`
     id,
@@ -238,7 +231,7 @@ useEffect(() => {
   `)
   .eq("status", "concluida"),
 
-    supabase
+    api
       .from("renewal_requests")
       .select("id, patient_id, status, requested_plan, last_weight, created_at")
       .eq("status", "pendente"),
@@ -266,17 +259,14 @@ useEffect(() => {
     try {
       const {
         data: { session },
-      } = await supabase.auth.getSession();
+      } = await api.auth.getSession();
 
-      if (!session?.access_token) {
+      if (!session) {
         console.error("Sessão não encontrada.");
         setSolicitacoesCadastro([]);
       } else {
         const resposta = await fetch("/api/solicitacoes-pacientes", {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
           cache: "no-store",
         });
 
@@ -390,7 +380,7 @@ useEffect(() => {
     setCarregandoHistorico(true);
     setMostrarHistorico(false);
 
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("diet_deliveries")
       .select(`
         id,
@@ -418,7 +408,7 @@ useEffect(() => {
   carregarHistorico();
 }, [pacienteSelecionado]);
 async function abrirPDF(caminhoArquivo: string) {
-  const { data, error } = await supabase.storage
+  const { data, error } = await api.storage
     .from("dietas")
     .createSignedUrl(caminhoArquivo, 60);
 
@@ -460,7 +450,7 @@ async function enviarDieta() {
     return;
   }
 
-  const { data: cicloAtivo, error: erroCiclo } = await supabase
+  const { data: cicloAtivo, error: erroCiclo } = await api
   .from("diet_cycles")
   .select("id, cycle_number, followup_frequency")
   .eq("patient_id", pacienteSelecionado.id)
@@ -499,7 +489,7 @@ console.log("FIM DO NOVO CICLO:", dataFimNovoCiclo);
 // Verificar se existe uma entrega anterior não concluída
 // antes de permitir um novo envio para este paciente.
 const { data: entregasIncompletas, error: erroVerificacaoEntrega } =
-  await supabase
+  await api
     .from("diet_deliveries")
     .select("id, diet_date, created_at")
     .eq("patient_id", pacienteSelecionado.id)
@@ -533,7 +523,7 @@ if (entregasIncompletas && entregasIncompletas.length > 0) {
 }
 
   // 1. Registrar a entrega da dieta
-  const { data: entrega, error: erroEntrega } = await supabase
+  const { data: entrega, error: erroEntrega } = await api
     .from("diet_deliveries")
     .insert({
       patient_id: pacienteSelecionado.id,
@@ -569,7 +559,7 @@ for (const arquivo of arquivosDieta) {
     const caminhoArquivo =
       `${pacienteSelecionado.id}/${entrega.id}/${Date.now()}-${nomeSeguro}`;
 
-    const { error: erroUpload } = await supabase.storage
+    const { error: erroUpload } = await api.storage
       .from("dietas")
       .upload(caminhoArquivo, arquivo);
 
@@ -578,7 +568,7 @@ for (const arquivo of arquivosDieta) {
 
   // Se nenhum PDF foi registrado, remover a entrega vazia.
   if (arquivosRegistradosComSucesso === 0) {
-    const { error: erroLimpeza } = await supabase
+    const { error: erroLimpeza } = await api
       .from("diet_deliveries")
       .delete()
       .eq("id", entrega.id);
@@ -605,7 +595,7 @@ for (const arquivo of arquivosDieta) {
   return;
 }
 
-    const { error: erroArquivo } = await supabase
+    const { error: erroArquivo } = await api
       .from("diet_delivery_files")
       .insert({
         delivery_id: entrega.id,
@@ -617,7 +607,7 @@ for (const arquivo of arquivosDieta) {
   console.error("Erro ao registrar arquivo:", erroArquivo);
 
   // Remover do Storage o PDF que não foi registrado no banco.
-  const { error: erroRemocaoArquivo } = await supabase.storage
+  const { error: erroRemocaoArquivo } = await api.storage
     .from("dietas")
     .remove([caminhoArquivo]);
 
@@ -635,7 +625,7 @@ for (const arquivo of arquivosDieta) {
 
   // Se nenhum PDF anterior foi registrado, remover a entrega vazia.
   if (arquivosRegistradosComSucesso === 0) {
-    const { error: erroLimpeza } = await supabase
+    const { error: erroLimpeza } = await api
       .from("diet_deliveries")
       .delete()
       .eq("id", entrega.id);
@@ -685,7 +675,7 @@ if (arquivosRegistradosComSucesso !== arquivosDieta.length) {
 const {
   data: pdfsRegistrados,
   error: erroConferenciaPDFs,
-} = await supabase
+} = await api
   .from("diet_delivery_files")
   .select("id, storage_path")
   .eq("delivery_id", entrega.id);
@@ -712,7 +702,7 @@ if (
 
 // Confirmar que os PDFs também existem no Storage
 const { data: arquivosNoStorage, error: erroConsultaStorage } =
-  await supabase.storage
+  await api.storage
     .from("dietas")
     .list(`${pacienteSelecionado.id}/${entrega.id}`, {
       limit: 100,
@@ -799,7 +789,7 @@ if (!ehRevisao) {
     pacienteSelecionado.plan;
 
   const { data: numeroNovoCiclo, error: erroNovoCiclo } =
-    await supabase.rpc("iniciar_ciclo_dieta", {
+    await api.rpc("iniciar_ciclo_dieta", {
       p_patient_id: pacienteSelecionado.id,
       p_start_date: dataDieta,
       p_end_date: dataFimNovoCiclo,
@@ -818,7 +808,7 @@ if (!ehRevisao) {
 
     // Localizar o ciclo que acabou de ser criado
 const { data: cicloCriado, error: erroBuscaCiclo } =
-  await supabase
+  await api
     .from("diet_cycles")
     .select("id")
     .eq("patient_id", pacienteSelecionado.id)
@@ -838,7 +828,7 @@ if (erroBuscaCiclo || !cicloCriado) {
 
 // Vincular a entrega ao ciclo criado
 const { data: entregaVinculada, error: erroVinculoCiclo } =
-  await supabase
+  await api
     .from("diet_deliveries")
     .update({
       cycle_id: cicloCriado.id,
@@ -867,7 +857,7 @@ if (
   renovacaoPendente?.requested_plan &&
   renovacaoPendente.requested_plan !== pacienteSelecionado.plan
 ) {
-  const { error: erroAtualizacaoPlano } = await supabase
+  const { error: erroAtualizacaoPlano } = await api
     .from("patients")
     .update({
       plan: renovacaoPendente.requested_plan,
@@ -919,7 +909,7 @@ if (
       (renovacao) => renovacao.id
     );
 
-    const { error: erroRenovacao } = await supabase
+    const { error: erroRenovacao } = await api
       .from("renewal_requests")
       .update({ status: "aprovada" })
       .in("id", idsRenovacoes)
@@ -950,7 +940,7 @@ if (
 // sem iniciar um novo ciclo.
 if (ehRevisao && cicloAtivo) {
   const { data: revisaoVinculada, error: erroVinculoRevisao } =
-    await supabase
+    await api
       .from("diet_deliveries")
       .update({
         cycle_id: cicloAtivo.id,
@@ -982,7 +972,7 @@ if (ehRevisao && cicloAtivo) {
 const {
   data: entregaConcluida,
   error: erroConclusaoEntrega,
-} = await supabase
+} = await api
   .from("diet_deliveries")
   .update({
     status: "concluida",

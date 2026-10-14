@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.env*
+!.env.example
+banco
+cron
+deploy
+scripts
+*.md
+*.sql
+*.log
+deploy.sh
+docker-compose*.yml
+Dockerfile

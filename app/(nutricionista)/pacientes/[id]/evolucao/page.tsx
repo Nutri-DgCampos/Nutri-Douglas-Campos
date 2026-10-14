@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function EvolucaoPage() {
   const params = useParams();
@@ -24,7 +24,7 @@ export default function EvolucaoPage() {
 
   useEffect(() => {
     async function carregarPaciente() {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("patients")
         .select("name")
         .eq("id", id)
@@ -64,7 +64,7 @@ export default function EvolucaoPage() {
       return;
     }
 
-    const { error } = await supabase
+    const { error } = await api
       .from("patient_progress")
       .insert({
         patient_id: id,

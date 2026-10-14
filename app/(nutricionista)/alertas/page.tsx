@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function AlertasPage() {
   const [renovacoes, setRenovacoes] = useState<any[]>([]);
@@ -10,7 +10,7 @@ export default function AlertasPage() {
 
   useEffect(() => {
   async function carregarRenovacoes() {
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("renewal_requests")
       .select(`
         *,
@@ -32,7 +32,7 @@ export default function AlertasPage() {
 
     const renovacoesComComentario = await Promise.all(
   (data ?? []).map(async (renovacao) => {
-    const { data: ultimoRelatorio } = await supabase
+    const { data: ultimoRelatorio } = await api
       .from("patient_reports")
       .select("general_notes")
       .eq("patient_id", renovacao.patient_id)
@@ -52,7 +52,7 @@ export default function AlertasPage() {
   }
 
 async function verificarScoreBaixo() {
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("patient_reports")
     .select("id, patient_id, adherence_score, created_at")
     .lt("adherence_score", 60)
@@ -89,7 +89,7 @@ async function verificarScoreBaixo() {
   );
 
   for (const patientId of pacientesComAlerta) {
-  const { data: ultimoAlerta, error: erroBusca } = await supabase
+  const { data: ultimoAlerta, error: erroBusca } = await api
   .from("patient_alerts")
   .select("id, status, last_report_id")
   .eq("patient_id", patientId)
@@ -117,7 +117,7 @@ if (
   continue;
 }
 
-  const { error: erroCriacao } = await supabase
+  const { error: erroCriacao } = await api
     .from("patient_alerts")
     .insert({
       patient_id: patientId,
@@ -136,7 +136,7 @@ if (
 }
 }
 async function carregarAlertasPacientes() {
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("patient_alerts")
     .select(`
       *,
@@ -158,7 +158,7 @@ async function carregarAlertasPacientes() {
 }
   
 async function verificarAusenciaSemanal() {
-  const { data: ciclos, error } = await supabase
+  const { data: ciclos, error } = await api
     .from("diet_cycles")
     .select(`
       patient_id,
@@ -183,7 +183,7 @@ async function verificarAusenciaSemanal() {
   console.log("CICLOS SEMANAIS PARA VERIFICAR:", ciclosSemanais);
 
   for (const ciclo of ciclosSemanais) {
-  const { data: ultimoRelatorio, error: erroRelatorio } = await supabase
+  const { data: ultimoRelatorio, error: erroRelatorio } = await api
     .from("patient_reports")
     .select("id, created_at")
     .eq("patient_id", ciclo.patient_id)
@@ -225,7 +225,7 @@ if (diasSemRelatorio >= 14) {
   );
 
 const { data: ultimoAlertaAusencia, error: erroBuscaAusencia } =
-  await supabase
+  await api
     .from("patient_alerts")
     .select("id, status, reference_date")
     .eq("patient_id", ciclo.patient_id)
@@ -263,7 +263,7 @@ if (
   continue;
 }
 
-const { error: erroCriacaoAusencia } = await supabase
+const { error: erroCriacaoAusencia } = await api
   .from("patient_alerts")
   .insert({
     patient_id: ciclo.patient_id,
@@ -302,7 +302,7 @@ async function aprovarRenovacao(renovacao: any) {
   
 
   console.log("RENOVAÇÃO PARA APROVAR:", renovacao);
-  const { data: ultimoCiclo, error: erroUltimoCiclo } = await supabase
+  const { data: ultimoCiclo, error: erroUltimoCiclo } = await api
   .from("diet_cycles")
   .select("cycle_number")
   .eq("patient_id", renovacao.patient_id)
@@ -326,7 +326,7 @@ dataFim.setMonth(dataFim.getMonth() + 1);
 console.log("INÍCIO DO NOVO CICLO:", dataInicio);
 console.log("FIM DO NOVO CICLO:", dataFim);
 
-const { error: erroNovoCiclo } = await supabase
+const { error: erroNovoCiclo } = await api
   .from("diet_cycles")
   .insert({
     patient_id: renovacao.patient_id,
@@ -346,7 +346,7 @@ if (erroNovoCiclo) {
 
 console.log("NOVO CICLO CRIADO COM SUCESSO");
 
-const { error: erroPlano } = await supabase
+const { error: erroPlano } = await api
   .from("patients")
   .update({
     plan: renovacao.requested_plan,
@@ -361,7 +361,7 @@ if (erroPlano) {
 
 console.log("PLANO ATUALIZADO COM SUCESSO");
 
-const { error: erroSolicitacao } = await supabase
+const { error: erroSolicitacao } = await api
   .from("renewal_requests")
   .update({
     status: "aprovada",
@@ -383,7 +383,7 @@ alert("Renovação aprovada com sucesso!");
 }
 
 async function reconhecerAlerta(alerta: any) {
-  const { error } = await supabase
+  const { error } = await api
     .from("patient_alerts")
     .update({
       status: "reconhecido",

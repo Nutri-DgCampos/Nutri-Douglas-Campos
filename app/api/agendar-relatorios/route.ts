@@ -1,24 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { autorizadoPorCron } from "@/lib/servidor/http";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
 export const runtime = "nodejs";
-
-function criarSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const chave = process.env.SUPABASE_SECRET_KEY;
-
-  if (!url || !chave) {
-    throw new Error("Configuração do Supabase incompleta.");
-  }
-
-  return createClient(url, chave, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
 
 type Frequencia = "semanal" | "quinzenal" | "mensal";
 
@@ -170,9 +155,8 @@ function obterSegundaAtualBrasil() {
 }
 
 async function consultarCiclosAtivos(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>
 ) {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await banco
     .from("diet_cycles")
     .select(
   "id, patient_id, start_date, end_date, followup_frequency, cycle_number, retroactive_registered_at"
@@ -188,10 +172,9 @@ async function consultarCiclosAtivos(
 }
 
 async function consultarRelatoriosDoCiclo(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>,
   cicloId: string
 ) {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await banco
     .from("patient_reports")
     .select("id, cycle_id, scheduled_week_start")
     .eq("cycle_id", cicloId)
@@ -216,9 +199,8 @@ async function consultarRelatoriosDoCiclo(
 }
 
 async function identificarRelatoriosPendentes(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>
 ) {
-  const ciclos = await consultarCiclosAtivos(supabaseAdmin);
+  const ciclos = await consultarCiclosAtivos();
   const segundaAtual = obterSegundaAtualBrasil();
 
   const pendentes: {
@@ -239,7 +221,7 @@ async function identificarRelatoriosPendentes(
     }
 
     const { data: pacienteRetroativo, error: erroPacienteRetroativo } =
-  await supabaseAdmin
+  await banco
     .from("patients")
     .select("retroactive_registration, retroactive_completed_weeks")
     .eq("id", ciclo.patient_id)
@@ -275,7 +257,6 @@ if (erroPacienteRetroativo) {
     }
 
         const semanasRespondidas = await consultarRelatoriosDoCiclo(
-      supabaseAdmin,
       ciclo.id
     );
 
@@ -376,7 +357,6 @@ function criarIdentificadorLembrete(
 }
 
 async function registrarLembrete(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>,
   pendente: {
     cicloId: string;
     pacienteId: string;
@@ -405,7 +385,7 @@ async function registrarLembrete(
       ? "Está na hora de preencher seu relatório de acompanhamento nutricional."
       : "Você ainda não preencheu seu relatório desta semana. Acesse seu acompanhamento para responder.";
 
-  const { error } = await supabaseAdmin
+  const { error } = await banco
     .from("notification_queue")
     .upsert(
       {
@@ -432,11 +412,10 @@ async function registrarLembrete(
 }
 
 async function relatorioJaRespondido(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>,
   cicloId: string,
   segundaPrevista: string
 ) {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await banco
     .from("patient_reports")
     .select("id")
     .eq("cycle_id", cicloId)
@@ -457,35 +436,7 @@ async function relatorioJaRespondido(
   return (data?.length ?? 0) > 0;
 }
 
-function cronAutorizado(request: Request) {
-  const segredo = process.env.CRON_SECRET;
-
-  const autorizacao = request.headers.get("authorization");
-
-  if (!segredo || segredo.length < 32 || !autorizacao) {
-    return false;
-  }
-
-  const prefixo = "Bearer ";
-
-  if (!autorizacao.startsWith(prefixo)) {
-    return false;
-  }
-
-  const token = autorizacao.slice(prefixo.length);
-
-  const tokenBuffer = Buffer.from(token);
-  const segredoBuffer = Buffer.from(segredo);
-
-  if (tokenBuffer.length !== segredoBuffer.length) {
-    return false;
-  }
-
-  return crypto.timingSafeEqual(tokenBuffer, segredoBuffer);
-}
-
 async function agendarLembretesPendentes() {
-  const supabaseAdmin = criarSupabaseAdmin();
 
   const tipo = identificarLembreteDisponivel();
 
@@ -497,14 +448,12 @@ async function agendarLembretesPendentes() {
   }
 
   const pendentes = await identificarRelatoriosPendentes(
-    supabaseAdmin
   );
 
   let agendados = 0;
 
   for (const pendente of pendentes) {
     const respondido = await relatorioJaRespondido(
-      supabaseAdmin,
       pendente.cicloId,
       pendente.segundaPrevista
     );
@@ -514,7 +463,6 @@ async function agendarLembretesPendentes() {
     }
 
     await registrarLembrete(
-      supabaseAdmin,
       pendente,
       tipo
     );
@@ -529,7 +477,7 @@ async function agendarLembretesPendentes() {
 }
 
 export async function GET(request: Request) {
-  if (!cronAutorizado(request)) {
+  if (!autorizadoPorCron(request)) {
     return NextResponse.json(
       { error: "Não autorizado." },
       { status: 401 }

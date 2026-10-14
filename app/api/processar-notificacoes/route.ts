@@ -1,4 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { autorizadoPorCron as chamadaDoCron } from "@/lib/servidor/http";
+import { obterContexto } from "@/lib/servidor/sessao";
 import { NextResponse } from "next/server";
 import webpush from "web-push";
 import crypto from "node:crypto";
@@ -21,29 +23,12 @@ function configurarWebPush() {
   );
 }
 
-function criarSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const chave = process.env.SUPABASE_SECRET_KEY;
-
-  if (!url || !chave) {
-    throw new Error("Configuração do Supabase incompleta.");
-  }
-
-  return createClient(url, chave, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
-
 async function finalizarNotificacao(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>,
   notificacaoId: string,
   sucesso: boolean,
   mensagemErro?: string
 ) {
-  const { data, error } = await supabaseAdmin.rpc(
+  const { data, error } = await banco.rpc(
     "finalizar_notificacao",
     {
       p_notificacao_id: notificacaoId,
@@ -65,9 +50,8 @@ async function finalizarNotificacao(
 }
 
 async function consultarNotificacoesInterrompidas(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>
 ) {
-  const { data, error } = await supabaseAdmin.rpc(
+  const { data, error } = await banco.rpc(
     "consultar_notificacoes_interrompidas"
   );
 
@@ -126,10 +110,9 @@ async function enviarPushParaDispositivo(
 }
 
 async function removerDispositivoExpirado(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>,
   dispositivoId: string
 ) {
-  const { error } = await supabaseAdmin
+  const { error } = await banco
     .from("push_subscriptions")
     .delete()
     .eq("id", dispositivoId);
@@ -147,7 +130,6 @@ async function removerDispositivoExpirado(
 }
 
 async function enviarPushParaDispositivos(
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>,
   dispositivos: {
     id: string;
     endpoint: string;
@@ -179,7 +161,6 @@ async function enviarPushParaDispositivos(
 
         try {
           await removerDispositivoExpirado(
-            supabaseAdmin,
             dispositivo.id
           );
         } catch (erroRemocao) {
@@ -206,82 +187,29 @@ async function enviarPushParaDispositivos(
   };
 }
 
-async function verificarNutricionista(
-  token: string,
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>
-) {
-  const {
-    data: { user },
-    error: erroUsuario,
-  } = await supabaseAdmin.auth.getUser(token);
-
-  if (erroUsuario || !user) {
-    return false;
-  }
-
-  const { data: perfil, error: erroPerfil } = await supabaseAdmin
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (erroPerfil || perfil?.role !== "nutricionista") {
-    return false;
-  }
-
-  return true;
-}
-
 async function processarNotificacoes(request: Request) {
   try {
-    const autorizacao = request.headers.get("authorization");
+    // Aceita o agendador (CRON_SECRET) ou o nutricionista conectado.
+    const cronSecret = process.env.CRON_SECRET;
+    const autorizadoPorCron = chamadaDoCron(request);
 
-    const tokenRecebido = autorizacao?.startsWith("Bearer ")
-  ? autorizacao.slice(7).trim()
-  : "";
+    if (!autorizadoPorCron) {
+      const contexto = await obterContexto();
 
-const cronSecret = process.env.CRON_SECRET;
+      if (!contexto) {
+        return NextResponse.json(
+          { error: "Autenticação necessária." },
+          { status: 401 }
+        );
+      }
 
-const autorizadoPorCron =
-  !!cronSecret &&
-  cronSecret.length >= 32 &&
-  tokenRecebido.length === cronSecret.length &&
-  crypto.timingSafeEqual(
-    Buffer.from(tokenRecebido),
-    Buffer.from(cronSecret)
-  );
-
-    if (!autorizacao?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { error: "Autenticação necessária." },
-        { status: 401 }
-      );
+      if (contexto.papel !== "nutricionista") {
+        return NextResponse.json(
+          { error: "Acesso não autorizado." },
+          { status: 403 }
+        );
+      }
     }
-    
-    const token = autorizacao.slice(7).trim();
-
-if (!token) {
-  return NextResponse.json(
-    { error: "Token não informado." },
-    { status: 401 }
-  );
-}
-
-const supabaseAdmin = criarSupabaseAdmin();
-
-if (!autorizadoPorCron) {
-  const autorizado = await verificarNutricionista(
-    token,
-    supabaseAdmin
-  );
-
-  if (!autorizado) {
-    return NextResponse.json(
-      { error: "Acesso não autorizado." },
-      { status: 403 }
-    );
-  }
-}
 
 if (autorizadoPorCron) {
   try {
@@ -316,7 +244,7 @@ if (autorizadoPorCron) {
 }
 
 const notificacoesInterrompidas =
-  await consultarNotificacoesInterrompidas(supabaseAdmin);
+  await consultarNotificacoesInterrompidas();
 
 if (notificacoesInterrompidas.length > 0) {
   console.warn(
@@ -326,7 +254,7 @@ if (notificacoesInterrompidas.length > 0) {
 }
 
     const { data: notificacoes, error: erroFila } =
-  await supabaseAdmin.rpc("reservar_proxima_notificacao");
+  await banco.rpc("reservar_proxima_notificacao");
 
 if (erroFila) {
   console.error("Erro ao consultar fila:", erroFila);
@@ -365,7 +293,7 @@ if (notificacao.notification_type === "lembrete_relatorio") {
   );
 
   const { data: cancelada, error: erroCancelamento } =
-    await supabaseAdmin
+    await banco
       .from("notification_queue")
       .update({
         status: "cancelada",
@@ -427,7 +355,7 @@ if (notificacao.notification_type === "lembrete_relatorio") {
 
   if (!horarioValido) {
     const { data: cancelada, error: erroCancelamento } =
-      await supabaseAdmin
+      await banco
         .from("notification_queue")
         .update({
           status: "cancelada",
@@ -488,7 +416,7 @@ if (notificacao.notification_type === "lembrete_relatorio") {
 
   if (segundaPrevista !== segundaAtual) {
     const { data: cancelada, error: erroCancelamento } =
-      await supabaseAdmin
+      await banco
         .from("notification_queue")
         .update({
           status: "cancelada",
@@ -519,7 +447,7 @@ if (notificacao.notification_type === "lembrete_relatorio") {
   }
 
     async function devolverLembreteParaFila() {
-    const { error } = await supabaseAdmin
+    const { error } = await banco
       .from("notification_queue")
       .update({
         status: "pendente",
@@ -538,7 +466,7 @@ if (notificacao.notification_type === "lembrete_relatorio") {
   }
 
     const { data: ciclo, error: erroCiclo } =
-    await supabaseAdmin
+    await banco
       .from("diet_cycles")
       .select("id, patient_id, status, start_date, end_date")
       .eq("id", cicloId)
@@ -583,7 +511,7 @@ const dataAtualBrasil = [
 
   if (cicloInvalido) {
     const { data: cancelada, error: erroCancelamento } =
-      await supabaseAdmin
+      await banco
         .from("notification_queue")
         .update({
           status: "cancelada",
@@ -613,7 +541,7 @@ const dataAtualBrasil = [
   }
 
   const { data: relatorios, error: erroRelatorios } =
-    await supabaseAdmin
+    await banco
       .from("patient_reports")
       .select("id")
       .eq("cycle_id", cicloId)
@@ -635,7 +563,7 @@ const dataAtualBrasil = [
 }
 
   if ((relatorios?.length ?? 0) > 0) {
-    const { error: erroCancelamento } = await supabaseAdmin
+    const { error: erroCancelamento } = await banco
       .from("notification_queue")
       .update({
         status: "cancelada",
@@ -664,7 +592,7 @@ const dataAtualBrasil = [
 }
 
 const { data: dispositivos, error: erroDispositivos } =
-  await supabaseAdmin
+  await banco
     .from("push_subscriptions")
     .select("id, endpoint, p256dh, auth_key")
     .eq("patient_id", notificacao.patient_id);
@@ -677,7 +605,6 @@ if (erroDispositivos) {
 
   try {
     await finalizarNotificacao(
-      supabaseAdmin,
       notificacao.id,
       false,
       "Erro ao consultar os dispositivos do paciente."
@@ -698,7 +625,6 @@ if (erroDispositivos) {
 try {
   if (!dispositivos || dispositivos.length === 0) {
     await finalizarNotificacao(
-      supabaseAdmin,
       notificacao.id,
       false,
       "O paciente não possui dispositivos cadastrados."
@@ -717,7 +643,6 @@ try {
   
 
   const resultado = await enviarPushParaDispositivos(
-  supabaseAdmin,
   dispositivos,
   mensagem
 );
@@ -736,7 +661,6 @@ if (resultado.erros.length > 0) {
 }
 
 await finalizarNotificacao(
-  supabaseAdmin,
   notificacao.id,
   sucesso,
   sucesso
@@ -758,7 +682,6 @@ await finalizarNotificacao(
 
   try {
     await finalizarNotificacao(
-      supabaseAdmin,
       notificacao.id,
       false,
       obterMensagemErro(erroEnvio)

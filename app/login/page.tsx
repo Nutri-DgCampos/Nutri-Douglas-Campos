@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function Login() {
   const router = useRouter();
@@ -53,7 +53,7 @@ useEffect(() => {
     setErro("");
     setCarregando(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await api.auth.signInWithPassword({
       email,
       password: senha,
     });
@@ -67,11 +67,11 @@ useEffect(() => {
 
     const {
   data: { user },
-} = await supabase.auth.getUser();
+} = await api.auth.getUser();
 
 if (!user) return;
 
-const { data: paciente } = await supabase
+const { data: paciente } = await api
   .from("patients")
   .select("id")
   .eq("auth_user_id", user.id)
@@ -92,9 +92,7 @@ if (paciente) {
 
   setErro("");
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/redefinir-senha`,
-  });
+  const { error } = await api.auth.resetPasswordForEmail(email);
 
   if (error) {
     console.error("ERRO RECUPERAÇÃO:", error);

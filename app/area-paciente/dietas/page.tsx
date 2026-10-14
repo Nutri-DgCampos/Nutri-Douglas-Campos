@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function MinhasDietasPage() {
   const [dietas, setDietas] = useState<any[]>([]);
@@ -9,14 +9,14 @@ export default function MinhasDietasPage() {
 
   useEffect(() => {
     async function carregarDietas() {
-      const { data: usuario } = await supabase.auth.getUser();
+      const { data: usuario } = await api.auth.getUser();
 
       if (!usuario.user) {
         window.location.href = "/login";
         return;
       }
 
-      const { data: paciente, error: erroPaciente } = await supabase
+      const { data: paciente, error: erroPaciente } = await api
         .from("patients")
         .select("id")
         .eq("auth_user_id", usuario.user.id)
@@ -28,7 +28,7 @@ export default function MinhasDietasPage() {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("diet_deliveries")
         .select("id, diet_date, created_at")
         .eq("patient_id", paciente.id)
@@ -42,7 +42,7 @@ export default function MinhasDietasPage() {
 
   const entregasComArquivos = await Promise.all(
     entregas.map(async (entrega) => {
-      const { data: arquivos, error: erroArquivos } = await supabase
+      const { data: arquivos, error: erroArquivos } = await api
         .from("diet_delivery_files")
         .select("id, file_name, storage_path")
         .eq("delivery_id", entrega.id)
@@ -66,7 +66,7 @@ const idsDietas = entregasComArquivos
   .map((entrega) => entrega.id);
 
 if (idsDietas.length > 0) {
-  const { error: erroVisualizacao } = await supabase
+  const { error: erroVisualizacao } = await api
     .from("patient_update_views")
     .upsert(
       idsDietas.map((id) => ({
@@ -96,7 +96,7 @@ if (idsDietas.length > 0) {
   }, []);
 
   async function abrirPDF(caminhoArquivo: string) {
-  const { data, error } = await supabase.storage
+  const { data, error } = await api.storage
     .from("dietas")
     .createSignedUrl(caminhoArquivo, 60);
 

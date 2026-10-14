@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function NovoPaciente() {
   const router = useRouter();
@@ -49,7 +49,7 @@ if (mostrarFormularioAcesso) {
 
 setSalvando(true);
 
-    const { data: pacienteCriado, error } = await supabase.from("patients").insert({
+    const { data: pacienteCriado, error } = await api.from("patients").insert({
       name: nome,
       phone: telefone,
       objective: objetivo,
@@ -76,7 +76,7 @@ if (mostrarFormularioAcesso) {
     const {
       data: { session },
       error: erroSessao,
-    } = await supabase.auth.getSession();
+    } = await api.auth.getSession();
 
     if (erroSessao || !session) {
       throw new Error(
@@ -88,7 +88,6 @@ if (mostrarFormularioAcesso) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({
         pacienteId: pacienteCriado.id,
@@ -297,8 +296,7 @@ router.refresh();
     </div>
 
     <p className="mt-3 text-xs text-gray-500">
-      O acesso será criado com segurança após configurarmos a integração
-      com o Supabase Authentication.
+      O acesso será criado com segurança ao salvar o cadastro.
     </p>
   </div>
 )}

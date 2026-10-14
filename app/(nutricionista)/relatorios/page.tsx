@@ -2,7 +2,7 @@
 
 import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 function obterSegundaFeiraAtualBrasil() {
   const partes = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Sao_Paulo",
@@ -81,7 +81,7 @@ const [gerandoIA, setGerandoIA] = useState<string | null>(null);
 
      useEffect(() => {
   async function carregarRelatorios() {
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patient_reports")
       .select("*, patients(name, initial_weight, important_note)")
       .eq("status", "pendente")
@@ -94,7 +94,7 @@ const [gerandoIA, setGerandoIA] = useState<string | null>(null);
 
     setRelatorios(data ?? []);
     // Buscar ciclos ativos para verificar relatórios não enviados
-const { data: ciclosAtivos, error: erroCiclos } = await supabase
+const { data: ciclosAtivos, error: erroCiclos } = await api
   .from("diet_cycles")
   .select(`
     id,
@@ -118,7 +118,7 @@ const idsCiclos = (ciclosAtivos ?? []).map((ciclo) => ciclo.id);
 
 if (idsCiclos.length > 0) {
   const { data: relatoriosDosCiclos, error: erroRelatoriosDosCiclos } =
-    await supabase
+    await api
       .from("patient_reports")
       .select("id, patient_id, cycle_id, cycle_report_number, scheduled_week_start, created_at, status")
       .in("cycle_id", idsCiclos);
@@ -244,7 +244,7 @@ console.log(
   }
 }
 }
-    const { data: historico, error: erroHistorico } = await supabase
+    const { data: historico, error: erroHistorico } = await api
   .from("patient_reports")
   .select("patient_id, weight, created_at")
   .eq("status", "enviado")
@@ -258,7 +258,7 @@ if (erroHistorico) {
 
 setHistoricoPesos(historico ?? []);
 const { data: historicoAlcoolData, error: erroHistoricoAlcool } =
-  await supabase
+  await api
     .from("patient_reports")
     .select("patient_id, alcohol_use, created_at")
     .eq("status", "enviado")
@@ -359,7 +359,7 @@ async function publicarDevolutiva(relatorio: any) {
     return;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("patient_reports")
     .update({
       feedback_text: textoFinal,
@@ -377,16 +377,15 @@ async function publicarDevolutiva(relatorio: any) {
   try {
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await api.auth.getSession();
 
-  if (session?.access_token) {
+  if (session) {
     const respostaNotificacao = await fetch(
       "/api/notificar-devolutiva",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           relatorioId: relatorio.id,
@@ -408,7 +407,7 @@ async function publicarDevolutiva(relatorio: any) {
   );
 }
 
-const { data: ciclo } = await supabase
+const { data: ciclo } = await api
   .from("diet_cycles")
   .select("id, followup_frequency")
   .eq("id", relatorio.cycle_id)
@@ -427,7 +426,7 @@ const ultimoRelatorio =
     relatorio.cycle_report_number >= 1);
 
     if (ultimoRelatorio && ciclo) {
-  const { error: erroEncerramento } = await supabase
+  const { error: erroEncerramento } = await api
     .from("diet_cycles")
     .update({
       status: "concluido",
@@ -455,7 +454,7 @@ async function excluirRelatorio(relatorio: any) {
 
   if (!confirmar) return;
 
-  const { error } = await supabase
+  const { error } = await api
     .from("patient_reports")
     .delete()
     .eq("id", relatorio.id);

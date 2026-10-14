@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { origemPermitida } from "@/lib/servidor/http";
 
 export const runtime = "nodejs";
 
@@ -33,9 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const origem = request.headers.get("origin");
-
-    if (origem && origem !== new URL(request.url).origin) {
+    if (!origemPermitida(request)) {
       return NextResponse.json(
         { erro: "Origem não permitida." },
         { status: 403 }
@@ -99,19 +98,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SECRET_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
-
     const { data: permitido, error: erroLimite } =
-      await supabase.rpc("verificar_limite_cadastro", {
+      await banco.rpc("verificar_limite_cadastro", {
         p_identificador: `solicitacao:${telefone.replace(/\D/g, "")}`,
       });
 
@@ -122,7 +110,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { error } = await supabase
+    const { error } = await banco
       .from("patient_registration_requests")
       .insert({
         name: nome,

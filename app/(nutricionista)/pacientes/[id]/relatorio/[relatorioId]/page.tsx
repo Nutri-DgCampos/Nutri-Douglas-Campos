@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function VisualizarRelatorioPage() {
   const params = useParams();
@@ -13,7 +13,7 @@ export default function VisualizarRelatorioPage() {
 
   useEffect(() => {
   async function buscarRelatorio() {
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patient_reports")
       .select("*")
       .eq("id", params.relatorioId)

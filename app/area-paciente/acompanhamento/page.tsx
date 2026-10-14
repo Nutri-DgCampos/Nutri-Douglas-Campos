@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function RelatorioPage() {
   const router = useRouter();
@@ -74,14 +74,14 @@ useEffect(() => {
   async function carregarMetaTreino() {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await api.auth.getUser();
 
     if (!user) {
       router.push("/login");
       return;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patients")
       .select("id, training_weekly_goal, cardio_weekly_goal, individual_goal, retroactive_registration, retroactive_completed_weeks")
       .eq("auth_user_id", user.id)
@@ -254,7 +254,7 @@ const pontosQualidadeSono =
   setSalvando(true);
 
   try {
-    const { data: cicloAtivo, error: erroCiclo } = await supabase
+    const { data: cicloAtivo, error: erroCiclo } = await api
   .from("diet_cycles")
   .select("id, start_date, followup_frequency, retroactive_registered_at")
   .eq("patient_id", patientId)
@@ -407,7 +407,7 @@ for (let numero = 1; numero <= quantidadePrevista; numero++) {
 }
 
 const { data: semanasRespondidas, error: erroSemanas } =
-  await supabase
+  await api
     .from("patient_reports")
     .select("scheduled_week_start")
     .eq("cycle_id", cicloAtivo.id)
@@ -509,7 +509,7 @@ if (numeroProgramado === null) {
 }
     if (semanaParaRegistrar !== null) {
   const { data: relatorioExistente, error: erroVerificacao } =
-    await supabase
+    await api
       .from("patient_reports")
       .select("id")
       .eq("cycle_id", cicloAtivo.id)
@@ -546,7 +546,7 @@ if (numeroProgramado === null) {
   alert("Não foi possível identificar o número do relatório programado.");
   return;
 }
-    const { error } = await supabase.from("patient_reports").insert({
+    const { error } = await api.from("patient_reports").insert({
   patient_id: patientId,
   cycle_id: cicloAtivo?.id ?? null,
   cycle_report_number: numeroProgramado,

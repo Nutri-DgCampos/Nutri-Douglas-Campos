@@ -1,0 +1,7 @@
+# Arquivos lidos dentro de containers Linux precisam de quebra de linha LF,
+# mesmo quando o repositorio e clonado no Windows.
+*.sh text eol=lf
+*.sql text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+deploy/nginx/* text eol=lf

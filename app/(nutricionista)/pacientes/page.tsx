@@ -2,7 +2,7 @@
 
 import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 export default function PacientesPage() {
@@ -35,9 +35,9 @@ async function concluirSolicitacao(id: string) {
   try {
     const {
       data: { session },
-    } = await supabase.auth.getSession();
+    } = await api.auth.getSession();
 
-    if (!session?.access_token) {
+    if (!session) {
       alert("Sua sessão expirou. Entre novamente.");
       return;
     }
@@ -48,7 +48,6 @@ async function concluirSolicitacao(id: string) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ id }),
       }
@@ -76,14 +75,14 @@ async function concluirSolicitacao(id: string) {
   async function carregarPacientes() {
     const {
   data: { user },
-} = await supabase.auth.getUser();
+} = await api.auth.getUser();
 
 if (!user) {
   router.push("/login");
   return;
 }
 
-const { data: pacienteLogado } = await supabase
+const { data: pacienteLogado } = await api
   .from("patients")
   .select("id")
   .eq("auth_user_id", user.id)
@@ -93,7 +92,7 @@ if (pacienteLogado) {
   router.push("/area-paciente");
   return;
 }
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patients")
       .select("*")
       .order("created_at", { ascending: false });
@@ -110,16 +109,13 @@ if (pacienteLogado) {
 try {
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await api.auth.getSession();
 
-  if (!session?.access_token) {
+  if (!session) {
     console.error("Sessão não encontrada.");
   } else {
     const resposta = await fetch("/api/solicitacoes-pacientes", {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
       cache: "no-store",
     });
 

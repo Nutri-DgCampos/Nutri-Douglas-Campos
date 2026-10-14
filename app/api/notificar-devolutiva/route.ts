@@ -1,91 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { exigirNutricionista } from "@/lib/servidor/http";
 import { NextResponse } from "next/server";
 import webpush from "web-push";
 
 export const runtime = "nodejs";
 
-function criarSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const chave = process.env.SUPABASE_SECRET_KEY;
-
-  if (!url || !chave) {
-    throw new Error("Configuração do Supabase incompleta.");
-  }
-
-  return createClient(url, chave, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
-
-async function verificarNutricionista(
-  token: string,
-  supabaseAdmin: ReturnType<typeof criarSupabaseAdmin>
-) {
-  const {
-    data: { user },
-    error: erroUsuario,
-  } = await supabaseAdmin.auth.getUser(token);
-
-  if (erroUsuario || !user) {
-    return false;
-  }
-
-  const { data: perfil, error: erroPerfil } = await supabaseAdmin
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (erroPerfil || perfil?.role !== "nutricionista") {
-    return false;
-  }
-
-  return true;
-}
-
 export async function POST(request: Request) {
   try {
-    const autorizacao = request.headers.get("authorization");
+    const contexto = await exigirNutricionista(request);
 
-if (!autorizacao?.startsWith("Bearer ")) {
-  return NextResponse.json(
-    { error: "Autenticação necessária." },
-    { status: 401 }
-  );
-}
-
-const tokenRecebido = autorizacao.slice(7).trim();
-const cronSecret = process.env.CRON_SECRET;
-
-const autorizadoPorCron =
-  !!cronSecret &&
-  cronSecret.length >= 32 &&
-  tokenRecebido.length === cronSecret.length &&
-  (() => {
-    const crypto = require("node:crypto");
-
-    return crypto.timingSafeEqual(
-      Buffer.from(tokenRecebido),
-      Buffer.from(cronSecret)
-    );
-  })();
-
-    const token = autorizacao.slice(7).trim();
-    const supabaseAdmin = criarSupabaseAdmin();
-
-    const autorizado = await verificarNutricionista(
-      token,
-      supabaseAdmin
-    );
-
-    if (!autorizado) {
-      return NextResponse.json(
-        { error: "Acesso permitido somente ao nutricionista." },
-        { status: 403 }
-      );
+    if (contexto instanceof NextResponse) {
+      return contexto;
     }
 
     const dados = await request.json();
@@ -102,7 +27,7 @@ const autorizadoPorCron =
     }
 
     const { data: relatorio, error: erroRelatorio } =
-      await supabaseAdmin
+      await banco
         .from("patient_reports")
         .select("id, patient_id, status, feedback_text")
         .eq("id", relatorioId)
@@ -126,7 +51,7 @@ const autorizadoPorCron =
       );
     }
 
-    const { error: erroFila } = await supabaseAdmin
+    const { error: erroFila } = await banco
   .from("notification_queue")
   .upsert(
     {

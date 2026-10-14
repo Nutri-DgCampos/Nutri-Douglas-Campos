@@ -1,13 +1,13 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   async function sair() {
-  await supabase.auth.signOut();
+  await api.auth.signOut();
   router.push("/login");
 }
   return (

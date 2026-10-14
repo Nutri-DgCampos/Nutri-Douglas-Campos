@@ -1,64 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { exigirNutricionista } from "@/lib/servidor/http";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
-    const autorizacao = request.headers.get("authorization");
+    const contexto = await exigirNutricionista(request);
 
-    if (!autorizacao?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { erro: "Acesso não autorizado." },
-        { status: 401 }
-      );
-    }
-
-    const token = autorizacao.slice(7);
-
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SECRET_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    );
-
-    const {
-      data: { user },
-      error: erroUsuario,
-    } = await supabaseAdmin.auth.getUser(token);
-
-    if (erroUsuario || !user) {
-      return NextResponse.json(
-        { erro: "Sessão inválida." },
-        { status: 401 }
-      );
-    }
-
-    const { data: perfil, error: erroPerfil } =
-      await supabaseAdmin
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-    if (
-      erroPerfil ||
-      !perfil ||
-      perfil.role !== "nutricionista"
-    ) {
-      return NextResponse.json(
-        { erro: "Acesso permitido somente ao nutricionista." },
-        { status: 403 }
-      );
+    if (contexto instanceof NextResponse) {
+      return contexto;
     }
 
     const { data: solicitacoes, error: erroSolicitacoes } =
-      await supabaseAdmin
+      await banco
         .from("patient_registration_requests")
         .select("id, name, phone, objective, status, created_at")
         .eq("status", "Pendente")

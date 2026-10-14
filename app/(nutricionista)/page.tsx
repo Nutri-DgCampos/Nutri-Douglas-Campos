@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 type Paciente = {
   id: string;
@@ -19,7 +19,7 @@ type Paciente = {
 export default function Home() {
   async function enviarNotificacaoTeste() {
   const { data: sessao, error: erroSessao } =
-    await supabase.auth.getSession();
+    await api.auth.getSession();
 
   if (erroSessao || !sessao.session) {
     alert("Você precisa estar conectado como nutricionista.");
@@ -38,7 +38,6 @@ try {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${sessao.session.access_token}`,
     },
     body: JSON.stringify({
       patientId: patientId.trim(),
@@ -98,9 +97,9 @@ async function enviarNotificacaoPersonalizada() {
     const {
       data: { session },
       error: erroSessao,
-    } = await supabase.auth.getSession();
+    } = await api.auth.getSession();
 
-    if (erroSessao || !session?.access_token) {
+    if (erroSessao || !session) {
       alert("Faça login como nutricionista.");
       return;
     }
@@ -110,7 +109,6 @@ async function enviarNotificacaoPersonalizada() {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ mensagem }),
@@ -151,7 +149,7 @@ async function enviarNotificacaoPersonalizada() {
       consultaEmAndamento = true;
 
       try {
-        const { count, error } = await supabase
+        const { count, error } = await api
           .from("patient_reports")
           .select("id", { count: "exact", head: true })
           .eq("status", "pendente");
@@ -230,7 +228,7 @@ useEffect(() => {
 
       const segundaAtual = segunda.toISOString().slice(0, 10);
 
-      const { data: ciclos, error: erroCiclos } = await supabase
+      const { data: ciclos, error: erroCiclos } = await api
         .from("diet_cycles")
         .select("id, patient_id, start_date, end_date, followup_frequency")
         .eq("status", "ativo");
@@ -238,7 +236,7 @@ useEffect(() => {
       if (erroCiclos) throw erroCiclos;
 
       const { data: relatorios, error: erroRelatorios } =
-        await supabase
+        await api
           .from("patient_reports")
           .select("cycle_id, scheduled_week_start")
           .eq("scheduled_week_start", segundaAtual);
@@ -342,7 +340,7 @@ useEffect(() => {
 
   useEffect(() => {
     async function carregarPacientes() {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("patients")
         .select("*")
         .order("created_at", { ascending: false });
@@ -366,7 +364,7 @@ const [pagamentosPendentes, setPagamentosPendentes] = useState(0);
 
 useEffect(() => {
   async function carregarPagamentosPendentes() {
-    const { count, error } = await supabase
+    const { count, error } = await api
       .from("payments")
       .select("*", { count: "exact", head: true })
       .eq("status", "comprovante_enviado");

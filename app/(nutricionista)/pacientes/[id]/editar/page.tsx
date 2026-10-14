@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function EditarPaciente() {
   const params = useParams();
@@ -33,7 +33,7 @@ const [sucessoSenha, setSucessoSenha] = useState("");
 
   useEffect(() => {
     async function carregarPaciente() {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("patients")
         .select("*")
         .eq("id", id)
@@ -81,7 +81,7 @@ setIndividualGoal(
     setSalvando(true);
     setErro("");
 
-    const { error } = await supabase
+    const { error } = await api
       .from("patients")
       .update({
         name,
@@ -129,7 +129,7 @@ async function redefinirSenhaPaciente() {
     const {
       data: { session },
       error: erroSessao,
-    } = await supabase.auth.getSession();
+    } = await api.auth.getSession();
 
     if (erroSessao || !session) {
       throw new Error("Sua sessão expirou. Entre novamente no sistema.");
@@ -139,7 +139,6 @@ async function redefinirSenhaPaciente() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({
         acao: "redefinir_senha",

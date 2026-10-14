@@ -1,0 +1,100 @@
+# Acompanhamento Nutricional - tres containers:
+#   postgres -> banco de dados
+#   app      -> sistema (Next.js)
+#   cron     -> agendador que chama as rotinas periodicas do app
+#
+# As variaveis vem do arquivo .env (modelo em .env.example).
+
+services:
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: nutri-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Acessivel so pela propria maquina (ex.: DBeaver via tunel SSH), nunca pela internet.
+    ports:
+      - "127.0.0.1:${POSTGRES_PORTA:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Scripts executados SOMENTE na primeira criacao do banco.
+      - ./banco/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - nutri-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+    container_name: nutri-app
+    restart: unless-stopped
+    environment:
+      # O host e "postgres": nome do servico na rede interna do Docker.
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SESSAO_SEGREDO: ${SESSAO_SEGREDO}
+      SESSAO_COOKIE_SEGURO: ${SESSAO_COOKIE_SEGURO:-false}
+      APP_URL: ${APP_URL:-}
+      ARQUIVOS_DIR: /dados/arquivos
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT: ${VAPID_SUBJECT}
+      CRON_SECRET: ${CRON_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      CADASTRO_ESPECIAL_INICIO: ${CADASTRO_ESPECIAL_INICIO:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_SENHA: ${SMTP_SENHA:-}
+      SMTP_REMETENTE: ${SMTP_REMETENTE:-}
+    # Na VPS o nginx do host (HTTPS) repassa para esta porta.
+    ports:
+      - "127.0.0.1:${APP_PORTA:-3000}:3000"
+    volumes:
+      - arquivos_data:/dados/arquivos
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nutri-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/saude"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  cron:
+    image: alpine:3.22
+    container_name: nutri-cron
+    restart: unless-stopped
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+      APP_INTERNO: http://app:3000
+    volumes:
+      - ./cron/agendador.sh:/agendador.sh:ro
+    command: ["sh", "/agendador.sh"]
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - nutri-network
+
+networks:
+  nutri-network:
+    driver: bridge
+
+volumes:
+  # Dados do banco. Sobrevive a "docker compose down"; apagado por "down -v".
+  postgres_data:
+  # Dietas em PDF e comprovantes de pagamento.
+  arquivos_data:

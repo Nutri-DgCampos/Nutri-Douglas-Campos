@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function RedefinirSenhaPage() {
   const [novaSenha, setNovaSenha] = useState("");
@@ -10,20 +10,25 @@ export default function RedefinirSenhaPage() {
   const [salvando, setSalvando] = useState(false);
   const [modoRecuperacao, setModoRecuperacao] = useState(false);
 
-  useEffect(() => {
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((event) => {
-    if (event === "PASSWORD_RECOVERY") {
-      setModoRecuperacao(true);
-      setErro("");
-    }
-  });
+  const [token, setToken] = useState("");
 
-  return () => {
-    subscription.unsubscribe();
-  };
-}, []);
+  useEffect(() => {
+    // O link enviado por e-mail traz o token: /redefinir-senha?token=...
+    const recebido =
+      new URLSearchParams(window.location.search).get("token") ?? "";
+
+    if (!recebido) {
+      return;
+    }
+
+    api.auth.tokenDeRedefinicaoValido(recebido).then((valido) => {
+      if (valido) {
+        setToken(recebido);
+        setModoRecuperacao(true);
+        setErro("");
+      }
+    });
+  }, []);
 
     async function redefinirSenha() {
         if (!modoRecuperacao) {
@@ -44,9 +49,7 @@ export default function RedefinirSenhaPage() {
 
   setSalvando(true);
 
-  const { error } = await supabase.auth.updateUser({
-    password: novaSenha,
-  });
+  const { error } = await api.auth.redefinirSenha(token, novaSenha);
 
   setSalvando(false);
 

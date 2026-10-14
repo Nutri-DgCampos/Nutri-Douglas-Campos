@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# modelo de configuracao e versionado
+!.env.example
+
+# dumps e backups do banco
+/banco/dump/
+db_backup_*.sql
+deploy.log

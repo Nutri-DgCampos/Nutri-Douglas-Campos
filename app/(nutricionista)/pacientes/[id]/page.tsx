@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 type Paciente = {
   id: string;
@@ -70,7 +70,7 @@ export default function PacientePage() {
 
   try {
     // Verifica se já existe pagamento pendente
-    const { data: pendente, error: erroConsulta } = await supabase
+    const { data: pendente, error: erroConsulta } = await api
       .from("payments")
       .select("id")
       .eq("patient_id", paciente.id)
@@ -85,7 +85,7 @@ export default function PacientePage() {
 
     // Cria somente se ainda não existir
     if (!pendente) {
-      const { error: erroPagamento } = await supabase
+      const { error: erroPagamento } = await api
         .from("payments")
         .insert({
           patient_id: paciente.id,
@@ -101,7 +101,7 @@ export default function PacientePage() {
     }
 
     // Registra a solicitação de reativação
-    const { error: erroReativacao } = await supabase
+    const { error: erroReativacao } = await api
       .from("patients")
       .update({
         reactivation_requested_at: new Date().toISOString(),
@@ -123,7 +123,7 @@ export default function PacientePage() {
 
   useEffect(() => {
     async function buscarPaciente() {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("patients")
         .select("*")
         .eq("id", params.id)
@@ -140,7 +140,7 @@ export default function PacientePage() {
     }
 
 async function buscarCicloAtivo() {
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("diet_cycles")
     .select("*")
     .eq("patient_id", params.id)
@@ -156,7 +156,7 @@ async function buscarCicloAtivo() {
 }
 
     async function buscarEvolucoes() {
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("patient_progress")
     .select("*")
     .eq("patient_id", params.id)
@@ -171,7 +171,7 @@ async function buscarCicloAtivo() {
 }
 
 async function buscarRelatorios() {
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("patient_reports")
     .select("*")
     .eq("patient_id", params.id)

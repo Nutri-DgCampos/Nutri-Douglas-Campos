@@ -3,7 +3,7 @@
 
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 
 export default function PagamentosPacientePage() {
@@ -53,14 +53,14 @@ export default function PagamentosPacientePage() {
 
     try {
       const { data: authData, error: authError } =
-        await supabase.auth.getUser();
+        await api.auth.getUser();
 
       if (authError || !authData.user) {
         throw new Error("Paciente não autenticado.");
       }
 
       const { data: paciente, error: pacienteError } =
-        await supabase
+        await api
           .from("patients")
           .select("id")
           .eq("auth_user_id", authData.user.id)
@@ -71,7 +71,7 @@ export default function PagamentosPacientePage() {
       }
 
       const { data: pagamento, error: pagamentoError } =
-  await supabase
+  await api
     .from("payments")
     .select("id")
     .eq("patient_id", paciente.id)
@@ -94,7 +94,7 @@ export default function PagamentosPacientePage() {
       const caminho =
         `${authData.user.id}/${pagamento.id}/${crypto.randomUUID()}.${extensao}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await api.storage
         .from("comprovantes")
         .upload(caminho, arquivoComprovante, {
           contentType: arquivoComprovante.type,
@@ -109,7 +109,7 @@ export default function PagamentosPacientePage() {
   );
 }
 
-      const { error: atualizarError } = await supabase
+      const { error: atualizarError } = await api
         .from("payments")
         .update({
           status: "comprovante_enviado",
@@ -148,7 +148,7 @@ export default function PagamentosPacientePage() {
       setErroHistorico("");
 
       const { data: usuario, error: erroUsuario } =
-        await supabase.auth.getUser();
+        await api.auth.getUser();
 
       if (erroUsuario || !usuario.user) {
         setErroHistorico("Não foi possível identificar o paciente.");
@@ -156,7 +156,7 @@ export default function PagamentosPacientePage() {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await api
   .from("payments")
   .select("id, status, confirmed_at, receipt_uploaded_at")
   .in("status", ["confirmado", "comprovante_enviado"])

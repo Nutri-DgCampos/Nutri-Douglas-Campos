@@ -3,7 +3,7 @@
 
 import Sidebar from "@/components/Sidebar";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 
 
@@ -43,7 +43,7 @@ export default function PagamentosPage() {
 
     if (!confirmar) return;
 
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("payments")
       .update({
         status: "confirmado",
@@ -75,7 +75,7 @@ export default function PagamentosPage() {
       return;
     }
 
-    const { data, error } = await supabase.storage
+    const { data, error } = await api.storage
       .from("comprovantes")
       .createSignedUrl(caminho, 60);
 
@@ -95,7 +95,7 @@ export default function PagamentosPage() {
 
     if (!confirmar) return;
 
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("payments")
       .update({
         status: "confirmado",
@@ -130,7 +130,7 @@ export default function PagamentosPage() {
       setCarregando(true);
 
       
-const { data, error } = await supabase
+const { data, error } = await api
   .from("payments")
   .select(`
   id,

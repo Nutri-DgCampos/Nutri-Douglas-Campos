@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function RelatoriosPacientePage() {
 
@@ -75,11 +75,11 @@ useEffect(() => {
   async function carregarPaciente() {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await api.auth.getUser();
 
     if (!user) return;
 
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("patients")
       .select("id, name, initial_weight")
       .eq("auth_user_id", user.id)
@@ -93,7 +93,7 @@ useEffect(() => {
     setPacienteId(data.id);
     setNomePaciente(data.name);
     setPesoInicial(data.initial_weight);
-    const { data: relatoriosEnviados, error: erroRelatorios } = await supabase
+    const { data: relatoriosEnviados, error: erroRelatorios } = await api
   .from("patient_reports")
   .select("*")
   .eq("patient_id", data.id)
@@ -117,7 +117,7 @@ const idsDevolutivas = (relatoriosEnviados ?? [])
   .map((relatorio) => relatorio.id);
 
 if (idsDevolutivas.length > 0) {
-  const { error: erroVisualizacao } = await supabase
+  const { error: erroVisualizacao } = await api
     .from("patient_update_views")
     .upsert(
       idsDevolutivas.map((id) => ({
@@ -138,7 +138,7 @@ if (idsDevolutivas.length > 0) {
     );
   }
 }
-const { data: pesosAnteriores, error: erroPesos } = await supabase
+const { data: pesosAnteriores, error: erroPesos } = await api
   .from("patient_reports")
   .select("id, weight, created_at, cycle_id")
   .eq("patient_id", data.id)
@@ -152,7 +152,7 @@ if (erroPesos) {
   setHistoricoPesos(pesosAnteriores ?? []);
 }
 
-const { data: alcoolAnterior, error: erroAlcool } = await supabase
+const { data: alcoolAnterior, error: erroAlcool } = await api
   .from("patient_reports")
   .select("id, alcohol_use, created_at")
   .eq("patient_id", data.id)

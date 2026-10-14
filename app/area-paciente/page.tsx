@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 function converterChaveVapid(chave: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (chave.length % 4)) % 4);
 
@@ -33,14 +33,14 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
     const [mostrarPlanosRenovacao, setMostrarPlanosRenovacao] = useState(false);
     async function sair() {
-  await supabase.auth.signOut();
+  await api.auth.signOut();
   window.location.href = "/login";
 }
 
 async function solicitarRenovacao(planoEscolhido: string) {
   if (!paciente) return;
 
-  const { data: ultimoRelatorio, error } = await supabase
+  const { data: ultimoRelatorio, error } = await api
   .from("patient_reports")
   .select("weight")
   .eq("patient_id", paciente.id)
@@ -56,7 +56,7 @@ if (error) {
 }
 
 console.log("ÚLTIMO PESO:", ultimoRelatorio?.weight);
-const { error: erroRenovacao } = await supabase
+const { error: erroRenovacao } = await api
   .from("renewal_requests")
   .insert({
     patient_id: paciente.id,
@@ -79,12 +79,12 @@ alert("Solicitação de renovação enviada com sucesso!");
   async function carregarPaciente() {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await api.auth.getUser();
 
     console.log("USUÁRIO LOGADO:", user);
     if (!user) return;
 
-const { data, error } = await supabase
+const { data, error } = await api
   .from("patients")
   .select("*")
   .eq("auth_user_id", user.id)
@@ -97,7 +97,7 @@ if (error) {
 
 setPaciente(data);
 // Verificar pagamentos atrasados do paciente
-const { data: pagamentos, error: erroPagamentos } = await supabase
+const { data: pagamentos, error: erroPagamentos } = await api
   .from("payments")
   .select(`
     id,
@@ -141,12 +141,12 @@ return dataHojeBrasil >= dataVencimento;
 
   setPagamentoAtrasado(existePagamentoAtrasado);
 }
-const { data: entregasDietas, error: erroDietas } = await supabase
+const { data: entregasDietas, error: erroDietas } = await api
   .from("diet_deliveries")
   .select("id")
   .eq("patient_id", data.id);
 
-const { data: relatoriosPublicados, error: erroRelatorios } = await supabase
+const { data: relatoriosPublicados, error: erroRelatorios } = await api
   .from("patient_reports")
   .select("id, feedback_text, created_at")
   .eq("patient_id", data.id)
@@ -154,7 +154,7 @@ const { data: relatoriosPublicados, error: erroRelatorios } = await supabase
   .order("created_at", { ascending: false })
   .limit(4);
 
-const { data: visualizacoes, error: erroVisualizacoes } = await supabase
+const { data: visualizacoes, error: erroVisualizacoes } = await api
   .from("patient_update_views")
   .select("update_type, reference_id")
   .eq("patient_id", data.id);
@@ -193,7 +193,7 @@ if (erroDietas || erroRelatorios || erroVisualizacoes) {
   );
 }
 
-const { data: ciclo } = await supabase
+const { data: ciclo } = await api
   .from("diet_cycles")
   .select("*")
   .eq("patient_id", data.id)
@@ -240,7 +240,7 @@ const semanaAtualBrasil = segundaAtualBrasil
   .slice(0, 10);
   const dentroDoPrazoRelatorio =
   diaSemanaBrasil === 1 || diaSemanaBrasil === 2;
-  const { data: ultimoRelatorio } = await supabase
+  const { data: ultimoRelatorio } = await api
     .from("patient_reports")
     .select("cycle_report_number")
     .eq("cycle_id", ciclo.id)
@@ -342,7 +342,7 @@ for (let numero = 1; numero <= quantidadePrevista; numero++) {
   }
 }
 
-const { data: relatoriosRespondidos } = await supabase
+const { data: relatoriosRespondidos } = await api
   .from("patient_reports")
   .select("scheduled_week_start")
   .eq("cycle_id", ciclo.id)
@@ -468,7 +468,7 @@ if (
   return;
 }
 
-const { error: erroCadastro } = await supabase
+const { error: erroCadastro } = await api
   .from("push_subscriptions")
   .upsert(
     {

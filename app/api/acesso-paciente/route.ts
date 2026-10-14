@@ -1,70 +1,21 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { exigirNutricionista } from "@/lib/servidor/http";
+import {
+  criarUsuario,
+  definirSenha,
+  excluirUsuario,
+} from "@/lib/servidor/usuarios";
 
 export const runtime = "nodejs";
 
 
 export async function POST(request: Request) {
   try {
-    const authorization = request.headers.get("authorization");
+    const contexto = await exigirNutricionista(request);
 
-    if (!authorization?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { erro: "Usuário não autenticado." },
-        { status: 401 }
-      );
-    }
-
-    const token = authorization.slice(7);
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const publicKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    const secretKey = process.env.SUPABASE_SECRET_KEY;
-
-    if (!supabaseUrl || !publicKey || !secretKey) {
-      return NextResponse.json(
-        { erro: "Configuração do servidor incompleta." },
-        { status: 500 }
-      );
-    }
-
-    const authClient = createClient(supabaseUrl, publicKey);
-
-    const {
-      data: { user },
-      error: authError,
-    } = await authClient.auth.getUser(token);
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { erro: "Sessão inválida ou expirada." },
-        { status: 401 }
-      );
-    }
-
-    const admin = createClient(supabaseUrl, secretKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
-
-    const { data: perfil, error: perfilError } = await admin
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-      console.log("Diagnóstico da autorização:", {
-  usuarioId: user.id,
-  erroPerfil: perfilError?.message ?? null,
-  roleEncontrada: perfil?.role ?? null,
-});
-    if (perfilError || perfil?.role !== "nutricionista") {
-      return NextResponse.json(
-        { erro: "Acesso permitido somente ao nutricionista." },
-        { status: 403 }
-      );
+    if (contexto instanceof NextResponse) {
+      return contexto;
     }
 
     const dados = await request.json();
@@ -83,7 +34,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { data: paciente, error: erroPaciente } = await admin
+  const { data: paciente, error: erroPaciente } = await banco
     .from("patients")
     .select("auth_user_id")
     .eq("id", pacienteId)
@@ -103,7 +54,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { data: perfilPaciente, error: erroPerfilPaciente } = await admin
+  const { data: perfilPaciente, error: erroPerfilPaciente } = await banco
     .from("profiles")
     .select("role")
     .eq("id", paciente.auth_user_id)
@@ -116,13 +67,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error: erroSenha } = await admin.auth.admin.updateUserById(
-    paciente.auth_user_id,
-    { password: novaSenha }
-  );
-
-  if (erroSenha) {
-    console.error("Erro ao redefinir senha:", erroSenha);
+  if (!(await definirSenha(paciente.auth_user_id, novaSenha))) {
+    console.error("Erro ao redefinir senha: usuário não encontrado.");
 
     return NextResponse.json(
       { erro: "Não foi possível redefinir a senha do paciente." },
@@ -152,7 +98,7 @@ if (
     { status: 400 }
   );
 }
-const { data: paciente, error: pacienteError } = await admin
+const { data: paciente, error: pacienteError } = await banco
   .from("patients")
   .select("id, auth_user_id")
   .eq("id", pacienteId)
@@ -180,14 +126,11 @@ if (paciente.auth_user_id) {
     { status: 409 }
   );
 }
-const { data: novoAcesso, error: erroCriacao } =
-  await admin.auth.admin.createUser({
-    email,
-    password: senha,
-    email_confirm: true,
-  });
+let novoUsuarioId: string;
 
-if (erroCriacao || !novoAcesso.user) {
+try {
+  novoUsuarioId = await criarUsuario(email, senha);
+} catch (erroCriacao) {
   console.error("Erro ao criar acesso:", erroCriacao);
 
   return NextResponse.json(
@@ -195,9 +138,8 @@ if (erroCriacao || !novoAcesso.user) {
     { status: 400 }
   );
 }
-const novoUsuarioId = novoAcesso.user.id;
 
-const { error: erroPerfilNovo } = await admin
+const { error: erroPerfilNovo } = await banco
   .from("profiles")
   .upsert(
     {
@@ -210,7 +152,7 @@ const { error: erroPerfilNovo } = await admin
 if (erroPerfilNovo) {
   console.error("Erro ao registrar perfil:", erroPerfilNovo);
 
-  await admin.auth.admin.deleteUser(novoUsuarioId);
+  await excluirUsuario(novoUsuarioId);
 
   return NextResponse.json(
     { erro: "Não foi possível registrar o perfil do paciente." },
@@ -218,7 +160,7 @@ if (erroPerfilNovo) {
   );
 }
 
-const { data: pacienteVinculado, error: erroVinculo } = await admin
+const { data: pacienteVinculado, error: erroVinculo } = await banco
   .from("patients")
   .update({ auth_user_id: novoUsuarioId })
   .eq("id", pacienteId)
@@ -229,7 +171,7 @@ const { data: pacienteVinculado, error: erroVinculo } = await admin
 if (erroVinculo || !pacienteVinculado) {
   console.error("Erro ao vincular acesso:", erroVinculo);
 
-  await admin.auth.admin.deleteUser(novoUsuarioId);
+  await excluirUsuario(novoUsuarioId);
 
   return NextResponse.json(
     { erro: "Não foi possível vincular o acesso ao paciente." },

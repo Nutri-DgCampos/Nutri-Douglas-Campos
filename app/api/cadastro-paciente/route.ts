@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { banco } from "@/lib/servidor/banco";
+import { origemPermitida } from "@/lib/servidor/http";
+import {
+  criarUsuario,
+  EmailJaCadastrado,
+  excluirUsuario,
+} from "@/lib/servidor/usuarios";
 
 export const runtime = "nodejs";
 
@@ -65,48 +71,27 @@ function calcularFimCiclo(dataInicio: string): string {
   return dataFim.toISOString().slice(0, 10);
 }
 
-function criarSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const chave = process.env.SUPABASE_SECRET_KEY;
-
-  if (!url || !chave) {
-    throw new Error("Configuração do Supabase incompleta.");
-  }
-
-  return createClient(url, chave, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-}
-
 async function criarAcessoPaciente(
-  admin: ReturnType<typeof criarSupabaseAdmin>,
   email: string,
   senha: string
 ) {
-  const { data, error } = await admin.auth.admin.createUser({
-    email,
-    password: senha,
-    email_confirm: true,
-  });
+  let usuarioId: string;
 
-  if (error || !data.user) {
-  console.error("Erro ao criar usuário:", error);
+  try {
+    usuarioId = await criarUsuario(email, senha);
+  } catch (error) {
+    console.error("Erro ao criar usuário:", error);
 
-  if (error?.code === "email_exists") {
-    throw new Error("EMAIL_JA_CADASTRADO");
+    if (error instanceof EmailJaCadastrado) {
+      throw new Error("EMAIL_JA_CADASTRADO");
+    }
+
+    throw new Error(
+      "Não foi possível criar o acesso do paciente."
+    );
   }
 
-  throw new Error(
-    "Não foi possível criar o acesso do paciente."
-  );
-}
-
-  const usuarioId = data.user.id;
-
-  const { error: erroPerfil } = await admin
+  const { error: erroPerfil } = await banco
     .from("profiles")
     .upsert(
       {
@@ -119,21 +104,7 @@ async function criarAcessoPaciente(
  if (erroPerfil) {
   console.error("Erro ao criar perfil:", erroPerfil);
 
-  const { error: erroExclusao } =
-    await admin.auth.admin.deleteUser(usuarioId);
-
-  if (erroExclusao) {
-    console.error(
-      "ATENÇÃO: usuário criado sem perfil. ID:",
-      usuarioId,
-      "Erro:",
-      erroExclusao
-    );
-
-    throw new Error(
-      "Falha ao criar perfil e ao desfazer o acesso. Verificação administrativa necessária."
-    );
-  }
+  await excluirUsuario(usuarioId);
 
   throw new Error(
     "Não foi possível criar o perfil do paciente."
@@ -144,7 +115,6 @@ async function criarAcessoPaciente(
 }
 
 async function salvarCadastroPaciente(
-  admin: ReturnType<typeof criarSupabaseAdmin>,
   usuarioId: string,
   cadastro: {
     name: string;
@@ -157,7 +127,7 @@ async function salvarCadastroPaciente(
     current_followup_week: number;
   }
 ) {
-  const { data: paciente, error } = await admin
+  const { data: paciente, error } = await banco
     .from("patients")
     .insert({
       ...cadastro,
@@ -179,7 +149,6 @@ async function salvarCadastroPaciente(
 }
 
 async function criarCicloRetroativo(
-  admin: ReturnType<typeof criarSupabaseAdmin>,
   pacienteId: string,
   plano: string,
   semanaConcluida: number
@@ -213,7 +182,7 @@ if (!anoCadastro || !mesCadastro || !diaCadastro) {
 const dataCadastroBrasil =
   `${anoCadastro}-${mesCadastro}-${diaCadastro}`;
 
-  const { data: ciclo, error } = await admin
+  const { data: ciclo, error } = await banco
     .from("diet_cycles")
     .insert({
       patient_id: pacienteId,
@@ -239,12 +208,11 @@ const dataCadastroBrasil =
 }
 
 async function limparCadastroIncompleto(
-  admin: ReturnType<typeof criarSupabaseAdmin>,
   usuarioId: string,
   pacienteId?: string
 ) {
   if (pacienteId) {
-    const { error: erroCiclos } = await admin
+    const { error: erroCiclos } = await banco
       .from("diet_cycles")
       .delete()
       .eq("patient_id", pacienteId);
@@ -254,7 +222,7 @@ async function limparCadastroIncompleto(
       return false;
     }
 
-    const { error: erroPaciente } = await admin
+    const { error: erroPaciente } = await banco
       .from("patients")
       .delete()
       .eq("id", pacienteId)
@@ -266,10 +234,9 @@ async function limparCadastroIncompleto(
     }
   }
 
-  const { error: erroUsuario } =
-    await admin.auth.admin.deleteUser(usuarioId);
-
-  if (erroUsuario) {
+  try {
+    await excluirUsuario(usuarioId);
+  } catch (erroUsuario) {
     console.error("Erro ao limpar acesso:", erroUsuario);
     return false;
   }
@@ -278,10 +245,9 @@ async function limparCadastroIncompleto(
 }
 
 async function verificarLimiteCadastro(
-  admin: ReturnType<typeof criarSupabaseAdmin>,
   identificador: string
 ): Promise<boolean> {
-  const { data, error } = await admin.rpc(
+  const { data, error } = await banco.rpc(
     "verificar_limite_cadastro",
     {
       p_identificador: identificador,
@@ -350,19 +316,13 @@ export async function POST(request: Request) {
     }
 
     // Verifica se a requisição veio do próprio sistema.
-const origem = request.headers.get("origin");
-
-if (origem) {
-  const origemPermitida = new URL(request.url).origin;
-
-  if (origem !== origemPermitida) {
-    return NextResponse.json(
-      {
-        erro: "Origem da solicitação não permitida.",
-      },
-      { status: 403 }
-    );
-  }
+if (!origemPermitida(request)) {
+  return NextResponse.json(
+    {
+      erro: "Origem da solicitação não permitida.",
+    },
+    { status: 403 }
+  );
 }
 
     const tipoConteudo = request.headers
@@ -536,7 +496,6 @@ const senhaValida =
 // A gravação será ativada somente após concluirmos
 // as verificações de segurança e duplicidade.
 
-const supabaseAdmin = criarSupabaseAdmin();
 
 // Limita tentativas de cadastro para o mesmo e-mail.
 // A verificação ocorre no servidor, sem CAPTCHA.
@@ -546,12 +505,11 @@ const supabaseAdmin = criarSupabaseAdmin();
 
 // O limite por IP só será ativado depois de
 // validarmos a origem confiável do endereço
-// fornecido pela infraestrutura da Vercel.
+// repassado pelo proxy (nginx).
 
 const identificadorIp: string | null = null;
 
 const limitePermitido = await verificarLimiteCadastro(
-  supabaseAdmin,
   `cadastro-email:${email}`
 );
 
@@ -567,9 +525,8 @@ if (!limitePermitido) {
 // Impede que um paciente já vinculado a este e-mail
 // seja cadastrado novamente.
 
-// O Supabase Authentication verificará se o e-mail
-// já existe durante a criação efetiva do usuário.
-// Isso evita consultas limitadas aos primeiros 1000 usuários.
+// A criação do usuário recusa e-mails já cadastrados
+// (índice único em public.users).
 
 // Controle dos registros criados durante o cadastro.
 // Esses identificadores serão usados para desfazer
@@ -600,18 +557,15 @@ console.log("Cadastro especial validado:", {
 });
 
 usuarioCriadoId = await criarAcessoPaciente(
-  supabaseAdmin,
   email,
   senha
 );
 
 pacienteCriadoId = await salvarCadastroPaciente(
-  supabaseAdmin,
   usuarioCriadoId,
   cadastroPaciente
 );
 await criarCicloRetroativo(
-  supabaseAdmin,
   pacienteCriadoId!,
   plano,
   semanaAtual
@@ -641,10 +595,8 @@ await criarCicloRetroativo(
 
     if (usuarioCriadoId) {
       try {
-        const supabaseAdmin = criarSupabaseAdmin();
 
         const limpezaConcluida = await limparCadastroIncompleto(
-          supabaseAdmin,
           usuarioCriadoId,
           pacienteCriadoId ?? undefined
         );

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 
 export default function NutricionistaLayout({
   children,
@@ -15,14 +15,14 @@ export default function NutricionistaLayout({
   async function verificarAcesso() {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await api.auth.getUser();
 
     if (!user) {
       router.push("/login");
       return;
     }
 
-    const { data: paciente } = await supabase
+    const { data: paciente } = await api
       .from("patients")
       .select("id")
       .eq("auth_user_id", user.id)
