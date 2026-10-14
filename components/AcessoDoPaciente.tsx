@@ -41,6 +41,49 @@ export default function AcessoDoPaciente({
       .catch(() => setEmailAtual(null));
   }, [pacienteId]);
 
+  async function criarAcesso() {
+    setErro("");
+
+    const novoEmail = email.trim().toLowerCase();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(novoEmail)) {
+      setErro("Informe um e-mail válido.");
+      return;
+    }
+
+    if (senha.length < 6) {
+      setErro("A senha provisória deve ter pelo menos 6 caracteres.");
+      return;
+    }
+
+    setSalvando(true);
+
+    try {
+      const resposta = await fetch("/api/acesso-paciente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pacienteId, email: novoEmail, senha }),
+      });
+
+      const resultado = await resposta.json().catch(() => null);
+
+      if (!resposta.ok) {
+        setErro(resultado?.erro ?? "Não foi possível criar o acesso.");
+        return;
+      }
+
+      setEmailAtual(novoEmail);
+      setSenha("");
+      setEditando(false);
+      avisar(
+        "Acesso criado. Informe ao paciente o e-mail e a senha provisória; no primeiro acesso ele cria uma senha própria.",
+        "success"
+      );
+    } finally {
+      setSalvando(false);
+    }
+  }
+
   async function salvarAcesso() {
     setErro("");
 
@@ -133,6 +176,21 @@ export default function AcessoDoPaciente({
         </div>
 
         <div className="flex flex-wrap gap-2">
+          {emailAtual === null && (
+            <Button
+              type="button"
+              icon="pi pi-user-plus"
+              label="Criar acesso"
+              outlined={editando}
+              onClick={() => {
+                setEditando(!editando);
+                setErro("");
+                setEmail("");
+                setSenha("");
+              }}
+            />
+          )}
+
           {emailAtual && (
             <Button
               type="button"
@@ -162,7 +220,7 @@ export default function AcessoDoPaciente({
         </div>
       </div>
 
-      {editando && emailAtual && (
+      {editando && emailAtual !== undefined && (
         <div className="mt-5 grid gap-4 border-t border-gray-200 pt-5 md:grid-cols-2">
           <div>
             <label htmlFor="acesso-email" className="mb-2 block text-sm font-semibold text-gray-700">
@@ -180,13 +238,13 @@ export default function AcessoDoPaciente({
 
           <div>
             <label htmlFor="acesso-senha" className="mb-2 block text-sm font-semibold text-gray-700">
-              Nova senha provisória
+              {emailAtual ? "Nova senha provisória" : "Senha provisória"}
             </label>
             <Password
               inputId="acesso-senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              placeholder="Deixe em branco para manter a atual"
+              placeholder={emailAtual ? "Deixe em branco para manter a atual" : "Pelo menos 6 caracteres"}
               autoComplete="new-password"
               feedback={false}
               toggleMask
@@ -210,10 +268,10 @@ export default function AcessoDoPaciente({
             />
             <Button
               type="button"
-              label="Salvar acesso"
+              label={emailAtual ? "Salvar acesso" : "Criar acesso"}
               icon="pi pi-check"
               loading={salvando}
-              onClick={salvarAcesso}
+              onClick={emailAtual ? salvarAcesso : criarAcesso}
             />
           </div>
         </div>

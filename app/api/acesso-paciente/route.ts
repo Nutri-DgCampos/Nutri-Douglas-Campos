@@ -4,6 +4,7 @@ import { exigirNutricionista } from "@/lib/servidor/http";
 import {
   criarUsuario,
   definirSenha,
+  EmailJaCadastrado,
   excluirUsuario,
 } from "@/lib/servidor/usuarios";
 
@@ -131,6 +132,13 @@ let novoUsuarioId: string;
 try {
   novoUsuarioId = await criarUsuario(email, senha, true);
 } catch (erroCriacao) {
+  if (erroCriacao instanceof EmailJaCadastrado) {
+    return NextResponse.json(
+      { erro: "Este e-mail já é usado por outro acesso." },
+      { status: 409 }
+    );
+  }
+
   console.error("Erro ao criar acesso:", erroCriacao);
 
   return NextResponse.json(

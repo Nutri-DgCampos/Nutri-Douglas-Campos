@@ -50,5 +50,6 @@ deploy.log
 
 # Planilhas de pacientes preenchidas: dados pessoais, nunca no Git.
 /banco/importacao/*.csv
+/banco/importacao/*.sql
 !/banco/importacao/modelo-pacientes.csv
 !/banco/importacao/exemplo-preenchido.csv
