@@ -17,4 +17,22 @@ O arquivo versionado aponta para certificados que ainda não existem em um servi
 5. Instale: `cp deploy/nginx/<dominio> /etc/nginx/sites-available/<dominio> && nginx -t && systemctl reload nginx`.
 6. No `.env` da VPS, defina `DOMINIO_PRODUCAO=<dominio>`, `APP_URL=https://<dominio>` e `SESSAO_COOKIE_SEGURO=true`.
 
+## Produção: nutridgcampos.com
+
+O arquivo `deploy/nginx/nutridgcampos.com` já está pronto (passo 4 feito). Ele atende também `www.nutridgcampos.com`, redirecionando para o endereço sem `www`, então o certificado precisa cobrir os dois nomes:
+
+```bash
+certbot --nginx -d nutridgcampos.com -d www.nutridgcampos.com
+```
+
+### Cloudflare
+
+O DNS do domínio fica na Cloudflare. Crie dois registros `A` (`@` e `www`) apontando para o IP da VPS.
+
+1. **Para emitir o certificado**, deixe os dois registros como "Somente DNS" (nuvem cinza).
+2. Depois que o site abrir em HTTPS, pode ligar o proxy (nuvem laranja). Antes de ligar, em *SSL/TLS → Visão geral*, escolha o modo **Completo (estrito)**. No modo "Flexível" a Cloudflare fala HTTP com a VPS, o nginx redireciona para HTTPS e o site entra em loop de redirecionamento.
+3. Com o proxy ligado, a renovação automática do certbot continua funcionando, porque a Cloudflare repassa a porta 80.
+
+O plano gratuito da Cloudflare aceita envios de até 100 MB, acima dos 50 MB das dietas.
+
 Daí em diante o `deploy.sh` mantém o arquivo. Ele identifica o ambiente pelo certificado em `/etc/letsencrypt/live/<dominio>`, por isso o passo 3 vem antes do primeiro deploy.
