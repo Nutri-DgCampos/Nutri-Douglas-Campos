@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import EnvioExame from "@/components/EnvioExame";
+import EnvioTreino from "@/components/EnvioTreino";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
 import {
@@ -565,6 +566,8 @@ carregarPaciente();
         </nav>
 
         {paciente && <EnvioExame pacienteId={paciente.id} />}
+
+        {paciente && <EnvioTreino pacienteId={paciente.id} />}
 
         {paciente && (!cicloAtivo || situacao?.podeRenovar) && (
           <section className="cartao mt-4 p-5">

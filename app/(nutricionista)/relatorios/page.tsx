@@ -57,7 +57,7 @@ const [gerandoIA, setGerandoIA] = useState<string | null>(null);
   async function carregarRelatorios() {
     const { data, error } = await api
       .from("patient_reports")
-      .select("*, patients(name, initial_weight, important_note)")
+      .select("*, patients(name, initial_weight, important_note, objective)")
       .eq("status", "pendente")
       .order("created_at", { ascending: false });
 
@@ -788,6 +788,12 @@ if (
             {relatorio.cycle_report_number && (
               <span className="text-sm font-semibold text-gray-600">
                 Relatório {relatorio.cycle_report_number}
+              </span>
+            )}
+
+            {relatorio.patients?.objective?.trim() && (
+              <span className="text-sm font-semibold text-primary-700">
+                {relatorio.patients.objective.trim()}
               </span>
             )}
 

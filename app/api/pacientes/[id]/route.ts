@@ -76,6 +76,8 @@ export async function DELETE(
   try {
     await removerPasta("dietas", id);
     await removerPasta("exames", id);
+    await removerPasta("treinos", id);
+    await removerPasta("fotos", id);
 
     if (usuarioId) {
       await removerPasta("comprovantes", usuarioId);

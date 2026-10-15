@@ -1011,6 +1011,15 @@ setEntregasRegistradas((anteriores) => [
   },
 ]);
 
+// Aviso no celular do paciente; uma falha aqui não desfaz o envio.
+fetch("/api/notificar-dieta", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ entregaId: entrega.id }),
+}).catch((erroNotificacao) =>
+  console.error("Erro ao registrar notificação de dieta:", erroNotificacao)
+);
+
 avisar("Dieta enviada ao paciente com sucesso!");
 
 setArquivosDieta([]);

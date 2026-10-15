@@ -7,6 +7,8 @@ import { avisar, pedirConfirmacao } from "@/lib/avisos";
 import { Button } from "primereact/button";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import { Tag } from "primereact/tag";
+import ComparativoFotos from "@/components/ComparativoFotos";
+import { type PlanoDeTreino, nivelDoTreino, volumePorGrupo } from "@/lib/treino";
 
 type Paciente = {
   id: string;
@@ -17,15 +19,6 @@ type Paciente = {
   payment_status: string;
   access_expires_at: string | null;
   important_note: string | null;
-  created_at: string;
-};
-
-type Evolucao = {
-  id: string;
-  patient_id: string;
-  weight: number | null;
-  notes: string | null;
-  measured_at: string;
   created_at: string;
 };
 
@@ -57,7 +50,7 @@ export default function PacientePage() {
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [cicloAtivo, setCicloAtivo] = useState<Ciclo | null>(null);
   const [carregando, setCarregando] = useState(true);
-  const [evolucoes, setEvolucoes] = useState<Evolucao[]>([]);
+  const [treino, setTreino] = useState<{ status: string; plano: PlanoDeTreino | null } | null>(null);
   const [relatorios, setRelatorios] = useState<Relatorio[]>([]);
   const [ativandoPaciente, setAtivandoPaciente] = useState(false);
   async function solicitarReativacao() {
@@ -158,19 +151,16 @@ async function buscarCicloAtivo() {
   setCicloAtivo(data);
 }
 
-    async function buscarEvolucoes() {
-  const { data, error } = await api
-    .from("patient_progress")
-    .select("*")
+    async function buscarTreino() {
+  const { data } = await api
+    .from("treinos")
+    .select("status, plano")
     .eq("patient_id", params.id)
-    .order("measured_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (error) {
-    console.error("Erro ao buscar evoluções:", error);
-    return;
-  }
-
-  setEvolucoes(data || []);
+  setTreino(data ?? null);
 }
 
 async function buscarRelatorios() {
@@ -190,7 +180,7 @@ async function buscarRelatorios() {
 
     buscarPaciente();
 buscarCicloAtivo();
-buscarEvolucoes();
+buscarTreino();
 buscarRelatorios();
 
   }, [params.id]);
@@ -314,6 +304,20 @@ buscarRelatorios();
               valor={new Date(paciente.created_at).toLocaleDateString("pt-BR")}
             />
 
+            <Card
+              titulo="Treino"
+              valor={
+                !treino
+                  ? "Não enviado"
+                  : treino.status === "concluido" && treino.plano
+                    ? nivelDoTreino(volumePorGrupo(treino.plano)).nivel ?? "Ver treino"
+                    : treino.status === "falhou"
+                      ? "Leitura falhou"
+                      : "Em leitura"
+              }
+              onClick={treino ? () => router.push(`/pacientes/${paciente.id}/treino`) : undefined}
+            />
+
           </div>
 
           <section className="mt-6 cartao p-5 lg:p-6">
@@ -327,65 +331,7 @@ buscarRelatorios();
               </p>
             </div>
           </section>
-          <section className="mt-6 cartao p-5 lg:p-6">
-  <div className="flex items-center justify-between">
-    <div>
-      <h2 className="text-xl font-bold text-gray-900">
-        Histórico de evolução
-      </h2>
-      <p className="mt-1 text-sm text-gray-500">
-        Acompanhe a evolução do paciente ao longo do tempo.
-      </p>
-    </div>
-
-    <Button icon="pi pi-plus" size="small"
-      type="button"
-      onClick={() => router.push(`/pacientes/${paciente.id}/evolucao`)}
-     
-    >
-  Registrar evolução
-</Button>
-  </div>
-
-  <div className="mt-6">
-    {evolucoes.length === 0 ? (
-      <div className="rounded-xl bg-gray-50 p-4 text-sm text-gray-500">
-        Nenhuma evolução registrada.
-      </div>
-    ) : (
-      <div className="space-y-3">
-        {evolucoes.map((evolucao) => (
-          <div
-            key={evolucao.id}
-            className="rounded-xl border border-gray-200 p-4"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-gray-500">
-                  {new Date(
-                    `${evolucao.measured_at}T00:00:00`
-                  ).toLocaleDateString("pt-BR")}
-                </p>
-
-                <p className="mt-1 text-lg font-bold text-gray-900">
-                  {evolucao.weight !== null
-                    ? `${evolucao.weight.toLocaleString("pt-BR")} kg`
-                    : "Peso não informado"}
-                </p>
-              </div>
-            </div>
-
-            {evolucao.notes && (
-              <p className="mt-3 text-sm text-gray-600">
-                {evolucao.notes}
-              </p>
-            )}
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</section>
+          <ComparativoFotos pacienteId={paciente.id} />
 
 <section className="mt-6 cartao p-5 lg:p-6">
   <h2 className="text-xl font-bold text-gray-900">
@@ -478,19 +424,40 @@ buscarRelatorios();
 function Card({
   titulo,
   valor,
+  onClick,
 }: {
   titulo: string;
   valor: string;
+  onClick?: () => void;
 }) {
+  const conteudo = (
+    <>
+      <span className="block text-sm text-gray-500">
+        {titulo}
+      </span>
+
+      <span className="mt-1 block break-words font-semibold text-gray-900 lg:text-lg">
+        {valor}
+      </span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="cartao flex items-start justify-between gap-2 p-4 text-left transition-colors hover:border-primary-700 lg:p-5"
+      >
+        <span className="min-w-0">{conteudo}</span>
+        <i className="pi pi-chevron-right mt-1 text-gray-400" aria-hidden />
+      </button>
+    );
+  }
+
   return (
     <div className="cartao p-4 lg:p-5">
-      <p className="text-sm text-gray-500">
-        {titulo}
-      </p>
-
-      <p className="mt-1 break-words font-semibold text-gray-900 lg:text-lg">
-        {valor}
-      </p>
+      {conteudo}
     </div>
   );
 }

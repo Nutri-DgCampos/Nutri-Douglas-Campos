@@ -3,7 +3,8 @@ import path from "node:path";
 import { obterPool } from "./banco";
 import type { Contexto } from "./permissoes";
 
-// Arquivos enviados (dietas em PDF, comprovantes de pagamento e exames de sangue).
+// Arquivos enviados (dietas em PDF, comprovantes de pagamento, exames de
+// sangue, treinos e fotos de evolução).
 // Ficam em disco, em um volume do Docker, organizados por "bucket".
 
 type Bucket = {
@@ -33,7 +34,29 @@ export const BUCKETS: Record<string, Bucket> = {
       "image/png": ["png"],
     },
   },
+  treinos: {
+    tamanhoMaximo: 20 * 1024 * 1024,
+    tipos: {
+      "application/pdf": ["pdf"],
+      "image/jpeg": ["jpg", "jpeg"],
+      "image/png": ["png"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ["docx"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ["xlsx"],
+      "text/plain": ["txt"],
+    },
+  },
+  fotos: {
+    tamanhoMaximo: 10 * 1024 * 1024,
+    tipos: {
+      "image/jpeg": ["jpg", "jpeg"],
+      "image/png": ["png"],
+      "image/webp": ["webp"],
+    },
+  },
 };
+
+// Buckets em que o paciente grava e lê só dentro da pasta do próprio cadastro.
+const PASTA_DO_PACIENTE = ["exames", "treinos", "fotos"];
 
 function pastaBase() {
   return process.env.ARQUIVOS_DIR ?? "/dados/arquivos";
@@ -85,8 +108,8 @@ export function podeEnviar(
     return contexto.papel === "nutricionista";
   }
 
-  // Exame de sangue: o paciente grava na pasta do próprio cadastro.
-  if (bucket === "exames") {
+  // Exame, treino e fotos: o paciente grava na pasta do próprio cadastro.
+  if (PASTA_DO_PACIENTE.includes(bucket)) {
     return Boolean(contexto.pacienteId) && caminho.startsWith(`${contexto.pacienteId}/`);
   }
 
@@ -111,7 +134,7 @@ export async function podeBaixar(
     return caminho.startsWith(`${contexto.usuarioId}/`);
   }
 
-  if (bucket === "exames") {
+  if (PASTA_DO_PACIENTE.includes(bucket)) {
     return Boolean(contexto.pacienteId) && caminho.startsWith(`${contexto.pacienteId}/`);
   }
 
