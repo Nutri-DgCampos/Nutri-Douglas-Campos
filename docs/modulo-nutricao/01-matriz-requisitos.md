@@ -1,0 +1,195 @@
+# 01 — Matriz de requisitos × aplicativo atual
+
+Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
+
+**Situação**
+
+- **MANTER** — já existe e atende; o módulo apenas reutiliza.
+- **COMPLETAR** — existe parcialmente; falta o que está descrito em *Lacuna*.
+- **CRIAR** — não existe nada equivalente.
+- **NÃO VERIFICADO** — depende de informação que o código não responde (indicado em *Lacuna*).
+
+**Fontes**: `R` = roteiro (título da seção), `S0n` = arquivo `SPEC/0n`, `EF` = especificação funcional, `FIG-n` = figura do roteiro.
+
+---
+
+## 1. Base do aplicativo reutilizada
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| BAS-01 | Cadastro único de pacientes com ID usado em todo o sistema | R: início; S01 | MANTER | tabela `patients` (`banco/init/001_estrutura.sql`) | — |
+| BAS-02 | Autenticação e permissões no servidor; credenciais nunca no navegador | S01 Segurança | MANTER | `lib/servidor/sessao.ts`, `lib/servidor/permissoes.ts` (regras por tabela), chaves só no `.env` do servidor | Regras novas para cada tabela do módulo |
+| BAS-03 | Armazenamento seguro de arquivos com controle de acesso | R: vários | MANTER | `lib/servidor/arquivos.ts` (buckets, `podeEnviar`/`podeBaixar`), links assinados `/api/arquivos/assinar` | Buckets novos: `documentos` (PDFs gerados), `identidade` (logo/assinatura), `orientacoes` (imagens), `bioimpedancia` |
+| BAS-04 | Ciclo de 33 dias iniciado no envio da dieta | R; S01; EF §10 | MANTER | função `iniciar_ciclo_dieta`, envio em `app/(nutricionista)/dietas/page.tsx` | O envio pelo editor deve chamar o mesmo fluxo |
+| BAS-05 | Ciclo de acesso/pagamento independente (30 + 15 dias) | R: comandos de envio §20 | MANTER | `atualizar_acesso_apos_pagamento`, `inativar_pacientes_vencidos` | — |
+| BAS-06 | Fluxo atual de envio de dieta por upload de PDF preservado | EF §10 | MANTER | `diet_deliveries`, `diet_delivery_files`, tela Dietas | — |
+| BAS-07 | Indicador de novidade só na área do paciente, some ao abrir | R: comandos de envio §21 | MANTER | `patient_update_views` (tipos `dieta`, `devolutiva`) | Novos tipos se avaliação/orientação forem publicadas ao paciente |
+| BAS-08 | Push ao paciente quando houver atualização | — (já entregue) | MANTER | `lib/servidor/notificacoes.ts`, `/api/notificar-dieta` | Reutilizar no envio pelo editor |
+| BAS-09 | Relatórios, pagamentos, alertas e área do paciente sem mudança de comportamento | S01 §5; S04 | MANTER | rotas e telas atuais | Testes de regressão a cada fase |
+| BAS-10 | Interface para computador, tablet e celular | R: FIG-002; EF 4.1 | COMPLETAR | PrimeReact + Tailwind, layout mobile-first já usado | Editor de dietas é denso; precisa de layout próprio para telas pequenas |
+
+## 2. Navegação, ficha e consultas
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| NAV-01 | Acesso ao módulo pela ficha do paciente (botão no topo) | S01; EF §10 | CRIAR | ficha em `app/(nutricionista)/pacientes/[id]/page.tsx` não tem o botão | Botão e rota do módulo |
+| NAV-02 | Acesso pela tela Dietas, com o paciente já selecionado | EF §10 | CRIAR | "Preparar dieta" abre só o upload de PDF | Segundo comando ao lado de "Preparar dieta" |
+| NAV-03 | Abertura mostra painel geral do paciente, não a consulta | S01 | CRIAR | — | Tela inicial do módulo por paciente |
+| NAV-04 | Pesquisa de pacientes no módulo (sem "Novo paciente") | R: MÓDULO DE DIETAS — INTEGRAÇÃO; FIG-002 | COMPLETAR | busca existe em `app/(nutricionista)/pacientes/page.tsx` | Reaproveitar na home do módulo |
+| NAV-05 | Configurações do módulo (menu próprio) | R: FIG-004/005 | CRIAR | — | Área "Configurações" com as bibliotecas da seção 3 |
+| CAD-01 | Data de nascimento e idade calculada | R: cadastro §1 | CRIAR | `patients` não tem nascimento | Coluna `birth_date`; idade sempre calculada |
+| CAD-02 | Sexo para cálculos e PDF | R: cadastro §1; ELABORAÇÃO — IDENTIFICAÇÃO §3 | CRIAR | ausente em `patients` | Coluna com valores definidos pelo cliente (ver pendências) |
+| CAD-03 | Altura atual sincronizada com a avaliação física | R: AVALIAÇÃO FÍSICA — PESO E ALTURA §3 | CRIAR | ausente | Coluna de altura atual + histórico na avaliação |
+| CAD-04 | E-mail no cadastro igual ao do acesso | R: FIG-008/009 | COMPLETAR | e-mail vive em `users`; editado por `/api/pacientes/[id]/acesso` | Mostrar o e-mail de acesso no cadastro; paciente sem acesso precisa de e-mail de contato |
+| CAD-05 | Peso inicial × peso atual × histórico de peso | R: cadastro §3 | COMPLETAR | `initial_weight`, `patient_progress.weight`, `patient_reports.weight` | Visão única de histórico (relatório, evolução, avaliação física) e "peso atual" derivado |
+| CAD-06 | Lembrete do cadastro | S02 Dois lembretes | MANTER | `patients.important_note` | Exibir só leitura no editor |
+| CON-01 | Consulta com ID, data, tipo (primeira/retorno), status, criação/atualização, nutricionista | R: FIG-010 §1; Nova consulta §3 | CRIAR | — | Tabela de consultas |
+| CON-02 | Uma consulta em andamento por paciente, garantida no banco | R: Nova consulta §2 e §9 | CRIAR | — | Índice único parcial |
+| CON-03 | Lista de consultas e resumo por consulta (dietas, avaliações, anamneses, exames, fórmulas) | R: FIG-010, FIG-015 | CRIAR | — | — |
+| CON-04 | Finalizar consulta sem publicar nada | R: Nova consulta §7 | CRIAR | — | — |
+| CON-05 | Excluir só a consulta vigente sem registros clínicos nem documentos publicados | R: FIG-014 | CRIAR | — | Bloqueio também no banco |
+| CON-06 | Auditoria de correções em consultas antigas (o quê, antes/depois, quando, quem) | R: FIG-013 §4 | CRIAR | não há trilha de auditoria | Tabela de auditoria genérica |
+| CON-07 | Consulta não altera plano, pagamento, acesso, ciclo nem relatórios | R: Nova consulta §8 | MANTER (regra) | — | Garantir por teste |
+
+## 3. Configurações (bibliotecas)
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| CFG-01 | Modelos de anamnese com versão, arquivamento quando usados | R: FIG-020; S02 Anamnese | CRIAR | — | Tipos de pergunta: curta, longa, múltipla escolha (simples/múltipla), texto livre; obrigatoriedade; sem seções |
+| CFG-02 | Modelos de solicitação de exames | R: CONFIGURAÇÕES — MODELOS DE SOLICITAÇÃO DE EXAMES | CRIAR | — | — |
+| CFG-03 | Avaliação física em Configurações | R: FIG-029 | NÃO SE APLICA | — | Roteiro descarta |
+| CFG-04 | Modelos de observação da dieta | R: CONFIGURAÇÕES DA DIETA — MODELOS DE OBSERVAÇÕES | CRIAR | — | — |
+| CFG-05 | Modelos de refeição | R: MODELOS DE REFEIÇÕES | CRIAR | — | — |
+| CFG-06 | Modelos de dieta completa | R: MODELOS DE DIETAS COMPLETAS | CRIAR | — | Sem dados pessoais no modelo |
+| CFG-07 | Medicações (cadastro) | R: MEDICAÇÕES E REGISTRO DE DOSAGENS | CRIAR | — | Calculadora auxiliar depende de aprovação (ver 04) |
+| CFG-08 | Fórmulas (modelos e ingredientes) | R: CONFIGURAÇÕES — FÓRMULAS NUTRICIONAIS | CRIAR | — | Cálculos dependem de aprovação |
+| CFG-09 | Orientações com texto formatado, imagens e assinatura | R: MODELOS DE ORIENTAÇÕES NUTRICIONAIS | CRIAR | — | Editor de texto rico |
+| CFG-10 | Logotipo, assinatura, marca-d'água, frase, identificação profissional (nome, CRN), cor das linhas | R: LOGOTIPO, ASSINATURA E MARCA-D'ÁGUA; PADRONIZAÇÃO VISUAL §2–3, §30 | CRIAR | — | — |
+| CFG-11 | Suplementos | S03 | NÃO VERIFICADO | — | Aparece na matriz da SPEC e no menu do NutriDiet, mas o roteiro trata "Suplementação" como "Medicações"; confirmar se é um cadastro separado |
+
+## 4. Alimentos (TACO)
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| ALI-01 | Estrutura para alimentos, categorias, nutrientes, ácidos graxos, aminoácidos, com fonte e versão | R: CADASTRO DE ALIMENTOS E INTEGRAÇÃO COM A TACO | CRIAR | — | Etapa 1: estrutura aprovada antes da carga |
+| ALI-02 | Importação dos 5 CSVs com validação e sem duplicar | R: IMPORTAÇÃO DA TACO §3 | CRIAR | CSVs recebidos e conferidos: 597 alimentos, 15 categorias, 423 com ácidos graxos, 26 com aminoácidos; todos os valores numéricos | Etapa 2 só após aprovação |
+| ALI-03 | Ausente ≠ zero | R; S02 Base de alimentos | CRIAR | CSVs usam campo vazio para ausência | 6 alimentos sem kcal; "traços" da TACO não são distinguíveis no CSV (ver pendências) |
+| ALI-04 | Cadastro manual de alimentos com origem distinta da TACO | R: TACO §4 | CRIAR | — | — |
+| ALI-05 | Medidas caseiras por alimento (singular, plural, g/mL, padrão, ordem) | R: MEDIDAS CASEIRAS | CRIAR | — | Preenchidas aos poucos pelo nutricionista |
+| ALI-06 | Substituições por alimento com quantidades e conferência de macros | R: LISTA DE SUBSTITUIÇÕES | CRIAR | — | Regra de arredondamento aprovada (S02) |
+| ALI-07 | Histórico/snapshots para não alterar dietas publicadas | S02 Base de alimentos | CRIAR | — | Dieta publicada guarda os nutrientes usados |
+| ALI-08 | Densidade para converter mL ↔ g | R: MEDIDAS CASEIRAS §7 | CRIAR | — | Sem dado na TACO; campo opcional por alimento |
+| ALI-09 | Busca sem acento, por partes do nome, rápida | R: CAMPO DE BUSCA §3, §17 | CRIAR | — | Extensão `unaccent` ou coluna normalizada + índice trigram |
+
+## 5. Editor de dietas
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| DIE-01 | Várias dietas por consulta, em abas, com estado próprio | R: ABAS DE MÚLTIPLAS DIETAS; S02 | CRIAR | — | — |
+| DIE-02 | Identificação do paciente e da consulta no topo | R: IDENTIFICAÇÃO DO PACIENTE E DA CONSULTA | CRIAR | — | Depende de CAD-01/02 |
+| DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR | — | Nunca no PDF nem para o paciente |
+| DIE-04 | Indicadores TMB/GET/GET+METs da avaliação de referência | R: INDICADORES DE GASTO ENERGÉTICO | CRIAR | — | Depende da avaliação física e dos métodos aprovados |
+| DIE-05 | Objetivo e título por dieta | R: BLOCO 1 L1 C1–C2 | CRIAR | — | — |
+| DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR | — | Seção cortada no roteiro (ver pendências) |
+| DIE-07 | Gerar nova dieta, duplicar, salvar como modelo | R: BLOCO 1 L1 C4–C6 | CRIAR | — | Texto de "Gerar nova dieta" e "Salvar como modelo" cortado |
+| DIE-08 | Importar rotina (itens em cinza fora dos cálculos até confirmar) | R: BLOCO 1 L1 C7 | CRIAR | — | — |
+| DIE-09 | Refeições: adicionar, remover, nome, horário, mover, observação única | R: BLOCO 1 L2 C1–C8; S02 | CRIAR | — | "Remover refeição" cortado no roteiro |
+| DIE-10 | Opções alternativas da refeição ("OU"), com opção de referência | R: BLOCO 1 L2 C7; S02 | CRIAR | — | — |
+| DIE-11 | Copiar/colar refeição (área interna), salvar e importar modelo de refeição | R: BLOCO 1 L2 C9–C13 | CRIAR | — | — |
+| DIE-12 | Vitaminas e minerais da refeição | R: BLOCO 1 L2 C12 | CRIAR | — | — |
+| DIE-13 | KCAL/CHO/PTN/LIP por refeição e por alimento; kcal sem decimais, macros com 1 casa | R: BLOCO 1 L2 C14–C17, L3 C11–C14; S02 | CRIAR | — | — |
+| DIE-14 | Linha de alimento: busca, quantidade de medidas, medida, gramas ajustáveis, mover | R: BLOCO 1 L3 C1–C9 | CRIAR | — | Coluna 7 não será implementada (roteiro) |
+| DIE-15 | Nome exibido editável sem trocar nutrientes; trocar alimento redefine a quantidade | R: L3 C3 §9–13; S02 | COMPLETAR (regra) | — | Comportamento exato de "redefine a quantidade" a confirmar |
+| DIE-16 | Substituições por alimento em janela, listadas ao final da dieta | R: L3 C10; S02 | CRIAR | — | Arredondamento: 1 g abaixo de 20 g; 10 g a partir de 20 g |
+| DIE-17 | Observações gerais da dieta (busca de modelos, várias, ordenáveis) | R: BLOCO AO FINAL; S02 | CRIAR | — | — |
+| DIE-18 | Salvar, Apagar, Gerar PDF, Enviar ao paciente, independentes | R: COMANDOS SALVAR, APAGAR, GERAR PDF | CRIAR | — | — |
+| DIE-19 | Rascunho automático + salvar explícito; ao voltar, escolher rascunho ou última versão salva | S02 Dietas | CRIAR | — | — |
+| DIE-20 | Envio publica a dieta e inicia o ciclo de 33 dias | R; S01; EF §10 | COMPLETAR | ciclo e entrega existem (BAS-04/06) | Envio pelo editor gera o PDF e registra a entrega pelo mesmo fluxo |
+| DIE-21 | Versões publicadas imutáveis | R: vários | CRIAR | — | — |
+| DIE-22 | Indicação de conteúdo sugerido pela IA | R: AUXÍLIO DA IA §30 | CRIAR | — | — |
+
+## 6. Painel nutricional (Bloco 2)
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| PAI-01 | Painel lateral retrátil, largura ajustável e persistente | R: BLOCO 2; S02 | CRIAR | — | — |
+| PAI-02 | Total da dieta atual × anterior (mesmo tipo, escolha manual) | R: BLOCO 2 L1 | CRIAR | — | — |
+| PAI-03 | kcal, CHO/PTN/LIP em g e %, por kg, fibras | R: BLOCO 2 L2–L12 | CRIAR | — | % por 4/4/9 sobre a energia registrada (S02: energia registrada é a referência) |
+| PAI-04 | kcal não proteica / g de nitrogênio | S02; FIG-088 | CRIAR | — | Fator de conversão nitrogênio/proteína a aprovar (ver 04) |
+| PAI-05 | Peso de referência identificado, comum a todos os indicadores por kg | R: BLOCO 2 L6–L9 | CRIAR | — | — |
+| PAI-06 | Fibras solúveis/insolúveis | R: BLOCO 2 L11–L12 | CRIAR | — | TACO não tem: exibir "Dado não disponível" |
+| PAI-07 | Vitaminas e minerais selecionados + janela "Detalhes Nutrientes" | R: VISUALIZAÇÃO DE VITAMINAS; DETALHES NUTRIENTES | CRIAR | — | TACO não tem vitamina D, E, B12, folato, selênio |
+| PAI-08 | Hidratação mL/kg com observações | R: HIDRATAÇÃO | CRIAR | — | — |
+| PAI-09 | Sem gráficos de barras/metas | S02 | — (restrição) | — | — |
+
+## 7. Avaliação física
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| AVF-01 | Avaliação vinculada a paciente e consulta, rascunho, autosave, finalizar | R: SALVAMENTO AUTOMÁTICO, FINALIZAÇÃO | CRIAR | — | — |
+| AVF-02 | Peso e altura pré-preenchidos e sincronizados com o cadastro | R: PESO E ALTURA | COMPLETAR | `patient_progress` guarda peso por data | Altura não existe (CAD-03) |
+| AVF-03 | TMB por protocolo + valor manual | R: PROTOCOLOS DE CÁLCULO DA TMB | CRIAR | — | Aguarda aprovação (04, item M-01) |
+| AVF-04 | NAF e METs sem dupla contagem | R: NAF E GASTO POR METs | CRIAR | — | Aguarda aprovação (04, M-02 e M-03) |
+| AVF-05 | Dobras cutâneas por protocolo | R: PROTOCOLOS DE DOBRAS CUTÂNEAS | CRIAR | — | Aguarda aprovação (04) |
+| AVF-06 | Perimetria (9 medidas) | R: PERIMETRIA | CRIAR | — | — |
+| AVF-07 | Bioimpedância manual + PDF com leitura automática | R: BIOIMPEDÂNCIA | COMPLETAR | leitura de PDF por IA já existe para exames (`lib/servidor/exames.ts`) | Seção de extração cortada no roteiro |
+| AVF-08 | Resultados: avatar com setas, avatares de % gordura, 4 gráficos (12 últimas), tabela de perimetria | R: RESULTADOS…; FIG-074–079 | CRIAR | `components/ComparativoFotos.tsx` é a única tela de evolução visual hoje | Ilustrações do avatar dependem do cliente |
+| AVF-09 | Faixa de referência de gordura com fonte | R: IDENTIFICAÇÃO E REFERÊNCIAS §6–9 | CRIAR | — | Aguarda aprovação |
+| AVF-10 | PDF da avaliação e envio opcional ao paciente | R: SALVAMENTO … ENVIO §6–8 | CRIAR | — | — |
+| AVF-11 | Relação com "Registrar evolução" atual | — | NÃO VERIFICADO | `app/(nutricionista)/pacientes/[id]/evolucao/page.tsx` grava `patient_progress` | Decidir se o registro de peso simples continua ao lado da avaliação física |
+
+## 8. Anamnese e recordatório
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| ANA-01 | Ficha por consulta a partir de modelo, com cópia da versão | R: ANAMNESE — SELEÇÃO; ABERTURA | CRIAR | — | — |
+| ANA-02 | Presencial e online na mesma ficha, autosave | S02 Anamnese | CRIAR | — | Proteção contra edição simultânea |
+| ANA-03 | Link individual seguro sem login, por paciente, para anamnese e recordatório | S01 Segurança; S02 | CRIAR | todo acesso atual exige login | Token imprevisível, revogável, só leitura/escrita do próprio formulário |
+| ANA-04 | Copiar link e abrir WhatsApp com mensagem pronta | S02 | CRIAR | `lib/contato.ts` já monta links `wa.me` | — |
+| ANA-05 | Paciente edita até o 1º acesso do nutricionista; depois só leitura | S02 | CRIAR | — | — |
+| ANA-06 | Observações profissionais separadas das respostas; lembrete da anamnese | S02 | CRIAR | — | — |
+| ANA-07 | Avisos "Anamnese online recebida" / "Recordatório alimentar recebido" na tela Dietas pendentes | S02 Avisos | COMPLETAR | lista `dietasPendentes` em `app/(nutricionista)/dietas/page.tsx` | Aviso sob o nome do paciente; "Preparar dieta" marca como visto |
+| ANA-08 | Recordatório: refeições, horários, alimentos em texto livre, rascunho, exemplo "MODELO" | S02 Recordatório | CRIAR | — | — |
+| ANA-09 | Importar recordatório para a dieta em cinza | S02; R: ANAMNESE — ENVIO §10 | CRIAR | — | Vinculação do texto livre a alimentos da base |
+| ANA-10 | Recordatório ≠ relatório semanal | R: §8 | MANTER (regra) | `patient_reports` | — |
+
+## 9. Exames, medicações, fórmulas, orientações
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| EXA-01 | Exames enviados pelo paciente na ficha e na consulta | R: EXAMES — INTEGRAÇÃO | COMPLETAR | `blood_exams`, `/api/exames`, tela `app/(nutricionista)/exames/page.tsx` | Vínculo opcional com consulta; aba de exames na ficha |
+| EXA-02 | Análise por IA visível só ao nutricionista | — (já entregue) | MANTER | `lib/servidor/exames.ts` | — |
+| EXA-03 | Solicitação de exames a partir de modelo, PDF, envio opcional | R: MODELOS DE SOLICITAÇÃO DE EXAMES §3–6 | CRIAR | — | Cálculos de exames: aguardam aprovação |
+| MED-01 | Registro de medicações com receita anexa e aviso obrigatório | R: MEDICAÇÕES | CRIAR | — | — |
+| MED-02 | Calculadora auxiliar (mL × mg/mL, total semanal) | R: MEDICAÇÕES §3–5; ELABORAÇÃO — MEDICAÇÃO | CRIAR | — | Aguarda aprovação (04) |
+| FOR-01 | Fórmulas por consulta: importar, nova, salvar como modelo | R: BOTÃO "FÓRMULAS" | CRIAR | — | — |
+| FOR-02 | Campos: nome (autocomplete), ingredientes, dosagem/unidade, excipiente, posologia, observação | R: FÓRMULAS: CAMPOS INTERNOS | CRIAR | — | — |
+| FOR-03 | Salvar, Apagar, PDF independente | R: FÓRMULAS: COMANDOS | CRIAR | — | — |
+| ORI-01 | Orientação por consulta a partir de modelo, enviada ao paciente | R: MODELOS DE ORIENTAÇÕES §5–6 | CRIAR | — | — |
+
+## 10. PDFs, IA e publicação
+
+| ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
+|---|---|---|---|---|---|
+| PDF-01 | Gerador de PDF no servidor, A4 vertical, paginação, cabeçalho repetido, rodapé com CRN | R: PADRONIZAÇÃO … DIETA ALIMENTAR; FIG-184–186 | CRIAR | app só armazena PDFs enviados | Biblioteca de geração a escolher na Fase 0 |
+| PDF-02 | Dieta: modelo #DGteam, simples ou detalhado, observações antes das substituições | S02; FIG-184–186 | CRIAR | — | — |
+| PDF-03 | Fórmulas, medicação, avaliação física, solicitação de exames, orientações | R | CRIAR | — | — |
+| PDF-04 | Nomes "Dieta - Nome - dd-mm-aaaa.pdf" etc. | R: COMANDOS §10–12 | CRIAR | — | — |
+| PDF-05 | PDF emitido preservado por versão | R | CRIAR | — | — |
+| IA-01 | Auxílio da IA no editor com prévia, confirmação e vínculo a alimentos da base | R: AUXÍLIO DA INTELIGÊNCIA ARTIFICIAL | CRIAR | integração OpenAI no servidor já existe (`lib/servidor/exames.ts`, `treinos.ts`) | Termo de consentimento para envio de dados de saúde |
+| IA-02 | Leitura de bioimpedância e de anamnese pela IA sem dados identificáveis | R; S01 | COMPLETAR | padrão de envio de arquivo à OpenAI já usado | Minimização de dados |
+| PUB-01 | Área do paciente mostra a dieta enviada (e as opções/observações) | R: COMANDOS §18; ABAS §7 | COMPLETAR | `app/area-paciente/dietas/page.tsx` lista PDFs das 2 últimas entregas | Decidir se o paciente vê só o PDF gerado ou também uma versão em tela |
+
+---
+
+## Resumo
+
+| Situação | Quantidade |
+|---|---|
+| MANTER | 13 |
+| COMPLETAR | 12 |
+| CRIAR | 88 |
+| NÃO VERIFICADO | 2 |
+| Não se aplica / restrição | 2 |
+
+O que já existe e será reutilizado: cadastro de pacientes, autenticação e permissões, armazenamento de arquivos, ciclo de 33 dias, entregas de dieta, push, indicadores de novidade, envio de exames com análise por IA e a integração com a OpenAI no servidor. Todo o restante do módulo é novo.
