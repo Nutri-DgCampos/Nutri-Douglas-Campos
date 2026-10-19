@@ -1,5 +1,27 @@
 # 03 — Pendências que dependem do cliente
 
+## Respostas recebidas em 19/10/2026
+
+| Item | Resposta do cliente | Efeito no projeto |
+|---|---|---|
+| B.2 Suplementos | Inseridos direto na dieta, tratados como alimentos | Sem cadastro próprio; suplementos são alimentos de cadastro manual (ex.: whey, creatina). CFG-11 encerrado |
+| B.3 Trocar alimento | A quantidade zera | Ao escolher outro alimento na linha, quantidade de medidas e gramas ficam vazias |
+| B.4 Registrar evolução | Substituído pela avaliação física | O registro rápido de peso sai quando a avaliação física entrar (Fase 4); os registros antigos continuam no histórico de peso |
+| B.5 Dieta na área do paciente | Paciente vê a dieta completa em tela | Além do PDF, tela da dieta com refeições, opções, substituições e observações |
+| B.6 Questionário de Rastreamento Metabólico | Não será usado | Fora do escopo |
+| B.7 E-mail de contato | Sim, para enviar a anamnese, além do link por WhatsApp | E-mail de contato no cadastro, independente do acesso ao app |
+| C.1 Traços | "Trataremos como vazio" | Traço = dado não disponível (ver dúvida abaixo sobre os zeros) |
+| C.2 Alimentos sem kcal | De acordo | Ficam "Dado não disponível" até serem completados |
+| C.3 Nutrientes fora da TACO | Usar fonte complementar reconhecida, à escolha da equipe | Pesquisar e propor a fonte (licença de uso incluída) |
+| E Consentimento para IA | Não será pedido: a IA só auxilia, o nutricionista revisa e libera, sob sua responsabilidade | Sem termo de aceite no app |
+
+Respostas ainda ambíguas, a confirmar:
+
+- **B.1 Sexo no cadastro:** a resposta foi "aparecer todas as equações possíveis". Não diz quais opções o campo terá.
+- **C.1 Zeros da TACO:** tratar todo zero do CSV como vazio também apaga zeros verdadeiros (ex.: colesterol de vegetais).
+- **"5.1 aprovado tudo":** não há item 5.1 no documento; provavelmente se refere à seção 1.1 (TMB). A seção 1.2 (gasto energético total) ficou sem resposta.
+- Sem resposta ainda: seção A (trechos cortados) e seção D (materiais).
+
 ## A. Trechos do roteiro cortados na conversão do Word
 
 O texto termina no meio da frase nestes pontos. Pedir o parágrafo completo (ou confirmar que a figura basta):
