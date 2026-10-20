@@ -6,12 +6,12 @@ Regra da SPEC 01 (decisão 177): cada método de cálculo clínico é pesquisado
 |---|---|---|
 | M-01 | TMB / gasto de repouso (4 equações + valor manual) | **Aprovado em 20/10/2026** |
 | M-02 | Gasto energético total (GET) e fator de atividade (NAF) | **Aprovado em 20/10/2026** (opções A e B) |
-| M-03 | Gasto por METs | A pesquisar |
-| M-04 | Dobras cutâneas (Jackson-Pollock 7 e 3, Faulkner, Slaughter, Petroski) e conversão densidade → % gordura | A pesquisar |
-| M-05 | Faixas de referência de % de gordura | A pesquisar |
-| M-06 | kcal não proteica / g de nitrogênio (fator N/proteína) | A pesquisar |
-| M-07 | Calculadora de medicações (mL × mg/mL; totais semanais) | A pesquisar |
-| M-08 | Cálculos de fórmulas, suplementos e exames | A pesquisar, conforme os campos reais |
+| M-03 | Gasto por METs (Compendium 2024) | **Aprovado em 20/10/2026** |
+| M-04 | Dobras cutâneas (Jackson-Pollock 7 e 3, Faulkner, Slaughter, Petroski) e conversão densidade → % gordura (Siri) | **Aprovado em 20/10/2026** |
+| M-05 | Faixas de referência de % de gordura (Gallagher 2000) | **Aprovado em 20/10/2026** |
+| M-06 | kcal não proteica / g de nitrogênio (fator 6,25) | **Aprovado em 20/10/2026** |
+| M-07 | Calculadora de medicações (mL × mg/mL; totais semanais) | **Aprovado em 20/10/2026** |
+| M-08 | Cálculos de fórmulas (dispensação); suplementos e exames sem cálculo | **Aprovado em 20/10/2026** |
 | F-01 | Fonte complementar de nutrientes ausentes na TACO | **Aprovado em 20/10/2026**: opção B (USDA FoodData Central) |
 
 Convenções em todos os métodos: peso em kg, altura em cm (salvo indicação), idade em anos completos na data da avaliação, resultado em kcal/dia arredondado só na exibição. O método, a versão e os dados de entrada ficam gravados na avaliação.
@@ -168,3 +168,36 @@ Nutrientes ausentes na TACO: vitamina B12, folato, vitaminas D e E, selênio, a�
 **Decisão do responsável (20/10/2026): opção B.** Proposta aprovada: opção B, aplicada por correspondência aprovada, começando pelos alimentos mais usados nas dietas. Cada valor importado fica identificado com a fonte "USDA FoodData Central", o código do alimento americano e a data, e pode ser revisto. A opção A só se a TBCA autorizar por escrito.
 
 Fontes: [FoodData Central — licença CC0](https://fdc.nal.usda.gov/) · [TBCA — tabelas complementares (versão 7.0)](https://www.tbca.net.br/arquivosestaticos/Tabelas_complementares_Vitamina_A_Carotenoides_n.pdf) · [Agência FAPESP sobre a TBCA](https://agencia.fapesp.br/59305)
+
+
+---
+
+## M-03 a M-08 — proposta e decisões (20/10/2026)
+
+A proposta completa enviada ao responsável, com fórmulas, coeficientes, populações, exemplos de teste e fontes, está em [05-proposta-metodos-M03-M08.md](05-proposta-metodos-M03-M08.md). Respostas recebidas no mesmo dia:
+
+| Item | Decisão |
+|---|---|
+| 1.1 | Tabela de METs do Compendium 2024 aprovada (inclusive as escolhas de mountain bike e musculação) |
+| 1.2 | Incluir também as opções por velocidade (corrida e caminhada) e a caminhada em subida de 6–10% (17035) |
+| 1.3 | Opção A: 60+ usa o Older Adult Compendium 2024 (repouso 2,7 mL/kg/min) |
+| 1.4 | "GET + METs" (categoria Inativo) soma o gasto líquido (MET − 1); o bruto aparece como informação |
+| 2.1 | Siri (1961) como conversão padrão |
+| 2.2–2.3 | Jackson-Pollock 7 e 3 dobras aprovados |
+| 2.4 | Faulkner mantido, com o aviso "precisão não estabelecida" |
+| 2.5 | Slaughter aprovado, com campos de maturação (Tanner) e etnia preenchidos pelo nutricionista |
+| 2.6 | Petroski aprovado (versão feminina A, B ou ambas: a confirmar) |
+| 2.7 | Fora da população do estudo: calcula com aviso; protocolo do outro sexo não aparece |
+| Pedido extra | Ícone "?" ao lado de cada fórmula; ao passar o mouse, mostra a equação e a população (ex.: "Jackson e Pollock — homens de 18 a 61 anos; mulheres de 18 a 55 anos") |
+| 3.1–3.3 | Gallagher (2000) para adultos de 20 a 79 anos; fora disso, "Referência não disponível" |
+| 4.1 | kcal não proteica/gN com fator 6,25, exibido "X:1" sem decimais, sem classificação |
+| 5.1–5.5 | Calculadora de medicações aprovada; frequências não semanais: opção A (não calcula, pede o dado semanal) |
+| 6.1–6.3 | Quantidade para dispensação de fórmulas aprovada |
+| 7.1 | Não há outro cálculo em suplementos ou exames |
+
+Antes de programar (conferências que não mudam a decisão):
+
+- Slaughter: confirmar no artigo original o +1,6 da equação dos meninos acima de 35 mm (uma fonte secundária traz −1,7).
+- Gallagher: transcrever os limites da tabela original (fontes secundárias divergem em até 1 ponto).
+- Older Adult Compendium 2024: transcrever os METs 60+ das mesmas atividades.
+- Opções por velocidade (1.2): transcrever os códigos de corrida e caminhada do Compendium com km/h.

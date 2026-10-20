@@ -14,7 +14,7 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 1 — Base de alimentos | **Concluída e aprovada** (19 verificações + 9 testes de cálculo); TACO carregada na produção em 20/10/2026 (597 alimentos, 20.165 valores). Pendente: correspondências USDA (F-01) | 20/10/2026 | 9 |
 | 2 — Editor de dietas | Não iniciada | — | — |
 | 3 — Modelos e importações | Não iniciada | — | — |
-| 4 — Avaliação física | Não iniciada (TMB e GET aprovados) | — | — |
+| 4 — Avaliação física | Não iniciada; todos os métodos aprovados em 20/10/2026 (M-01 a M-05) | — | — |
 | 5 — Anamnese e recordatório | Não iniciada | — | — |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
@@ -50,7 +50,7 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 - Dietas em abas por consulta; objetivo, título; refeições (adicionar, remover, nome, horário, mover, observação única); opções "OU" com opção de referência; linhas de alimento completas; indicadores por alimento e refeição [DIE-01 a DIE-05, DIE-09, DIE-10, DIE-13 a DIE-15].
 - Substituições em janela e listadas ao final; arredondamento aprovado [DIE-16].
 - Observações gerais da dieta [DIE-17]; hidratação [PAI-08].
-- Painel lateral: atual × anterior, g/%/por kg, kcal não proteica/gN (após aprovação do fator), fibras, vitaminas e minerais, Detalhes Nutrientes [PAI-01 a PAI-07].
+- Painel lateral: atual × anterior, g/%/por kg, kcal não proteica/gN (fator 6,25 aprovado, M-06), fibras, vitaminas e minerais, Detalhes Nutrientes [PAI-01 a PAI-07].
 - Lembretes nas duas estrelas [DIE-03, CAD-06].
 - Rascunho automático, Salvar, escolha entre rascunho e última versão; Apagar rascunho [DIE-18, DIE-19].
 - PDF da dieta (simples e detalhado) [PDF-02, PDF-04].
@@ -78,7 +78,7 @@ Modelos versionados [CFG-01]; ficha presencial/online única [ANA-01, ANA-02, AN
 
 ## Fase 6 — Exames, medicações, fórmulas, orientações
 
-Exames na ficha e na consulta [EXA-01]; solicitação de exames [CFG-02, EXA-03]; medicações e calculadora (após aprovação) [CFG-07, MED-01, MED-02]; fórmulas [CFG-08, FOR-01 a FOR-03]; orientações [CFG-09, ORI-01]; PDFs correspondentes [PDF-03].
+Exames na ficha e na consulta [EXA-01]; solicitação de exames [CFG-02, EXA-03]; medicações e calculadora (M-07 aprovado) [CFG-07, MED-01, MED-02]; fórmulas [CFG-08, FOR-01 a FOR-03]; orientações [CFG-09, ORI-01]; PDFs correspondentes [PDF-03].
 
 ## Fase 7 — Auxílio da IA
 
