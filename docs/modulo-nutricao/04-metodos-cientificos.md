@@ -12,7 +12,7 @@ Regra da SPEC 01 (decisão 177): cada método de cálculo clínico é pesquisado
 | M-06 | kcal não proteica / g de nitrogênio (fator N/proteína) | A pesquisar |
 | M-07 | Calculadora de medicações (mL × mg/mL; totais semanais) | A pesquisar |
 | M-08 | Cálculos de fórmulas, suplementos e exames | A pesquisar, conforme os campos reais |
-| F-01 | Fonte complementar de nutrientes ausentes na TACO | **Aguardando decisão** (ver abaixo) |
+| F-01 | Fonte complementar de nutrientes ausentes na TACO | **Aprovado em 20/10/2026**: opção B (USDA FoodData Central) |
 
 Convenções em todos os métodos: peso em kg, altura em cm (salvo indicação), idade em anos completos na data da avaliação, resultado em kcal/dia arredondado só na exibição. O método, a versão e os dados de entrada ficam gravados na avaliação.
 
@@ -165,6 +165,6 @@ Nutrientes ausentes na TACO: vitamina B12, folato, vitaminas D e E, selênio, a�
 | **B. USDA FoodData Central** (Departamento de Agricultura dos EUA) | Base norte-americana | **Domínio público (CC0 1.0)**, sem necessidade de autorização; cobre todos os nutrientes faltantes | Alimentos e preparações dos EUA: cada alimento da TACO precisa de uma correspondência escolhida e aprovada pelo nutricionista (ex.: "Arroz, tipo 1, cozido" ↔ "Rice, white, long-grain, cooked"). Sem correspondência confiável, o dado continua "não disponível". |
 | **C. Só cadastro manual** | O nutricionista completa os valores quando precisar | Nenhuma dependência externa | Trabalhoso; poucos valores preenchidos |
 
-**Proposta:** opção B, aplicada por correspondência aprovada, começando pelos alimentos mais usados nas dietas. Cada valor importado fica identificado com a fonte "USDA FoodData Central", o código do alimento americano e a data, e pode ser revisto. A opção A só se a TBCA autorizar por escrito.
+**Decisão do responsável (20/10/2026): opção B.** Proposta aprovada: opção B, aplicada por correspondência aprovada, começando pelos alimentos mais usados nas dietas. Cada valor importado fica identificado com a fonte "USDA FoodData Central", o código do alimento americano e a data, e pode ser revisto. A opção A só se a TBCA autorizar por escrito.
 
 Fontes: [FoodData Central — licença CC0](https://fdc.nal.usda.gov/) · [TBCA — tabelas complementares (versão 7.0)](https://www.tbca.net.br/arquivosestaticos/Tabelas_complementares_Vitamina_A_Carotenoides_n.pdf) · [Agência FAPESP sobre a TBCA](https://agencia.fapesp.br/59305)

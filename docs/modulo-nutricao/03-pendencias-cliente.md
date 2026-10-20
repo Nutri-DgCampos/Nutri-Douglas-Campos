@@ -35,10 +35,13 @@ Respostas de 20/10/2026 (segunda rodada):
 
 Esclarecimentos recebidos em 20/10/2026 (`Downloads\esclarecimentos da SPEC - funcionalidades incompletas.txt`): respondem todos os trechos cortados (seção A) — Importar dieta com as 4 origens, Gerar nova dieta, Salvar como modelo, Remover refeição, leitura do PDF de bioimpedância com conferência, 4 gráficos (12 avaliações), integração de peso e altura, 9 medidas de perimetria, ficha de anamnese — e confirmam o indicador kcal não proteica/gN (fator a aprovar, não presumir). Frase do cabeçalho e rodapé mantidos. Avatar de % de gordura: mostrar só o do sexo do paciente. Uso da planilha oficial da TACO autorizado.
 
-Aguardando aprovação do responsável (Fase 1):
+Aprovações da Fase 1 (20/10/2026), documento `Aprovacao Fase 1 - Base de alimentos.md`:
 
-- Estrutura da base de alimentos e regras de importação da TACO (valores dos CSVs; traços pela planilha oficial; 112 zeros sem respaldo na planilha tratados como não disponíveis).
-- F-01: fonte complementar (proposta USDA FoodData Central por correspondência aprovada).
+- 1.1 a 1.9: estrutura da base de alimentos aprovada integralmente.
+- 2.1: traços da planilha oficial gravados como "Tr" — de acordo.
+- 2.2: os 112 zeros sem respaldo na planilha oficial gravados como dado não disponível — de acordo.
+- 3: fonte complementar = opção B, USDA FoodData Central, por correspondência aprovada alimento a alimento.
+- Carga da TACO na produção liberada.
 
 Pendências abertas:
 
