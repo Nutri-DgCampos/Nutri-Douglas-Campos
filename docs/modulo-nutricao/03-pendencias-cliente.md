@@ -33,9 +33,16 @@ Respostas de 20/10/2026 (segunda rodada):
 - **Trechos cortados (4.1 a 4.10):** respondidos no arquivo "Esclarecimentos da SPEC — funcionalidades incompletas", **ainda não recebido**.
 - O pacote `Acompanhamento_Nutricional_Inspecao_e_Acordos_2026-10-18.zip` contém `Acordos_Funcionais_Atualizados_2026-10-18.md` (acordos ND-166 a ND-225: Fórmulas, Medicações e Auxílio da IA no editor). Esses acordos prevalecem sobre o roteiro nesses três temas.
 
+Esclarecimentos recebidos em 20/10/2026 (`Downloads\esclarecimentos da SPEC - funcionalidades incompletas.txt`): respondem todos os trechos cortados (seção A) — Importar dieta com as 4 origens, Gerar nova dieta, Salvar como modelo, Remover refeição, leitura do PDF de bioimpedância com conferência, 4 gráficos (12 avaliações), integração de peso e altura, 9 medidas de perimetria, ficha de anamnese — e confirmam o indicador kcal não proteica/gN (fator a aprovar, não presumir). Frase do cabeçalho e rodapé mantidos. Avatar de % de gordura: mostrar só o do sexo do paciente. Uso da planilha oficial da TACO autorizado.
+
+Aguardando aprovação do responsável (Fase 1):
+
+- Estrutura da base de alimentos e regras de importação da TACO (valores dos CSVs; traços pela planilha oficial; 112 zeros sem respaldo na planilha tratados como não disponíveis).
+- F-01: fonte complementar (proposta USDA FoodData Central por correspondência aprovada).
+
 Pendências abertas:
 
-- Arquivo de esclarecimentos dos itens 4.1 a 4.10.
+- ~~Arquivo de esclarecimentos dos itens 4.1 a 4.10.~~ Recebido.
 - Silhueta com fundo transparente ou branco; versão feminina para os protocolos de dobras femininos.
 - Respostas da TACO (planilha oficial com "Tr").
 

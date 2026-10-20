@@ -220,6 +220,16 @@ export function criarRegras(contexto: Contexto): Regras {
       select: nutricionista ? TUDO : null,
     },
 
+    // Base de alimentos: leitura do nutricionista; gravação pelas rotas
+    // /api/nutricao/alimentos (que protegem os valores da TACO).
+    alimentos: { select: nutricionista ? TUDO : null },
+    alimentos_categorias: { select: nutricionista ? TUDO : null },
+    alimentos_fontes: { select: nutricionista ? TUDO : null },
+    alimentos_nutrientes: { select: nutricionista ? TUDO : null },
+    nutrientes: { select: nutricionista ? TUDO : null },
+    medidas_caseiras: { select: nutricionista ? TUDO : null },
+    substituicoes: { select: nutricionista ? TUDO : null },
+
     configuracoes_documentos: {
       select: nutricionista ? TUDO : null,
       update: nutricionista ? TUDO : null,

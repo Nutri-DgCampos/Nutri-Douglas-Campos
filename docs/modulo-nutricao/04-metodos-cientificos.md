@@ -12,6 +12,7 @@ Regra da SPEC 01 (decisão 177): cada método de cálculo clínico é pesquisado
 | M-06 | kcal não proteica / g de nitrogênio (fator N/proteína) | A pesquisar |
 | M-07 | Calculadora de medicações (mL × mg/mL; totais semanais) | A pesquisar |
 | M-08 | Cálculos de fórmulas, suplementos e exames | A pesquisar, conforme os campos reais |
+| F-01 | Fonte complementar de nutrientes ausentes na TACO | **Aguardando decisão** (ver abaixo) |
 
 Convenções em todos os métodos: peso em kg, altura em cm (salvo indicação), idade em anos completos na data da avaliação, resultado em kcal/dia arredondado só na exibição. O método, a versão e os dados de entrada ficam gravados na avaliação.
 
@@ -151,3 +152,19 @@ GET = TMB × NAF, com NAF escolhido pelo nutricionista entre as faixas do relat�
 2. Não usar os fatores 1,00/1,12/1,27/1,45 do NutriDiet (são do IOM 2005, substituído).
 3. Opção B oferecida ou não.
 4. Regra de "GET + METs" acima.
+
+---
+
+## F-01 — Fonte complementar para os nutrientes que a TACO não traz
+
+Nutrientes ausentes na TACO: vitamina B12, folato, vitaminas D e E, selênio, açúcares, fibras solúveis e insolúveis. O responsável autorizou escolher uma fonte reconhecida, a ser apresentada antes do uso.
+
+| Opção | O que é | Prós | Contras |
+|---|---|---|---|
+| **A. TBCA** (Tabela Brasileira de Composição de Alimentos, USP/FoRC) | Base brasileira, mais de 6 mil alimentos | Alimentos e preparações brasileiros, mesma lógica da TACO | Licença indicada nos documentos da TBCA: **CC BY-NC-ND 4.0** (sem uso comercial e sem obras derivadas). Para usar num aplicativo pago seria preciso autorização por escrito da TBCA. Cobertura exata de B12, folato, vit. D, selênio e açúcares a confirmar. |
+| **B. USDA FoodData Central** (Departamento de Agricultura dos EUA) | Base norte-americana | **Domínio público (CC0 1.0)**, sem necessidade de autorização; cobre todos os nutrientes faltantes | Alimentos e preparações dos EUA: cada alimento da TACO precisa de uma correspondência escolhida e aprovada pelo nutricionista (ex.: "Arroz, tipo 1, cozido" ↔ "Rice, white, long-grain, cooked"). Sem correspondência confiável, o dado continua "não disponível". |
+| **C. Só cadastro manual** | O nutricionista completa os valores quando precisar | Nenhuma dependência externa | Trabalhoso; poucos valores preenchidos |
+
+**Proposta:** opção B, aplicada por correspondência aprovada, começando pelos alimentos mais usados nas dietas. Cada valor importado fica identificado com a fonte "USDA FoodData Central", o código do alimento americano e a data, e pode ser revisto. A opção A só se a TBCA autorizar por escrito.
+
+Fontes: [FoodData Central — licença CC0](https://fdc.nal.usda.gov/) · [TBCA — tabelas complementares (versão 7.0)](https://www.tbca.net.br/arquivosestaticos/Tabelas_complementares_Vitamina_A_Carotenoides_n.pdf) · [Agência FAPESP sobre a TBCA](https://agencia.fapesp.br/59305)

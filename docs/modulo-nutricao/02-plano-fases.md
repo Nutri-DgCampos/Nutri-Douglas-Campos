@@ -11,14 +11,14 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | Fase | Situação | Entregue em | Requisitos |
 |---|---|---|---|
 | 0 — Fundação | **Concluída** (39 verificações automáticas) | 20/10/2026 | 18 |
-| 1 — Base de alimentos | Não iniciada | — | — |
+| 1 — Base de alimentos | **Concluída no código** (19 verificações + 9 testes de cálculo); carga na produção aguarda aprovação do nutricionista | 20/10/2026 | 9 |
 | 2 — Editor de dietas | Não iniciada | — | — |
 | 3 — Modelos e importações | Não iniciada | — | — |
 | 4 — Avaliação física | Não iniciada (TMB e GET aprovados) | — | — |
 | 5 — Anamnese e recordatório | Não iniciada | — | — |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **18 de 101 requisitos (18%)** | | |
+| **Módulo** | **27 de 101 requisitos (27%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -40,6 +40,8 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 2. **Etapa 2 (carga):** script de importação dos 5 CSVs com relatório de validação (contagens, chaves, vazios, unidades); vazio → nulo [ALI-02, ALI-03].
 3. Tela de alimentos em Configurações: busca sem acento, cadastro manual, medidas caseiras (+/−, subir/descer, padrão), substituições com conferência de kcal e macros [ALI-04 a ALI-09].
 4. Módulo central de cálculo nutricional (`lib/nutricao/`), com testes numéricos: porção por 100 g, medidas caseiras, ausente ≠ zero, totais parciais sinalizados.
+
+**Carga na produção (só depois da aprovação do nutricionista):** o `deploy.sh` aplica a migration 008 (estrutura vazia). A carga é separada: `node scripts/importar-taco.mjs <pasta dos 5 CSVs> <planilha oficial .xlsx> > banco/importacao/taco.sql`, enviar o arquivo à VPS e rodar `docker exec -i nutri-postgres psql -v ON_ERROR_STOP=1 -U nutri -d nutri < /tmp/taco.sql`. Pode rodar de novo sem duplicar.
 
 **Aceite:** 597 alimentos importados, contagens batendo com os CSVs; um alimento com nutriente ausente aparece como "Dado não disponível"; medida caseira de 25 g × 2 = 50 g reflete nos nutrientes; nenhum valor ausente vira zero.
 

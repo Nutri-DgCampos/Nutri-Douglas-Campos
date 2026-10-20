@@ -71,15 +71,15 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| ALI-01 | Estrutura para alimentos, categorias, nutrientes, ácidos graxos, aminoácidos, com fonte e versão | R: CADASTRO DE ALIMENTOS E INTEGRAÇÃO COM A TACO | CRIAR | — | Etapa 1: estrutura aprovada antes da carga |
-| ALI-02 | Importação dos 5 CSVs com validação e sem duplicar | R: IMPORTAÇÃO DA TACO §3 | CRIAR | CSVs recebidos e conferidos: 597 alimentos, 15 categorias, 423 com ácidos graxos, 26 com aminoácidos; todos os valores numéricos | Etapa 2 só após aprovação |
-| ALI-03 | Ausente ≠ zero | R; S02 Base de alimentos | CRIAR | CSVs usam campo vazio para ausência | 6 alimentos sem kcal; "traços" da TACO não são distinguíveis no CSV (ver pendências) |
-| ALI-04 | Cadastro manual de alimentos com origem distinta da TACO | R: TACO §4 | CRIAR | — | — |
-| ALI-05 | Medidas caseiras por alimento (singular, plural, g/mL, padrão, ordem) | R: MEDIDAS CASEIRAS | CRIAR | — | Preenchidas aos poucos pelo nutricionista |
-| ALI-06 | Substituições por alimento com quantidades e conferência de macros | R: LISTA DE SUBSTITUIÇÕES | CRIAR | — | Regra de arredondamento aprovada (S02) |
-| ALI-07 | Histórico/snapshots para não alterar dietas publicadas | S02 Base de alimentos | CRIAR | — | Dieta publicada guarda os nutrientes usados |
-| ALI-08 | Densidade para converter mL ↔ g | R: MEDIDAS CASEIRAS §7 | CRIAR | — | Sem dado na TACO; campo opcional por alimento |
-| ALI-09 | Busca sem acento, por partes do nome, rápida | R: CAMPO DE BUSCA §3, §17 | CRIAR | — | Extensão `unaccent` ou coluna normalizada + índice trigram |
+| ALI-01 | Estrutura para alimentos, categorias, nutrientes, ácidos graxos, aminoácidos, com fonte e versão | R: CADASTRO DE ALIMENTOS E INTEGRAÇÃO COM A TACO | CRIAR → **ENTREGUE (Fase 1)** | — | Etapa 1: estrutura aprovada antes da carga |
+| ALI-02 | Importação dos 5 CSVs com validação e sem duplicar | R: IMPORTAÇÃO DA TACO §3 | CRIAR → **ENTREGUE (Fase 1)** | CSVs recebidos e conferidos: 597 alimentos, 15 categorias, 423 com ácidos graxos, 26 com aminoácidos; todos os valores numéricos | Etapa 2 só após aprovação |
+| ALI-03 | Ausente ≠ zero | R; S02 Base de alimentos | CRIAR → **ENTREGUE (Fase 1)** | CSVs usam campo vazio para ausência | 6 alimentos sem kcal; "traços" da TACO não são distinguíveis no CSV (ver pendências) |
+| ALI-04 | Cadastro manual de alimentos com origem distinta da TACO | R: TACO §4 | CRIAR → **ENTREGUE (Fase 1)** | — | — |
+| ALI-05 | Medidas caseiras por alimento (singular, plural, g/mL, padrão, ordem) | R: MEDIDAS CASEIRAS | CRIAR → **ENTREGUE (Fase 1)** | — | Preenchidas aos poucos pelo nutricionista |
+| ALI-06 | Substituições por alimento com quantidades e conferência de macros | R: LISTA DE SUBSTITUIÇÕES | CRIAR → **ENTREGUE (Fase 1)** | — | Regra de arredondamento aprovada (S02) |
+| ALI-07 | Histórico/snapshots para não alterar dietas publicadas | S02 Base de alimentos | CRIAR → **ENTREGUE (Fase 1)** | — | Dieta publicada guarda os nutrientes usados |
+| ALI-08 | Densidade para converter mL ↔ g | R: MEDIDAS CASEIRAS §7 | CRIAR → **ENTREGUE (Fase 1)** | — | Sem dado na TACO; campo opcional por alimento |
+| ALI-09 | Busca sem acento, por partes do nome, rápida | R: CAMPO DE BUSCA §3, §17 | CRIAR → **ENTREGUE (Fase 1)** | — | Extensão `unaccent` ou coluna normalizada + índice trigram |
 
 ## 5. Editor de dietas
 
