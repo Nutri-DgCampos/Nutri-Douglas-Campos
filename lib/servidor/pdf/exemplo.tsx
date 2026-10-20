@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "@react-pdf/renderer";
-import { DocumentoPadrao, gerarPdf } from "./documento";
+import { Assinatura, DocumentoPadrao, gerarPdf } from "./documento";
 import type { Identidade } from "./identidade";
 
 // PDF de conferência da identidade visual: reproduz o modelo do Plano
@@ -92,8 +92,10 @@ export async function gerarPdfExemplo(identidade: Identidade) {
         </View>
       ))}
 
+      <Assinatura identidade={identidade} />
+
       <Text style={estilos.aviso}>
-        Documento de exemplo para conferência do logotipo, da frase, das cores e do rodapé.
+        Documento de exemplo para conferência do logotipo, da marca-d'água, da assinatura, da frase, das cores e do rodapé.
       </Text>
     </DocumentoPadrao>
   );

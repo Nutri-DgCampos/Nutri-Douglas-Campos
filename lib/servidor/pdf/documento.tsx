@@ -103,6 +103,19 @@ export function DocumentoPadrao({
   );
 }
 
+// Bloco de assinatura no fim do documento (imagem de identificação visual,
+// não é assinatura digital certificada). Sem imagem cadastrada, não aparece.
+export function Assinatura({ identidade }: { identidade: Identidade }) {
+  if (!identidade.assinatura) return null;
+
+  return (
+    <View wrap={false} style={{ marginTop: 28, alignItems: "center" }}>
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
+      <Image src={identidade.assinatura} style={{ width: 230, maxHeight: 110, objectFit: "contain" }} />
+    </View>
+  );
+}
+
 export async function gerarPdf(documento: Parameters<typeof renderToBuffer>[0]) {
   return renderToBuffer(documento);
 }
