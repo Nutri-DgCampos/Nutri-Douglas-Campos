@@ -79,7 +79,10 @@ export function avisoExibido() {
   }
 }
 
-export function pedirConfirmacao(mensagem: string): Promise<boolean> {
+export function pedirConfirmacao(
+  mensagem: string,
+  rotulos: { aceitar?: string; rejeitar?: string; titulo?: string } = {}
+): Promise<boolean> {
   return new Promise((resolver) => {
     let respondido = false;
 
@@ -91,10 +94,10 @@ export function pedirConfirmacao(mensagem: string): Promise<boolean> {
     };
 
     confirmDialog({
-      header: "Confirmar",
+      header: rotulos.titulo ?? "Confirmar",
       message: mensagem,
-      acceptLabel: "Confirmar",
-      rejectLabel: "Cancelar",
+      acceptLabel: rotulos.aceitar ?? "Confirmar",
+      rejectLabel: rotulos.rejeitar ?? "Cancelar",
       defaultFocus: "reject",
       accept: () => responder(true),
       reject: () => responder(false),

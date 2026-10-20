@@ -33,7 +33,7 @@ type Alteracao = {
 };
 
 // Seções da consulta. Cada uma passa a listar seus registros na fase em que
-// for implementada; até lá, a consulta mostra que não há registros.
+// for implementada (Dietas: Fase 2); até lá, mostra que não há registros.
 const SECOES = [
   { titulo: "Anamnese", icone: "pi-file-edit" },
   { titulo: "Avaliação física", icone: "pi-chart-line" },
@@ -66,6 +66,7 @@ export default function ConsultaPage() {
   const [consulta, setConsulta] = useState<Consulta | null | undefined>(undefined);
   const [paciente, setPaciente] = useState<{ name: string; birth_date: string | null } | null>(null);
   const [alteracoes, setAlteracoes] = useState<Alteracao[]>([]);
+  const [dietas, setDietas] = useState<{ id: string; titulo: string | null; versoes: number; arquivada_em: string | null }[]>([]);
 
   const [corrigindo, setCorrigindo] = useState(false);
   const [dataEditada, setDataEditada] = useState("");
@@ -75,7 +76,7 @@ export default function ConsultaPage() {
   const [confirmarExclusao, setConfirmarExclusao] = useState(false);
 
   const carregar = useCallback(async () => {
-    const [dadosConsulta, dadosPaciente, historico] = await Promise.all([
+    const [dadosConsulta, dadosPaciente, historico, dadosDietas] = await Promise.all([
       api
         .from("consultas")
         .select("id, patient_id, data, tipo, status, created_at, finalizada_em")
@@ -88,12 +89,16 @@ export default function ConsultaPage() {
         .eq("tabela", "consultas")
         .eq("registro_id", consultaId)
         .order("criado_em", { ascending: false }),
+      fetch(`/api/nutricao/consultas/${consultaId}/dietas`, { cache: "no-store" })
+        .then((resposta) => (resposta.ok ? resposta.json() : { dietas: [] }))
+        .catch(() => ({ dietas: [] })),
     ]);
 
     const encontrada = dadosConsulta.data as Consulta | null;
     setConsulta(encontrada && encontrada.patient_id === pacienteId ? encontrada : null);
     setPaciente(dadosPaciente.data ?? null);
     setAlteracoes((historico.data ?? []) as Alteracao[]);
+    setDietas(dadosDietas.dietas ?? []);
   }, [consultaId, pacienteId]);
 
   useEffect(() => {
@@ -242,7 +247,40 @@ export default function ConsultaPage() {
                 </span>
                 <h2 className="font-bold text-gray-900">{secao.titulo}</h2>
               </div>
-              <p className="mt-3 text-sm text-gray-500">Nenhum registro cadastrado.</p>
+              {secao.titulo === "Dietas" ? (
+                <>
+                  {dietas.filter((d) => !d.arquivada_em).length === 0 ? (
+                    <p className="mt-3 text-sm text-gray-500">Nenhuma dieta elaborada.</p>
+                  ) : (
+                    <ul className="mt-3 space-y-1 text-sm">
+                      {dietas
+                        .filter((d) => !d.arquivada_em)
+                        .map((d) => (
+                          <li key={d.id} className="flex justify-between gap-2">
+                            <button
+                              type="button"
+                              className="truncate text-left text-primary-700 hover:underline"
+                              onClick={() => router.push(`/nutricao/${pacienteId}/consultas/${consultaId}/dietas?dieta=${d.id}`)}
+                            >
+                              {d.titulo?.trim() || "Sem título"}
+                            </button>
+                            <span className="shrink-0 text-gray-500">{d.versoes ? `Enviada (v${d.versoes})` : "Em elaboração"}</span>
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+                  <Button
+                    type="button"
+                    icon="pi pi-pencil"
+                    label="Elaborar dietas"
+                    size="small"
+                    className="mt-3"
+                    onClick={() => router.push(`/nutricao/${pacienteId}/consultas/${consultaId}/dietas`)}
+                  />
+                </>
+              ) : (
+                <p className="mt-3 text-sm text-gray-500">Nenhum registro cadastrado.</p>
+              )}
             </div>
           ))}
         </section>

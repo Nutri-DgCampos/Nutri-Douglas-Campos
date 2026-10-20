@@ -12,13 +12,13 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 |---|---|---|---|
 | 0 — Fundação | **Concluída** (39 verificações automáticas) | 20/10/2026 | 18 |
 | 1 — Base de alimentos | **Concluída e aprovada** (19 verificações + 9 testes de cálculo); TACO carregada na produção em 20/10/2026 (597 alimentos, 20.165 valores). Pendente: correspondências USDA (F-01) | 20/10/2026 | 9 |
-| 2 — Editor de dietas | Não iniciada | — | — |
+| 2 — Editor de dietas | **Concluída** (53 verificações de navegação + 16 testes de cálculo); aguardando aprovação do cliente | 20/10/2026 | 28 |
 | 3 — Modelos e importações | Não iniciada | — | — |
 | 4 — Avaliação física | Não iniciada; todos os métodos aprovados em 20/10/2026 (M-01 a M-05) | — | — |
 | 5 — Anamnese e recordatório | Não iniciada | — | — |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **27 de 101 requisitos (27%)** | | |
+| **Módulo** | **55 de 101 requisitos (54%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -57,6 +57,19 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 - Enviar ao paciente: versão imutável, PDF gerado vira a entrega de dieta pelo fluxo atual, ciclo de 33 dias, indicador de novidade e push [DIE-20, DIE-21, PDF-05, PUB-01].
 
 **Aceite:** dieta com 6 refeições e opções alternativas tem totais iguais à soma só das opções de referência; salvar e gerar PDF não publicam; enviar publica uma única vez mesmo com cliques repetidos, inicia o ciclo e aparece na área do paciente; envio por upload de PDF continua funcionando.
+
+**Entregue (20/10/2026)** — migration `009_editor_de_dietas.sql`:
+
+- Abas por consulta (Consulta → Dietas → "Elaborar dietas"); cada dieta tem objetivo, título, refeições, opções, observações, hidratação e peso de referência próprios.
+- Conteúdo em três estados: rascunho gravado automaticamente (1,2 s após cada alteração), última versão salva (botão Salvar) e versões enviadas, imutáveis no banco, com a composição dos alimentos congelada. Ao reabrir com rascunho diferente do salvo, o editor pergunta qual usar. Duas janelas editando a mesma dieta: a segunda gravação é recusada (sem sobrescrever).
+- Linha de alimento: busca na base, nome exibido editável (nutrientes continuam os do alimento da base), medida padrão pré-selecionada, nº de medidas × medida = g/mL, ajuste manual sinalizado e reversível, troca de alimento zera a quantidade (B.3).
+- Substituições em janela: quantidade só por ação do nutricionista (botões "Proporcional ao cadastro" e "Mesma energia", ou digitação), com diferença de kcal e macros; substituto sem quantidade não sai para o paciente.
+- Painel lateral retrátil e com largura ajustável: atual × anterior (escolha manual), g/%/por kg, kcal não proteica/gN (6,25), fibras, vitaminas e minerais escolhidos em "Detalhes Nutrientes", hidratação mL/kg. No celular, o painel fica abaixo do editor.
+- PDF: modelo "simples" (prescrição) e "detalhado" (acrescenta kcal e macros por opção e o total da dieta). Gerar PDF não publica.
+- Enviar ao paciente: confere pendências; o nutricionista escolhe "novo ciclo de 33 dias" ou "manter o ciclo atual" (sugerido quando outra dieta da mesma consulta já foi enviada no ciclo). Tudo numa transação: entrega com o PDF (mesmo registro do upload), ciclo, versão e auditoria; o aviso no celular sai depois. Cliques repetidos não duplicam.
+- Apagar só dieta nunca enviada; enviada é arquivada (sai das abas, histórico mantido). Consulta com dietas não pode ser excluída.
+- Área do paciente: as dietas do ciclo da entrega mais recente aparecem em tela (abas, opções, trocas, observações, hidratação), além do PDF. Lembretes nunca aparecem.
+- Ficam para outras fases: indicadores TMB/GET (DIE-04, Fase 4), lembrete da anamnese (Fase 5), busca nos modelos de observação, importações, duplicar e modelos (Fase 3), IA (Fase 7).
 
 ## Fase 3 — Modelos e importações
 

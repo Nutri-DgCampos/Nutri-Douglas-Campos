@@ -56,10 +56,16 @@ export function DocumentoPadrao({
   identidade,
   titulo,
   children,
+  cabecalhoExtra,
+  alturaCabecalhoExtra = 0,
 }: {
   identidade: Identidade;
   titulo: string;
   children: ReactNode;
+  // Conteúdo repetido em todas as páginas logo abaixo do cabeçalho (ex.:
+  // título do documento e identificação do paciente).
+  cabecalhoExtra?: ReactNode;
+  alturaCabecalhoExtra?: number;
 }) {
   const identificacao = [identidade.nomeProfissional, identidade.registroProfissional]
     .filter(Boolean)
@@ -67,7 +73,11 @@ export function DocumentoPadrao({
 
   return (
     <Document title={titulo} author={identidade.nomeProfissional ?? undefined} language="pt-BR">
-      <Page size="A4" orientation="portrait" style={estilos.pagina}>
+      <Page
+        size="A4"
+        orientation="portrait"
+        style={[estilos.pagina, { paddingTop: estilos.pagina.paddingTop + alturaCabecalhoExtra }]}
+      >
         {identidade.marcaDagua && (
           // eslint-disable-next-line jsx-a11y/alt-text
           <Image fixed style={estilos.marcaDagua} src={identidade.marcaDagua} />
@@ -84,6 +94,12 @@ export function DocumentoPadrao({
           )}
           {identidade.frase ? <Text style={estilos.frase}>{identidade.frase}</Text> : <View />}
         </View>
+
+        {cabecalhoExtra ? (
+          <View fixed style={{ position: "absolute", top: 100, left: 40, right: 40 }}>
+            {cabecalhoExtra}
+          </View>
+        ) : null}
 
         {children}
 

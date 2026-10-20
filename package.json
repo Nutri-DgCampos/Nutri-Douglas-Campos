@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test tests/calculo.test.mjs"
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",

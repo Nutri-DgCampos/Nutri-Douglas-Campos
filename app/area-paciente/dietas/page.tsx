@@ -7,6 +7,7 @@ import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
+import DietaEmTela from "@/components/DietaEmTela";
 
 export default function MinhasDietasPage() {
   const [dietas, setDietas] = useState<any[]>([]);
@@ -121,6 +122,8 @@ if (idsDietas.length > 0) {
           titulo="Meu plano"
           descricao="As dietas mais recentes enviadas pelo seu nutricionista."
         />
+
+        <DietaEmTela />
 
         {carregando ? (
           <div className="mt-6 space-y-4">

@@ -85,41 +85,41 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| DIE-01 | Várias dietas por consulta, em abas, com estado próprio | R: ABAS DE MÚLTIPLAS DIETAS; S02 | CRIAR | — | — |
-| DIE-02 | Identificação do paciente e da consulta no topo | R: IDENTIFICAÇÃO DO PACIENTE E DA CONSULTA | CRIAR | — | Depende de CAD-01/02 |
-| DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR | — | Nunca no PDF nem para o paciente |
+| DIE-01 | Várias dietas por consulta, em abas, com estado próprio | R: ABAS DE MÚLTIPLAS DIETAS; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| DIE-02 | Identificação do paciente e da consulta no topo | R: IDENTIFICAÇÃO DO PACIENTE E DA CONSULTA | CRIAR → **ENTREGUE (Fase 2)** | — | Depende de CAD-01/02 |
+| DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR → **ENTREGUE (Fase 2)** | — | Lembrete da anamnese aparece com a Fase 5 |
 | DIE-04 | Indicadores TMB/GET/GET+METs da avaliação de referência | R: INDICADORES DE GASTO ENERGÉTICO | CRIAR | — | Depende da avaliação física e dos métodos aprovados |
-| DIE-05 | Objetivo e título por dieta | R: BLOCO 1 L1 C1–C2 | CRIAR | — | — |
+| DIE-05 | Objetivo e título por dieta | R: BLOCO 1 L1 C1–C2 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR | — | Seção cortada no roteiro (ver pendências) |
 | DIE-07 | Gerar nova dieta, duplicar, salvar como modelo | R: BLOCO 1 L1 C4–C6 | CRIAR | — | Texto de "Gerar nova dieta" e "Salvar como modelo" cortado |
 | DIE-08 | Importar rotina (itens em cinza fora dos cálculos até confirmar) | R: BLOCO 1 L1 C7 | CRIAR | — | — |
-| DIE-09 | Refeições: adicionar, remover, nome, horário, mover, observação única | R: BLOCO 1 L2 C1–C8; S02 | CRIAR | — | "Remover refeição" cortado no roteiro |
-| DIE-10 | Opções alternativas da refeição ("OU"), com opção de referência | R: BLOCO 1 L2 C7; S02 | CRIAR | — | — |
+| DIE-09 | Refeições: adicionar, remover, nome, horário, mover, observação única | R: BLOCO 1 L2 C1–C8; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | "Remover refeição" cortado no roteiro |
+| DIE-10 | Opções alternativas da refeição ("OU"), com opção de referência | R: BLOCO 1 L2 C7; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-11 | Copiar/colar refeição (área interna), salvar e importar modelo de refeição | R: BLOCO 1 L2 C9–C13 | CRIAR | — | — |
-| DIE-12 | Vitaminas e minerais da refeição | R: BLOCO 1 L2 C12 | CRIAR | — | — |
-| DIE-13 | KCAL/CHO/PTN/LIP por refeição e por alimento; kcal sem decimais, macros com 1 casa | R: BLOCO 1 L2 C14–C17, L3 C11–C14; S02 | CRIAR | — | — |
-| DIE-14 | Linha de alimento: busca, quantidade de medidas, medida, gramas ajustáveis, mover | R: BLOCO 1 L3 C1–C9 | CRIAR | — | Coluna 7 não será implementada (roteiro) |
-| DIE-15 | Nome exibido editável sem trocar nutrientes; trocar alimento redefine a quantidade | R: L3 C3 §9–13; S02 | COMPLETAR (regra) | — | Comportamento exato de "redefine a quantidade" a confirmar |
-| DIE-16 | Substituições por alimento em janela, listadas ao final da dieta | R: L3 C10; S02 | CRIAR | — | Arredondamento: 1 g abaixo de 20 g; 10 g a partir de 20 g |
-| DIE-17 | Observações gerais da dieta (busca de modelos, várias, ordenáveis) | R: BLOCO AO FINAL; S02 | CRIAR | — | — |
-| DIE-18 | Salvar, Apagar, Gerar PDF, Enviar ao paciente, independentes | R: COMANDOS SALVAR, APAGAR, GERAR PDF | CRIAR | — | — |
-| DIE-19 | Rascunho automático + salvar explícito; ao voltar, escolher rascunho ou última versão salva | S02 Dietas | CRIAR | — | — |
-| DIE-20 | Envio publica a dieta e inicia o ciclo de 33 dias | R; S01; EF §10 | COMPLETAR | ciclo e entrega existem (BAS-04/06) | Envio pelo editor gera o PDF e registra a entrega pelo mesmo fluxo |
-| DIE-21 | Versões publicadas imutáveis | R: vários | CRIAR | — | — |
+| DIE-12 | Vitaminas e minerais da refeição | R: BLOCO 1 L2 C12 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| DIE-13 | KCAL/CHO/PTN/LIP por refeição e por alimento; kcal sem decimais, macros com 1 casa | R: BLOCO 1 L2 C14–C17, L3 C11–C14; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| DIE-14 | Linha de alimento: busca, quantidade de medidas, medida, gramas ajustáveis, mover | R: BLOCO 1 L3 C1–C9 | CRIAR → **ENTREGUE (Fase 2)** | — | Coluna 7 não será implementada (roteiro) |
+| DIE-15 | Nome exibido editável sem trocar nutrientes; trocar alimento redefine a quantidade | R: L3 C3 §9–13; S02 | COMPLETAR (regra) → **ENTREGUE (Fase 2)** | — | Comportamento exato de "redefine a quantidade" a confirmar |
+| DIE-16 | Substituições por alimento em janela, listadas ao final da dieta | R: L3 C10; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | Arredondamento: 1 g abaixo de 20 g; 10 g a partir de 20 g |
+| DIE-17 | Observações gerais da dieta (busca de modelos, várias, ordenáveis) | R: BLOCO AO FINAL; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | Observações livres; busca nos modelos com a Fase 3 |
+| DIE-18 | Salvar, Apagar, Gerar PDF, Enviar ao paciente, independentes | R: COMANDOS SALVAR, APAGAR, GERAR PDF | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| DIE-19 | Rascunho automático + salvar explícito; ao voltar, escolher rascunho ou última versão salva | S02 Dietas | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| DIE-20 | Envio publica a dieta e inicia o ciclo de 33 dias | R; S01; EF §10 | COMPLETAR → **ENTREGUE (Fase 2)** | ciclo e entrega existem (BAS-04/06) | Envio pelo editor gera o PDF e registra a entrega pelo mesmo fluxo |
+| DIE-21 | Versões publicadas imutáveis | R: vários | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-22 | Indicação de conteúdo sugerido pela IA | R: AUXÍLIO DA IA §30 | CRIAR | — | — |
 
 ## 6. Painel nutricional (Bloco 2)
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| PAI-01 | Painel lateral retrátil, largura ajustável e persistente | R: BLOCO 2; S02 | CRIAR | — | — |
-| PAI-02 | Total da dieta atual × anterior (mesmo tipo, escolha manual) | R: BLOCO 2 L1 | CRIAR | — | — |
-| PAI-03 | kcal, CHO/PTN/LIP em g e %, por kg, fibras | R: BLOCO 2 L2–L12 | CRIAR | — | % por 4/4/9 sobre a energia registrada (S02: energia registrada é a referência) |
-| PAI-04 | kcal não proteica / g de nitrogênio | S02; FIG-088 | CRIAR | — | Fator de conversão nitrogênio/proteína a aprovar (ver 04) |
-| PAI-05 | Peso de referência identificado, comum a todos os indicadores por kg | R: BLOCO 2 L6–L9 | CRIAR | — | — |
-| PAI-06 | Fibras solúveis/insolúveis | R: BLOCO 2 L11–L12 | CRIAR | — | TACO não tem: exibir "Dado não disponível" |
-| PAI-07 | Vitaminas e minerais selecionados + janela "Detalhes Nutrientes" | R: VISUALIZAÇÃO DE VITAMINAS; DETALHES NUTRIENTES | CRIAR | — | TACO não tem vitamina D, E, B12, folato, selênio |
-| PAI-08 | Hidratação mL/kg com observações | R: HIDRATAÇÃO | CRIAR | — | — |
+| PAI-01 | Painel lateral retrátil, largura ajustável e persistente | R: BLOCO 2; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| PAI-02 | Total da dieta atual × anterior (mesmo tipo, escolha manual) | R: BLOCO 2 L1 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| PAI-03 | kcal, CHO/PTN/LIP em g e %, por kg, fibras | R: BLOCO 2 L2–L12 | CRIAR → **ENTREGUE (Fase 2)** | — | % por 4/4/9 sobre a energia registrada (S02: energia registrada é a referência) |
+| PAI-04 | kcal não proteica / g de nitrogênio | S02; FIG-088 | CRIAR → **ENTREGUE (Fase 2)** | — | Fator de conversão nitrogênio/proteína a aprovar (ver 04) |
+| PAI-05 | Peso de referência identificado, comum a todos os indicadores por kg | R: BLOCO 2 L6–L9 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| PAI-06 | Fibras solúveis/insolúveis | R: BLOCO 2 L11–L12 | CRIAR → **ENTREGUE (Fase 2)** | — | Sem dado na TACO: "—" até a fonte complementar (F-01) |
+| PAI-07 | Vitaminas e minerais selecionados + janela "Detalhes Nutrientes" | R: VISUALIZAÇÃO DE VITAMINAS; DETALHES NUTRIENTES | CRIAR → **ENTREGUE (Fase 2)** | — | Vitaminas sem dado na TACO: "Dado não disponível" |
+| PAI-08 | Hidratação mL/kg com observações | R: HIDRATAÇÃO | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | PAI-09 | Sem gráficos de barras/metas | S02 | — (restrição) | — | — |
 
 ## 7. Avaliação física
@@ -172,13 +172,13 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
 | PDF-01 | Gerador de PDF no servidor, A4 vertical, paginação, cabeçalho repetido, rodapé com CRN | R: PADRONIZAÇÃO … DIETA ALIMENTAR; FIG-184–186 | CRIAR → **ENTREGUE (Fase 0)** | app só armazena PDFs enviados | Biblioteca de geração a escolher na Fase 0 |
-| PDF-02 | Dieta: modelo #DGteam, simples ou detalhado, observações antes das substituições | S02; FIG-184–186 | CRIAR | — | — |
+| PDF-02 | Dieta: modelo #DGteam, simples ou detalhado, observações antes das substituições | S02; FIG-184–186 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | PDF-03 | Fórmulas, medicação, avaliação física, solicitação de exames, orientações | R | CRIAR | — | — |
-| PDF-04 | Nomes "Dieta - Nome - dd-mm-aaaa.pdf" etc. | R: COMANDOS §10–12 | CRIAR | — | — |
-| PDF-05 | PDF emitido preservado por versão | R | CRIAR | — | — |
+| PDF-04 | Nomes "Dieta - Nome - dd-mm-aaaa.pdf" etc. | R: COMANDOS §10–12 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
+| PDF-05 | PDF emitido preservado por versão | R | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | IA-01 | Auxílio da IA no editor com prévia, confirmação e vínculo a alimentos da base | R: AUXÍLIO DA INTELIGÊNCIA ARTIFICIAL | CRIAR | integração OpenAI no servidor já existe (`lib/servidor/exames.ts`, `treinos.ts`) | Termo de consentimento para envio de dados de saúde |
 | IA-02 | Leitura de bioimpedância e de anamnese pela IA sem dados identificáveis | R; S01 | COMPLETAR | padrão de envio de arquivo à OpenAI já usado | Minimização de dados |
-| PUB-01 | Área do paciente mostra a dieta enviada (e as opções/observações) | R: COMANDOS §18; ABAS §7 | COMPLETAR | `app/area-paciente/dietas/page.tsx` lista PDFs das 2 últimas entregas | Decidir se o paciente vê só o PDF gerado ou também uma versão em tela |
+| PUB-01 | Área do paciente mostra a dieta enviada (e as opções/observações) | R: COMANDOS §18; ABAS §7 | COMPLETAR → **ENTREGUE (Fase 2)** | `app/area-paciente/dietas/page.tsx` lista PDFs das 2 últimas entregas | Decidir se o paciente vê só o PDF gerado ou também uma versão em tela |
 
 ---
 
