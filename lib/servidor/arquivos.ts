@@ -45,6 +45,14 @@ export const BUCKETS: Record<string, Bucket> = {
       "text/plain": ["txt"],
     },
   },
+  // Logotipo, assinatura e marca-d'água dos PDFs (só o nutricionista).
+  identidade: {
+    tamanhoMaximo: 5 * 1024 * 1024,
+    tipos: {
+      "image/jpeg": ["jpg", "jpeg"],
+      "image/png": ["png"],
+    },
+  },
   fotos: {
     tamanhoMaximo: 10 * 1024 * 1024,
     tipos: {
@@ -104,7 +112,7 @@ export function podeEnviar(
   bucket: string,
   caminho: string
 ) {
-  if (bucket === "dietas") {
+  if (bucket === "dietas" || bucket === "identidade") {
     return contexto.papel === "nutricionista";
   }
 
@@ -118,7 +126,7 @@ export function podeEnviar(
 }
 
 export function podeGerenciar(contexto: Contexto, bucket: string) {
-  return bucket === "dietas" && contexto.papel === "nutricionista";
+  return (bucket === "dietas" || bucket === "identidade") && contexto.papel === "nutricionista";
 }
 
 export async function podeBaixar(

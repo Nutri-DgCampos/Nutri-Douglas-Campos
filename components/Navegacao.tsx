@@ -57,13 +57,14 @@ const ALERTAS: Item = { rotulo: "Alertas", icone: "pi-bell", destino: "/alertas"
 const PAGAMENTOS: Item = { rotulo: "Pagamentos", icone: "pi-wallet", destino: "/pagamentos" };
 const EXAMES: Item = { rotulo: "Exames de sangue", icone: "pi-heart", destino: "/exames" };
 const PARCEIROS: Item = { rotulo: "Parceiros", icone: "pi-briefcase", destino: "/parceiros" };
+const NUTRICAO: Item = { rotulo: "Módulo de Nutrição", icone: "pi-th-large", destino: "/nutricao" };
 
 // Menu lateral (computador): todos os itens.
-const MENU_LATERAL = [INICIO, PACIENTES, RELATORIOS, DIETAS, ALERTAS, PAGAMENTOS, EXAMES, PARCEIROS];
+const MENU_LATERAL = [INICIO, PACIENTES, NUTRICAO, RELATORIOS, DIETAS, ALERTAS, PAGAMENTOS, EXAMES, PARCEIROS];
 
 // Barra inferior (celular): quatro abas e "Mais" com o restante.
 const ABAS_CELULAR = [INICIO, PACIENTES, RELATORIOS, DIETAS];
-const MENU_MAIS = [PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
+const MENU_MAIS = [NUTRICAO, PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
 
 export function NavegacaoNutri() {
   const caminho = usePathname();

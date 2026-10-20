@@ -227,7 +227,12 @@ buscarRelatorios();
   </div>
 
   <div className="flex flex-wrap gap-2">
-  <Button icon="pi pi-plus"
+  <Button icon="pi pi-th-large"
+    type="button"
+    label="Módulo de Nutrição"
+    onClick={() => router.push(`/nutricao/${paciente.id}`)}
+  />
+  <Button icon="pi pi-plus" outlined
     type="button"
     onClick={() => router.push(`/pacientes/${paciente.id}/evolucao`)}
    

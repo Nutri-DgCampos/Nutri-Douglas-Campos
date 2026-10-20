@@ -9,6 +9,11 @@ import Selecao from "@/components/Selecao";
 import { InputTextarea } from "primereact/inputtextarea";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import AcessoDoPaciente from "@/components/AcessoDoPaciente";
+import CamposComplementares, {
+  DADOS_VAZIOS,
+  dadosDoBanco,
+  dadosParaBanco,
+} from "@/components/CamposComplementares";
 
 export default function EditarPaciente() {
   const params = useParams();
@@ -24,6 +29,7 @@ export default function EditarPaciente() {
   const [trainingWeeklyGoal, setTrainingWeeklyGoal] = useState("0");
   const [cardioWeeklyGoal, setCardioWeeklyGoal] = useState("0");
   const [individualGoal, setIndividualGoal] = useState("");
+  const [complementares, setComplementares] = useState(DADOS_VAZIOS);
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
@@ -68,6 +74,7 @@ setIndividualGoal(
     "Planejar e organizar as refeições do dia seguinte com antecedência."
 );
 
+      setComplementares(dadosDoBanco(data));
       setCarregando(false);
     }
 
@@ -77,8 +84,16 @@ setIndividualGoal(
   async function salvarPaciente(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setSalvando(true);
     setErro("");
+
+    const convertidos = dadosParaBanco(complementares);
+
+    if ("erro" in convertidos) {
+      setErro(convertidos.erro);
+      return;
+    }
+
+    setSalvando(true);
 
     const { error } = await api
       .from("patients")
@@ -94,6 +109,7 @@ setIndividualGoal(
   training_weekly_goal: Number(trainingWeeklyGoal),
   cardio_weekly_goal: Number(cardioWeeklyGoal),
   individual_goal: individualGoal.trim() === "" ? null : individualGoal.trim(),
+        ...convertidos.valores,
       })
       .eq("id", id);
 
@@ -155,6 +171,8 @@ setIndividualGoal(
                 valor={phone}
                 alterar={setPhone}
               />
+
+              <CamposComplementares valor={complementares} onChange={setComplementares} />
 
               <Campo
   titulo="Peso inicial (kg)"

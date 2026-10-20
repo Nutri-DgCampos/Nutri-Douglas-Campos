@@ -32,23 +32,23 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| NAV-01 | Acesso ao módulo pela ficha do paciente (botão no topo) | S01; EF §10 | CRIAR | ficha em `app/(nutricionista)/pacientes/[id]/page.tsx` não tem o botão | Botão e rota do módulo |
-| NAV-02 | Acesso pela tela Dietas, com o paciente já selecionado | EF §10 | CRIAR | "Preparar dieta" abre só o upload de PDF | Segundo comando ao lado de "Preparar dieta" |
-| NAV-03 | Abertura mostra painel geral do paciente, não a consulta | S01 | CRIAR | — | Tela inicial do módulo por paciente |
-| NAV-04 | Pesquisa de pacientes no módulo (sem "Novo paciente") | R: MÓDULO DE DIETAS — INTEGRAÇÃO; FIG-002 | COMPLETAR | busca existe em `app/(nutricionista)/pacientes/page.tsx` | Reaproveitar na home do módulo |
-| NAV-05 | Configurações do módulo (menu próprio) | R: FIG-004/005 | CRIAR | — | Área "Configurações" com as bibliotecas da seção 3 |
-| CAD-01 | Data de nascimento e idade calculada | R: cadastro §1 | CRIAR | `patients` não tem nascimento | Coluna `birth_date`; idade sempre calculada |
-| CAD-02 | Sexo para cálculos e PDF | R: cadastro §1; ELABORAÇÃO — IDENTIFICAÇÃO §3 | CRIAR | ausente em `patients` | Coluna com valores definidos pelo cliente (ver pendências) |
-| CAD-03 | Altura atual sincronizada com a avaliação física | R: AVALIAÇÃO FÍSICA — PESO E ALTURA §3 | CRIAR | ausente | Coluna de altura atual + histórico na avaliação |
-| CAD-04 | E-mail no cadastro igual ao do acesso | R: FIG-008/009 | COMPLETAR | e-mail vive em `users`; editado por `/api/pacientes/[id]/acesso` | Mostrar o e-mail de acesso no cadastro; paciente sem acesso precisa de e-mail de contato |
-| CAD-05 | Peso inicial × peso atual × histórico de peso | R: cadastro §3 | COMPLETAR | `initial_weight`, `patient_progress.weight`, `patient_reports.weight` | Visão única de histórico (relatório, evolução, avaliação física) e "peso atual" derivado |
+| NAV-01 | Acesso ao módulo pela ficha do paciente (botão no topo) | S01; EF §10 | CRIAR → **ENTREGUE (Fase 0)** | ficha em `app/(nutricionista)/pacientes/[id]/page.tsx` não tem o botão | Botão e rota do módulo |
+| NAV-02 | Acesso pela tela Dietas, com o paciente já selecionado | EF §10 | CRIAR → **ENTREGUE (Fase 0)** | "Preparar dieta" abre só o upload de PDF | Segundo comando ao lado de "Preparar dieta" |
+| NAV-03 | Abertura mostra painel geral do paciente, não a consulta | S01 | CRIAR → **ENTREGUE (Fase 0)** | — | Tela inicial do módulo por paciente |
+| NAV-04 | Pesquisa de pacientes no módulo (sem "Novo paciente") | R: MÓDULO DE DIETAS — INTEGRAÇÃO; FIG-002 | COMPLETAR → **ENTREGUE (Fase 0)** | busca existe em `app/(nutricionista)/pacientes/page.tsx` | Reaproveitar na home do módulo |
+| NAV-05 | Configurações do módulo (menu próprio) | R: FIG-004/005 | CRIAR → **ENTREGUE (Fase 0)** | — | Área "Configurações" com as bibliotecas da seção 3 |
+| CAD-01 | Data de nascimento e idade calculada | R: cadastro §1 | CRIAR → **ENTREGUE (Fase 0)** | `patients` não tem nascimento | Coluna `birth_date`; idade sempre calculada |
+| CAD-02 | Sexo para cálculos e PDF | R: cadastro §1; ELABORAÇÃO — IDENTIFICAÇÃO §3 | CRIAR → **ENTREGUE (Fase 0)** | ausente em `patients` | Coluna com valores definidos pelo cliente (ver pendências) |
+| CAD-03 | Altura atual sincronizada com a avaliação física | R: AVALIAÇÃO FÍSICA — PESO E ALTURA §3 | CRIAR → **ENTREGUE (Fase 0)** | ausente | Coluna de altura atual + histórico na avaliação |
+| CAD-04 | E-mail no cadastro igual ao do acesso | R: FIG-008/009 | COMPLETAR → **ENTREGUE (Fase 0)** | e-mail vive em `users`; editado por `/api/pacientes/[id]/acesso` | Mostrar o e-mail de acesso no cadastro; paciente sem acesso precisa de e-mail de contato |
+| CAD-05 | Peso inicial × peso atual × histórico de peso | R: cadastro §3 | COMPLETAR → **ENTREGUE (Fase 0)** | `initial_weight`, `patient_progress.weight`, `patient_reports.weight` | Visão única de histórico (relatório, evolução, avaliação física) e "peso atual" derivado |
 | CAD-06 | Lembrete do cadastro | S02 Dois lembretes | MANTER | `patients.important_note` | Exibir só leitura no editor |
-| CON-01 | Consulta com ID, data, tipo (primeira/retorno), status, criação/atualização, nutricionista | R: FIG-010 §1; Nova consulta §3 | CRIAR | — | Tabela de consultas |
-| CON-02 | Uma consulta em andamento por paciente, garantida no banco | R: Nova consulta §2 e §9 | CRIAR | — | Índice único parcial |
-| CON-03 | Lista de consultas e resumo por consulta (dietas, avaliações, anamneses, exames, fórmulas) | R: FIG-010, FIG-015 | CRIAR | — | — |
-| CON-04 | Finalizar consulta sem publicar nada | R: Nova consulta §7 | CRIAR | — | — |
-| CON-05 | Excluir só a consulta vigente sem registros clínicos nem documentos publicados | R: FIG-014 | CRIAR | — | Bloqueio também no banco |
-| CON-06 | Auditoria de correções em consultas antigas (o quê, antes/depois, quando, quem) | R: FIG-013 §4 | CRIAR | não há trilha de auditoria | Tabela de auditoria genérica |
+| CON-01 | Consulta com ID, data, tipo (primeira/retorno), status, criação/atualização, nutricionista | R: FIG-010 §1; Nova consulta §3 | CRIAR → **ENTREGUE (Fase 0)** | — | Tabela de consultas |
+| CON-02 | Uma consulta em andamento por paciente, garantida no banco | R: Nova consulta §2 e §9 | CRIAR → **ENTREGUE (Fase 0)** | — | Índice único parcial |
+| CON-03 | Lista de consultas e resumo por consulta (dietas, avaliações, anamneses, exames, fórmulas) | R: FIG-010, FIG-015 | CRIAR → **ENTREGUE (Fase 0)** | — | — |
+| CON-04 | Finalizar consulta sem publicar nada | R: Nova consulta §7 | CRIAR → **ENTREGUE (Fase 0)** | — | — |
+| CON-05 | Excluir só a consulta vigente sem registros clínicos nem documentos publicados | R: FIG-014 | CRIAR → **ENTREGUE (Fase 0)** | — | Bloqueio também no banco |
+| CON-06 | Auditoria de correções em consultas antigas (o quê, antes/depois, quando, quem) | R: FIG-013 §4 | CRIAR → **ENTREGUE (Fase 0)** | não há trilha de auditoria | Tabela de auditoria genérica |
 | CON-07 | Consulta não altera plano, pagamento, acesso, ciclo nem relatórios | R: Nova consulta §8 | MANTER (regra) | — | Garantir por teste |
 
 ## 3. Configurações (bibliotecas)
@@ -64,8 +64,8 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | CFG-07 | Medicações (cadastro) | R: MEDICAÇÕES E REGISTRO DE DOSAGENS | CRIAR | — | Calculadora auxiliar depende de aprovação (ver 04) |
 | CFG-08 | Fórmulas (modelos e ingredientes) | R: CONFIGURAÇÕES — FÓRMULAS NUTRICIONAIS | CRIAR | — | Cálculos dependem de aprovação |
 | CFG-09 | Orientações com texto formatado, imagens e assinatura | R: MODELOS DE ORIENTAÇÕES NUTRICIONAIS | CRIAR | — | Editor de texto rico |
-| CFG-10 | Logotipo, assinatura, marca-d'água, frase, identificação profissional (nome, CRN), cor das linhas | R: LOGOTIPO, ASSINATURA E MARCA-D'ÁGUA; PADRONIZAÇÃO VISUAL §2–3, §30 | CRIAR | — | — |
-| CFG-11 | Suplementos | S03 | NÃO VERIFICADO | — | Aparece na matriz da SPEC e no menu do NutriDiet, mas o roteiro trata "Suplementação" como "Medicações"; confirmar se é um cadastro separado |
+| CFG-10 | Logotipo, assinatura, marca-d'água, frase, identificação profissional (nome, CRN), cor das linhas | R: LOGOTIPO, ASSINATURA E MARCA-D'ÁGUA; PADRONIZAÇÃO VISUAL §2–3, §30 | CRIAR → **ENTREGUE (Fase 0)** | — | — |
+| CFG-11 | Suplementos | S03 | NÃO SE APLICA (decisão 19/10: suplementos entram na dieta como alimentos) | — | Aparece na matriz da SPEC e no menu do NutriDiet, mas o roteiro trata "Suplementação" como "Medicações"; confirmar se é um cadastro separado |
 
 ## 4. Alimentos (TACO)
 
@@ -136,7 +136,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | AVF-08 | Resultados: avatar com setas, avatares de % gordura, 4 gráficos (12 últimas), tabela de perimetria | R: RESULTADOS…; FIG-074–079 | CRIAR | `components/ComparativoFotos.tsx` é a única tela de evolução visual hoje | Ilustrações do avatar dependem do cliente |
 | AVF-09 | Faixa de referência de gordura com fonte | R: IDENTIFICAÇÃO E REFERÊNCIAS §6–9 | CRIAR | — | Aguarda aprovação |
 | AVF-10 | PDF da avaliação e envio opcional ao paciente | R: SALVAMENTO … ENVIO §6–8 | CRIAR | — | — |
-| AVF-11 | Relação com "Registrar evolução" atual | — | NÃO VERIFICADO | `app/(nutricionista)/pacientes/[id]/evolucao/page.tsx` grava `patient_progress` | Decidir se o registro de peso simples continua ao lado da avaliação física |
+| AVF-11 | Relação com "Registrar evolução" atual | — | CRIAR (decisão 19/10: substituído pela avaliação física) | `app/(nutricionista)/pacientes/[id]/evolucao/page.tsx` grava `patient_progress` | Decidir se o registro de peso simples continua ao lado da avaliação física |
 
 ## 8. Anamnese e recordatório
 
@@ -171,7 +171,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| PDF-01 | Gerador de PDF no servidor, A4 vertical, paginação, cabeçalho repetido, rodapé com CRN | R: PADRONIZAÇÃO … DIETA ALIMENTAR; FIG-184–186 | CRIAR | app só armazena PDFs enviados | Biblioteca de geração a escolher na Fase 0 |
+| PDF-01 | Gerador de PDF no servidor, A4 vertical, paginação, cabeçalho repetido, rodapé com CRN | R: PADRONIZAÇÃO … DIETA ALIMENTAR; FIG-184–186 | CRIAR → **ENTREGUE (Fase 0)** | app só armazena PDFs enviados | Biblioteca de geração a escolher na Fase 0 |
 | PDF-02 | Dieta: modelo #DGteam, simples ou detalhado, observações antes das substituições | S02; FIG-184–186 | CRIAR | — | — |
 | PDF-03 | Fórmulas, medicação, avaliação física, solicitação de exames, orientações | R | CRIAR | — | — |
 | PDF-04 | Nomes "Dieta - Nome - dd-mm-aaaa.pdf" etc. | R: COMANDOS §10–12 | CRIAR | — | — |

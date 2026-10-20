@@ -4,6 +4,22 @@ Cada fase é entregue, testada (fluxos novos + regressão dos existentes) e apro
 
 Os IDs entre colchetes remetem à [matriz](01-matriz-requisitos.md).
 
+## Andamento
+
+Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101). Requisitos têm tamanhos diferentes: o editor de dietas (fases 2 e 3) concentra a maior parte do esforço.
+
+| Fase | Situação | Entregue em | Requisitos |
+|---|---|---|---|
+| 0 — Fundação | **Concluída** (39 verificações automáticas) | 20/10/2026 | 18 |
+| 1 — Base de alimentos | Não iniciada | — | — |
+| 2 — Editor de dietas | Não iniciada | — | — |
+| 3 — Modelos e importações | Não iniciada | — | — |
+| 4 — Avaliação física | Não iniciada (TMB e GET aprovados) | — | — |
+| 5 — Anamnese e recordatório | Não iniciada | — | — |
+| 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
+| 7 — Auxílio da IA | Não iniciada | — | — |
+| **Módulo** | **18 de 101 requisitos (18%)** | | |
+
 ## Fase 0 — Fundação
 
 **Objetivo:** dar ao módulo a estrutura de que todas as outras fases dependem, sem tocar no que já funciona.

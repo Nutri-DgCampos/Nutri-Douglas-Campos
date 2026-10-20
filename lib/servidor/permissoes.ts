@@ -206,6 +206,25 @@ export function criarRegras(contexto: Contexto): Regras {
       delete: nutricionista ? TUDO : null,
     },
 
+    // Módulo de Nutrição. Consultas são criadas, alteradas e excluídas pelas
+    // rotas /api/nutricao/consultas (com auditoria); aqui só a leitura.
+    consultas: {
+      select: nutricionista ? TUDO : null,
+    },
+
+    auditoria_clinica: {
+      select: nutricionista ? TUDO : null,
+    },
+
+    historico_peso: {
+      select: nutricionista ? TUDO : null,
+    },
+
+    configuracoes_documentos: {
+      select: nutricionista ? TUDO : null,
+      update: nutricionista ? TUDO : null,
+    },
+
     patient_update_views: {
       select: { usando: doPaciente },
       // A visualização precisa apontar para uma dieta ou devolutiva do próprio paciente.

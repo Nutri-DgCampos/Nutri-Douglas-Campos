@@ -7,6 +7,10 @@ import Selecao from "@/components/Selecao";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import CamposComplementares, {
+  DADOS_VAZIOS,
+  dadosParaBanco,
+} from "@/components/CamposComplementares";
 
 export default function NovoPaciente() {
   const router = useRouter();
@@ -30,6 +34,7 @@ export default function NovoPaciente() {
 const [emailAcesso, setEmailAcesso] = useState("");
 const [senhaProvisoria, setSenhaProvisoria] = useState("");
 const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [complementares, setComplementares] = useState(DADOS_VAZIOS);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -50,9 +55,17 @@ if (mostrarFormularioAcesso) {
   }
 }
 
+const convertidos = dadosParaBanco(complementares);
+
+if ("erro" in convertidos) {
+  setErro(convertidos.erro);
+  return;
+}
+
 setSalvando(true);
 
     const { data: pacienteCriado, error } = await api.from("patients").insert({
+      ...convertidos.valores,
       name: nome,
       phone: telefone,
       objective: objetivo,
@@ -161,6 +174,8 @@ router.refresh();
                 value={telefone}
                 onChange={setTelefone}
               />
+
+              <CamposComplementares valor={complementares} onChange={setComplementares} />
 
               <Campo
   titulo="Peso inicial (kg)"

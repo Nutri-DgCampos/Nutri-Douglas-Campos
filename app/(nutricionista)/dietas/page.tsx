@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
 import { Button } from "primereact/button";
@@ -79,6 +80,7 @@ async function testarFilaNotificacoes() {
 }
 
 export default function DietasPage() {
+  const router = useRouter();
 
   const [mensagemPersonalizada, setMensagemPersonalizada] = useState(
   "Olá! Seu relatório nutricional está disponível para preenchimento. Acesse o Acompanhamento Nutricional e envie suas respostas dentro do prazo."
@@ -1115,6 +1117,14 @@ setArquivosDieta([]);
           </div>
 
           {pendencia.paciente ? (
+            <div className="flex flex-wrap gap-2">
+            <Button size="small"
+              type="button"
+              outlined
+              icon="pi pi-th-large"
+              label="Módulo de Nutrição"
+              onClick={() => router.push(`/nutricao/${pendencia.paciente.id}`)}
+            />
             <Button size="small"
               type="button"
               onClick={() => {
@@ -1126,6 +1136,7 @@ setArquivosDieta([]);
             >
               Preparar dieta
             </Button>
+            </div>
           ) : (
             <Button severity="warning" size="small"
               type="button"
