@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+// Captura o convite de instalação do navegador desde a primeira carga.
+import "@/lib/instalacao";
 
 export default function RegistrarServiceWorker() {
   useEffect(() => {

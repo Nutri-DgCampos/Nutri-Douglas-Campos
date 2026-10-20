@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
+import AvisoDeInstalacao from "@/components/AvisoDeInstalacao";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import EnvioExame from "@/components/EnvioExame";
 import EnvioTreino from "@/components/EnvioTreino";
@@ -443,7 +444,8 @@ carregarPaciente();
           <div className="min-w-0">
             <p className="text-sm text-gray-500">Área do paciente</p>
             <h1 className="mt-0.5 truncate text-3xl font-bold text-gray-900">
-              Olá, {primeiroNome ?? "Paciente"}
+              {/* Sem nome provisório: aparece só quando o cadastro carrega. */}
+              Olá{primeiroNome ? `, ${primeiroNome}` : ""}
             </h1>
           </div>
 
@@ -468,6 +470,8 @@ carregarPaciente();
             />
           </div>
         </header>
+
+        <AvisoDeInstalacao />
 
         {/* Relatório da semana: a ação principal do paciente. */}
         <section
