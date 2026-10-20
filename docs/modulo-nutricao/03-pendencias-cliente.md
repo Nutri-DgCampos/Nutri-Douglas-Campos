@@ -41,13 +41,13 @@ Aprovações da Fase 1 (20/10/2026), documento `Aprovacao Fase 1 - Base de alime
 - 2.1: traços da planilha oficial gravados como "Tr" — de acordo.
 - 2.2: os 112 zeros sem respaldo na planilha oficial gravados como dado não disponível — de acordo.
 - 3: fonte complementar = opção B, USDA FoodData Central, por correspondência aprovada alimento a alimento.
-- Carga da TACO na produção liberada.
+- Carga da TACO na produção liberada e feita em 20/10/2026 (597 alimentos, 20.165 valores).
 
 Pendências abertas:
 
 - ~~Arquivo de esclarecimentos dos itens 4.1 a 4.10.~~ Recebido.
 - ~~Silhueta com fundo transparente; versão feminina.~~ Recebidas em 20/10/2026 (`Downloads\Avatar`): silhuetas feminina e masculina e faixas de percentual em resolução maior, todas com fundo transparente. Guardadas em `public/nutricao/avatares/`.
-- Respostas da TACO (planilha oficial com "Tr").
+- ~~Respostas da TACO (planilha oficial com "Tr").~~ Aprovadas (itens 2.1 e 2.2).
 
 Histórico — dúvidas levantadas em 19/10/2026, respondidas acima:
 
