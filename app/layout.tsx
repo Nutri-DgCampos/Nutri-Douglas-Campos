@@ -1,19 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import localFont from "next/font/local";
 import "primeicons/primeicons.css";
 import "./globals.css";
 import Provedores from "@/components/Provedores";
 import RegistrarServiceWorker from "./RegistrarServiceWorker";
 
-// Corpo do texto e títulos. As fontes são baixadas no build e servidas pelo próprio app.
-const fonteCorpo = Figtree({
+// Corpo do texto e títulos. As fontes vêm dos pacotes @fontsource (as mesmas
+// do Google Fonts, licença OFL) e são servidas pelo próprio app: o build não
+// depende de acesso à internet.
+const fonteCorpo = localFont({
   variable: "--fonte-corpo",
-  subsets: ["latin"],
+  src: "../node_modules/@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2",
+  weight: "300 900",
+  style: "normal",
+  display: "swap",
 });
 
-const fonteTitulo = Bricolage_Grotesque({
+const fonteTitulo = localFont({
   variable: "--fonte-titulo",
-  subsets: ["latin"],
+  src: "../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2",
+  weight: "200 800",
+  style: "normal",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
