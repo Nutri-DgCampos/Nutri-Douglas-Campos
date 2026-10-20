@@ -15,7 +15,16 @@
 | C.3 Nutrientes fora da TACO | Usar fonte complementar reconhecida, à escolha da equipe | Pesquisar e propor a fonte (licença de uso incluída) |
 | E Consentimento para IA | Não será pedido: a IA só auxilia, o nutricionista revisa e libera, sob sua responsabilidade | Sem termo de aceite no app |
 
-Respostas ainda ambíguas, a confirmar:
+Confirmações de 20/10/2026:
+
+- **B.1 Sexo:** campo obrigatório no cadastro. Proposto Masculino / Feminino (os grupos das equações aprovadas); aguardando confirmação das opções. "Todas as equações possíveis" se referia aos protocolos de dobras: Jackson-Pollock 7 e 3 dobras, Faulkner, Slaughter e Petroski — todos devem aparecer (métodos ainda a submeter, M-04).
+- **C.1 Traços:** só os traços viram "dado não disponível"; zeros verdadeiros continuam zero. Como o CSV não distingue traço de zero, a importação vai cruzar com a planilha oficial da TACO (NEPA/Unicamp, 4ª edição), onde os traços estão marcados como "Tr".
+- **"5.1":** era a seção 1.1 — as cinco perguntas da TMB estão aprovadas.
+- **M-01 e M-02:** aprovados (ver 04-metodos-cientificos.md).
+- **E Consentimento:** o responsável consultou advogado; termo não é necessário porque a IA não decide nada diretamente para o paciente.
+- Enviadas em 20/10/2026 e aguardando resposta: opções do campo sexo, seção A (trechos cortados, incluindo kcal não proteica/gN) e seção D (materiais, frase e CRN).
+
+Histórico — dúvidas levantadas em 19/10/2026, respondidas acima:
 
 - **B.1 Sexo no cadastro:** a resposta foi "aparecer todas as equações possíveis". Não diz quais opções o campo terá.
 - **C.1 Zeros da TACO:** tratar todo zero do CSV como vazio também apaga zeros verdadeiros (ex.: colesterol de vegetais).

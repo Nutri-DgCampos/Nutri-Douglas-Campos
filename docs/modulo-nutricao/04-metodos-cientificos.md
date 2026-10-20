@@ -4,8 +4,8 @@ Regra da SPEC 01 (decisão 177): cada método de cálculo clínico é pesquisado
 
 | ID | Método | Situação |
 |---|---|---|
-| M-01 | TMB / gasto de repouso (5 equações + valor manual) | **Aguardando aprovação** |
-| M-02 | Gasto energético total (GET) e fator de atividade (NAF) | **Aguardando aprovação** |
+| M-01 | TMB / gasto de repouso (4 equações + valor manual) | **Aprovado em 20/10/2026** |
+| M-02 | Gasto energético total (GET) e fator de atividade (NAF) | **Aprovado em 20/10/2026** (opções A e B) |
 | M-03 | Gasto por METs | A pesquisar |
 | M-04 | Dobras cutâneas (Jackson-Pollock 7 e 3, Faulkner, Slaughter, Petroski) e conversão densidade → % gordura | A pesquisar |
 | M-05 | Faixas de referência de % de gordura | A pesquisar |
@@ -91,7 +91,11 @@ As DRIs de energia de 2023 **não estimam TMB**: dão o gasto energético total 
 
 Campos: valor (kcal/dia), método ou justificativa, observação. Identificado na tela e no histórico como "informado pelo profissional".
 
-### O que precisa ser aprovado em M-01
+### Decisão do responsável (20/10/2026)
+
+Aprovadas as cinco perguntas: as quatro equações com estes coeficientes; Mifflin na forma simplificada; faixas da FAO fechadas no início (30 e 60 anos entram na faixa de cima); Cunningham só com MLG da mesma avaliação; versão da FAO com peso e altura também oferecida.
+
+### O que foi submetido em M-01
 
 1. As quatro equações acima com os coeficientes exatos.
 2. Mifflin na forma simplificada.
@@ -135,7 +139,13 @@ GET = TMB × NAF, com NAF escolhido pelo nutricionista entre as faixas do relat�
 - Na opção A, a categoria já contém a atividade habitual: o gasto por METs aparece só como informação, sem somar ("GET + METs" fica oculto ou com aviso de dupla contagem).
 - "GET + METs" só é exibido se o nutricionista escolher a categoria **Inativo** e cadastrar as atividades por METs separadamente. **Confirmar se esse é o comportamento desejado.**
 
-### O que precisa ser aprovado em M-02
+### Decisão do responsável (20/10/2026)
+
+- As duas opções ficam disponíveis: A (DRIs 2023) e B (TMB × NAF da FAO/OMS/UNU 2004). Antes de codificar a opção B, transcrever as faixas de NAF da fonte original.
+- Os fatores 1,00 / 1,12 / 1,27 / 1,45 do NutriDiet não serão usados.
+- "GET + METs" só soma na categoria Inativo, com as atividades cadastradas por METs.
+
+### O que foi submetido em M-02
 
 1. Opção A (DRIs 2023) como método padrão do GET.
 2. Não usar os fatores 1,00/1,12/1,27/1,45 do NutriDiet (são do IOM 2005, substituído).
