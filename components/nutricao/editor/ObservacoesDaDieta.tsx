@@ -1,14 +1,19 @@
 "use client";
 
+import { useState } from "react";
+import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import type { DocumentoDieta } from "@/lib/nutricao/dieta";
-import { pedirConfirmacao } from "@/lib/avisos";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
+
+type ModeloDeObservacao = { id: string; nome: string; resumo: string | null };
 
 // Observações gerais da dieta: várias, com título e texto, em ordem
 // definida pelo nutricionista. Saem no PDF antes das trocas equivalentes.
-// (A busca nos modelos de observação chega com a Fase 3.)
+// Podem vir dos modelos cadastrados (cópia editável: o modelo não muda) ou
+// ser escritas na hora.
 export default function ObservacoesDaDieta({
   documento,
   onAlterar,
@@ -17,6 +22,40 @@ export default function ObservacoesDaDieta({
   onAlterar: (alterar: (documento: DocumentoDieta) => void) => void;
 }) {
   const lista = documento.observacoes;
+  const [busca, setBusca] = useState<string | ModeloDeObservacao>("");
+  const [sugestoes, setSugestoes] = useState<ModeloDeObservacao[]>([]);
+  const [incluindo, setIncluindo] = useState(false);
+
+  async function buscar(texto: string) {
+    const resposta = await fetch(`/api/nutricao/modelos?tipo=observacao&q=${encodeURIComponent(texto)}`, { cache: "no-store" });
+    const dados = await resposta.json().catch(() => null);
+    setSugestoes(dados?.modelos ?? []);
+  }
+
+  async function incluirModelo() {
+    if (typeof busca === "string" || incluindo) return;
+    if (lista.some((o) => o.modeloId === busca.id)) {
+      avisar("Essa observação já foi adicionada a esta dieta.", "warn");
+      return;
+    }
+    setIncluindo(true);
+    try {
+      const resposta = await fetch(`/api/nutricao/modelos/${busca.id}/usar`, { method: "POST" });
+      const dados = await resposta.json().catch(() => null);
+      if (!resposta.ok) {
+        avisar(dados?.erro ?? "Não foi possível usar a observação.", "error");
+        return;
+      }
+      const conteudo = dados.conteudo as { titulo: string; texto: string };
+      const modeloId = busca.id;
+      onAlterar((d) =>
+        void d.observacoes.push({ id: globalThis.crypto.randomUUID(), titulo: conteudo.titulo, texto: conteudo.texto, modeloId })
+      );
+      setBusca("");
+    } finally {
+      setIncluindo(false);
+    }
+  }
 
   async function remover(indice: number) {
     const observacao = lista[indice];
@@ -43,7 +82,41 @@ export default function ObservacoesDaDieta({
         />
       </div>
 
-      {lista.length === 0 ? <p className="mt-1 text-sm text-gray-500">Nenhuma observação (opcional).</p> : null}
+      <div className="mt-2 flex items-center gap-2">
+        <AutoComplete
+          inputId="observacao-modelo-busca"
+          value={busca}
+          suggestions={sugestoes}
+          completeMethod={(e) => buscar(e.query)}
+          field="nome"
+          delay={250}
+          minLength={1}
+          dropdown
+          placeholder="Buscar observação cadastrada pelo título"
+          onChange={(e) => setBusca(e.value)}
+          showEmptyMessage
+          emptyMessage="Nenhuma observação encontrada."
+          itemTemplate={(m: ModeloDeObservacao) => (
+            <span className="block max-w-[32rem]">
+              <span className="block">{m.nome}</span>
+              {m.resumo ? <span className="block truncate text-xs text-gray-500">{m.resumo}</span> : null}
+            </span>
+          )}
+          className="min-w-0 flex-1"
+          inputClassName="w-full"
+        />
+        <Button
+          type="button"
+          icon="pi pi-plus"
+          aria-label="Incluir observação selecionada"
+          tooltip="Incluir na dieta"
+          disabled={typeof busca === "string"}
+          loading={incluindo}
+          onClick={incluirModelo}
+        />
+      </div>
+
+      {lista.length === 0 ? <p className="mt-2 text-sm text-gray-500">Nenhuma observação (opcional).</p> : null}
 
       <ol className="mt-2 space-y-3">
         {lista.map((observacao, indice) => (

@@ -157,3 +157,82 @@ test("pendências do envio", () => {
     "Refeição 1: Arroz está sem quantidade.",
   ]);
 });
+
+// ---------------------------------------------------------------------------
+// Fase 3: cópias e rotina
+
+import { aplicarRefeicao, copiarDocumento, documentoParaModelo, itemPrescrito } from "../lib/nutricao/dieta.ts";
+
+function dietaDeExemplo() {
+  const doc = documentoVazio("Treino", "Hipertrofia");
+  doc.pesoReferencia = { valor: 80, origem: "Relatório", data: "2026-10-20" };
+  const almoco = novaRefeicao("Almoço");
+  almoco.horario = "12:00";
+  almoco.observacao = "Sem fritura";
+  almoco.opcoes[0].itens.push(item(ARROZ, { medida: colherDeServir, numeroMedidas: 2 }));
+  doc.refeicoes.push(almoco);
+  doc.observacoes.push({ id: crypto.randomUUID(), titulo: "", texto: "Beber água", modeloId: null });
+  doc.hidratacao.mlPorKg = 35;
+  return doc;
+}
+
+test("cópia de dieta: identificadores novos, conteúdo igual, sem peso do paciente", () => {
+  const origem = dietaDeExemplo();
+  const copia = copiarDocumento(origem);
+  assert.notEqual(copia.refeicoes[0].id, origem.refeicoes[0].id);
+  assert.notEqual(copia.refeicoes[0].opcoes[0].id, origem.refeicoes[0].opcoes[0].id);
+  assert.notEqual(copia.refeicoes[0].opcoes[0].itens[0].id, origem.refeicoes[0].opcoes[0].itens[0].id);
+  assert.equal(copia.refeicoes[0].opcaoReferencia, copia.refeicoes[0].opcoes[0].id);
+  assert.equal(copia.refeicoes[0].opcoes[0].itens[0].numeroMedidas, 2);
+  assert.equal(copia.pesoReferencia.valor, null);
+  assert.equal(copia.observacoes[0].texto, "Beber água");
+  // Alterar a cópia não mexe na origem.
+  copia.refeicoes[0].opcoes[0].itens[0].numeroMedidas = 5;
+  assert.equal(origem.refeicoes[0].opcoes[0].itens[0].numeroMedidas, 2);
+  assert.equal(documentoParaModelo(origem).pesoReferencia.valor, null);
+});
+
+test("rotina: itens em cinza fora dos totais e do PDF, sem observações", () => {
+  const rotina = copiarDocumento(dietaDeExemplo(), "rotina");
+  const linha = rotina.refeicoes[0].opcoes[0].itens[0];
+  assert.equal(linha.referencia, true);
+  assert.equal(itemPrescrito(linha), false);
+  assert.equal(totaisDaDieta(rotina, composicoes, ["kcal"]).kcal.valor, null);
+  assert.equal(rotina.refeicoes[0].observacao, null);
+  assert.equal(rotina.observacoes.length, 0);
+  assert.equal(rotina.hidratacao.mlPorKg, null);
+  assert.deepEqual(pendenciasDoEnvio({ ...rotina, titulo: "x" }), [
+    "Almoço: só há itens da rotina anterior (em cinza). Confirme ou inclua alimentos.",
+  ]);
+  // Confirmado: volta a contar.
+  linha.referencia = false;
+  assert.equal(totaisDaDieta(rotina, composicoes, ["kcal"]).kcal.valor, 130);
+});
+
+test("colar refeição: substituir mantém nome e horário do destino; adicionar vira nova opção", () => {
+  const origem = dietaDeExemplo().refeicoes[0];
+  const destino = novaRefeicao("Lanche da manhã");
+  destino.horario = "10:00";
+  destino.opcoes[0].itens.push(item(PAO, { quantidadeAjustada: 50 }));
+
+  const substituida = aplicarRefeicao(destino, origem, "substituir");
+  assert.equal(substituida.nome, "Lanche da manhã");
+  assert.equal(substituida.horario, "10:00");
+  assert.equal(substituida.opcoes.length, 1);
+  assert.equal(substituida.opcoes[0].itens[0].alimentoId, ARROZ);
+  assert.equal(substituida.observacao, "Sem fritura");
+
+  const somada = aplicarRefeicao(destino, origem, "opcao");
+  assert.equal(somada.opcoes.length, 2);
+  assert.equal(somada.opcaoReferencia, destino.opcaoReferencia);
+  assert.equal(somada.observacao, null);
+  assert.equal(aplicarRefeicao(destino, origem, "opcao", { incorporarObservacao: true }).observacao, "Sem fritura");
+
+  const comNome = aplicarRefeicao(destino, origem, "substituir", { usarNomeEHorario: true });
+  assert.equal(comNome.nome, "Almoço");
+  assert.equal(comNome.horario, "12:00");
+
+  // Destino vazio: a opção vazia não sobra.
+  const vazio = novaRefeicao("Ceia");
+  assert.equal(aplicarRefeicao(vazio, origem, "opcao").opcoes.length, 1);
+});

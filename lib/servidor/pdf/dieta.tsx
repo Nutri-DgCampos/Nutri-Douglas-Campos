@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from "@react-pdf/renderer";
 import {
   formatarNumero,
   hidratacaoDiaria,
+  itemPrescrito,
   nomeNaPrescricao,
   textoDaQuantidade,
   totaisDaDieta,
@@ -122,7 +123,7 @@ export function DocumentoDaDieta({ dados, identidade }: { dados: DadosDoPdf; ide
   const trocas = documento.refeicoes.flatMap((refeicao) =>
     refeicao.opcoes.flatMap((opcao) =>
       opcao.itens
-        .filter((item) => item.alimentoId && item.substituicoes.some((s) => s.quantidade))
+        .filter((item) => itemPrescrito(item) && item.substituicoes.some((s) => s.quantidade))
         .map((item) => ({
           refeicao: refeicao.nome,
           texto: [
@@ -164,7 +165,7 @@ export function DocumentoDaDieta({ dados, identidade }: { dados: DadosDoPdf; ide
                   </Text>
                 ) : null}
                 {opcao.itens
-                  .filter((item) => item.alimentoId)
+                  .filter(itemPrescrito)
                   .map((item, indice) => (
                     <LinhaDeAlimento
                       key={item.id}

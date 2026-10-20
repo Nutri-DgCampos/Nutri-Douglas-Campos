@@ -13,12 +13,12 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 0 — Fundação | **Concluída** (39 verificações automáticas) | 20/10/2026 | 18 |
 | 1 — Base de alimentos | **Concluída e aprovada** (19 verificações + 9 testes de cálculo); TACO carregada na produção em 20/10/2026 (597 alimentos, 20.165 valores). Pendente: correspondências USDA (F-01) | 20/10/2026 | 9 |
 | 2 — Editor de dietas | **Concluída e aprovada** (53 verificações de navegação + 16 testes de cálculo); no ar desde 20/10/2026 | 20/10/2026 | 28 |
-| 3 — Modelos e importações | Não iniciada | — | — |
+| 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); aguardando aprovação do cliente | 20/10/2026 | 7 |
 | 4 — Avaliação física | Não iniciada; todos os métodos aprovados em 20/10/2026 (M-01 a M-05) | — | — |
 | 5 — Anamnese e recordatório | Não iniciada | — | — |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **55 de 101 requisitos (54%)** | | |
+| **Módulo** | **62 de 101 requisitos (61%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -76,6 +76,16 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 Modelos de observação, refeição e dieta [CFG-04 a CFG-06]; gerar nova, duplicar, salvar como modelo [DIE-07]; importar dieta das quatro origens [DIE-06]; importar rotina em cinza [DIE-08]; copiar/colar e modelos de refeição [DIE-11, DIE-12].
 
 **Aceite:** importar de outro paciente não leva dados pessoais; modelo editado não altera dietas já criadas a partir dele; itens em cinza não entram nos totais.
+
+**Entregue (20/10/2026)** — migration `010_modelos_de_dieta.sql`:
+
+- Configurações → Dieta: três bibliotecas (observações, modelos de refeição, modelos de dieta), com busca, edição no mesmo editor das dietas, excluir (nunca usado) ou arquivar (já usado). Arquivado sai das buscas.
+- Usar um modelo copia o conteúdo com identificadores novos: editar o modelo depois não muda as dietas, e editar a dieta não muda o modelo. Modelos não guardam o peso do paciente.
+- No editor da dieta: Importar (consultas do paciente, outros pacientes, modelos salvos; o recordatório aparece como "chega com a Fase 5"), Importar rotina, Gerar nova dieta, Duplicar e Salvar como modelo. Quando a dieta aberta já tem conteúdo, a importação pergunta se cria uma nova dieta (padrão) ou substitui; nada é sobrescrito sem escolha. Título e objetivo da origem só entram quando preenchidos.
+- Importar rotina: refeições, horários, alimentos, quantidades e substituições de uma dieta anterior do mesmo paciente, com os alimentos em cinza — fora dos totais, do PDF e da área do paciente até "Confirmar na dieta". Observações e hidratação não vêm.
+- Por refeição: copiar, colar (área de transferência interna, vale entre dietas e pacientes na sessão), salvar como modelo e importar modelo. Colar e importar modelo perguntam "Adicionar como nova opção" ou "Substituir conteúdo" quando o destino tem conteúdo; nome e horário do destino ficam, salvo escolha.
+- Observações da dieta: busca nos modelos pelo título; a mesma observação não entra duas vezes; o texto copiado pode ser ajustado só naquela dieta.
+- Cada dieta registra a origem (duplicação, importação, modelo, rotina) na coluna `dietas.origens` e na auditoria.
 
 ## Fase 4 — Avaliação física
 

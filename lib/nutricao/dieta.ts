@@ -49,6 +49,9 @@ export type ItemDaDieta = {
   // Ajuste manual em g/mL. Nulo = vale a quantidade calculada pela medida.
   quantidadeAjustada: number | null;
   substituicoes: SubstituicaoDaLinha[];
+  // Item trazido por "Importar rotina", ainda não confirmado: aparece em
+  // cinza e fica fora dos cálculos, do PDF e da área do paciente.
+  referencia?: boolean;
 };
 
 export type Opcao = { id: string; itens: ItemDaDieta[] };
@@ -62,7 +65,8 @@ export type Refeicao = {
   opcoes: Opcao[];
 };
 
-export type ObservacaoDaDieta = { id: string; titulo: string; texto: string };
+// modeloId: observação copiada de um modelo (evita incluir o mesmo duas vezes).
+export type ObservacaoDaDieta = { id: string; titulo: string; texto: string; modeloId?: string | null };
 
 export type PesoDeReferencia = {
   valor: number | null;
@@ -100,6 +104,7 @@ export function novoItem(): ItemDaDieta {
     numeroMedidas: null,
     quantidadeAjustada: null,
     substituicoes: [],
+    referencia: false,
   };
 }
 
@@ -236,7 +241,17 @@ function validarItem(valor: unknown, onde: string): ItemDaDieta {
     substituicoes: lista(i.substituicoes ?? [], LIMITES.substituicoes, `${onde}, substituições`).map((s, n) =>
       validarSubstituicao(s, `${onde}, substituição ${n + 1}`)
     ),
+    referencia: i.referencia === true,
   };
+}
+
+export function validarRefeicaoAvulsa(valor: unknown): { refeicao: Refeicao } | { erro: string } {
+  try {
+    return { refeicao: validarRefeicao(valor, "Refeição") };
+  } catch (erro) {
+    if (erro instanceof ErroDeValidacao) return { erro: erro.message };
+    throw erro;
+  }
 }
 
 function validarRefeicao(valor: unknown, onde: string): Refeicao {
@@ -295,6 +310,7 @@ export function validarDocumento(valor: unknown): { documento: DocumentoDieta } 
           id: id(obs.id, `Observação ${n + 1}`),
           titulo: texto(obs.titulo, LIMITES.texto, `Observação ${n + 1}`),
           texto: texto(obs.texto, LIMITES.textoLongo, `Observação ${n + 1}`),
+          modeloId: idOuNulo(obs.modeloId, `Observação ${n + 1}`),
         };
       }),
       hidratacao: {
@@ -337,9 +353,15 @@ export function quantidadeDoItem(item: Pick<ItemDaDieta, "medida" | "numeroMedid
   };
 }
 
-// Linha que participa dos cálculos: tem alimento e quantidade efetiva.
+// Linha que participa dos cálculos: tem alimento e quantidade efetiva e não
+// é só referência da rotina anterior.
 export function itemCalculavel(item: ItemDaDieta) {
-  return Boolean(item.alimentoId) && (quantidadeDoItem(item).efetiva ?? 0) > 0;
+  return !item.referencia && Boolean(item.alimentoId) && (quantidadeDoItem(item).efetiva ?? 0) > 0;
+}
+
+// Linha que vai para o paciente (PDF e área do paciente).
+export function itemPrescrito(item: ItemDaDieta) {
+  return Boolean(item.alimentoId) && !item.referencia;
 }
 
 // ---------------------------------------------------------------------------
@@ -495,9 +517,16 @@ export function pendenciasDoEnvio(documento: DocumentoDieta): string[] {
 
     refeicao.opcoes.forEach((opcao, o) => {
       const onde = refeicao.opcoes.length > 1 ? `${nome}, opção ${o + 1}` : nome;
-      if (opcao.itens.length === 0) pendencias.push(`${onde}: nenhum alimento.`);
+      const prescritos = opcao.itens.filter((item) => !item.referencia);
+      if (prescritos.length === 0) {
+        pendencias.push(
+          opcao.itens.length
+            ? `${onde}: só há itens da rotina anterior (em cinza). Confirme ou inclua alimentos.`
+            : `${onde}: nenhum alimento.`
+        );
+      }
 
-      opcao.itens.forEach((item, i) => {
+      prescritos.forEach((item, i) => {
         if (!item.alimentoId) pendencias.push(`${onde}: a linha ${i + 1} está sem alimento.`);
         else if (!((quantidadeDoItem(item).efetiva ?? 0) > 0)) {
           pendencias.push(`${onde}: ${nomeNaPrescricao(item)} está sem quantidade.`);
@@ -531,4 +560,108 @@ export function alimentosDoDocumento(documento: DocumentoDieta) {
     }
   }
   return [...ids];
+}
+
+// ---------------------------------------------------------------------------
+// Cópias (importar, duplicar, colar, modelos)
+//
+// Toda cópia ganha identificadores novos: nada fica ligado à origem.
+
+function copiarItem(item: ItemDaDieta, comoReferencia: boolean): ItemDaDieta {
+  return {
+    ...structuredClone(item),
+    id: novoId(),
+    referencia: comoReferencia || Boolean(item.referencia),
+    substituicoes: item.substituicoes.map((s) => ({ ...structuredClone(s), id: novoId() })),
+  };
+}
+
+export function copiarOpcao(opcao: Opcao, comoReferencia = false): Opcao {
+  return { id: novoId(), itens: opcao.itens.map((item) => copiarItem(item, comoReferencia)) };
+}
+
+export function copiarRefeicao(refeicao: Refeicao, comoReferencia = false): Refeicao {
+  const opcoes = refeicao.opcoes.map((opcao) => copiarOpcao(opcao, comoReferencia));
+  const indiceReferencia = Math.max(0, refeicao.opcoes.findIndex((o) => o.id === refeicao.opcaoReferencia));
+  return {
+    id: novoId(),
+    nome: refeicao.nome,
+    horario: refeicao.horario,
+    observacao: refeicao.observacao,
+    opcaoReferencia: opcoes[indiceReferencia].id,
+    opcoes,
+  };
+}
+
+// Cópia de uma dieta (ou modelo) para outra dieta. "rotina": itens em cinza
+// e sem observações (as da dieta anterior não valem automaticamente).
+export function copiarDocumento(origem: DocumentoDieta, modo: "copia" | "rotina" = "copia"): DocumentoDieta {
+  const rotina = modo === "rotina";
+  return {
+    ...documentoVazio(origem.titulo, origem.objetivo),
+    refeicoes: origem.refeicoes.map((r) => {
+      const copia = copiarRefeicao(r, rotina);
+      if (rotina) copia.observacao = null;
+      return copia;
+    }),
+    observacoes: rotina ? [] : origem.observacoes.map((o) => ({ ...o, id: novoId() })),
+    hidratacao: rotina ? { mlPorKg: null, observacoes: "" } : { ...origem.hidratacao },
+    nutrientesAcompanhados: [...origem.nutrientesAcompanhados],
+  };
+}
+
+// Conteúdo de um modelo de dieta: sem dados do paciente (peso de referência).
+export function documentoParaModelo(documento: DocumentoDieta): DocumentoDieta {
+  return { ...copiarDocumento(documento), pesoReferencia: { valor: null, origem: null, data: null } };
+}
+
+export function documentoTemConteudo(documento: DocumentoDieta) {
+  return (
+    documento.refeicoes.length > 0 ||
+    documento.observacoes.length > 0 ||
+    documento.hidratacao.mlPorKg !== null ||
+    documento.hidratacao.observacoes.trim() !== ""
+  );
+}
+
+export function refeicaoTemConteudo(refeicao: Refeicao) {
+  return refeicao.opcoes.some((o) => o.itens.length > 0) || Boolean(refeicao.observacao?.trim());
+}
+
+// Colar refeição / importar modelo de refeição numa refeição de destino.
+// "substituir": troca alimentos, opções e observação; "opcao": acrescenta as
+// opções da origem como novas opções. Nome e horário do destino ficam, salvo
+// pedido explícito.
+export function aplicarRefeicao(
+  destino: Refeicao,
+  origem: Refeicao,
+  modo: "substituir" | "opcao",
+  opcoes: { usarNomeEHorario?: boolean; incorporarObservacao?: boolean } = {}
+): Refeicao {
+  const copia = copiarRefeicao(origem);
+  let resultado: Refeicao;
+
+  if (modo === "substituir") {
+    resultado = { ...copia, id: destino.id, nome: destino.nome, horario: destino.horario };
+  } else if (destino.opcoes.every((o) => o.itens.length === 0)) {
+    // Destino sem alimentos: a opção vazia dele não fica sobrando.
+    resultado = { ...destino, opcoes: copia.opcoes, opcaoReferencia: copia.opcaoReferencia };
+  } else {
+    resultado = { ...destino, opcoes: [...destino.opcoes, ...copia.opcoes] };
+  }
+
+  if (opcoes.usarNomeEHorario) {
+    resultado.nome = origem.nome;
+    resultado.horario = origem.horario;
+  }
+
+  if (modo === "opcao") {
+    const daOrigem = origem.observacao?.trim();
+    resultado.observacao =
+      opcoes.incorporarObservacao && daOrigem
+        ? [destino.observacao?.trim(), daOrigem].filter(Boolean).join("\n")
+        : destino.observacao;
+  }
+
+  return resultado;
 }

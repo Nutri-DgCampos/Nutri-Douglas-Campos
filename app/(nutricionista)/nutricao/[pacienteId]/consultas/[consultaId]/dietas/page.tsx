@@ -147,6 +147,14 @@ function DietasDaConsulta() {
               await carregar();
               abrir(null);
             }}
+            onAbrirDieta={async (id) => {
+              await carregar();
+              abrir(id);
+            }}
+            onNovaDieta={() => {
+              setNovoTitulo("");
+              setNomeando(true);
+            }}
           />
         ) : (
           <div className="cartao p-6 text-center">

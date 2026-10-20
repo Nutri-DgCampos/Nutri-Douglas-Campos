@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hidratacaoDiaria, nomeNaPrescricao, textoDaQuantidade, type DocumentoDieta } from "@/lib/nutricao/dieta";
+import { hidratacaoDiaria, itemPrescrito, nomeNaPrescricao, textoDaQuantidade, type DocumentoDieta } from "@/lib/nutricao/dieta";
 import { obterPool } from "@/lib/servidor/banco";
 import { origemPermitida, recusar } from "@/lib/servidor/http";
 import { obterContexto } from "@/lib/servidor/sessao";
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
           opcoes: refeicao.opcoes.map((opcao) => ({
             id: opcao.id,
             itens: opcao.itens
-              .filter((item) => item.alimentoId)
+              .filter(itemPrescrito)
               .map((item) => ({
                 id: item.id,
                 nome: nomeNaPrescricao(item),

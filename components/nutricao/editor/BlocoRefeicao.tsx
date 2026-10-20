@@ -76,11 +76,17 @@ export default function BlocoRefeicao({
   nutrientes,
   acompanhados,
   mostrarNutrientes,
+  estruturaFixa = false,
+  temCopiada = false,
   onAlterar,
   onRemover,
   onMover,
   onEscolherAlimento,
   onSubstituicoes,
+  onCopiar,
+  onColar,
+  onSalvarModelo,
+  onImportarModelo,
 }: {
   refeicao: Refeicao;
   indice: number;
@@ -89,11 +95,17 @@ export default function BlocoRefeicao({
   nutrientes: Nutriente[];
   acompanhados: string[];
   mostrarNutrientes: boolean;
+  estruturaFixa?: boolean;
+  temCopiada?: boolean;
   onAlterar: (alterar: (refeicao: Refeicao) => void) => void;
   onRemover: () => void;
   onMover: (direcao: -1 | 1) => void;
   onEscolherAlimento: (opcaoId: string, itemId: string, alimento: AlimentoEncontrado) => void;
   onSubstituicoes: (opcaoId: string, itemId: string) => void;
+  onCopiar: () => void;
+  onColar: () => void;
+  onSalvarModelo: () => void;
+  onImportarModelo: () => void;
 }) {
   const [verMicronutrientes, setVerMicronutrientes] = useState(false);
   const referencia = opcaoDeReferencia(refeicao);
@@ -156,15 +168,17 @@ export default function BlocoRefeicao({
   return (
     <section className="cartao @container p-3 sm:p-4" aria-label={nomeDaRefeicao}>
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          icon="pi pi-minus-circle"
-          text
-          severity="danger"
-          aria-label={`Remover ${nomeDaRefeicao}`}
-          tooltip="Remover refeição"
-          onClick={onRemover}
-        />
+        {!estruturaFixa ? (
+          <Button
+            type="button"
+            icon="pi pi-minus-circle"
+            text
+            severity="danger"
+            aria-label={`Remover ${nomeDaRefeicao}`}
+            tooltip="Remover refeição"
+            onClick={onRemover}
+          />
+        ) : null}
         <InputText
           aria-label="Nome da refeição"
           value={refeicao.nome}
@@ -181,8 +195,12 @@ export default function BlocoRefeicao({
           className="w-28"
         />
         <div className="flex flex-wrap items-center">
-          <Button type="button" icon="pi pi-angle-down" text aria-label="Mover refeição para baixo" disabled={indice === total - 1} onClick={() => onMover(1)} />
-          <Button type="button" icon="pi pi-angle-up" text aria-label="Mover refeição para cima" disabled={indice === 0} onClick={() => onMover(-1)} />
+          {!estruturaFixa ? (
+            <>
+              <Button type="button" icon="pi pi-angle-down" text aria-label="Mover refeição para baixo" disabled={indice === total - 1} onClick={() => onMover(1)} />
+              <Button type="button" icon="pi pi-angle-up" text aria-label="Mover refeição para cima" disabled={indice === 0} onClick={() => onMover(-1)} />
+            </>
+          ) : null}
           <Button
             type="button"
             icon="pi pi-clone"
@@ -208,6 +226,32 @@ export default function BlocoRefeicao({
             tooltip="Vitaminas e minerais da refeição"
             className={verMicronutrientes ? "text-primary-700" : ""}
             onClick={() => setVerMicronutrientes((v) => !v)}
+          />
+          <Button type="button" icon="pi pi-copy" text aria-label="Copiar refeição" tooltip="Copiar refeição" onClick={onCopiar} />
+          <Button
+            type="button"
+            icon="pi pi-clipboard"
+            text
+            aria-label="Colar refeição"
+            tooltip={temCopiada ? "Colar refeição" : "Nenhuma refeição copiada"}
+            disabled={!temCopiada}
+            onClick={onColar}
+          />
+          <Button
+            type="button"
+            icon="pi pi-bookmark"
+            text
+            aria-label="Salvar refeição como modelo"
+            tooltip="Salvar refeição como modelo"
+            onClick={onSalvarModelo}
+          />
+          <Button
+            type="button"
+            icon="pi pi-download"
+            text
+            aria-label="Importar modelo de refeição"
+            tooltip="Importar modelo de refeição"
+            onClick={onImportarModelo}
           />
         </div>
         <div className="ml-auto w-full max-w-[18rem]">

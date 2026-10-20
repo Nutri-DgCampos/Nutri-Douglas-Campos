@@ -7,16 +7,15 @@ import { InputText } from "primereact/inputtext";
 import { OverlayPanel } from "primereact/overlaypanel";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
-import type { AlimentoEncontrado } from "@/components/nutricao/BuscaAlimento";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
-import { alimentosDoDocumento, novaRefeicao, type DocumentoDieta, type Refeicao } from "@/lib/nutricao/dieta";
+import { alimentosDoDocumento, documentoTemConteudo, type DocumentoDieta } from "@/lib/nutricao/dieta";
 import { formatarData, idadeEm, rotuloDoSexo } from "@/lib/nutricao/paciente";
-import BlocoRefeicao, { SUGESTOES_DE_NOME } from "./BlocoRefeicao";
 import DialogoEnvio, { type OpcoesDoEnvio } from "./DialogoEnvio";
-import JanelaSubstituicoes from "./JanelaSubstituicoes";
+import JanelaImportar, { type OrigemDaImportacao } from "./JanelaImportar";
+import ListaDeRefeicoes from "./ListaDeRefeicoes";
 import ObservacoesDaDieta from "./ObservacoesDaDieta";
 import PainelNutricional from "./PainelNutricional";
-import { carregarAlimentos, horaCurta, type BaseDosAlimentos, type DadosDoEditor } from "./tipos";
+import { horaCurta, type BaseDosAlimentos, type DadosDoEditor } from "./tipos";
 
 type EstadoGravacao = "salvo" | "pendente" | "salvando" | "erro" | "conflito";
 
@@ -68,11 +67,16 @@ export default function EditorDaDieta({
   dietaId,
   onAlterada,
   onRemovida,
+  onAbrirDieta,
+  onNovaDieta,
 }: {
   dietaId: string;
   // Título ou situação mudaram (para atualizar a aba).
   onAlterada: () => void;
   onRemovida: () => void;
+  // Outra dieta criada a partir desta (duplicar, importar em nova dieta).
+  onAbrirDieta: (id: string) => void;
+  onNovaDieta: () => void;
 }) {
   const [dados, setDados] = useState<DadosDoEditor | null | undefined>(undefined);
   const [documento, setDocumento] = useState<DocumentoDieta | null>(null);
@@ -81,7 +85,11 @@ export default function EditorDaDieta({
   const [rascunhoEm, setRascunhoEm] = useState<string | null>(null);
   const [salvoEm, setSalvoEm] = useState<string | null>(null);
   const [escolherVersao, setEscolherVersao] = useState(false);
-  const [substituindo, setSubstituindo] = useState<{ opcaoId: string; itemId: string } | null>(null);
+  const [importando, setImportando] = useState<"importar" | "rotina" | null>(null);
+  const [salvandoModelo, setSalvandoModelo] = useState(false);
+  const [nomeDoModelo, setNomeDoModelo] = useState("");
+  const [gravandoModelo, setGravandoModelo] = useState(false);
+  const [duplicando, setDuplicando] = useState(false);
   const [envio, setEnvio] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [mostrarNutrientes, setMostrarNutrientes] = useState(true);
@@ -253,72 +261,83 @@ export default function EditorDaDieta({
     [somenteLeitura]
   );
 
-  const garantirAlimentos = useCallback(async (ids: string[]) => {
-    const faltando = ids.filter((id) => !base.alimentos[id]);
-    if (faltando.length === 0) return;
-    const novos = await carregarAlimentos(faltando);
-    setBase((atual) => ({
-      alimentos: { ...atual.alimentos, ...novos.alimentos },
-      composicoes: { ...atual.composicoes, ...novos.composicoes },
-    }));
-  }, [base.alimentos]);
-
-  // Escolher (ou trocar) o alimento de uma linha: a quantidade zera
-  // (decisão B.3) e a medida padrão do alimento já vem selecionada.
-  async function escolherAlimento(refeicaoId: string, opcaoId: string, itemId: string, alimento: AlimentoEncontrado) {
-    let dadosDoAlimento = base.alimentos[alimento.id];
-    try {
-      if (!dadosDoAlimento) {
-        const novos = await carregarAlimentos([alimento.id]);
-        setBase((atual) => ({
-          alimentos: { ...atual.alimentos, ...novos.alimentos },
-          composicoes: { ...atual.composicoes, ...novos.composicoes },
-        }));
-        dadosDoAlimento = novos.alimentos[alimento.id];
-      }
-    } catch {
-      avisar("Não foi possível carregar o alimento.", "error");
-      return;
-    }
-
-    const item = documentoRef.current?.refeicoes
-      .find((r) => r.id === refeicaoId)
-      ?.opcoes.find((o) => o.id === opcaoId)
-      ?.itens.find((i) => i.id === itemId);
-
-    if (item?.alimentoId && item.substituicoes.length > 0) {
-      const confirmado = await pedirConfirmacao(
-        "Trocar o alimento remove as substituições escolhidas para ele nesta linha. Continuar?",
-        { aceitar: "Trocar alimento", rejeitar: "Cancelar" }
-      );
-      if (!confirmado) return;
-    }
-
-    const padrao = dadosDoAlimento?.medidas.find((m) => m.padrao) ?? dadosDoAlimento?.medidas[0];
-
-    alterar((doc) => {
-      const alvo = doc.refeicoes
-        .find((r) => r.id === refeicaoId)
-        ?.opcoes.find((o) => o.id === opcaoId)
-        ?.itens.find((i) => i.id === itemId);
-      if (!alvo) return;
-      Object.assign(alvo, {
-        alimentoId: alimento.id,
-        nomeOriginal: alimento.nome,
-        nomeExibido: null,
-        unidade: alimento.unidade_base,
-        medida: padrao
-          ? { id: padrao.id, singular: padrao.nome_singular, plural: padrao.nome_plural, quantidade: padrao.quantidade }
-          : null,
-        numeroMedidas: null,
-        quantidadeAjustada: null,
-        substituicoes: [],
-      });
-    });
-  }
-
   // ---------------------------------------------------------------------
   // Comandos
+
+  // Importar (dieta, outro paciente, modelo) ou importar rotina. Grava antes
+  // o que estiver pendente; o servidor confere a revisão.
+  async function importar(origem: OrigemDaImportacao, aplicacao: "substituir" | "nova") {
+    if (!(await gravar(false))) {
+      avisar("Não foi possível gravar as últimas alterações. Tente de novo.", "error");
+      return false;
+    }
+    const resposta = await fetch(`/api/nutricao/dietas/${dietaId}/importar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ origem, modo: aplicacao, revisao: revisaoRef.current }),
+    });
+    const resultado = await resposta.json().catch(() => null);
+    if (!resposta.ok) {
+      avisar(resultado?.erro ?? "Não foi possível importar.", "error");
+      return false;
+    }
+    if (aplicacao === "nova") {
+      avisar(origem.tipo === "rotina" ? "Nova dieta criada com a rotina anterior." : "Nova dieta criada com o conteúdo importado.", "success");
+      onAbrirDieta(resultado.id);
+    } else {
+      avisar(origem.tipo === "rotina" ? "Rotina importada: confirme os alimentos em cinza." : "Conteúdo importado.", "success");
+      await carregar();
+      onAlterada();
+    }
+    return true;
+  }
+
+  async function duplicar() {
+    if (duplicando) return;
+    setDuplicando(true);
+    try {
+      if (!(await gravar(false))) {
+        avisar("Não foi possível gravar as últimas alterações. Tente de novo.", "error");
+        return;
+      }
+      const resposta = await fetch(`/api/nutricao/dietas/${dietaId}/duplicar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ revisao: revisaoRef.current }),
+      });
+      const resultado = await resposta.json().catch(() => null);
+      if (!resposta.ok) {
+        avisar(resultado?.erro ?? "Não foi possível duplicar a dieta.", "error");
+        return;
+      }
+      avisar("Dieta duplicada.", "success");
+      onAbrirDieta(resultado.id);
+    } finally {
+      setDuplicando(false);
+    }
+  }
+
+  async function salvarComoModelo() {
+    const doc = documentoRef.current;
+    if (!doc || !nomeDoModelo.trim() || gravandoModelo) return;
+    setGravandoModelo(true);
+    try {
+      const resposta = await fetch("/api/nutricao/modelos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tipo: "dieta", nome: nomeDoModelo, conteudo: doc }),
+      });
+      const resultado = await resposta.json().catch(() => null);
+      if (!resposta.ok) {
+        avisar(resultado?.erro ?? "Não foi possível salvar o modelo.", "error");
+        return;
+      }
+      setSalvandoModelo(false);
+      avisar("Modelo de dieta salvo com sucesso.", "success");
+    } finally {
+      setGravandoModelo(false);
+    }
+  }
 
   async function salvar() {
     if (await gravar(true)) avisar("Dieta salva.", "success");
@@ -457,9 +476,6 @@ export default function EditorDaDieta({
   const { paciente, consulta, versoes } = dados;
   const idade = idadeEm(paciente.birth_date, consulta?.data);
   const ultimaVersao = versoes[0];
-  const itemEmSubstituicao = substituindo
-    ? documento.refeicoes.flatMap((r) => r.opcoes).find((o) => o.id === substituindo.opcaoId)?.itens.find((i) => i.id === substituindo.itemId) ?? null
-    : null;
 
   const textoDoEstado: Record<EstadoGravacao, string> = {
     salvo: rascunhoEm ? `Rascunho gravado às ${horaCurta(rascunhoEm)}` : "",
@@ -471,12 +487,6 @@ export default function EditorDaDieta({
 
   return (
     <div>
-      <datalist id="sugestoes-refeicao">
-        {SUGESTOES_DE_NOME.map((nome) => (
-          <option key={nome} value={nome} />
-        ))}
-      </datalist>
-
       {/* Identificação do paciente e da consulta */}
       <div className="cartao mb-3 flex flex-wrap items-center gap-x-6 gap-y-1 p-3 text-sm">
         <span className="font-bold text-gray-900">{paciente.name}</span>
@@ -499,6 +509,23 @@ export default function EditorDaDieta({
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 space-y-3">
           <div className="cartao grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
+            <div className="flex flex-wrap gap-1 sm:col-span-2" inert={somenteLeitura}>
+              <Button type="button" icon="pi pi-download" label="Importar" size="small" outlined onClick={() => setImportando("importar")} />
+              <Button type="button" icon="pi pi-history" label="Importar rotina" size="small" outlined onClick={() => setImportando("rotina")} />
+              <Button type="button" icon="pi pi-plus" label="Gerar nova dieta" size="small" text onClick={onNovaDieta} />
+              <Button type="button" icon="pi pi-clone" label="Duplicar" size="small" text loading={duplicando} onClick={duplicar} />
+              <Button
+                type="button"
+                icon="pi pi-bookmark"
+                label="Salvar como modelo"
+                size="small"
+                text
+                onClick={() => {
+                  setNomeDoModelo(documento.titulo.trim());
+                  setSalvandoModelo(true);
+                }}
+              />
+            </div>
             <label className="block">
               <span className="mb-1 block text-sm font-semibold text-gray-700">Objetivo</span>
               <InputText
@@ -541,47 +568,13 @@ export default function EditorDaDieta({
 
           {/* Somente leitura (arquivada ou alterada em outra janela): nada responde a cliques. */}
           <div inert={somenteLeitura} className={`min-w-0 space-y-3 ${somenteLeitura ? "opacity-70" : ""}`}>
-            {documento.refeicoes.map((refeicao, indice) => (
-              <BlocoRefeicao
-                key={refeicao.id}
-                refeicao={refeicao}
-                indice={indice}
-                total={documento.refeicoes.length}
-                base={base}
-                nutrientes={dados.nutrientes}
-                acompanhados={documento.nutrientesAcompanhados}
-                mostrarNutrientes={mostrarNutrientes}
-                onAlterar={(mudanca) =>
-                  alterar((d) => {
-                    const alvo = d.refeicoes.find((r) => r.id === refeicao.id);
-                    if (alvo) mudanca(alvo as Refeicao);
-                  })
-                }
-                onRemover={async () => {
-                  const confirmado = await pedirConfirmacao(
-                    `Remover ${refeicao.nome.trim() || `a refeição ${indice + 1}`} e todos os alimentos dela desta dieta?`,
-                    { aceitar: "Remover refeição", rejeitar: "Cancelar" }
-                  );
-                  if (confirmado) alterar((d) => void (d.refeicoes = d.refeicoes.filter((r) => r.id !== refeicao.id)));
-                }}
-                onMover={(direcao) =>
-                  alterar((d) => {
-                    const destino = indice + direcao;
-                    if (destino < 0 || destino >= d.refeicoes.length) return;
-                    [d.refeicoes[indice], d.refeicoes[destino]] = [d.refeicoes[destino], d.refeicoes[indice]];
-                  })
-                }
-                onEscolherAlimento={(opcaoId, itemId, alimento) => escolherAlimento(refeicao.id, opcaoId, itemId, alimento)}
-                onSubstituicoes={(opcaoId, itemId) => setSubstituindo({ opcaoId, itemId })}
-              />
-            ))}
-
-            <Button
-              type="button"
-              icon="pi pi-plus"
-              label="Adicionar refeição"
-              outlined
-              onClick={() => alterar((d) => void d.refeicoes.push(novaRefeicao()))}
+            <ListaDeRefeicoes
+              documento={documento}
+              base={base}
+              onBase={setBase}
+              alterar={alterar}
+              nutrientes={dados.nutrientes}
+              mostrarNutrientes={mostrarNutrientes}
             />
 
             <ObservacoesDaDieta documento={documento} onAlterar={alterar} />
@@ -688,28 +681,53 @@ export default function EditorDaDieta({
         </div>
       </details>
 
-      <JanelaSubstituicoes
-        key={substituindo ? `${substituindo.opcaoId}-${substituindo.itemId}` : "fechada"}
-        item={itemEmSubstituicao}
-        base={base}
-        visivel={Boolean(substituindo)}
-        garantirAlimentos={garantirAlimentos}
-        onFechar={() => setSubstituindo(null)}
-        onConfirmar={(substituicoes) => {
-          const alvo = substituindo;
-          setSubstituindo(null);
-          if (!alvo) return;
-          alterar((d) => {
-            const item = d.refeicoes
-              .flatMap((r) => r.opcoes)
-              .find((o) => o.id === alvo.opcaoId)
-              ?.itens.find((i) => i.id === alvo.itemId);
-            if (item) item.substituicoes = substituicoes;
-          });
-        }}
-      />
+      {importando ? (
+        <JanelaImportar
+          modo={importando}
+          dietaId={dietaId}
+          pacienteId={paciente.id}
+          temConteudo={documentoTemConteudo(documento)}
+          onFechar={() => setImportando(null)}
+          onImportar={importar}
+        />
+      ) : null}
 
-      <DialogoEnvio
+      <Dialog
+        header="Salvar dieta como modelo"
+        visible={salvandoModelo}
+        onHide={() => setSalvandoModelo(false)}
+        className="w-[min(30rem,calc(100vw-1rem))]"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button type="button" label="Cancelar" text onClick={() => setSalvandoModelo(false)} />
+            <Button
+              type="button"
+              label="Salvar"
+              icon="pi pi-check"
+              loading={gravandoModelo}
+              disabled={!nomeDoModelo.trim()}
+              onClick={salvarComoModelo}
+            />
+          </div>
+        }
+      >
+        <label className="block">
+          <span className="mb-1 block text-sm font-semibold text-gray-700">Nome do modelo</span>
+          <InputText
+            autoFocus
+            value={nomeDoModelo}
+            onChange={(e) => setNomeDoModelo(e.target.value)}
+            placeholder="Ex.: Emagrecimento — 1.800 kcal"
+            className={`w-full ${nomeDoModelo.trim() ? "" : "p-invalid"}`}
+          />
+        </label>
+        <p className="mt-2 text-sm text-gray-600">
+          O modelo guarda objetivo, título, refeições, alimentos, quantidades, substituições, observações e hidratação. O peso e os
+          dados do paciente não vão para o modelo; revise as observações para não levar informações pessoais. A dieta atual não muda.
+        </p>
+      </Dialog>
+
+            <DialogoEnvio
         key={envio ? "envio-aberto" : "envio-fechado"}
         visivel={envio}
         documento={documento}

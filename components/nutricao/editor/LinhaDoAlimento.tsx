@@ -89,7 +89,7 @@ export default function LinhaDoAlimento({
   return (
     // Layout pela largura do bloco da refeição (container query): numa fileira
     // quando há espaço; senão os nutrientes descem para a fileira de baixo.
-    <div className="linha-alimento grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2 gap-y-1 border-b border-gray-100 py-2 @2xl:grid-cols-[auto_minmax(10rem,1fr)_4rem_minmax(8.5rem,11rem)_5.75rem_auto] @2xl:items-center @6xl:grid-cols-[auto_minmax(10rem,1fr)_4rem_minmax(8.5rem,11rem)_5.75rem_auto_14rem]">
+    <div className={`linha-alimento ${item.referencia ? "linha-referencia rounded-md bg-gray-100 text-gray-500" : ""} grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2 gap-y-1 border-b border-gray-100 py-2 @2xl:grid-cols-[auto_minmax(10rem,1fr)_4rem_minmax(8.5rem,11rem)_5.75rem_auto] @2xl:items-center @6xl:grid-cols-[auto_minmax(10rem,1fr)_4rem_minmax(8.5rem,11rem)_5.75rem_auto_14rem]`}>
       <Button
         type="button"
         icon="pi pi-minus"
@@ -144,6 +144,14 @@ export default function LinhaDoAlimento({
           <p className="mt-0.5 truncate text-xs text-gray-500">Nutrientes de: {item.nomeOriginal}</p>
         ) : null}
         {alimento?.arquivado ? <p className="mt-0.5 text-xs text-amber-700">Alimento arquivado na base.</p> : null}
+        {item.referencia ? (
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+            <span>Rotina anterior: fora dos totais e do PDF até confirmar.</span>
+            <button type="button" className="font-semibold text-primary-700 underline" onClick={() => onAlterar({ referencia: false })}>
+              Confirmar na dieta
+            </button>
+          </p>
+        ) : null}
       </div>
 
       {item.alimentoId ? (

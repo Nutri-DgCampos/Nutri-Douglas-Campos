@@ -234,3 +234,28 @@ export async function dadosDaEmissao(dieta: LinhaDieta, documento: DocumentoDiet
     dataConsulta,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Origem de importações: a versão mais recente enviada ao paciente; se a
+// dieta nunca foi enviada, o rascunho atual.
+
+export async function conteudoDeOrigem(dietaId: string) {
+  const resultado = await obterPool().query<{
+    patient_id: string;
+    consulta_id: string;
+    documento: DocumentoDieta;
+    versao: number | null;
+  }>(
+    `select d.patient_id, d.consulta_id,
+            coalesce(v.conteudo->'documento', d.rascunho) as documento,
+            v.numero as versao
+       from public.dietas d
+       left join lateral (
+         select conteudo, numero from public.dietas_versoes
+          where dieta_id = d.id order by numero desc limit 1
+       ) v on true
+      where d.id = $1`,
+    [dietaId]
+  );
+  return resultado.rows[0] ?? null;
+}

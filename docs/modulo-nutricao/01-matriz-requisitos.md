@@ -58,9 +58,9 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | CFG-01 | Modelos de anamnese com versão, arquivamento quando usados | R: FIG-020; S02 Anamnese | CRIAR | — | Tipos de pergunta: curta, longa, múltipla escolha (simples/múltipla), texto livre; obrigatoriedade; sem seções |
 | CFG-02 | Modelos de solicitação de exames | R: CONFIGURAÇÕES — MODELOS DE SOLICITAÇÃO DE EXAMES | CRIAR | — | — |
 | CFG-03 | Avaliação física em Configurações | R: FIG-029 | NÃO SE APLICA | — | Roteiro descarta |
-| CFG-04 | Modelos de observação da dieta | R: CONFIGURAÇÕES DA DIETA — MODELOS DE OBSERVAÇÕES | CRIAR | — | — |
-| CFG-05 | Modelos de refeição | R: MODELOS DE REFEIÇÕES | CRIAR | — | — |
-| CFG-06 | Modelos de dieta completa | R: MODELOS DE DIETAS COMPLETAS | CRIAR | — | Sem dados pessoais no modelo |
+| CFG-04 | Modelos de observação da dieta | R: CONFIGURAÇÕES DA DIETA — MODELOS DE OBSERVAÇÕES | CRIAR → **ENTREGUE (Fase 3)** | — | — |
+| CFG-05 | Modelos de refeição | R: MODELOS DE REFEIÇÕES | CRIAR → **ENTREGUE (Fase 3)** | — | — |
+| CFG-06 | Modelos de dieta completa | R: MODELOS DE DIETAS COMPLETAS | CRIAR → **ENTREGUE (Fase 3)** | — | Sem dados pessoais no modelo |
 | CFG-07 | Medicações (cadastro) | R: MEDICAÇÕES E REGISTRO DE DOSAGENS | CRIAR | — | Calculadora auxiliar depende de aprovação (ver 04) |
 | CFG-08 | Fórmulas (modelos e ingredientes) | R: CONFIGURAÇÕES — FÓRMULAS NUTRICIONAIS | CRIAR | — | Cálculos dependem de aprovação |
 | CFG-09 | Orientações com texto formatado, imagens e assinatura | R: MODELOS DE ORIENTAÇÕES NUTRICIONAIS | CRIAR | — | Editor de texto rico |
@@ -90,12 +90,12 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR → **ENTREGUE (Fase 2)** | — | Lembrete da anamnese aparece com a Fase 5 |
 | DIE-04 | Indicadores TMB/GET/GET+METs da avaliação de referência | R: INDICADORES DE GASTO ENERGÉTICO | CRIAR | — | Depende da avaliação física e dos métodos aprovados |
 | DIE-05 | Objetivo e título por dieta | R: BLOCO 1 L1 C1–C2 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
-| DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR | — | Seção cortada no roteiro (ver pendências) |
-| DIE-07 | Gerar nova dieta, duplicar, salvar como modelo | R: BLOCO 1 L1 C4–C6 | CRIAR | — | Texto de "Gerar nova dieta" e "Salvar como modelo" cortado |
-| DIE-08 | Importar rotina (itens em cinza fora dos cálculos até confirmar) | R: BLOCO 1 L1 C7 | CRIAR | — | — |
+| DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR → **ENTREGUE (Fase 3)** | — | Consultas do paciente, outros pacientes e modelos; recordatório entra com a Fase 5 |
+| DIE-07 | Gerar nova dieta, duplicar, salvar como modelo | R: BLOCO 1 L1 C4–C6 | CRIAR → **ENTREGUE (Fase 3)** | — | Gerar nova, duplicar e salvar como modelo |
+| DIE-08 | Importar rotina (itens em cinza fora dos cálculos até confirmar) | R: BLOCO 1 L1 C7 | CRIAR → **ENTREGUE (Fase 3)** | — | — |
 | DIE-09 | Refeições: adicionar, remover, nome, horário, mover, observação única | R: BLOCO 1 L2 C1–C8; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | "Remover refeição" cortado no roteiro |
 | DIE-10 | Opções alternativas da refeição ("OU"), com opção de referência | R: BLOCO 1 L2 C7; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
-| DIE-11 | Copiar/colar refeição (área interna), salvar e importar modelo de refeição | R: BLOCO 1 L2 C9–C13 | CRIAR | — | — |
+| DIE-11 | Copiar/colar refeição (área interna), salvar e importar modelo de refeição | R: BLOCO 1 L2 C9–C13 | CRIAR → **ENTREGUE (Fase 3)** | — | — |
 | DIE-12 | Vitaminas e minerais da refeição | R: BLOCO 1 L2 C12 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-13 | KCAL/CHO/PTN/LIP por refeição e por alimento; kcal sem decimais, macros com 1 casa | R: BLOCO 1 L2 C14–C17, L3 C11–C14; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-14 | Linha de alimento: busca, quantidade de medidas, medida, gramas ajustáveis, mover | R: BLOCO 1 L3 C1–C9 | CRIAR → **ENTREGUE (Fase 2)** | — | Coluna 7 não será implementada (roteiro) |
