@@ -47,7 +47,7 @@ Aprovação dos métodos M-03 a M-08 (20/10/2026): todos aprovados; detalhes em 
 
 Pendências abertas:
 
-- Petroski feminino: usar a versão A (axilar média, supra-ilíaca, coxa, panturrilha), a B (subescapular, tríceps, supra-ilíaca, panturrilha, com peso e altura) ou as duas? A resposta "2.6 aprovado" não escolheu.
+- ~~Petroski feminino: versão A, B ou ambas?~~ Respondido em 20/10/2026: somente a versão B. O "?" mostra a faixa de idade exata de cada fórmula.
 
 - ~~Arquivo de esclarecimentos dos itens 4.1 a 4.10.~~ Recebido.
 - ~~Silhueta com fundo transparente; versão feminina.~~ Recebidas em 20/10/2026 (`Downloads\Avatar`): silhuetas feminina e masculina e faixas de percentual em resolução maior, todas com fundo transparente. Guardadas em `public/nutricao/avatares/`.

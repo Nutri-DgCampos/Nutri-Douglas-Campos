@@ -186,9 +186,9 @@ A proposta completa enviada ao responsável, com fórmulas, coeficientes, popula
 | 2.2–2.3 | Jackson-Pollock 7 e 3 dobras aprovados |
 | 2.4 | Faulkner mantido, com o aviso "precisão não estabelecida" |
 | 2.5 | Slaughter aprovado, com campos de maturação (Tanner) e etnia preenchidos pelo nutricionista |
-| 2.6 | Petroski aprovado (versão feminina A, B ou ambas: a confirmar) |
+| 2.6 | Petroski aprovado. Feminino: **somente a versão B** (subescapular, tríceps, supra-ilíaca, panturrilha medial + peso e altura) |
 | 2.7 | Fora da população do estudo: calcula com aviso; protocolo do outro sexo não aparece |
-| Pedido extra | Ícone "?" ao lado de cada fórmula; ao passar o mouse, mostra a equação e a população (ex.: "Jackson e Pollock — homens de 18 a 61 anos; mulheres de 18 a 55 anos") |
+| Pedido extra | Ícone "?" ao lado de cada fórmula; ao passar o mouse, mostra a equação e a população **exata do estudo de cada fórmula** (ex.: Jackson e Pollock — homens de 18 a 61 anos; mulheres de 18 a 55 anos) |
 | 3.1–3.3 | Gallagher (2000) para adultos de 20 a 79 anos; fora disso, "Referência não disponível" |
 | 4.1 | kcal não proteica/gN com fator 6,25, exibido "X:1" sem decimais, sem classificação |
 | 5.1–5.5 | Calculadora de medicações aprovada; frequências não semanais: opção A (não calcula, pede o dado semanal) |
@@ -198,6 +198,7 @@ A proposta completa enviada ao responsável, com fórmulas, coeficientes, popula
 Antes de programar (conferências que não mudam a decisão):
 
 - Slaughter: confirmar no artigo original o +1,6 da equação dos meninos acima de 35 mm (uma fonte secundária traz −1,7).
+- Petroski feminino versão B: confirmar na tese a população (faixa de idade) para o "?".
 - Gallagher: transcrever os limites da tabela original (fontes secundárias divergem em até 1 ponto).
 - Older Adult Compendium 2024: transcrever os METs 60+ das mesmas atividades.
 - Opções por velocidade (1.2): transcrever os códigos de corrida e caminhada do Compendium com km/h.
