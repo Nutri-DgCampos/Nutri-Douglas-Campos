@@ -43,7 +43,7 @@ Aguardando aprovação do responsável (Fase 1):
 Pendências abertas:
 
 - ~~Arquivo de esclarecimentos dos itens 4.1 a 4.10.~~ Recebido.
-- Silhueta com fundo transparente ou branco; versão feminina para os protocolos de dobras femininos.
+- ~~Silhueta com fundo transparente; versão feminina.~~ Recebidas em 20/10/2026 (`Downloads\Avatar`): silhuetas feminina e masculina e faixas de percentual em resolução maior, todas com fundo transparente. Guardadas em `public/nutricao/avatares/`.
 - Respostas da TACO (planilha oficial com "Tr").
 
 Histórico — dúvidas levantadas em 19/10/2026, respondidas acima:
