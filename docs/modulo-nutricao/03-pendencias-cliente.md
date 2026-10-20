@@ -45,6 +45,8 @@ Aprovações da Fase 1 (20/10/2026), documento `Aprovacao Fase 1 - Base de alime
 
 Aprovação dos métodos M-03 a M-08 (20/10/2026): todos aprovados; detalhes em 04-metodos-cientificos.md. Pedido extra: ícone "?" com equação e população ao lado de cada fórmula.
 
+Aprovação da Fase 2 enviada em 20/10/2026 (`Aprovacao Fase 2 - Editor de dietas.md`), aguardando resposta: funcionamento do editor (1) e quatro decisões de implementação — 2.1 PDF simples × detalhado, 2.2 escolha do ciclo no envio, 2.3 quais dietas o paciente vê em tela, 2.4 apagar × arquivar.
+
 Pendências abertas:
 
 - ~~Petroski feminino: versão A, B ou ambas?~~ Respondido em 20/10/2026: somente a versão B. O "?" mostra a faixa de idade exata de cada fórmula.
