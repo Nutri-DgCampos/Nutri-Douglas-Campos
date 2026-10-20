@@ -24,6 +24,21 @@ Confirmações de 20/10/2026:
 - **E Consentimento:** o responsável consultou advogado; termo não é necessário porque a IA não decide nada diretamente para o paciente.
 - Enviadas em 20/10/2026 e aguardando resposta: opções do campo sexo, seção A (trechos cortados, incluindo kcal não proteica/gN) e seção D (materiais, frase e CRN).
 
+Respostas de 20/10/2026 (segunda rodada):
+
+- **PDF de exemplo:** layout e intensidade da marca-d'água aprovados; assinatura só na última página, alinhada à direita.
+- **Sexo:** somente Masculino e Feminino.
+- **Perimetria:** as 9 medidas do roteiro (deltoide, tórax inspirado, cintura, abdômen, quadril, braço direito e esquerdo, coxa direita e esquerda).
+- **Ilustrações:** são de autoria do responsável, com direito de uso. Recebidas em `Downloads\Avatars`: silhueta frente/costas (sem marcações) e faixas de percentual de gordura feminina (45, 40, 35, 30, 25, 20, 18, 15, 12, 10, 8, 5, 3%) e masculina (45, 40, 35, 30, 25, 20, 15, 12, 10, 8, 6, 4, 3%), com fundo transparente. A silhueta tem fundo cinza-escuro e é só masculina (pendente, ver abaixo).
+- **Trechos cortados (4.1 a 4.10):** respondidos no arquivo "Esclarecimentos da SPEC — funcionalidades incompletas", **ainda não recebido**.
+- O pacote `Acompanhamento_Nutricional_Inspecao_e_Acordos_2026-10-18.zip` contém `Acordos_Funcionais_Atualizados_2026-10-18.md` (acordos ND-166 a ND-225: Fórmulas, Medicações e Auxílio da IA no editor). Esses acordos prevalecem sobre o roteiro nesses três temas.
+
+Pendências abertas:
+
+- Arquivo de esclarecimentos dos itens 4.1 a 4.10.
+- Silhueta com fundo transparente ou branco; versão feminina para os protocolos de dobras femininos.
+- Respostas da TACO (planilha oficial com "Tr").
+
 Histórico — dúvidas levantadas em 19/10/2026, respondidas acima:
 
 - **B.1 Sexo no cadastro:** a resposta foi "aparecer todas as equações possíveis". Não diz quais opções o campo terá.

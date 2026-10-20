@@ -103,13 +103,14 @@ export function DocumentoPadrao({
   );
 }
 
-// Bloco de assinatura no fim do documento (imagem de identificação visual,
-// não é assinatura digital certificada). Sem imagem cadastrada, não aparece.
+// Bloco de assinatura no fim do documento, só na última página e alinhado à
+// direita (decisão do responsável, 20/10/2026). É imagem de identificação
+// visual, não assinatura digital certificada. Sem imagem cadastrada, não aparece.
 export function Assinatura({ identidade }: { identidade: Identidade }) {
   if (!identidade.assinatura) return null;
 
   return (
-    <View wrap={false} style={{ marginTop: 28, alignItems: "center" }}>
+    <View wrap={false} style={{ marginTop: 28, alignItems: "flex-end" }}>
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <Image src={identidade.assinatura} style={{ width: 230, maxHeight: 110, objectFit: "contain" }} />
     </View>

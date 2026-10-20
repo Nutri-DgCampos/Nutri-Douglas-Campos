@@ -16,8 +16,9 @@ Pacote do cliente de 19/10/2026 (`Nutricao_SPEC_Claude_2026-10-19`), lido nesta 
 1. `SPEC/01_INSTRUCOES_CLAUDE.md` a `SPEC/05_INDICE_HTML.md` — prevalecem sobre o roteiro onde divergem.
 2. `Roteiro_Modulo_Nutricao.txt` — roteiro original com marcações `FIG-NNN` (186 figuras). Referências deste diretório no formato `R:linha` apontam para a versão compacta do roteiro (sem linhas vazias); os títulos de seção são citados por extenso para facilitar a busca.
 3. `Especificacao_Funcional_Modulo_Nutricao.md` — pontos de acesso aprovados e capturas `VIS-001` a `VIS-012` do app atual.
-4. CSVs da TACO: `food.csv`, `categories.csv`, `nutrients.csv`, `fatty-acids.csv`, `amino-acids.csv`.
-5. HTMLs do NutriDiet — somente referência visual e de comportamento; nenhum código deles entra no projeto.
+4. `Acordos_Funcionais_Atualizados_2026-10-18.md` (dentro de `FONTES_ORIGINAIS/Acompanhamento_Nutricional_Inspecao_e_Acordos_2026-10-18.zip`) — acordos ND-166 a ND-225 sobre Fórmulas, Medicações e Auxílio da IA no editor; prevalecem sobre o roteiro nesses temas (ex.: PDF de Medicações sem logotipo, assinatura e marca-d'água, com aviso obrigatório; status Em uso/Suspenso/Não confirmado; somatória semanal; IA com comparação e aplicação seletiva).
+5. CSVs da TACO: `food.csv`, `categories.csv`, `nutrients.csv`, `fatty-acids.csv`, `amino-acids.csv`.
+6. HTMLs do NutriDiet — somente referência visual e de comportamento; nenhum código deles entra no projeto.
 
 ## Regras que valem para todo o módulo
 
