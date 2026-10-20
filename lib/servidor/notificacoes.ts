@@ -1,4 +1,6 @@
+import { after } from "next/server";
 import { obterPool } from "./banco";
+import { processarFila } from "./filaDeNotificacoes";
 
 // Aviso no celular do paciente quando o nutricionista publica uma dieta ou
 // uma devolutiva. Entra na fila de notificações, enviada pelo agendador.
@@ -23,5 +25,11 @@ export async function enfileirarAtualizacao(
      values ($1, $2, $3, $4, $5, $6, $7, 'pendente')
      on conflict (dedup_key) do nothing`,
     [pacienteId, tipo, TITULO_ATUALIZACAO, corpo, destino, referenciaId, `${tipo}:${referenciaId}`]
+  );
+
+  // Envia já, depois da resposta, sem esperar a próxima passada do agendador
+  // (que continua como reserva se algo falhar aqui).
+  after(() =>
+    processarFila(20).catch((erro) => console.error("Erro no envio imediato de notificações:", erro))
   );
 }

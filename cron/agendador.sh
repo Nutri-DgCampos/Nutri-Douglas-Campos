@@ -1,7 +1,9 @@
 #!/bin/sh
 # Agendador: substitui o cron da Vercel e o pg_cron do Supabase.
-# A cada 5 minutos chama as rotinas de notificacao; uma vez por dia, a de
-# inativacao de pacientes com acesso vencido.
+# A cada minuto esvazia a fila de notificacoes (os avisos de dieta e
+# devolutiva ja saem na hora; aqui ficam lembretes e reenvios); a cada 5
+# minutos agenda os lembretes de relatorio; uma vez por dia, inativa os
+# pacientes com acesso vencido.
 
 chamar() {
     if resposta=$(wget -q -T 60 -O - --header "Authorization: Bearer $CRON_SECRET" "$APP_INTERNO$1" 2>&1); then
@@ -12,10 +14,15 @@ chamar() {
 }
 
 ultimo_dia=""
+volta=0
 
 while true; do
     chamar /api/processar-notificacoes
-    chamar /api/agendar-relatorios
+
+    if [ $((volta % 5)) -eq 0 ]; then
+        chamar /api/agendar-relatorios
+    fi
+    volta=$((volta + 1))
 
     hoje=$(date +%F)
     if [ "$hoje" != "$ultimo_dia" ]; then
@@ -23,5 +30,5 @@ while true; do
         ultimo_dia=$hoje
     fi
 
-    sleep 300
+    sleep 60
 done
