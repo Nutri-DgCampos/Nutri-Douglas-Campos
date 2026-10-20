@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { NavegacaoPaciente } from "@/components/Navegacao";
+import RegistrarAcesso from "@/components/RegistrarAcesso";
 import { api } from "@/lib/api";
 
 export default function AreaPacienteLayout({
@@ -25,6 +26,7 @@ export default function AreaPacienteLayout({
 
   return (
     <div className="estrutura-paciente">
+      <RegistrarAcesso />
       {children}
       <NavegacaoPaciente />
     </div>

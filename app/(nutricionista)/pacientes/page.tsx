@@ -11,10 +11,26 @@ import { InputText } from "primereact/inputtext";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
+import {
+  FAIXAS,
+  SEM_REGISTRO,
+  SITUACOES,
+  diasSemAcesso,
+  faixaDeAcesso,
+  situacaoDe,
+  textoDosDias,
+  type Engajamento,
+  type Situacao,
+} from "@/lib/engajamento";
+
+type Filtro = "todos" | Situacao | (typeof FAIXAS)[number]["faixa"] | "sem_registro";
 
 export default function PacientesPage() {
     const [pacientes, setPacientes] = useState<any[]>([]);
 const [busca, setBusca] = useState("");
+const [engajamento, setEngajamento] = useState<Record<string, Engajamento>>({});
+const [filtro, setFiltro] = useState<Filtro>("todos");
+const [ordem, setOrdem] = useState<"recentes" | "sem_acesso">("recentes");
 
 const [solicitacoes, setSolicitacoes] = useState<
   {
@@ -111,6 +127,16 @@ if (pacienteLogado) {
 
     setPacientes(data ?? []);
 
+    // Acesso ao app (situação e dias sem acessar); falha aqui não impede a lista.
+    fetch("/api/pacientes/engajamento", { cache: "no-store" })
+      .then((resposta) => (resposta.ok ? resposta.json() : { pacientes: [] }))
+      .then((dados) =>
+        setEngajamento(
+          Object.fromEntries((dados.pacientes as Engajamento[]).map((e) => [e.id, e]))
+        )
+      )
+      .catch(() => {});
+
     setCarregandoSolicitacoes(true);
 
 try {
@@ -147,9 +173,63 @@ try {
   carregarPacientes();
 }, []);
 
-  const pacientesFiltrados = pacientes.filter((paciente) =>
-    paciente.name?.toLowerCase().includes(busca.toLowerCase())
-  );
+  // Acesso ao app: só pacientes ativos ou pendentes entram nos indicadores.
+  const acompanhados = pacientes.filter((p) => p.payment_status === "Ativo" || p.payment_status === "Pendente");
+
+  function indicadoresDe(paciente: { id: string }) {
+    const e = engajamento[paciente.id];
+    if (!e) return null;
+    const dias = e.tem_acesso ? diasSemAcesso(e.ultimo_acesso_em) : null;
+    return { e, situacao: situacaoDe(e), dias, faixa: e.tem_acesso ? faixaDeAcesso(dias) : null };
+  }
+
+  function contar(teste: (i: NonNullable<ReturnType<typeof indicadoresDe>>) => boolean) {
+    return acompanhados.filter((p) => {
+      const i = indicadoresDe(p);
+      return i ? teste(i) : false;
+    }).length;
+  }
+
+  const pacientesFiltrados = pacientes
+    .filter((paciente) => paciente.name?.toLowerCase().includes(busca.toLowerCase()))
+    .filter((paciente) => {
+      if (filtro === "todos") return true;
+      if (!acompanhados.includes(paciente)) return false;
+      const i = indicadoresDe(paciente);
+      if (!i) return false;
+      if (filtro in SITUACOES) return i.situacao === filtro;
+      return i.faixa?.faixa === filtro;
+    })
+    .sort((a, b) => {
+      if (ordem === "recentes") return 0;
+      const da = indicadoresDe(a);
+      const db = indicadoresDe(b);
+      // Mais tempo sem acessar primeiro; nunca acessou antes de todos.
+      const valor = (i: ReturnType<typeof indicadoresDe>) =>
+        !i ? -2 : !i.e.tem_acesso ? -1 : i.dias === null ? Infinity : i.dias;
+      return valor(db) - valor(da);
+    });
+
+  const chips: { valor: Filtro; rotulo: string; quantidade: number; ponto?: string }[] = [
+    { valor: "todos", rotulo: "Todos", quantidade: pacientes.length },
+    ...FAIXAS.map((f) => ({
+      valor: f.faixa as Filtro,
+      rotulo: `${f.rotulo} (${f.ate === Infinity ? "mais de 30 dias" : `até ${f.ate} dias`})`,
+      quantidade: contar((i) => i.faixa?.faixa === f.faixa),
+      ponto: f.ponto,
+    })),
+    {
+      valor: "sem_registro",
+      rotulo: "Nunca acessou",
+      quantidade: contar((i) => i.faixa?.faixa === "sem_registro"),
+      ponto: SEM_REGISTRO.ponto,
+    },
+    ...(Object.keys(SITUACOES) as Situacao[]).map((s) => ({
+      valor: s as Filtro,
+      rotulo: SITUACOES[s].rotulo,
+      quantidade: contar((i) => i.situacao === s),
+    })),
+  ];
 
   return (
     <main className="p-4 lg:p-8">
@@ -220,7 +300,32 @@ try {
           </section>
         )}
 
-        <IconField iconPosition="left" className="mt-6">
+        <section className="cartao mt-6 p-4" aria-label="Acesso dos pacientes ao aplicativo">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-bold text-gray-900">Acesso ao aplicativo</h2>
+            <span className="text-xs text-gray-500">Pacientes ativos e pendentes · toque para filtrar</span>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {chips.map((chip) => (
+              <button
+                key={chip.valor}
+                type="button"
+                aria-pressed={filtro === chip.valor}
+                onClick={() => setFiltro(filtro === chip.valor ? "todos" : chip.valor)}
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
+                  filtro === chip.valor ? "border-primary-700 bg-primary-700 text-white" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {chip.ponto ? <span className={`h-2.5 w-2.5 rounded-full ${chip.ponto}`} aria-hidden /> : null}
+                {chip.rotulo}
+                <span className="font-semibold">{chip.quantidade}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+        <IconField iconPosition="left" className="min-w-0 flex-1">
           <InputIcon className="pi pi-search" />
           <InputText
             type="search"
@@ -230,6 +335,15 @@ try {
             className="w-full"
           />
         </IconField>
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={ordem === "sem_acesso"}
+              onChange={(e) => setOrdem(e.target.checked ? "sem_acesso" : "recentes")}
+            />
+            Mais tempo sem acessar primeiro
+          </label>
+        </div>
 
         <ul className="cartao mt-4 divide-y divide-gray-200">
           {pacientesFiltrados.map((paciente) => (
@@ -260,6 +374,31 @@ try {
                       .filter(Boolean)
                       .join(", ")}
                   </span>
+                  {(() => {
+                    const i = indicadoresDe(paciente);
+                    if (!i) return null;
+                    return (
+                      <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs">
+                        <span className={`rounded-full px-2 py-0.5 font-semibold ${SITUACOES[i.situacao].classe}`} title={SITUACOES[i.situacao].descricao}>
+                          {SITUACOES[i.situacao].rotulo}
+                        </span>
+                        {i.faixa ? (
+                          <span
+                            className={`flex items-center gap-1 rounded-full px-2 py-0.5 ${i.faixa.classe}`}
+                            title={i.e.ultimo_acesso_em ? `Último acesso: ${new Date(i.e.ultimo_acesso_em).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : "Sem registro de acesso"}
+                          >
+                            <span className={`h-2 w-2 rounded-full ${i.faixa.ponto}`} aria-hidden />
+                            {textoDosDias(i.dias)}
+                          </span>
+                        ) : null}
+                        {i.e.app_instalado_em ? (
+                          <span className="flex items-center gap-1 text-gray-500" title="Já abriu pelo app instalado">
+                            <i className="pi pi-mobile" aria-hidden /> App
+                          </span>
+                        ) : null}
+                      </span>
+                    );
+                  })()}
                 </span>
 
                 <Tag
