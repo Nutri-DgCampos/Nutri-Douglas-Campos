@@ -12,7 +12,7 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 |---|---|---|---|
 | 0 — Fundação | **Concluída** (39 verificações automáticas) | 20/10/2026 | 18 |
 | 1 — Base de alimentos | **Concluída e aprovada** (19 verificações + 9 testes de cálculo); TACO carregada na produção em 20/10/2026 (597 alimentos, 20.165 valores). Pendente: correspondências USDA (F-01) | 20/10/2026 | 9 |
-| 2 — Editor de dietas | **Concluída** (53 verificações de navegação + 16 testes de cálculo); aguardando aprovação do cliente | 20/10/2026 | 28 |
+| 2 — Editor de dietas | **Concluída e aprovada** (53 verificações de navegação + 16 testes de cálculo); no ar desde 20/10/2026 | 20/10/2026 | 28 |
 | 3 — Modelos e importações | Não iniciada | — | — |
 | 4 — Avaliação física | Não iniciada; todos os métodos aprovados em 20/10/2026 (M-01 a M-05) | — | — |
 | 5 — Anamnese e recordatório | Não iniciada | — | — |

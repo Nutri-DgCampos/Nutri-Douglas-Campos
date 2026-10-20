@@ -45,7 +45,14 @@ Aprovações da Fase 1 (20/10/2026), documento `Aprovacao Fase 1 - Base de alime
 
 Aprovação dos métodos M-03 a M-08 (20/10/2026): todos aprovados; detalhes em 04-metodos-cientificos.md. Pedido extra: ícone "?" com equação e população ao lado de cada fórmula.
 
-Aprovação da Fase 2 enviada em 20/10/2026 (`Aprovacao Fase 2 - Editor de dietas.md`), aguardando resposta: funcionamento do editor (1) e quatro decisões de implementação — 2.1 PDF simples × detalhado, 2.2 escolha do ciclo no envio, 2.3 quais dietas o paciente vê em tela, 2.4 apagar × arquivar.
+Aprovação da Fase 2 (20/10/2026), documento `Aprovacao Fase 2 - Editor de dietas.md`:
+
+- 1.1 a 1.8: editor testado pelo responsável, tudo funcionando.
+- 2.1 PDF simples (só a prescrição) e detalhado (com kcal e macros por opção e total): de acordo.
+- 2.2 Envio com escolha explícita entre novo ciclo de 33 dias e manter o ciclo atual: de acordo.
+- 2.3 Paciente vê em tela as dietas do editor no ciclo da entrega mais recente: de acordo.
+- 2.4 Só dieta nunca enviada é apagada; enviada é arquivada e não muda (nova versão): de acordo.
+- 3: itens das próximas fases, ok.
 
 Pendências abertas:
 
