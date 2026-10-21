@@ -16,7 +16,7 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); **aprovada pelo cliente em 21/10/2026** | 20/10/2026 | 7 |
 | 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); no ar; **aprovada pelo cliente em 21/10/2026** (inclusive METs 60+ com valor adulto e leitura da bioimpedância pela OpenAI) | 20/10/2026 | 12 |
 | 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); **aprovada pelo cliente em 21/10/2026** (5.11: recordatório começa com 6 refeições) | 21/10/2026 | 10 |
-| 6 — Exames, medicações, fórmulas, orientações | **Concluída** (86 verificações de navegação + testes de unidade das calculadoras; fases 0–5 retestadas); aguardando aprovação do cliente | 21/10/2026 | 13 |
+| 6 — Exames, medicações, fórmulas, orientações | **Concluída** (86 verificações de navegação + testes de unidade das calculadoras; fases 0–5 retestadas); **aprovada pelo cliente em 21/10/2026** (6.9: texto completado do aviso de medicações confirmado) | 21/10/2026 | 13 |
 | 7 — Auxílio da IA | Não iniciada | — | — |
 | **Módulo** | **97 de 101 requisitos (96%)** | | |
 
@@ -121,6 +121,11 @@ Entregue (21/10/2026, migrações 014 a 017), em quatro partes:
 ## Fase 7 — Auxílio da IA
 
 Assistente no editor com saída estruturada, vínculo a alimentos da base, prévia e confirmação [IA-01, DIE-22]; leitura de bioimpedância e anamnese [IA-02]. Pré-requisito: termo de consentimento para envio de dados de saúde à OpenAI.
+
+## Pendências para depois (fora das fases)
+
+- [ ] **Painel de uso e custo da IA (OpenAI).** Gravar, a cada chamada (exame de sangue, treino, bioimpedância e o assistente da Fase 7), o recurso, o modelo, os tokens de entrada e saída e o paciente (sem enviar nada a mais à OpenAI); tela do nutricionista com custo estimado por dia, por recurso e por paciente (tokens × preço do modelo, tabela de preços editável) e o limite diário de pedidos (ponto 7.7 da validação da Fase 7). O valor exato da fatura continua no painel da OpenAI (Usage e limites de orçamento); a Costs API oficial exige chave de administrador, que não deve ficar no servidor do app. Não usar o script `RGGH/OpenAI_SQL/check_usage.py` (endpoint antigo `/v1/usage`, preços fixos desatualizados e chave exposta no código).
+- [ ] Correspondências USDA para os nutrientes que a TACO não traz (F-01).
 
 ## Dependências entre fases
 
