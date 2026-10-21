@@ -122,6 +122,8 @@ Entregue (21/10/2026, migrações 014 a 017), em quatro partes:
 
 Assistente no editor com saída estruturada, vínculo a alimentos da base, prévia e confirmação [IA-01, DIE-22]; leitura de bioimpedância e anamnese [IA-02]. Pré-requisito: termo de consentimento para envio de dados de saúde à OpenAI.
 
+Validação do cliente (21/10/2026): 7.1 funcionamento de acordo; 7.2 dados mínimos sem identificação (sexo, idade, peso, altura, metas, TMB/GET, dieta aberta, pedido); 7.3 opção B — sem termo do paciente, só dados sem identificação, com aviso na política de privacidade; 7.4 opção C — alergias/restrições/preferências da anamnese como contexto (o nutricionista vê o que vai) e resumo da anamnese pela IA, sem o nome; 7.5 opção B — exame de sangue, treino e bioimpedância continuam como estão, citados na política de privacidade; 7.6 selo "IA" de acordo; 7.7 limite de 200 pedidos por dia.
+
 ## Pendências para depois (fora das fases)
 
 - [ ] **Painel de uso e custo da IA (OpenAI).** Gravar, a cada chamada (exame de sangue, treino, bioimpedância e o assistente da Fase 7), o recurso, o modelo, os tokens de entrada e saída e o paciente (sem enviar nada a mais à OpenAI); tela do nutricionista com custo estimado por dia, por recurso e por paciente (tokens × preço do modelo, tabela de preços editável) e o limite diário de pedidos (ponto 7.7 da validação da Fase 7). O valor exato da fatura continua no painel da OpenAI (Usage e limites de orçamento); a Costs API oficial exige chave de administrador, que não deve ficar no servidor do app. Não usar o script `RGGH/OpenAI_SQL/check_usage.py` (endpoint antigo `/v1/usage`, preços fixos desatualizados e chave exposta no código).
@@ -133,7 +135,7 @@ Assistente no editor com saída estruturada, vínculo a alimentos da base, prév
   - LGPD: registro das operações de dados de saúde, termo de consentimento (Fase 7), direito de acesso, correção e exclusão pelo paciente, política de retenção, trilha de auditoria de acessos (quem abriu o quê).
   - Infraestrutura: backups automáticos testados (banco + arquivos), SSH só com chave, firewall, atualizações do servidor, monitoramento e alertas.
   - Teste de invasão (pentest) ao final, com relatório e correções.
-- [ ] **Alta disponibilidade (failover).** Hoje tudo roda numa única VPS (app, banco e arquivos). A conversar depois: servidor reserva em outro provedor/região (ativo-passivo, mais simples, ou ativo-ativo); replicação do banco (streaming replication do PostgreSQL) e dos arquivos; troca automática por DNS com verificação de saúde (ex.: Cloudflare, que também resolve a migração de DNS pendente) ou balanceador de carga; ensaio periódico de troca. Pré-requisito: o backup externo automático (abaixo) funcionando e testado.
+- [ ] **Alta disponibilidade (failover).** Hoje tudo roda numa única VPS (app, banco e arquivos). A conversar depois: servidor reserva em outro provedor/região (ativo-passivo, mais simples, ou ativo-ativo); replicação do banco (streaming replication do PostgreSQL) e dos arquivos; troca automática por DNS com verificação de saúde (ex.: Cloudflare, que também resolve a migração de DNS pendente) ou balanceador de carga; ensaio periódico de troca. Pré-requisito: o backup externo automático funcionando e testado (feito em 21/10/2026: `backup/`, cópia diária para o computador do responsável; ver `backup/LEIA-ME.md`).
 
 ## Dependências entre fases
 
