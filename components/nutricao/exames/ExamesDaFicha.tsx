@@ -10,7 +10,7 @@ import { formatarData } from "@/lib/nutricao/paciente";
 import { abrirExame, alterarExame, type ExameDoPaciente } from "./SecaoExames";
 
 type Dados = {
-  exames: (ExameDoPaciente & { consulta_data: string | null })[];
+  exames: (ExameDoPaciente & { consulta_data: string | null; recente?: boolean })[];
   solicitacoes: { id: string; titulo: string; consulta_id: string; consulta_data: string; emitida_em: string | null }[];
   consultas: { id: string; data: string }[];
 };
@@ -27,7 +27,11 @@ export default function ExamesDaFicha({ pacienteId }: { pacienteId: string }) {
 
   const carregar = useCallback(async () => {
     const resposta = await fetch(`/api/nutricao/pacientes/${pacienteId}/exames`, { cache: "no-store" });
-    setDados(resposta.ok ? await resposta.json() : { exames: [], solicitacoes: [], consultas: [] });
+    const resultado: Dados = resposta.ok ? await resposta.json() : { exames: [], solicitacoes: [], consultas: [] };
+    // Recente: enviado nos últimos 90 dias (calculado ao carregar).
+    const agora = Date.now();
+    resultado.exames = resultado.exames.map((e) => ({ ...e, recente: agora - new Date(e.uploaded_at).getTime() < NOVENTA_DIAS }));
+    setDados(resultado);
   }, [pacienteId]);
 
   useEffect(() => {
@@ -43,8 +47,6 @@ export default function ExamesDaFicha({ pacienteId }: { pacienteId: string }) {
     }
   }
 
-  const agora = Date.now();
-
   return (
     <section className="cartao mt-4 overflow-hidden">
       <h2 className="border-b border-gray-200 px-5 py-3 font-bold text-gray-900">Exames</h2>
@@ -55,7 +57,7 @@ export default function ExamesDaFicha({ pacienteId }: { pacienteId: string }) {
       ) : (
         <ul className="divide-y divide-gray-200">
           {dados.exames.map((e) => {
-            const recente = agora - new Date(e.uploaded_at).getTime() < NOVENTA_DIAS;
+            const recente = Boolean(e.recente);
             return (
               <li key={e.id} className="space-y-2 px-5 py-3">
                 <div className="flex flex-wrap items-center gap-2">
