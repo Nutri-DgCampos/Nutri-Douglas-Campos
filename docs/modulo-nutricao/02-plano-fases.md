@@ -15,7 +15,7 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 2 — Editor de dietas | **Concluída e aprovada** (53 verificações de navegação + 16 testes de cálculo); no ar desde 20/10/2026 | 20/10/2026 | 28 |
 | 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); **aprovada pelo cliente em 21/10/2026** | 20/10/2026 | 7 |
 | 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); no ar; **aprovada pelo cliente em 21/10/2026** (inclusive METs 60+ com valor adulto e leitura da bioimpedância pela OpenAI) | 20/10/2026 | 12 |
-| 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); aguardando aprovação do cliente | 21/10/2026 | 10 |
+| 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); **aprovada pelo cliente em 21/10/2026** (5.11: recordatório começa com 6 refeições) | 21/10/2026 | 10 |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
 | **Módulo** | **84 de 101 requisitos (83%)** | | |

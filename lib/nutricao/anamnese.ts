@@ -78,10 +78,14 @@ export function novaRefeicaoRecordatorio(nome = "", horario: string | null = nul
 
 export function recordatorioVazio(): Recordatorio {
   return {
+    // Seis refeições sugeridas (decisão do cliente, 5.11); o paciente pode
+    // renomear, remover e incluir outras.
     refeicoes: [
       novaRefeicaoRecordatorio("Café da manhã"),
+      novaRefeicaoRecordatorio("Lanche da manhã"),
       novaRefeicaoRecordatorio("Almoço"),
       novaRefeicaoRecordatorio("Lanche da tarde"),
+      novaRefeicaoRecordatorio("Café da tarde"),
       novaRefeicaoRecordatorio("Jantar"),
     ],
     observacoes: "",
