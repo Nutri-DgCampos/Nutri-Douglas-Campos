@@ -8,10 +8,13 @@ import {
   AVATARES,
   CAMPOS_BIOIMPEDANCIA,
   CLASSES_GORDURA,
+  CORES_EVOLUCAO,
   DESCRICAO_GALLAGHER,
   DOBRAS,
   PERIMETRIA,
   PROTOCOLOS_DOBRAS,
+  RECORTE_SILHUETA,
+  SETAS_PERIMETRIA,
   dobrasDoProtocolo,
   evolucaoDaRegiao,
   type CampoBio,
@@ -46,26 +49,14 @@ type Dados = {
 const n = (v: number | null | undefined, casas = 1) =>
   v === null || v === undefined ? "—" : v.toLocaleString("pt-BR", { maximumFractionDigits: casas });
 
-const CORES: Record<Evolucao, string> = { diminuiu: "#16a34a", aumentou: "#dc2626", igual: "#9ca3af", sem_comparacao: "#9ca3af" };
+const CORES = CORES_EVOLUCAO;
+const SETAS = SETAS_PERIMETRIA;
 const TEXTO_EVOLUCAO: Record<Evolucao, string> = { diminuiu: "diminuiu", aumentou: "aumentou", igual: "igual", sem_comparacao: "sem comparação" };
-
-// Setas na figura de frente (imagem de 1024 × 1536): [y, x inicial, x final, número].
-const SETAS: Record<Regiao, [number, number, number, number]> = {
-  deltoide: [355, 100, 462, 1],
-  torax: [430, 165, 395, 2],
-  cintura: [545, 190, 372, 3],
-  abdomen: [615, 182, 380, 4],
-  quadril: [700, 160, 402, 5],
-  braco_direito: [480, 62, 128, 6],
-  braco_esquerdo: [480, 432, 498, 7],
-  coxa_direita: [880, 150, 272, 8],
-  coxa_esquerda: [880, 290, 412, 9],
-};
 
 function AvatarPerimetria({ sexo, evolucoes }: { sexo: Sexo; evolucoes: Record<Regiao, Evolucao> }) {
   const imagem = sexo === "feminino" ? "/nutricao/avatares/silhueta-feminina.png" : "/nutricao/avatares/silhueta-masculina.png";
   return (
-    <svg viewBox="20 150 520 1300" className="h-auto w-full max-w-[18rem]" role="img" aria-label="Avatar com a evolução da perimetria">
+    <svg viewBox={RECORTE_SILHUETA.join(" ")} className="h-auto w-full max-w-[18rem]" role="img" aria-label="Avatar com a evolução da perimetria">
       <defs>
         {Object.entries(CORES).map(([chave, cor]) => (
           <marker key={chave} id={`seta-${chave}`} viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">

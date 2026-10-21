@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
-import { Document, Image, Page, StyleSheet, Text, View, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Font, Image, Page, StyleSheet, Text, View, renderToBuffer } from "@react-pdf/renderer";
 import type { Identidade } from "./identidade";
+
+// Sem hifenização: a regra padrão é a do inglês e partia palavras em
+// português de forma errada ("gor-dura", "ade-quada"). A palavra inteira
+// passa para a linha seguinte.
+Font.registerHyphenationCallback((palavra) => [palavra]);
 
 // Modelo base dos PDFs do Módulo de Nutrição (A4 vertical), conforme o
 // modelo de referência: logotipo à esquerda, frase à direita, linhas na cor

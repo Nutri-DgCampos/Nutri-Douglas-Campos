@@ -673,6 +673,30 @@ export const PERIMETRIA = {
 export type Regiao = keyof typeof PERIMETRIA;
 export type Evolucao = "diminuiu" | "aumentou" | "igual" | "sem_comparacao";
 
+// Cores da variação (tela e PDF): a cor indica só a variação, não melhora ou piora.
+export const CORES_EVOLUCAO: Record<Evolucao, string> = {
+  diminuiu: "#16a34a",
+  aumentou: "#dc2626",
+  igual: "#9ca3af",
+  sem_comparacao: "#9ca3af",
+};
+
+// Setas na figura de frente (imagem de 1024 × 1536): [y, x inicial, x final, número].
+export const SETAS_PERIMETRIA: Record<Regiao, [number, number, number, number]> = {
+  deltoide: [355, 100, 462, 1],
+  torax: [430, 165, 395, 2],
+  cintura: [545, 190, 372, 3],
+  abdomen: [615, 182, 380, 4],
+  quadril: [700, 160, 402, 5],
+  braco_direito: [480, 62, 128, 6],
+  braco_esquerdo: [480, 432, 498, 7],
+  coxa_direita: [880, 150, 272, 8],
+  coxa_esquerda: [880, 290, 412, 9],
+};
+
+// Recorte da figura usado na tela e no PDF (x, y, largura, altura).
+export const RECORTE_SILHUETA = [20, 150, 520, 1300] as const;
+
 // Compara com a última medida válida anterior da mesma região.
 export function evolucaoDaRegiao(atual: number | null | undefined, anteriores: (number | null | undefined)[]): { evolucao: Evolucao; diferenca: number | null } {
   if (!atual) return { evolucao: "sem_comparacao", diferenca: null };
