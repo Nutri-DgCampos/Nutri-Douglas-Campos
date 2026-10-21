@@ -74,6 +74,16 @@ export type PesoDeReferencia = {
   data: string | null; // AAAA-MM-DD
 };
 
+// Gasto energético da avaliação física de referência (DIE-04). Cópia dos
+// valores da avaliação finalizada: a versão enviada guarda o que foi visto.
+export type GastoDeReferencia = {
+  avaliacaoId: string;
+  data: string; // AAAA-MM-DD
+  tmb: number | null;
+  get: number | null;
+  getMaisMets: number | null;
+};
+
 export type DocumentoDieta = {
   esquema: number;
   titulo: string;
@@ -84,6 +94,8 @@ export type DocumentoDieta = {
   pesoReferencia: PesoDeReferencia;
   // Vitaminas e minerais acompanhados no painel (seleção do nutricionista).
   nutrientesAcompanhados: string[];
+  // Ausente: usa a avaliação finalizada mais recente; null: sem referência.
+  gastoReferencia?: GastoDeReferencia | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -297,6 +309,21 @@ export function validarDocumento(valor: unknown): { documento: DocumentoDieta } 
     const dataPeso = textoOuNulo(peso.data, 10, "Peso de referência");
     if (dataPeso && !/^\d{4}-\d{2}-\d{2}$/.test(dataPeso)) falhar("Peso de referência: data inválida.");
 
+    let gastoReferencia: GastoDeReferencia | null | undefined = undefined;
+    if (d.gastoReferencia === null) gastoReferencia = null;
+    else if (d.gastoReferencia !== undefined) {
+      const g = objeto(d.gastoReferencia, "Gasto energético de referência");
+      const data = texto(g.data, 10, "Gasto energético de referência");
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) falhar("Gasto energético de referência: data inválida.");
+      gastoReferencia = {
+        avaliacaoId: id(g.avaliacaoId, "Gasto energético de referência"),
+        data,
+        tmb: positivoOuNulo(g.tmb, 20000, "TMB"),
+        get: positivoOuNulo(g.get, 20000, "GET"),
+        getMaisMets: positivoOuNulo(g.getMaisMets, 20000, "GET + METs"),
+      };
+    }
+
     const documento: DocumentoDieta = {
       esquema: VERSAO_DO_ESQUEMA,
       titulo: texto(d.titulo, LIMITES.texto, "Título"),
@@ -324,6 +351,7 @@ export function validarDocumento(valor: unknown): { documento: DocumentoDieta } 
       },
       nutrientesAcompanhados: [...new Set(nutrientes)],
     };
+    if (gastoReferencia !== undefined) documento.gastoReferencia = gastoReferencia;
 
     return { documento };
   } catch (erro) {

@@ -41,6 +41,7 @@ export default function AreaPacientePage() {
     const [dietaNaoVisualizada, setDietaNaoVisualizada] = useState(false);
 const [devolutivaNaoVisualizada, setDevolutivaNaoVisualizada] = useState(false);
 const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
+    const [avaliacoes, setAvaliacoes] = useState<{ total: number; nova: boolean }>({ total: 0, nova: false });
     const [numeroRelatorio, setNumeroRelatorio] = useState<number | null>(null);
     const [relatorioDisponivel, setRelatorioDisponivel] = useState(false);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
@@ -65,6 +66,16 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
       navigator.serviceWorker.ready
         .then((registro) => registro.pushManager.getSubscription())
         .then((inscricao) => setNotificacoesAtivas(inscricao !== null))
+        .catch(() => {});
+    }, []);
+
+    // Atalho das avaliações físicas: só aparece para quem já recebeu alguma.
+    useEffect(() => {
+      fetch("/api/area-paciente/avaliacoes", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : { avaliacoes: [] }))
+        .then((d: { avaliacoes?: { nova: boolean }[] }) =>
+          setAvaliacoes({ total: d.avaliacoes?.length ?? 0, nova: (d.avaliacoes ?? []).some((a) => a.nova) })
+        )
         .catch(() => {});
     }, []);
     async function sair() {
@@ -428,6 +439,17 @@ carregarPaciente();
       destino: "/area-paciente/relatorios",
       novidade: devolutivaNaoVisualizada,
     },
+    ...(avaliacoes.total
+      ? [
+          {
+            rotulo: "Avaliação física",
+            descricao: avaliacoes.nova ? "Chegou o resultado da sua avaliação" : "Meus resultados",
+            icone: "pi-chart-line",
+            destino: "/area-paciente/avaliacoes",
+            novidade: avaliacoes.nova,
+          },
+        ]
+      : []),
     {
       rotulo: "Pagamentos",
       descricao: pagamentoAtrasado ? "Há um pagamento em atraso" : "Comprovantes",

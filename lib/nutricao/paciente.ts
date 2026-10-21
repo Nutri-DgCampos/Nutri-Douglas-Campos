@@ -49,4 +49,5 @@ export const ORIGENS_DE_PESO: Record<string, string> = {
   cadastro: "Peso inicial (cadastro)",
   evolucao: "Evolução registrada",
   relatorio: "Relatório semanal",
+  avaliacao: "Avaliação física",
 };

@@ -88,7 +88,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | DIE-01 | Várias dietas por consulta, em abas, com estado próprio | R: ABAS DE MÚLTIPLAS DIETAS; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-02 | Identificação do paciente e da consulta no topo | R: IDENTIFICAÇÃO DO PACIENTE E DA CONSULTA | CRIAR → **ENTREGUE (Fase 2)** | — | Depende de CAD-01/02 |
 | DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR → **ENTREGUE (Fase 2)** | — | Lembrete da anamnese aparece com a Fase 5 |
-| DIE-04 | Indicadores TMB/GET/GET+METs da avaliação de referência | R: INDICADORES DE GASTO ENERGÉTICO | CRIAR | — | Depende da avaliação física e dos métodos aprovados |
+| DIE-04 | Indicadores TMB/GET/GET+METs da avaliação de referência | R: INDICADORES DE GASTO ENERGÉTICO | CRIAR → **ENTREGUE (Fase 4)** | Painel do editor: avaliação finalizada escolhida (padrão: a mais recente), % da dieta sobre cada valor; a versão enviada guarda a referência | — |
 | DIE-05 | Objetivo e título por dieta | R: BLOCO 1 L1 C1–C2 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR → **ENTREGUE (Fase 3)** | — | Consultas do paciente, outros pacientes e modelos; recordatório entra com a Fase 5 |
 | DIE-07 | Gerar nova dieta, duplicar, salvar como modelo | R: BLOCO 1 L1 C4–C6 | CRIAR → **ENTREGUE (Fase 3)** | — | Gerar nova, duplicar e salvar como modelo |
@@ -126,17 +126,17 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| AVF-01 | Avaliação vinculada a paciente e consulta, rascunho, autosave, finalizar | R: SALVAMENTO AUTOMÁTICO, FINALIZAÇÃO | CRIAR | — | — |
-| AVF-02 | Peso e altura pré-preenchidos e sincronizados com o cadastro | R: PESO E ALTURA | COMPLETAR | `patient_progress` guarda peso por data | Altura não existe (CAD-03) |
-| AVF-03 | TMB por protocolo + valor manual | R: PROTOCOLOS DE CÁLCULO DA TMB | CRIAR | — | Aguarda aprovação (04, item M-01) |
-| AVF-04 | NAF e METs sem dupla contagem | R: NAF E GASTO POR METs | CRIAR | — | Aguarda aprovação (04, M-02 e M-03) |
-| AVF-05 | Dobras cutâneas por protocolo | R: PROTOCOLOS DE DOBRAS CUTÂNEAS | CRIAR | — | Aguarda aprovação (04) |
-| AVF-06 | Perimetria (9 medidas) | R: PERIMETRIA | CRIAR | — | — |
-| AVF-07 | Bioimpedância manual + PDF com leitura automática | R: BIOIMPEDÂNCIA | COMPLETAR | leitura de PDF por IA já existe para exames (`lib/servidor/exames.ts`) | Seção de extração cortada no roteiro |
-| AVF-08 | Resultados: avatar com setas, avatares de % gordura, 4 gráficos (12 últimas), tabela de perimetria | R: RESULTADOS…; FIG-074–079 | CRIAR | `components/ComparativoFotos.tsx` é a única tela de evolução visual hoje | Ilustrações do avatar dependem do cliente |
-| AVF-09 | Faixa de referência de gordura com fonte | R: IDENTIFICAÇÃO E REFERÊNCIAS §6–9 | CRIAR | — | Aguarda aprovação |
-| AVF-10 | PDF da avaliação e envio opcional ao paciente | R: SALVAMENTO … ENVIO §6–8 | CRIAR | — | — |
-| AVF-11 | Relação com "Registrar evolução" atual | — | CRIAR (decisão 19/10: substituído pela avaliação física) | `app/(nutricionista)/pacientes/[id]/evolucao/page.tsx` grava `patient_progress` | Decidir se o registro de peso simples continua ao lado da avaliação física |
+| AVF-01 | Avaliação vinculada a paciente e consulta, rascunho, autosave, finalizar | R: SALVAMENTO AUTOMÁTICO, FINALIZAÇÃO | CRIAR → **ENTREGUE (Fase 4)** | `avaliacoes_fisicas` (migração 012); resultados congelados na finalização; reabrir para correção | — |
+| AVF-02 | Peso e altura pré-preenchidos e sincronizados com o cadastro | R: PESO E ALTURA | COMPLETAR → **ENTREGUE (Fase 4)** | Peso mais recente do histórico; altura do cadastro; ao finalizar a avaliação mais recente, a altura volta ao cadastro e o peso entra em `historico_peso` | — |
+| AVF-03 | TMB por protocolo + valor manual | R: PROTOCOLOS DE CÁLCULO DA TMB | CRIAR → **ENTREGUE (Fase 4)** | Harris-Benedict 1984, Mifflin, FAO 1985 (peso; peso e altura), Cunningham; manual com método e observação | — |
+| AVF-04 | NAF e METs sem dupla contagem | R: NAF E GASTO POR METs | CRIAR → **ENTREGUE (Fase 4)** | DRIs 2023 por categoria; TMB × NAF (faixas FAO); METs do Compendium 2024 (60+: Older Adult, com reserva adulta sinalizada); GET + METs só na categoria Inativo | Atividades sem valor 60+ no Older Adult usam o MET adulto com aviso (confirmar com o cliente) |
+| AVF-05 | Dobras cutâneas por protocolo | R: PROTOCOLOS DE DOBRAS CUTÂNEAS | CRIAR → **ENTREGUE (Fase 4)** | JP7, JP3, Faulkner, Slaughter (maturação e etnia), Petroski (feminino versão B); Siri | — |
+| AVF-06 | Perimetria (9 medidas) | R: PERIMETRIA | CRIAR → **ENTREGUE (Fase 4)** | 9 regiões com o valor anterior ao lado | — |
+| AVF-07 | Bioimpedância manual + PDF com leitura automática | R: BIOIMPEDÂNCIA | COMPLETAR → **ENTREGUE (Fase 4)** | `lib/servidor/bioimpedancia.ts`: leitura por IA com conferência antes de aplicar; PDF anexado | — |
+| AVF-08 | Resultados: avatar com setas, avatares de % gordura, 4 gráficos (12 últimas), tabela de perimetria | R: RESULTADOS…; FIG-074–079 | CRIAR → **ENTREGUE (Fase 4)** | `components/nutricao/avaliacao/ResultadosDaAvaliacao.tsx` | — |
+| AVF-09 | Faixa de referência de gordura com fonte | R: IDENTIFICAÇÃO E REFERÊNCIAS §6–9 | CRIAR → **ENTREGUE (Fase 4)** | Gallagher et al. 2000 (20–79 anos), com "?" da fonte | — |
+| AVF-10 | PDF da avaliação e envio opcional ao paciente | R: SALVAMENTO … ENVIO §6–8 | CRIAR → **ENTREGUE (Fase 4)** | PDF com avatares e evolução; envio por versão (`avaliacoes_envios`, imutável), aviso no celular, tela "Avaliações físicas" na área do paciente | — |
+| AVF-11 | Relação com "Registrar evolução" atual | — | CRIAR → **ENTREGUE (Fase 4)** | Botão removido da ficha; registros antigos continuam no histórico de peso | — |
 
 ## 8. Anamnese e recordatório
 

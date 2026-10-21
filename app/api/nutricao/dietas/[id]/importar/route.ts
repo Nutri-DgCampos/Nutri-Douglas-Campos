@@ -87,6 +87,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         objetivo: (origem.tipo !== "rotina" && copia.objetivo.trim()) || atual.rascunho.objetivo,
         pesoReferencia: atual.rascunho.pesoReferencia,
         nutrientesAcompanhados: atual.rascunho.nutrientesAcompanhados,
+        ...(atual.rascunho.gastoReferencia !== undefined ? { gastoReferencia: atual.rascunho.gastoReferencia } : {}),
       };
 
       const gravada = await cliente.query<{ revisao: number }>(

@@ -195,10 +195,11 @@ A proposta completa enviada ao responsável, com fórmulas, coeficientes, popula
 | 6.1–6.3 | Quantidade para dispensação de fórmulas aprovada |
 | 7.1 | Não há outro cálculo em suplementos ou exames |
 
-Antes de programar (conferências que não mudam a decisão):
+Conferências feitas na programação (Fase 4, 20/10/2026):
 
-- Slaughter: confirmar no artigo original o +1,6 da equação dos meninos acima de 35 mm (uma fonte secundária traz −1,7).
-- Petroski feminino versão B: confirmar na tese a população (faixa de idade) para o "?".
-- Gallagher: transcrever os limites da tabela original (fontes secundárias divergem em até 1 ponto).
-- Older Adult Compendium 2024: transcrever os METs 60+ das mesmas atividades.
-- Opções por velocidade (1.2): transcrever os códigos de corrida e caminhada do Compendium com km/h.
+- Slaughter: +1,6 da equação dos meninos acima de 35 mm confirmado.
+- Petroski feminino versão B: coeficiente da idade × dobras confirmado em duas fontes como −0,00026073 (a transcrição de Moreira, 2009, perdeu um dígito); população de 18 a 51 anos. Com isso, o exemplo do teste passa de 24,0% para 24,8%.
+- Gallagher: limites transcritos da Tabela 4 do artigo original.
+- DRIs 2023: categorias pelas faixas de NAF (Inativo 1,00 a menos de 1,53; Pouco ativo 1,53–1,68; Ativo 1,68–1,85; Muito ativo 1,85–2,50). TMB × NAF: faixas da FAO (1,40–1,69; 1,70–1,99; 2,00–2,40).
+- Older Adult Compendium 2024: transcritos os METs 60+ de musculação leve, caminhadas (leve a 7,2 km/h) e corrida a 11,3 km/h. O Older Adult não traz mountain bike, ciclismo de estrada, a maioria das corridas, musculação moderada/vigorosa nem caminhada em subida: nesses casos o app usa o MET adulto e mostra um aviso (decisão a confirmar com o cliente).
+- Opções por velocidade (1.2): códigos de corrida e caminhada com km/h transcritos do Compendium 2024.

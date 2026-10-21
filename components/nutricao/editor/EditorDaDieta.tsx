@@ -657,6 +657,7 @@ export default function EditorDaDieta({
                   nutrientes={dados.nutrientes}
                   anteriores={dados.anteriores}
                   pesoAtual={dados.pesoAtual}
+                  gastos={dados.gastos ?? []}
                   onAlterar={alterar}
                 />
               ) : null}
@@ -676,6 +677,7 @@ export default function EditorDaDieta({
             nutrientes={dados.nutrientes}
             anteriores={dados.anteriores}
             pesoAtual={dados.pesoAtual}
+                  gastos={dados.gastos ?? []}
             onAlterar={alterar}
           />
         </div>

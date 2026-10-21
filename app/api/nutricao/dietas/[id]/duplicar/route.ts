@@ -43,6 +43,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const copia = copiarDocumento(validacao.documento);
     copia.titulo = `${validacao.documento.titulo.trim() || "Dieta"} — Cópia`.slice(0, 200);
     copia.pesoReferencia = validacao.documento.pesoReferencia;
+    if (validacao.documento.gastoReferencia !== undefined) copia.gastoReferencia = validacao.documento.gastoReferencia;
 
     const criada = await cliente.query<{ id: string }>(
       `insert into public.dietas (patient_id, consulta_id, ordem, rascunho, criada_por, origens)

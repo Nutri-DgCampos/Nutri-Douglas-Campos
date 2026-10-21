@@ -4,7 +4,7 @@ import { NUTRIENTES_DO_PAINEL, pendenciasDoEnvio, totaisDaDieta, validarDocument
 import { gravarArquivo, removerArquivo, resolverCaminho } from "@/lib/servidor/arquivos";
 import { registrarAcao } from "@/lib/servidor/auditoria";
 import { obterPool } from "@/lib/servidor/banco";
-import { UUID, buscarDieta, dadosDaEmissao } from "@/lib/servidor/dietas";
+import { UUID, buscarDieta, dadosDaEmissao, gastosDasAvaliacoes } from "@/lib/servidor/dietas";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
 import { enfileirarAtualizacao } from "@/lib/servidor/notificacoes";
 import { nomeDoArquivo } from "@/lib/servidor/pdf/documento";
@@ -71,6 +71,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (pendencias.length > 0) throw new Recusa("Corrija as pendências antes de enviar.", 400, { pendencias });
 
     pacienteId = dieta.patient_id;
+
+    // Sem escolha do nutricionista, a versão guarda a avaliação mais recente.
+    if (documento.gastoReferencia === undefined) {
+      documento.gastoReferencia = (await gastosDasAvaliacoes(pacienteId, cliente))[0] ?? null;
+    }
 
     // Trava o paciente: dois envios simultâneos não se cruzam.
     await cliente.query("select 1 from public.patients where id = $1 for update", [pacienteId]);

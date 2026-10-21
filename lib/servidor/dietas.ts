@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { alimentosDoDocumento, documentoVazio, type DocumentoDieta } from "@/lib/nutricao/dieta";
+import { alimentosDoDocumento, documentoVazio, type DocumentoDieta, type GastoDeReferencia } from "@/lib/nutricao/dieta";
 import { ORIGENS_DE_PESO, idadeEm } from "@/lib/nutricao/paciente";
 import { composicoes } from "./alimentos";
 import { obterPool } from "./banco";
@@ -7,6 +7,29 @@ import { obterPool } from "./banco";
 // Leitura e gravação das dietas do editor (Módulo de Nutrição, Fase 2).
 
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Gasto energético das avaliações físicas finalizadas, da mais recente para a
+// mais antiga (valores congelados na finalização).
+export async function gastosDasAvaliacoes(pacienteId: string, cliente?: PoolClient): Promise<GastoDeReferencia[]> {
+  const resultado = await (cliente ?? obterPool()).query<{
+    id: string;
+    data: string;
+    tmb: number | null;
+    get: number | null;
+    get_mais_mets: number | null;
+  }>(
+    `select id, to_char(data, 'YYYY-MM-DD') as data,
+            (resultados->'tmb'->>'valor')::float as tmb,
+            (resultados->'get'->>'valor')::float as get,
+            (resultados->>'getMaisMets')::float as get_mais_mets
+       from public.avaliacoes_fisicas
+      where patient_id = $1 and status = 'finalizada' and resultados is not null
+      order by data desc, finalizada_em desc
+      limit 30`,
+    [pacienteId]
+  );
+  return resultado.rows.map((r) => ({ avaliacaoId: r.id, data: r.data, tmb: r.tmb, get: r.get, getMaisMets: r.get_mais_mets }));
+}
 
 export type LinhaDieta = {
   id: string;

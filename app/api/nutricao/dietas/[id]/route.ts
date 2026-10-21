@@ -7,6 +7,7 @@ import {
   buscarDieta,
   dadosDoPaciente,
   dadosDosAlimentos,
+  gastosDasAvaliacoes,
   gravarDieta,
   pesoMaisRecente,
   versoesDasDietas,
@@ -31,7 +32,7 @@ export async function GET(request: Request, { params }: Contexto) {
   const pool = obterPool();
   const ids = [...alimentosDoDocumento(dieta.rascunho), ...(dieta.salvo ? alimentosDoDocumento(dieta.salvo) : [])];
 
-  const [paciente, consulta, versoes, anteriores, nutrientes, alimentos, pesoAtual, ciclo] = await Promise.all([
+  const [paciente, consulta, versoes, anteriores, nutrientes, alimentos, pesoAtual, ciclo, gastos] = await Promise.all([
     dadosDoPaciente(dieta.patient_id),
     pool.query<{ data: string; tipo: string; status: string }>(
       "select to_char(data, 'YYYY-MM-DD') as data, tipo, status from public.consultas where id = $1",
@@ -65,6 +66,7 @@ export async function GET(request: Request, { params }: Contexto) {
         limit 1`,
       [dieta.patient_id, dieta.consulta_id]
     ),
+    gastosDasAvaliacoes(dieta.patient_id),
   ]);
 
   if (!paciente) return recusar("Paciente não encontrado.", 404);
@@ -80,6 +82,7 @@ export async function GET(request: Request, { params }: Contexto) {
     nutrientes: nutrientes.rows,
     pesoAtual,
     cicloAtivo: ciclo.rows[0] ?? null,
+    gastos,
     ...alimentos,
   });
 }

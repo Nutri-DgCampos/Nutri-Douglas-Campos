@@ -14,11 +14,11 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 1 — Base de alimentos | **Concluída e aprovada** (19 verificações + 9 testes de cálculo); TACO carregada na produção em 20/10/2026 (597 alimentos, 20.165 valores). Pendente: correspondências USDA (F-01) | 20/10/2026 | 9 |
 | 2 — Editor de dietas | **Concluída e aprovada** (53 verificações de navegação + 16 testes de cálculo); no ar desde 20/10/2026 | 20/10/2026 | 28 |
 | 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); aguardando aprovação do cliente | 20/10/2026 | 7 |
-| 4 — Avaliação física | Não iniciada; todos os métodos aprovados em 20/10/2026 (M-01 a M-05) | — | — |
+| 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); aguardando aprovação do cliente | 20/10/2026 | 12 |
 | 5 — Anamnese e recordatório | Não iniciada | — | — |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **62 de 101 requisitos (61%)** | | |
+| **Módulo** | **74 de 101 requisitos (73%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -89,7 +89,7 @@ Modelos de observação, refeição e dieta [CFG-04 a CFG-06]; gerar nova, dupli
 
 ## Fase 4 — Avaliação física
 
-Formulário com autosave, peso/altura sincronizados [AVF-01, AVF-02]; perimetria [AVF-06]; bioimpedância manual e por PDF [AVF-07]; TMB, NAF/METs, dobras e faixas de referência **somente com métodos aprovados** [AVF-03 a AVF-05, AVF-09]; tela de resultados [AVF-08]; PDF e envio [AVF-10]; indicadores no editor [DIE-04].
+Formulário com autosave, peso/altura sincronizados [AVF-01, AVF-02]; substitui o "Registrar evolução" [AVF-11]; perimetria [AVF-06]; bioimpedância manual e por PDF [AVF-07]; TMB, NAF/METs, dobras e faixas de referência **somente com métodos aprovados** [AVF-03 a AVF-05, AVF-09]; tela de resultados [AVF-08]; PDF e envio [AVF-10]; indicadores no editor [DIE-04].
 
 **Aceite:** cada equação com teste numérico contra exemplo da fonte aprovada; avaliação histórica não muda quando o cadastro muda; ausência de medida aparece como "—".
 

@@ -53,6 +53,12 @@ export const BUCKETS: Record<string, Bucket> = {
       "image/png": ["png"],
     },
   },
+  // Avaliação física: PDF da bioimpedância (só o nutricionista) e PDFs
+  // enviados ao paciente (o paciente abre só os dele).
+  avaliacoes: {
+    tamanhoMaximo: 20 * 1024 * 1024,
+    tipos: { "application/pdf": ["pdf"] },
+  },
   fotos: {
     tamanhoMaximo: 10 * 1024 * 1024,
     tipos: {
@@ -112,7 +118,7 @@ export function podeEnviar(
   bucket: string,
   caminho: string
 ) {
-  if (bucket === "dietas" || bucket === "identidade") {
+  if (bucket === "dietas" || bucket === "identidade" || bucket === "avaliacoes") {
     return contexto.papel === "nutricionista";
   }
 
@@ -126,7 +132,7 @@ export function podeEnviar(
 }
 
 export function podeGerenciar(contexto: Contexto, bucket: string) {
-  return (bucket === "dietas" || bucket === "identidade") && contexto.papel === "nutricionista";
+  return (bucket === "dietas" || bucket === "identidade" || bucket === "avaliacoes") && contexto.papel === "nutricionista";
 }
 
 export async function podeBaixar(
@@ -148,6 +154,15 @@ export async function podeBaixar(
 
   if (!contexto.pacienteId) {
     return false;
+  }
+
+  // Avaliação física: só os PDFs enviados ao próprio paciente.
+  if (bucket === "avaliacoes") {
+    const enviado = await obterPool().query(
+      "select 1 from public.avaliacoes_envios where storage_path = $1 and patient_id = $2",
+      [caminho, contexto.pacienteId]
+    );
+    return (enviado.rowCount ?? 0) > 0;
   }
 
   // Dieta: o paciente só abre arquivos das suas duas entregas mais recentes.

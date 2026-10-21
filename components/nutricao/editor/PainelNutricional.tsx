@@ -13,6 +13,7 @@ import {
   NUTRIENTES_DO_PAINEL,
   totaisDaDieta,
   type DocumentoDieta,
+  type GastoDeReferencia,
   type Indicador,
   type Indicadores,
 } from "@/lib/nutricao/dieta";
@@ -90,6 +91,7 @@ export default function PainelNutricional({
   nutrientes,
   anteriores,
   pesoAtual,
+  gastos,
   onAlterar,
 }: {
   dietaId: string;
@@ -98,6 +100,7 @@ export default function PainelNutricional({
   nutrientes: Nutriente[];
   anteriores: DietaAnterior[];
   pesoAtual: { valor: number; data: string; origem: string } | null;
+  gastos: GastoDeReferencia[];
   onAlterar: (alterar: (documento: DocumentoDieta) => void) => void;
 }) {
   const [detalhes, setDetalhes] = useState(false);
@@ -141,6 +144,11 @@ export default function PainelNutricional({
   const atual = indicadoresDoPainel(totaisAtuais, peso);
   const escolhida = anteriores.find((a) => a.id === comparacao) ?? null;
   const anterior = escolhida ? indicadoresDoPainel(escolhida.totais, escolhida.peso) : null;
+
+  // Gasto energético: a avaliação escolhida, ou a mais recente se não houve escolha.
+  const gasto = documento.gastoReferencia === undefined ? gastos[0] ?? null : documento.gastoReferencia;
+  const gastoAtualizado = gasto ? gastos.find((g) => g.avaliacaoId === gasto.avaliacaoId) : null;
+  const kcalDieta = atual?.kcal?.valor ?? null;
 
   const linhasAtuais = Linhas({ p: atual });
   const linhasAnteriores = Linhas({ p: anterior });
@@ -188,6 +196,66 @@ export default function PainelNutricional({
             ? `${documento.pesoReferencia.origem ?? "Origem não informada"}${documento.pesoReferencia.data ? `, ${formatarData(documento.pesoReferencia.data)}` : ""}. Usado em todos os valores por kg e na hidratação.`
             : "Sem peso de referência: os valores por kg e a hidratação não são calculados."}
         </p>
+      </div>
+
+      <div>
+        <p className="font-semibold text-gray-900">Gasto energético (avaliação física)</p>
+        {gastos.length === 0 && !gasto ? (
+          <p className="mt-1 text-xs text-gray-500">Nenhuma avaliação física finalizada para este paciente.</p>
+        ) : (
+          <>
+            <Dropdown
+              aria-label="Avaliação física de referência"
+              value={gasto?.avaliacaoId ?? "nenhuma"}
+              onChange={(e) =>
+                onAlterar((d) => {
+                  d.gastoReferencia = e.value === "nenhuma" ? null : gastos.find((g) => g.avaliacaoId === e.value) ?? null;
+                })
+              }
+              options={[
+                ...gastos.map((g, i) => ({ label: `Avaliação de ${formatarData(g.data)}${i === 0 ? " (mais recente)" : ""}`, value: g.avaliacaoId })),
+                ...(gasto && !gastoAtualizado ? [{ label: `Avaliação de ${formatarData(gasto.data)} (não está mais finalizada)`, value: gasto.avaliacaoId }] : []),
+                { label: "Sem referência", value: "nenhuma" },
+              ]}
+              className="mt-1 w-full"
+              panelClassName="max-w-[calc(100vw-2rem)]"
+            />
+            {gasto ? (
+              <table className="mt-2 w-full tabular-nums">
+                <tbody>
+                  {(
+                    [
+                      ["TMB", gasto.tmb],
+                      ["GET", gasto.get],
+                      ["GET + METs", gasto.getMaisMets],
+                    ] as const
+                  ).map(([rotulo, valor]) =>
+                    rotulo === "GET + METs" && valor === null ? null : (
+                      <tr key={rotulo} className="border-t border-gray-100">
+                        <td className="py-1 pr-2 text-gray-600">{rotulo}</td>
+                        <td className="py-1 pr-2 text-right">{valor === null ? "—" : `${formatarNumero(valor, 0)} kcal`}</td>
+                        <td className="py-1 text-right text-xs text-gray-500">
+                          {valor && kcalDieta !== null ? `dieta: ${formatarNumero((kcalDieta / valor) * 100, 0)}%` : null}
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            ) : null}
+            {gasto && gastoAtualizado && (gastoAtualizado.tmb !== gasto.tmb || gastoAtualizado.get !== gasto.get || gastoAtualizado.getMaisMets !== gasto.getMaisMets) ? (
+              <Button
+                type="button"
+                size="small"
+                text
+                icon="pi pi-refresh"
+                label="A avaliação foi corrigida: usar os valores atuais"
+                onClick={() => onAlterar((d) => void (d.gastoReferencia = gastoAtualizado))}
+              />
+            ) : null}
+            <p className="mt-1 text-xs text-gray-500">Valores da avaliação finalizada; a versão enviada guarda a referência usada.</p>
+          </>
+        )}
       </div>
 
       <div className="overflow-x-auto">

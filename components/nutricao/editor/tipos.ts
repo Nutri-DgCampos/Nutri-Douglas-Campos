@@ -1,4 +1,4 @@
-import type { Composicoes, DocumentoDieta } from "@/lib/nutricao/dieta";
+import type { Composicoes, DocumentoDieta, GastoDeReferencia } from "@/lib/nutricao/dieta";
 
 // Dados que o editor recebe da API (GET /api/nutricao/dietas/[id]).
 
@@ -78,6 +78,7 @@ export type DadosDoEditor = BaseDosAlimentos & {
   anteriores: DietaAnterior[];
   nutrientes: Nutriente[];
   pesoAtual: { valor: number; data: string; origem: string } | null;
+  gastos?: GastoDeReferencia[];
   cicloAtivo: { id: string; inicio: string; fim: string; enviadas_da_consulta: number } | null;
 };
 

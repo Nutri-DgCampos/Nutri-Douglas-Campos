@@ -67,6 +67,8 @@ export default function ConsultaPage() {
   const [paciente, setPaciente] = useState<{ name: string; birth_date: string | null } | null>(null);
   const [alteracoes, setAlteracoes] = useState<Alteracao[]>([]);
   const [dietas, setDietas] = useState<{ id: string; titulo: string | null; versoes: number; arquivada_em: string | null }[]>([]);
+  const [avaliacoes, setAvaliacoes] = useState<{ id: string; data: string; status: string; envios: number }[]>([]);
+  const [criandoAvaliacao, setCriandoAvaliacao] = useState(false);
 
   const [corrigindo, setCorrigindo] = useState(false);
   const [dataEditada, setDataEditada] = useState("");
@@ -76,7 +78,7 @@ export default function ConsultaPage() {
   const [confirmarExclusao, setConfirmarExclusao] = useState(false);
 
   const carregar = useCallback(async () => {
-    const [dadosConsulta, dadosPaciente, historico, dadosDietas] = await Promise.all([
+    const [dadosConsulta, dadosPaciente, historico, dadosDietas, dadosAvaliacoes] = await Promise.all([
       api
         .from("consultas")
         .select("id, patient_id, data, tipo, status, created_at, finalizada_em")
@@ -92,6 +94,9 @@ export default function ConsultaPage() {
       fetch(`/api/nutricao/consultas/${consultaId}/dietas`, { cache: "no-store" })
         .then((resposta) => (resposta.ok ? resposta.json() : { dietas: [] }))
         .catch(() => ({ dietas: [] })),
+      fetch(`/api/nutricao/consultas/${consultaId}/avaliacoes`, { cache: "no-store" })
+        .then((resposta) => (resposta.ok ? resposta.json() : { avaliacoes: [] }))
+        .catch(() => ({ avaliacoes: [] })),
     ]);
 
     const encontrada = dadosConsulta.data as Consulta | null;
@@ -99,6 +104,7 @@ export default function ConsultaPage() {
     setPaciente(dadosPaciente.data ?? null);
     setAlteracoes((historico.data ?? []) as Alteracao[]);
     setDietas(dadosDietas.dietas ?? []);
+    setAvaliacoes(dadosAvaliacoes.avaliacoes ?? []);
   }, [consultaId, pacienteId]);
 
   useEffect(() => {
@@ -139,6 +145,18 @@ export default function ConsultaPage() {
     setCorrigindo(false);
     avisar("Consulta corrigida. A alteração ficou registrada no histórico.", "success");
     carregar();
+  }
+
+  async function novaAvaliacao() {
+    setCriandoAvaliacao(true);
+    const resposta = await fetch(`/api/nutricao/consultas/${consultaId}/avaliacoes`, { method: "POST" });
+    const resultado = await resposta.json().catch(() => null);
+    setCriandoAvaliacao(false);
+    if (!resposta.ok || !resultado?.id) {
+      avisar(resultado?.erro ?? "Não foi possível criar a avaliação.", "error");
+      return;
+    }
+    router.push(`/nutricao/${pacienteId}/consultas/${consultaId}/avaliacao/${resultado.id}`);
   }
 
   async function finalizar() {
@@ -247,7 +265,39 @@ export default function ConsultaPage() {
                 </span>
                 <h2 className="font-bold text-gray-900">{secao.titulo}</h2>
               </div>
-              {secao.titulo === "Dietas" ? (
+              {secao.titulo === "Avaliação física" ? (
+                <>
+                  {avaliacoes.length === 0 ? (
+                    <p className="mt-3 text-sm text-gray-500">Nenhuma avaliação registrada.</p>
+                  ) : (
+                    <ul className="mt-3 space-y-1 text-sm">
+                      {avaliacoes.map((a) => (
+                        <li key={a.id} className="flex justify-between gap-2">
+                          <button
+                            type="button"
+                            className="truncate text-left text-primary-700 hover:underline"
+                            onClick={() => router.push(`/nutricao/${pacienteId}/consultas/${consultaId}/avaliacao/${a.id}`)}
+                          >
+                            Avaliação de {formatarData(a.data)}
+                          </button>
+                          <span className="shrink-0 text-gray-500">
+                            {a.status === "finalizada" ? (a.envios ? "Enviada" : "Finalizada") : "Rascunho"}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <Button
+                    type="button"
+                    icon="pi pi-plus"
+                    label="Nova avaliação"
+                    size="small"
+                    className="mt-3"
+                    loading={criandoAvaliacao}
+                    onClick={novaAvaliacao}
+                  />
+                </>
+              ) : secao.titulo === "Dietas" ? (
                 <>
                   {dietas.filter((d) => !d.arquivada_em).length === 0 ? (
                     <p className="mt-3 text-sm text-gray-500">Nenhuma dieta elaborada.</p>

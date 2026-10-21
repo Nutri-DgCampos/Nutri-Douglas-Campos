@@ -232,13 +232,8 @@ buscarRelatorios();
     label="Módulo de Nutrição"
     onClick={() => router.push(`/nutricao/${paciente.id}`)}
   />
-  <Button icon="pi pi-plus" outlined
-    type="button"
-    onClick={() => router.push(`/pacientes/${paciente.id}/evolucao`)}
-   
-  >
-  Registrar evolução
-</Button>
+  {/* "Registrar evolução" saiu daqui: o peso passa a vir da avaliação física
+      (decisão de 19/10). Os registros antigos continuam no histórico de peso. */}
 <Button outlined
   type="button"
   onClick={solicitarReativacao}
