@@ -3,6 +3,7 @@ import { hojeNoBrasil } from "@/lib/cronograma";
 import { registrarAcao } from "@/lib/servidor/auditoria";
 import { obterPool } from "@/lib/servidor/banco";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
+import { incluirOrientacoesAutomaticas } from "@/lib/servidor/orientacoes";
 
 export const runtime = "nodejs";
 
@@ -76,6 +77,9 @@ export async function POST(request: Request) {
       "criacao",
       { data, tipo }
     );
+
+    // Orientações marcadas para entrar em toda consulta.
+    await incluirOrientacoesAutomaticas(cliente, id, contexto.usuarioId);
 
     await cliente.query("commit");
 

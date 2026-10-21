@@ -64,6 +64,11 @@ export const BUCKETS: Record<string, Bucket> = {
     tamanhoMaximo: 20 * 1024 * 1024,
     tipos: { "application/pdf": ["pdf"] },
   },
+  // Imagens das orientações (só o nutricionista; o paciente recebe o PDF).
+  orientacoes: {
+    tamanhoMaximo: 5 * 1024 * 1024,
+    tipos: { "image/jpeg": ["jpg", "jpeg"], "image/png": ["png"] },
+  },
   fotos: {
     tamanhoMaximo: 10 * 1024 * 1024,
     tipos: {
@@ -78,7 +83,7 @@ export const BUCKETS: Record<string, Bucket> = {
 const PASTA_DO_PACIENTE = ["exames", "treinos", "fotos"];
 
 // Buckets em que só o nutricionista grava e gerencia.
-const SO_NUTRICIONISTA = ["dietas", "identidade", "avaliacoes", "documentos"];
+const SO_NUTRICIONISTA = ["dietas", "identidade", "avaliacoes", "documentos", "orientacoes"];
 
 function pastaBase() {
   return process.env.ARQUIVOS_DIR ?? "/dados/arquivos";

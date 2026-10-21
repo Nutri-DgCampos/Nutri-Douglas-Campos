@@ -35,7 +35,7 @@ const ITENS = [
   { titulo: "Exames", descricao: "Modelos de solicitação de exames.", icone: "pi-heart", destino: "/nutricao/configuracoes/exames" },
   { titulo: "Medicações", descricao: "Cadastro de medicações.", icone: "pi-plus-circle" },
   { titulo: "Fórmulas", descricao: "Modelos de fórmulas e ingredientes.", icone: "pi-box" },
-  { titulo: "Orientações", descricao: "Modelos de orientações nutricionais.", icone: "pi-comment" },
+  { titulo: "Orientações", descricao: "Modelos de orientações nutricionais.", icone: "pi-comment", destino: "/nutricao/configuracoes/orientacoes" },
 ];
 
 export default function ConfiguracoesPage() {

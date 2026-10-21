@@ -10,6 +10,7 @@ import { Tag } from "primereact/tag";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import SecaoAnamnese from "@/components/nutricao/anamnese/SecaoAnamnese";
 import SecaoExames from "@/components/nutricao/exames/SecaoExames";
+import SecaoOrientacoes from "@/components/nutricao/orientacoes/SecaoOrientacoes";
 import Selecao from "@/components/Selecao";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
@@ -269,6 +270,8 @@ export default function ConsultaPage() {
               </div>
               {secao.titulo === "Anamnese" ? (
                 <SecaoAnamnese pacienteId={pacienteId} consultaId={consultaId} />
+              ) : secao.titulo === "Orientações" ? (
+                <SecaoOrientacoes pacienteId={pacienteId} consultaId={consultaId} />
               ) : secao.titulo === "Exames" ? (
                 <SecaoExames pacienteId={pacienteId} consultaId={consultaId} />
               ) : secao.titulo === "Avaliação física" ? (
