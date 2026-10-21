@@ -16,9 +16,9 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); **aprovada pelo cliente em 21/10/2026** | 20/10/2026 | 7 |
 | 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); no ar; **aprovada pelo cliente em 21/10/2026** (inclusive METs 60+ com valor adulto e leitura da bioimpedância pela OpenAI) | 20/10/2026 | 12 |
 | 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); **aprovada pelo cliente em 21/10/2026** (5.11: recordatório começa com 6 refeições) | 21/10/2026 | 10 |
-| 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
+| 6 — Exames, medicações, fórmulas, orientações | **Concluída** (86 verificações de navegação + testes de unidade das calculadoras; fases 0–5 retestadas); aguardando aprovação do cliente | 21/10/2026 | 13 |
 | 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **84 de 101 requisitos (83%)** | | |
+| **Módulo** | **97 de 101 requisitos (96%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -111,6 +111,12 @@ Entregue (21/10/2026, migração 013):
 ## Fase 6 — Exames, medicações, fórmulas, orientações
 
 Exames na ficha e na consulta [EXA-01]; solicitação de exames [CFG-02, EXA-03]; medicações e calculadora (M-07 aprovado) [CFG-07, MED-01, MED-02]; fórmulas [CFG-08, FOR-01 a FOR-03]; orientações [CFG-09, ORI-01]; PDFs correspondentes [PDF-03].
+
+Entregue (21/10/2026, migrações 014 a 017), em quatro partes:
+- Exames: nome e data opcionais no envio do paciente; vínculo com consulta e solicitação; seção na consulta e na ficha; modelos de solicitação; solicitação com prévia, emissão congelada e envio opcional à área do paciente ("Documentos").
+- Orientações: modelos em blocos (título, parágrafo com negrito, lista, imagem) e assinatura; inclusão automática em toda consulta; cópia com {paciente}/{data_consulta}; PDF e envio (PDF guardado por versão).
+- Medicações: biblioteca; registro por consulta com status, filtros, pesquisa, ordem, duplicar, exclusão lógica com restauração; trazer da consulta anterior em cinza; semana com quantidade e vezes por dia; somatória semanal (M-07); receitas (vincular, mais recente, ver todas, ZIP); anotações; PDF sem logotipo com o aviso obrigatório; copiar resumo. Botões "Medicação" e "Fórmulas" no editor de dietas.
+- Fórmulas: ingredientes e modelos; fórmulas da consulta com importar (modelos, consultas do paciente em cinza, outros pacientes só a estrutura), nova, duplicar, salvar como modelo, vínculo com a dieta; dispensação (M-08); PDF individual e "Manipulados" com seleção; PDFs emitidos guardados.
 
 ## Fase 7 — Auxílio da IA
 

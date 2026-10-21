@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -21,6 +21,9 @@ export default function ListaDaBiblioteca({
   vazio,
   base,
   detalhe,
+  extra,
+  voltarPara = "/nutricao/configuracoes",
+  rotuloVoltar = "Voltar às configurações",
 }: {
   tipo: string;
   titulo: string;
@@ -30,6 +33,10 @@ export default function ListaDaBiblioteca({
   // Rota das páginas de edição: `${base}/<id>`.
   base: string;
   detalhe?: (item: ItemDaBiblioteca) => string;
+  // Botões extras ao lado de "novo" (ex.: atalho para outra biblioteca).
+  extra?: ReactNode;
+  voltarPara?: string;
+  rotuloVoltar?: string;
 }) {
   const router = useRouter();
   const [itens, setItens] = useState<ItemDaBiblioteca[] | null>(null);
@@ -90,10 +97,13 @@ export default function ListaDaBiblioteca({
   return (
     <main className="min-w-0 flex-1 p-4 lg:p-8">
       <div className="mx-auto max-w-5xl">
-        <BotaoVoltar rotulo="Voltar às configurações" onClick={() => router.push("/nutricao/configuracoes")} />
+        <BotaoVoltar rotulo={rotuloVoltar} onClick={() => router.push(voltarPara)} />
         <div className="flex flex-wrap items-start justify-between gap-3">
           <CabecalhoPagina titulo={titulo} descricao={descricao} />
-          <Button type="button" icon="pi pi-plus" label={rotuloNovo} loading={criando} onClick={novo} />
+          <div className="flex flex-wrap gap-2">
+            {extra}
+            <Button type="button" icon="pi pi-plus" label={rotuloNovo} loading={criando} onClick={novo} />
+          </div>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">

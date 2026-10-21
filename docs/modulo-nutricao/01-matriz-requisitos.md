@@ -56,14 +56,14 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
 | CFG-01 | Modelos de anamnese com versão, arquivamento quando usados | R: FIG-020; S02 Anamnese | CRIAR → **ENTREGUE (Fase 5)** | Configurações → Anamnese (`modelos_anamnese`, migração 013): campo curto, longo, múltipla escolha (uma ou várias), texto livre; obrigatória; versão sobe ao alterar modelo já usado; excluir só o não usado, senão arquivar | — |
-| CFG-02 | Modelos de solicitação de exames | R: CONFIGURAÇÕES — MODELOS DE SOLICITAÇÃO DE EXAMES | CRIAR | — | — |
+| CFG-02 | Modelos de solicitação de exames | R: CONFIGURAÇÕES — MODELOS DE SOLICITAÇÃO DE EXAMES | CRIAR → **ENTREGUE (Fase 6)** | Configurações → Exames (`modelos_exames`, migração 014): listas de exames; excluir só o não usado, senão arquivar | — |
 | CFG-03 | Avaliação física em Configurações | R: FIG-029 | NÃO SE APLICA | — | Roteiro descarta |
 | CFG-04 | Modelos de observação da dieta | R: CONFIGURAÇÕES DA DIETA — MODELOS DE OBSERVAÇÕES | CRIAR → **ENTREGUE (Fase 3)** | — | — |
 | CFG-05 | Modelos de refeição | R: MODELOS DE REFEIÇÕES | CRIAR → **ENTREGUE (Fase 3)** | — | — |
 | CFG-06 | Modelos de dieta completa | R: MODELOS DE DIETAS COMPLETAS | CRIAR → **ENTREGUE (Fase 3)** | — | Sem dados pessoais no modelo |
-| CFG-07 | Medicações (cadastro) | R: MEDICAÇÕES E REGISTRO DE DOSAGENS | CRIAR | — | Calculadora auxiliar depende de aprovação (ver 04) |
-| CFG-08 | Fórmulas (modelos e ingredientes) | R: CONFIGURAÇÕES — FÓRMULAS NUTRICIONAIS | CRIAR | — | Cálculos dependem de aprovação |
-| CFG-09 | Orientações com texto formatado, imagens e assinatura | R: MODELOS DE ORIENTAÇÕES NUTRICIONAIS | CRIAR | — | Editor de texto rico |
+| CFG-07 | Medicações (cadastro) | R: MEDICAÇÕES E REGISTRO DE DOSAGENS | CRIAR → **ENTREGUE (Fase 6)** | Configurações → Medicações (`medicamentos`, migração 016): nome comercial, princípio ativo, apresentação, concentração; também "Salvar na biblioteca" a partir da consulta | — |
+| CFG-08 | Fórmulas (modelos e ingredientes) | R: CONFIGURAÇÕES — FÓRMULAS NUTRICIONAIS | CRIAR → **ENTREGUE (Fase 6)** | Configurações → Fórmulas (`modelos_formulas`) e Ingredientes (`ingredientes`, dosagem de referência), migração 017; modelos sem dados do paciente | — |
+| CFG-09 | Orientações com texto formatado, imagens e assinatura | R: MODELOS DE ORIENTAÇÕES NUTRICIONAIS | CRIAR → **ENTREGUE (Fase 6)** | Configurações → Orientações (`modelos_orientacoes`, migração 015): blocos de título, parágrafo (negrito), lista e imagem; assinatura opcional; inclusão automática em toda consulta | — |
 | CFG-10 | Logotipo, assinatura, marca-d'água, frase, identificação profissional (nome, CRN), cor das linhas | R: LOGOTIPO, ASSINATURA E MARCA-D'ÁGUA; PADRONIZAÇÃO VISUAL §2–3, §30 | CRIAR → **ENTREGUE (Fase 0)** | — | — |
 | CFG-11 | Suplementos | S03 | NÃO SE APLICA (decisão 19/10: suplementos entram na dieta como alimentos) | — | Aparece na matriz da SPEC e no menu do NutriDiet, mas o roteiro trata "Suplementação" como "Medicações"; confirmar se é um cadastro separado |
 
@@ -157,15 +157,15 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| EXA-01 | Exames enviados pelo paciente na ficha e na consulta | R: EXAMES — INTEGRAÇÃO | COMPLETAR | `blood_exams`, `/api/exames`, tela `app/(nutricionista)/exames/page.tsx` | Vínculo opcional com consulta; aba de exames na ficha |
+| EXA-01 | Exames enviados pelo paciente na ficha e na consulta | R: EXAMES — INTEGRAÇÃO | COMPLETAR → **ENTREGUE (Fase 6)** | `blood_exams` ganha nome/data do exame e vínculo opcional com consulta e solicitação (sem copiar arquivo); seção Exames da consulta e lista na ficha (recentes e mais de 90 dias) | — |
 | EXA-02 | Análise por IA visível só ao nutricionista | — (já entregue) | MANTER | `lib/servidor/exames.ts` | — |
-| EXA-03 | Solicitação de exames a partir de modelo, PDF, envio opcional | R: MODELOS DE SOLICITAÇÃO DE EXAMES §3–6 | CRIAR | — | Cálculos de exames: aguardam aprovação |
-| MED-01 | Registro de medicações com receita anexa e aviso obrigatório | R: MEDICAÇÕES | CRIAR | — | — |
-| MED-02 | Calculadora auxiliar (mL × mg/mL, total semanal) | R: MEDICAÇÕES §3–5; ELABORAÇÃO — MEDICAÇÃO | CRIAR | — | Aguarda aprovação (04) |
-| FOR-01 | Fórmulas por consulta: importar, nova, salvar como modelo | R: BOTÃO "FÓRMULAS" | CRIAR | — | — |
-| FOR-02 | Campos: nome (autocomplete), ingredientes, dosagem/unidade, excipiente, posologia, observação | R: FÓRMULAS: CAMPOS INTERNOS | CRIAR | — | — |
-| FOR-03 | Salvar, Apagar, PDF independente | R: FÓRMULAS: COMANDOS | CRIAR | — | — |
-| ORI-01 | Orientação por consulta a partir de modelo, enviada ao paciente | R: MODELOS DE ORIENTAÇÕES §5–6 | CRIAR | — | — |
+| EXA-03 | Solicitação de exames a partir de modelo, PDF, envio opcional | R: MODELOS DE SOLICITAÇÃO DE EXAMES §3–6 | CRIAR → **ENTREGUE (Fase 6)** | Solicitação por consulta (`solicitacoes_exames`): cópia ajustável do modelo, prévia em PDF, emissão congelada e envio opcional à área do paciente (Documentos) | — |
+| MED-01 | Registro de medicações com receita anexa e aviso obrigatório | R: MEDICAÇÕES | CRIAR → **ENTREGUE (Fase 6)** | `medicacoes` por consulta: status Em uso/Suspenso/Não confirmado, filtros e pesquisa, trazer da consulta anterior em cinza, receitas anexadas e vinculadas (`receitas`, ZIP), anotações, aviso obrigatório | — |
+| MED-02 | Calculadora auxiliar (mL × mg/mL, total semanal) | R: MEDICAÇÕES §3–5; ELABORAÇÃO — MEDICAÇÃO | CRIAR → **ENTREGUE (Fase 6)** | `lib/nutricao/medicacao.ts`: somatória semanal aprovada (M-07), sem conversões; PDF sem logotipo com o aviso (ND-193/194), emitido e guardado; copiar resumo | — |
+| FOR-01 | Fórmulas por consulta: importar, nova, salvar como modelo | R: BOTÃO "FÓRMULAS" | CRIAR → **ENTREGUE (Fase 6)** | Fórmulas da consulta (`formulas`): nova, importar (modelos, consultas do paciente em cinza, outros pacientes só a estrutura), duplicar, salvar como modelo, ordem | — |
+| FOR-02 | Campos: nome (autocomplete), ingredientes, dosagem/unidade, excipiente, posologia, observação | R: FÓRMULAS: CAMPOS INTERNOS | CRIAR → **ENTREGUE (Fase 6)** | Nome com sugestões, ingredientes da biblioteca (dosagem sugerida e editável), unidade, por unidade ou por dose, excipiente, apresentação, dose, posologia, orientações para farmácia e paciente, observação, dispensação (M-08) | — |
+| FOR-03 | Salvar, Apagar, PDF independente | R: FÓRMULAS: COMANDOS | CRIAR → **ENTREGUE (Fase 6)** | Salvar (rascunho automático + salvar explícito), Apagar (confirmação do roteiro), PDF individual e consolidado "Manipulados" com seleção, emitidos guardados | — |
+| ORI-01 | Orientação por consulta a partir de modelo, enviada ao paciente | R: MODELOS DE ORIENTAÇÕES §5–6 | CRIAR → **ENTREGUE (Fase 6)** | Orientação por consulta (`orientacoes`): cópia do modelo com {paciente}/{data_consulta}, PDF e envio à área do paciente (PDF da versão guardado) | — |
 
 ## 10. PDFs, IA e publicação
 
@@ -173,7 +173,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 |---|---|---|---|---|---|
 | PDF-01 | Gerador de PDF no servidor, A4 vertical, paginação, cabeçalho repetido, rodapé com CRN | R: PADRONIZAÇÃO … DIETA ALIMENTAR; FIG-184–186 | CRIAR → **ENTREGUE (Fase 0)** | app só armazena PDFs enviados | Biblioteca de geração a escolher na Fase 0 |
 | PDF-02 | Dieta: modelo #DGteam, simples ou detalhado, observações antes das substituições | S02; FIG-184–186 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
-| PDF-03 | Fórmulas, medicação, avaliação física, solicitação de exames, orientações | R | CRIAR | — | — |
+| PDF-03 | Fórmulas, medicação, avaliação física, solicitação de exames, orientações | R | CRIAR → **ENTREGUE (Fase 6)** | PDFs de fórmulas, medicações, solicitação de exames e orientações (a avaliação física veio na Fase 4) | — |
 | PDF-04 | Nomes "Dieta - Nome - dd-mm-aaaa.pdf" etc. | R: COMANDOS §10–12 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | PDF-05 | PDF emitido preservado por versão | R | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | IA-01 | Auxílio da IA no editor com prévia, confirmação e vínculo a alimentos da base | R: AUXÍLIO DA INTELIGÊNCIA ARTIFICIAL | CRIAR | integração OpenAI no servidor já existe (`lib/servidor/exames.ts`, `treinos.ts`) | Termo de consentimento para envio de dados de saúde |

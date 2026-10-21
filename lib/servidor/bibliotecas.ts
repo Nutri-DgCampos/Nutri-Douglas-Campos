@@ -1,4 +1,5 @@
 import { validarListaDeExames } from "@/lib/nutricao/exames";
+import { formulaVazia, validarIngrediente, validarModeloDeFormula } from "@/lib/nutricao/formula";
 import { validarMedicamento } from "@/lib/nutricao/medicacao";
 import { conteudoVazio, validarOrientacao } from "@/lib/nutricao/orientacao";
 import type { ConfiguracaoDaBiblioteca } from "./biblioteca";
@@ -28,5 +29,21 @@ export const BIBLIOTECAS: Record<string, ConfiguracaoDaBiblioteca> = {
     conteudoInicial: {},
     resumo: "dados->>'principioAtivo' as principio_ativo, dados->>'apresentacao' as apresentacao",
     nomePadrao: "Novo medicamento",
+  },
+  ingredientes: {
+    tabela: "ingredientes",
+    campo: "dados",
+    validar: validarIngrediente,
+    conteudoInicial: {},
+    resumo: "dados->>'dosagem' as dosagem, dados->>'unidade' as unidade, dados->>'forma' as forma",
+    nomePadrao: "Novo ingrediente",
+  },
+  formulas: {
+    tabela: "modelos_formulas",
+    campo: "conteudo",
+    validar: validarModeloDeFormula,
+    conteudoInicial: formulaVazia(),
+    resumo: "jsonb_array_length(conteudo->'componentes') as quantidade",
+    nomePadrao: "Nova fórmula",
   },
 };
