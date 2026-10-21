@@ -10,8 +10,10 @@ import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
 import { abrirDocumento } from "@/lib/visualizador";
+import { confirmarSugestoes, temSeloDaIa } from "@/lib/nutricao/assistente";
 import { alimentosDoDocumento, documentoTemConteudo, type DocumentoDieta } from "@/lib/nutricao/dieta";
 import { formatarData, idadeEm, rotuloDoSexo } from "@/lib/nutricao/paciente";
+import AssistenteIa, { type PropostaNaTela } from "./AssistenteIa";
 import DialogoEnvio, { type OpcoesDoEnvio } from "./DialogoEnvio";
 import JanelaImportar, { type OrigemDaImportacao } from "./JanelaImportar";
 import ListaDeRefeicoes from "./ListaDeRefeicoes";
@@ -96,6 +98,9 @@ export default function EditorDaDieta({
   const [envio, setEnvio] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [mostrarNutrientes, setMostrarNutrientes] = useState(true);
+  const [assistente, setAssistente] = useState(false);
+  // Sugestões da IA por dieta: continuam disponíveis ao fechar e reabrir.
+  const [propostas, setPropostas] = useState<Record<string, PropostaNaTela[]>>({});
   const [painelAberto, setPainelAberto] = useState(() => lerPainel().aberto);
   const [larguraPainel, setLarguraPainel] = useState(() => lerPainel().largura);
 
@@ -398,6 +403,27 @@ export default function EditorDaDieta({
     onRemovida();
   }
 
+  // Auxílio da IA: a dieta nova (com o resultado) fica na mesma consulta.
+  async function criarDietaDaIa(resultado: DocumentoDieta) {
+    if (!(await gravar(false))) {
+      avisar("Não foi possível gravar as últimas alterações. Tente de novo.", "error");
+      return false;
+    }
+    const resposta = await fetch(`/api/nutricao/dietas/${dietaId}/ia/nova`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ documento: resultado }),
+    });
+    const dados = await resposta.json().catch(() => null);
+    if (!resposta.ok) {
+      avisar(dados?.erro ?? "Não foi possível criar a dieta.", "error");
+      return false;
+    }
+    avisar("Nova dieta criada com as alterações da IA. A dieta anterior não mudou.", "success");
+    onAbrirDieta(dados.id);
+    return true;
+  }
+
   async function abrirPdf(modelo: "simples" | "detalhado") {
     // O PDF sai do que está gravado: grava antes as últimas alterações.
     const ok = await gravar(false);
@@ -529,6 +555,32 @@ export default function EditorDaDieta({
 
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 space-y-3">
+          {/* Auxílio da IA: fixo no topo durante a edição (ND-221). */}
+          {!somenteLeitura ? (
+            <div className="pointer-events-none sticky top-2 z-20 -mb-11 flex justify-end gap-2">
+              {temSeloDaIa(documento) ? (
+                <Button
+                  type="button"
+                  icon="pi pi-check"
+                  label="Confirmar sugestões da IA"
+                  size="small"
+                  outlined
+                  className="pointer-events-auto bg-white shadow"
+                  tooltip="Tira o selo “IA” de todas as linhas e refeições"
+                  onClick={() => alterar((d) => confirmarSugestoes(d))}
+                />
+              ) : null}
+              <Button
+                type="button"
+                icon="pi pi-sparkles"
+                label="Auxílio da IA"
+                size="small"
+                className="pointer-events-auto shadow-lg"
+                onClick={() => setAssistente(true)}
+              />
+            </div>
+          ) : null}
+
           <div className="cartao grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
             <div className="flex flex-wrap gap-1 sm:col-span-2" inert={somenteLeitura}>
               <Button type="button" icon="pi pi-download" label="Importar" size="small" outlined onClick={() => setImportando("importar")} />
@@ -596,6 +648,12 @@ export default function EditorDaDieta({
               alterar={alterar}
               nutrientes={dados.nutrientes}
               mostrarNutrientes={mostrarNutrientes}
+              onAbrirCadastro={async (alimentoId) => {
+                // Grava antes de sair; o cadastro mostra "Voltar para a dieta".
+                await gravar(false);
+                const voltar = `/nutricao/${paciente.id}/consultas/${dados.dieta.consulta_id}/dietas?dieta=${dietaId}`;
+                router.push(`/nutricao/configuracoes/alimentos/${alimentoId}?voltar=${encodeURIComponent(voltar)}`);
+              }}
             />
 
             <ObservacoesDaDieta documento={documento} onAlterar={alterar} />
@@ -703,6 +761,33 @@ export default function EditorDaDieta({
           />
         </div>
       </details>
+
+      {assistente ? (
+        <AssistenteIa
+          visivel={assistente}
+          dietaId={dietaId}
+          documento={documento}
+          base={base}
+          nutrientes={dados.nutrientes}
+          propostas={propostas[dietaId] ?? []}
+          onPropostas={(mudar) => setPropostas((atuais) => ({ ...atuais, [dietaId]: mudar(atuais[dietaId] ?? []) }))}
+          onFechar={() => setAssistente(false)}
+          onPreparar={async () => ((await gravar(false)) ? revisaoRef.current : null)}
+          onBase={(novos) =>
+            setBase((atual) => ({
+              alimentos: { ...atual.alimentos, ...novos.alimentos },
+              composicoes: { ...atual.composicoes, ...novos.composicoes },
+            }))
+          }
+          onAplicar={(resultado) =>
+            alterar((d) => {
+              d.refeicoes = resultado.refeicoes;
+              d.auxilioIa = resultado.auxilioIa;
+            })
+          }
+          onNovaDieta={criarDietaDaIa}
+        />
+      ) : null}
 
       {importando ? (
         <JanelaImportar

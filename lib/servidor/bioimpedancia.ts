@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { CAMPOS_BIOIMPEDANCIA, type CampoBio } from "@/lib/nutricao/avaliacao";
 import { lerArquivo } from "./arquivos";
+import { registrarUsoDaIa } from "./ia";
 
 // Leitura do PDF de bioimpedância por IA. Só extrai: o nutricionista confere
 // e confirma cada valor antes de ir para a avaliação (nada é aplicado sozinho).
@@ -40,7 +41,7 @@ export type LeituraBioimpedancia = {
   observacoes: string | null;
 };
 
-export async function lerPdfDeBioimpedancia(destino: string, nome: string): Promise<LeituraBioimpedancia> {
+export async function lerPdfDeBioimpedancia(destino: string, nome: string, pacienteId: string | null = null): Promise<LeituraBioimpedancia> {
   if (!process.env.OPENAI_API_KEY) throw new Error("A chave da OpenAI não está configurada no servidor.");
 
   const base64 = (await lerArquivo(destino)).toString("base64");
@@ -59,6 +60,7 @@ export async function lerPdfDeBioimpedancia(destino: string, nome: string): Prom
     text: { format: { type: "json_schema", name: "bioimpedancia", strict: true, schema: ESQUEMA } },
   });
 
+  void registrarUsoDaIa({ recurso: "bioimpedancia", modelo: "gpt-5.4-mini", uso: resposta.usage, pacienteId });
   const dados = JSON.parse(resposta.output_text) as Record<string, unknown>;
   const valores: Partial<Record<CampoBio, number | null>> = {};
   for (const campo of CAMPOS) {

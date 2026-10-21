@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import { exigirNutricionista } from "@/lib/servidor/http";
+import { registrarUsoDaIa } from "@/lib/servidor/ia";
 
 export const runtime = "nodejs";
 
@@ -76,6 +77,8 @@ ${dados.observacoes || "Nenhuma observação adicional."}
 
 📲 Fale comigo pelo WhatsApp:
 https://wa.me/5514991066000`;
+
+    void registrarUsoDaIa({ recurso: "devolutiva", modelo: "gpt-5.4-mini", uso: resposta.usage, usuarioId: contexto.usuarioId });
 
     const devolutivaFinal =
       resposta.output_text.trim() + mensagemWhatsApp;

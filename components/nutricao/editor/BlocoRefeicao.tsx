@@ -87,6 +87,7 @@ export default function BlocoRefeicao({
   onColar,
   onSalvarModelo,
   onImportarModelo,
+  onAbrirCadastro,
 }: {
   refeicao: Refeicao;
   indice: number;
@@ -106,6 +107,7 @@ export default function BlocoRefeicao({
   onColar: () => void;
   onSalvarModelo: () => void;
   onImportarModelo: () => void;
+  onAbrirCadastro?: (alimentoId: string) => void;
 }) {
   const [verMicronutrientes, setVerMicronutrientes] = useState(false);
   const referencia = opcaoDeReferencia(refeicao);
@@ -117,7 +119,10 @@ export default function BlocoRefeicao({
   function alterarItem(opcaoId: string, itemId: string, alteracao: Partial<ItemDaDieta>) {
     onAlterar((r) => {
       const item = r.opcoes.find((o) => o.id === opcaoId)?.itens.find((i) => i.id === itemId);
-      if (item) Object.assign(item, alteracao);
+      if (!item) return;
+      Object.assign(item, alteracao);
+      // Linha editada pelo nutricionista deixa de ser "sugerida pela IA".
+      delete item.ia;
     });
   }
 
@@ -259,6 +264,21 @@ export default function BlocoRefeicao({
         </div>
       </div>
 
+      {refeicao.ia ? (
+        <p className="mt-1 flex items-center gap-2 text-xs text-gray-600">
+          <button
+            type="button"
+            className="selo-ia"
+            aria-label="Refeição sugerida pela IA: confirmar"
+            title="Refeição sugerida pela IA. Clique para confirmar."
+            onClick={() => onAlterar((r) => void delete r.ia)}
+          >
+            IA <i className="pi pi-check text-[0.6rem]" aria-hidden />
+          </button>
+          Refeição sugerida pela IA: revise e confirme.
+        </p>
+      ) : null}
+
       {verMicronutrientes ? (
         <div className="mt-2 rounded-lg bg-gray-50 p-2 text-xs text-gray-700">
           {micronutrientes.length === 0 ? (
@@ -329,6 +349,7 @@ export default function BlocoRefeicao({
                   })
                 }
                 onSubstituicoes={() => onSubstituicoes(opcao.id, item.id)}
+                onAbrirCadastro={onAbrirCadastro}
               />
             ))}
 

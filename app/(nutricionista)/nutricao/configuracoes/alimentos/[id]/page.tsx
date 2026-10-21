@@ -36,7 +36,7 @@ type Alimento = {
   densidade_g_ml: number | null;
   arquivado: boolean;
 };
-type MedidaEditavel = { id?: string; nome_singular: string; nome_plural: string; quantidade: string; padrao: boolean };
+type MedidaEditavel = { id?: string; nome_singular: string; nome_plural: string; quantidade: string; padrao: boolean; sugerida?: boolean };
 type MedidaDoSubstituto = { id: string; nome_singular: string; nome_plural: string; quantidade: number; padrao: boolean };
 type SubstituicaoEditavel = {
   substitutoId: string;
@@ -78,8 +78,57 @@ const numero = (texto: string) => {
 };
 const texto = (valor: number | null | undefined) => (valor == null ? "" : String(valor).replace(".", ","));
 
+// Medidas caseiras sugeridas em todo alimento (melhoria 3.0): aparecem com a
+// equivalência em branco e só são gravadas quando o nutricionista preenche.
+const MEDIDAS_PADRAO: [string, string][] = [
+  ["colher de café", "colheres de café"],
+  ["colher de café cheia", "colheres de café cheias"],
+  ["colher de café rasa", "colheres de café rasas"],
+  ["colher de chá", "colheres de chá"],
+  ["colher de chá cheia", "colheres de chá cheias"],
+  ["colher de chá rasa", "colheres de chá rasas"],
+  ["colher de servir", "colheres de servir"],
+  ["colher de servir cheia", "colheres de servir cheias"],
+  ["colher de servir rasa", "colheres de servir rasas"],
+  ["colher de sobremesa", "colheres de sobremesa"],
+  ["colher de sobremesa cheia", "colheres de sobremesa cheias"],
+  ["colher de sobremesa rasa", "colheres de sobremesa rasas"],
+  ["colher de sopa", "colheres de sopa"],
+  ["colher de sopa cheia", "colheres de sopa cheias"],
+  ["colher de sopa rasa", "colheres de sopa rasas"],
+  ["unidade", "unidades"],
+];
+
+const semAcento = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+
+function comPadroes(cadastradas: MedidaEditavel[]): MedidaEditavel[] {
+  const existentes = new Set(cadastradas.map((m) => semAcento(m.nome_singular)));
+  return [
+    ...cadastradas,
+    ...MEDIDAS_PADRAO.filter(([singular]) => !existentes.has(semAcento(singular))).map(([nome_singular, nome_plural]) => ({
+      nome_singular,
+      nome_plural,
+      quantidade: "",
+      padrao: false,
+      sugerida: true,
+    })),
+  ];
+}
+
+// Volta para a dieta em elaboração (melhoria 2.0): só caminhos do módulo.
+function caminhoDeVolta() {
+  if (typeof window === "undefined") return null;
+  const valor = new URLSearchParams(window.location.search).get("voltar");
+  return valor && valor.startsWith("/nutricao/") && !valor.startsWith("//") ? valor : null;
+}
+
 export default function AlimentoPage() {
   const { id } = useParams<{ id: string }>();
+  const [voltar, setVoltar] = useState<string | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVoltar(caminhoDeVolta());
+  }, []);
   const router = useRouter();
   const novo = id === "novo";
 
@@ -135,13 +184,15 @@ export default function AlimentoPage() {
     if (secoes.includes("composicao")) setComposicaoEditada({});
 
     if (secoes.includes("medidas")) setMedidas(
-      (dados.medidas as (MedidaDoSubstituto & { ordem: number })[]).map((medida) => ({
-        id: medida.id,
-        nome_singular: medida.nome_singular,
-        nome_plural: medida.nome_plural,
-        quantidade: texto(medida.quantidade),
-        padrao: medida.padrao,
-      }))
+      comPadroes(
+        (dados.medidas as (MedidaDoSubstituto & { ordem: number })[]).map((medida) => ({
+          id: medida.id,
+          nome_singular: medida.nome_singular,
+          nome_plural: medida.nome_plural,
+          quantidade: texto(medida.quantidade),
+          padrao: medida.padrao,
+        }))
+      )
     );
 
     if (secoes.includes("substituicoes")) setSubstituicoes(
@@ -296,6 +347,8 @@ export default function AlimentoPage() {
   async function salvarMedidas() {
     const lista = [];
     for (const medida of medidas) {
+      // Sugerida e ainda sem equivalência: não é gravada.
+      if (medida.sugerida && !medida.quantidade.trim()) continue;
       const quantidade = numero(medida.quantidade);
       if (!medida.nome_singular.trim() || !medida.nome_plural.trim() || !quantidade || quantidade <= 0) {
         avisar("Preencha singular, plural e uma equivalência maior que zero em todas as medidas.", "warn");
@@ -303,6 +356,8 @@ export default function AlimentoPage() {
       }
       lista.push({ id: medida.id, nome_singular: medida.nome_singular, nome_plural: medida.nome_plural, quantidade, padrao: medida.padrao });
     }
+    // Sem padrão marcado entre as gravadas: a primeira passa a ser a padrão.
+    if (lista.length && !lista.some((m) => m.padrao)) lista[0].padrao = true;
 
     setSalvando("medidas");
     const resposta = await fetch(`/api/nutricao/alimentos/${id}/medidas`, {
@@ -428,7 +483,10 @@ export default function AlimentoPage() {
     return (
       <main className="min-w-0 flex-1 p-4 lg:p-8">
         <div className="mx-auto max-w-5xl">
+          <div className="flex flex-wrap items-center gap-2">
           <BotaoVoltar rotulo="Voltar aos alimentos" onClick={() => router.push("/nutricao/configuracoes/alimentos")} />
+          {voltar ? <Button type="button" icon="pi pi-arrow-left" label="Voltar para a dieta" size="small" className="mb-4" onClick={() => router.push(voltar)} /> : null}
+        </div>
           <h1 className="text-2xl font-bold text-gray-900">Alimento não encontrado</h1>
         </div>
       </main>
@@ -441,7 +499,10 @@ export default function AlimentoPage() {
   return (
     <main className="min-w-0 flex-1 p-4 lg:p-8">
       <div className="mx-auto max-w-5xl">
-        <BotaoVoltar rotulo="Voltar aos alimentos" onClick={() => router.push("/nutricao/configuracoes/alimentos")} />
+        <div className="flex flex-wrap items-center gap-2">
+          <BotaoVoltar rotulo="Voltar aos alimentos" onClick={() => router.push("/nutricao/configuracoes/alimentos")} />
+          {voltar ? <Button type="button" icon="pi pi-arrow-left" label="Voltar para a dieta" size="small" className="mb-4" onClick={() => router.push(voltar)} /> : null}
+        </div>
 
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
@@ -607,13 +668,25 @@ export default function AlimentoPage() {
                   outlined
                   icon="pi pi-plus"
                   label="Adicionar medida"
-                  onClick={() => setMedidas((atuais) => [...atuais, { nome_singular: "", nome_plural: "", quantidade: "", padrao: atuais.length === 0 }])}
+                  onClick={() =>
+                    setMedidas((atuais) => {
+                      // A nova entra antes das sugeridas, logo abaixo das cadastradas.
+                      const posicao = atuais.findIndex((m) => m.sugerida);
+                      const nova = { nome_singular: "", nome_plural: "", quantidade: "", padrao: !atuais.some((m) => !m.sugerida) };
+                      return posicao < 0 ? [...atuais, nova] : [...atuais.slice(0, posicao), nova, ...atuais.slice(posicao)];
+                    })
+                  }
                 />
               </div>
               {medidas.length === 0 ? (
                 <p className="mt-3 text-sm text-gray-500">Nenhuma medida cadastrada. Sem medida, o alimento é prescrito em {unidadeTexto}.</p>
               ) : (
                 <div className="mt-4 space-y-2">
+                  {medidas.some((m) => m.sugerida) ? (
+                    <p className="text-xs text-gray-500">
+                      As medidas com equivalência em branco são sugestões: só passam a valer (e aparecem na dieta) depois de preenchidas e salvas.
+                    </p>
+                  ) : null}
                   <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_7rem_4rem_6.5rem] gap-2 px-1 text-xs font-semibold uppercase text-gray-500 md:grid">
                     <span>Singular</span><span>Plural</span><span>Equivale a ({unidadeTexto})</span><span>Padrão</span><span />
                   </div>
@@ -634,7 +707,7 @@ export default function AlimentoPage() {
                       <InputText
                         aria-label={`Equivalência em ${unidadeTexto}`}
                         inputMode="decimal"
-                        placeholder="25"
+                        placeholder={medida.sugerida ? "0" : "25"}
                         value={medida.quantidade}
                         onChange={(evento) => setMedidas((atuais) => atuais.map((m, p) => (p === indice ? { ...m, quantidade: evento.target.value } : m)))}
                         className="text-right"

@@ -43,6 +43,7 @@ export default function JanelaSubstituicoes({
   garantirAlimentos,
   onFechar,
   onConfirmar,
+  onAbrirCadastro,
 }: {
   item: ItemDaDieta | null;
   base: BaseDosAlimentos;
@@ -50,6 +51,7 @@ export default function JanelaSubstituicoes({
   garantirAlimentos: (ids: string[]) => Promise<void>;
   onFechar: () => void;
   onConfirmar: (substituicoes: SubstituicaoDaLinha[]) => void;
+  onAbrirCadastro?: (alimentoId: string) => void;
 }) {
   const alimento = item?.alimentoId ? base.alimentos[item.alimentoId] : undefined;
 
@@ -151,7 +153,11 @@ export default function JanelaSubstituicoes({
                 label="Cadastro do alimento"
                 icon="pi pi-external-link"
                 text
-                onClick={() => window.open(`/nutricao/configuracoes/alimentos/${item.alimentoId}`, "_blank", "noopener")}
+                onClick={() =>
+                  onAbrirCadastro
+                    ? onAbrirCadastro(item.alimentoId!)
+                    : window.open(`/nutricao/configuracoes/alimentos/${item.alimentoId}`, "_blank", "noopener")
+                }
               />
             ) : null}
           </div>

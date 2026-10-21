@@ -55,6 +55,12 @@ export type ItemDaDieta = {
   referencia?: boolean;
   // O que o paciente escreveu no recordatório (só para o nutricionista).
   informado?: string | null;
+  // Linha sugerida pela IA (Fase 7): selo "IA" no editor até o nutricionista
+  // editar ou confirmar. Nunca aparece no PDF nem para o paciente.
+  ia?: boolean;
+  // Alimento que a IA sugeriu sem correspondência segura na base: a linha
+  // fica sem alimento até o nutricionista escolher um.
+  sugeridoIa?: string | null;
 };
 
 export type Opcao = { id: string; itens: ItemDaDieta[] };
@@ -66,6 +72,8 @@ export type Refeicao = {
   observacao: string | null;
   opcaoReferencia: string;
   opcoes: Opcao[];
+  // Refeição criada pela IA (selo "IA" no editor até confirmar).
+  ia?: boolean;
 };
 
 // modeloId: observação copiada de um modelo (evita incluir o mesmo duas vezes).
@@ -99,7 +107,11 @@ export type DocumentoDieta = {
   nutrientesAcompanhados: string[];
   // Ausente: usa a avaliação finalizada mais recente; null: sem referência.
   gastoReferencia?: GastoDeReferencia | null;
+  // Houve auxílio da IA nesta dieta (fica na versão enviada, para o histórico).
+  auxilioIa?: AuxilioDaIa;
 };
+
+export type AuxilioDaIa = { aplicacoes: number; ultimaEm: string };
 
 // ---------------------------------------------------------------------------
 // Criação
@@ -258,6 +270,8 @@ function validarItem(valor: unknown, onde: string): ItemDaDieta {
     ),
     referencia: i.referencia === true,
     ...(i.informado ? { informado: textoOuNulo(i.informado, 700, onde) } : {}),
+    ...(i.ia === true ? { ia: true } : {}),
+    ...(i.sugeridoIa ? { sugeridoIa: textoOuNulo(i.sugeridoIa, LIMITES.texto, onde) } : {}),
   };
 }
 
@@ -296,6 +310,7 @@ function validarRefeicao(valor: unknown, onde: string): Refeicao {
     observacao: textoOuNulo(r.observacao, LIMITES.textoLongo, onde),
     opcaoReferencia: opcoes.some((opcao) => opcao.id === referencia) ? referencia : opcoes[0].id,
     opcoes,
+    ...(r.ia === true ? { ia: true } : {}),
   };
 }
 
@@ -356,6 +371,12 @@ export function validarDocumento(valor: unknown): { documento: DocumentoDieta } 
       nutrientesAcompanhados: [...new Set(nutrientes)],
     };
     if (gastoReferencia !== undefined) documento.gastoReferencia = gastoReferencia;
+    if (d.auxilioIa !== undefined && d.auxilioIa !== null) {
+      const a = objeto(d.auxilioIa, "Auxílio da IA");
+      const ultimaEm = texto(a.ultimaEm, 40, "Auxílio da IA");
+      if (Number.isNaN(Date.parse(ultimaEm))) falhar("Auxílio da IA: data inválida.");
+      documento.auxilioIa = { aplicacoes: positivoOuNulo(a.aplicacoes, 100_000, "Auxílio da IA") ?? 1, ultimaEm };
+    }
 
     return { documento };
   } catch (erro) {
@@ -601,8 +622,9 @@ export function alimentosDoDocumento(documento: DocumentoDieta) {
 
 // O texto do recordatório ("informado") é do paciente: nunca vai junto.
 function copiarItem(item: ItemDaDieta, comoReferencia: boolean): ItemDaDieta {
+  // O selo "IA" também não vai: a cópia é conteúdo já revisado.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { informado, ...resto } = structuredClone(item);
+  const { informado, ia, ...resto } = structuredClone(item);
   return {
     ...resto,
     id: novoId(),

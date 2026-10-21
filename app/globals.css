@@ -157,6 +157,22 @@
     font-family: var(--fonte-titulo), var(--fonte-corpo), system-ui, sans-serif;
   }
 
+  /* Selo "IA" do editor de dietas (conteúdo sugerido pela IA, Fase 7). */
+  .selo-ia {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    border-radius: 9999px;
+    background: #ede9fe;
+    color: #5b21b6;
+    padding: 0.05rem 0.45rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.25rem;
+    white-space: nowrap;
+  }
+
   /* Selos de status: mesma largura, qualquer que seja o texto. */
   .p-tag.selo-status {
     min-width: 5.25rem;

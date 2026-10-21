@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { DIAS, GRUPOS, OUTROS_GRUPOS, planoValido } from "@/lib/treino";
 import { lerArquivo, resolverCaminho, tipoDoArquivo } from "./arquivos";
 import { obterPool } from "./banco";
+import { registrarUsoDaIa } from "./ia";
 
 // Leitura do treino enviado pelo paciente: a IA lê o arquivo (inclusive foto
 // ou PDF escaneado), organiza por dia da semana e estima o gasto calórico.
@@ -237,6 +238,7 @@ export async function analisarTreino(id: string) {
       },
     });
 
+    void registrarUsoDaIa({ recurso: "treino", modelo: "gpt-5.4-mini", uso: resposta.usage, pacienteId: treino.patient_id });
     const dados = JSON.parse(resposta.output_text);
     const plano = { dias: dados.dias };
 

@@ -222,6 +222,10 @@ export default function Login() {
           <i className="pi pi-star-fill" aria-hidden />
           <span className="p-button-label">Planos disponíveis</span>
         </a>
+
+        <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="mt-4 block text-center text-sm text-gray-500 underline">
+          Política de privacidade
+        </a>
       </div>
     </PainelDeEntrada>
   );

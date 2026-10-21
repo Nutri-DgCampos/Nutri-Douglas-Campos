@@ -19,6 +19,8 @@ const MACROS = [
 
 // Valor especial da lista de medidas: quantidade direto em g ou mL.
 const DIRETO = "__direto__";
+// Item da lista que leva ao cadastro do alimento (medidas caseiras).
+const CADASTRAR = "__cadastrar__";
 
 export default function LinhaDoAlimento({
   item,
@@ -32,6 +34,7 @@ export default function LinhaDoAlimento({
   onRemover,
   onMover,
   onSubstituicoes,
+  onAbrirCadastro,
 }: {
   item: ItemDaDieta;
   numero: number;
@@ -44,6 +47,8 @@ export default function LinhaDoAlimento({
   onRemover: () => void;
   onMover: (direcao: -1 | 1) => void;
   onSubstituicoes: () => void;
+  // Abre o cadastro do alimento (medidas caseiras) com volta para a dieta.
+  onAbrirCadastro?: (alimentoId: string) => void;
 }) {
   const [trocando, setTrocando] = useState(false);
   const alimento = item.alimentoId ? base.alimentos[item.alimentoId] : undefined;
@@ -52,13 +57,16 @@ export default function LinhaDoAlimento({
   const unidade = item.unidade === "ml" ? "mL" : "g";
 
   const medidas = alimento?.medidas ?? [];
+  // Mais de uma medida: o nome vai no plural ("2 unidades").
+  const plural = (item.numeroMedidas ?? 0) > 1;
   const opcoesDeMedida = [
-    ...medidas.map((m) => ({ label: m.nome_singular, value: m.id })),
+    ...medidas.map((m) => ({ label: plural ? m.nome_plural : m.nome_singular, value: m.id })),
     // Medida que saiu do cadastro continua valendo nesta dieta.
     ...(item.medida && !medidas.some((m) => m.id === item.medida?.id)
-      ? [{ label: `${item.medida.singular} (cadastro anterior)`, value: item.medida.id }]
+      ? [{ label: `${plural ? item.medida.plural : item.medida.singular} (cadastro anterior)`, value: item.medida.id }]
       : []),
     { label: `Em ${unidade}`, value: DIRETO },
+    ...(onAbrirCadastro ? [{ label: "+ Cadastrar ou editar medidas…", value: CADASTRAR }] : []),
   ];
 
   function escolherMedida(valor: string) {
@@ -140,6 +148,26 @@ export default function LinhaDoAlimento({
             />
           </div>
         )}
+        {item.ia || item.sugeridoIa ? (
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+            {item.ia ? (
+              <button
+                type="button"
+                className="selo-ia"
+                aria-label="Sugerido pela IA: confirmar"
+                title="Sugerido pela IA. Clique para confirmar (o selo também some ao editar a linha)."
+                onClick={() => onAlterar({ ia: undefined })}
+              >
+                IA <i className="pi pi-check text-[0.6rem]" aria-hidden />
+              </button>
+            ) : null}
+            {!item.alimentoId && item.sugeridoIa ? (
+              <span>
+                A IA sugeriu <span className="font-semibold">“{item.sugeridoIa}”</span>, sem correspondência segura na base: escolha o alimento.
+              </span>
+            ) : null}
+          </p>
+        ) : null}
         {item.nomeExibido && item.nomeExibido !== item.nomeOriginal ? (
           <p className="mt-0.5 truncate text-xs text-gray-500">Nutrientes de: {item.nomeOriginal}</p>
         ) : null}
@@ -180,7 +208,13 @@ export default function LinhaDoAlimento({
             aria-label="Medida caseira"
             value={item.medida?.id ?? DIRETO}
             options={opcoesDeMedida}
-            onChange={(evento) => escolherMedida(evento.value)}
+            onChange={(evento) => {
+              if (evento.value === CADASTRAR) {
+                if (item.alimentoId) onAbrirCadastro?.(item.alimentoId);
+                return;
+              }
+              escolherMedida(evento.value);
+            }}
             className="w-full min-w-0"
             panelClassName="max-w-[calc(100vw-2rem)]"
             emptyMessage="Sem medidas cadastradas"
@@ -208,6 +242,11 @@ export default function LinhaDoAlimento({
           {medidas.length === 0 && !item.medida ? (
             <p className="col-span-3 text-xs text-gray-500 @2xl:order-last @2xl:col-span-4 @2xl:col-start-3">
               Sem medida caseira cadastrada: informe em {unidade}.
+              {onAbrirCadastro && item.alimentoId ? (
+                <button type="button" className="ml-1 font-semibold text-primary-700 underline" onClick={() => onAbrirCadastro(item.alimentoId!)}>
+                  Cadastrar medidas caseiras
+                </button>
+              ) : null}
             </p>
           ) : null}
         </div>

@@ -17,8 +17,8 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); no ar; **aprovada pelo cliente em 21/10/2026** (inclusive METs 60+ com valor adulto e leitura da bioimpedância pela OpenAI) | 20/10/2026 | 12 |
 | 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); **aprovada pelo cliente em 21/10/2026** (5.11: recordatório começa com 6 refeições) | 21/10/2026 | 10 |
 | 6 — Exames, medicações, fórmulas, orientações | **Concluída** (86 verificações de navegação + testes de unidade das calculadoras; fases 0–5 retestadas); **aprovada pelo cliente em 21/10/2026** (6.9: texto completado do aviso de medicações confirmado) | 21/10/2026 | 13 |
-| 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **97 de 101 requisitos (96%)** | | |
+| 7 — Auxílio da IA | **Concluída** (35 verificações de navegação com a IA simulada + 7 testes de unidade; validada com o modelo real; fases 0–6 retestadas); aguardando aprovação do cliente | 21/10/2026 | 4 (com BAS-10) |
+| **Módulo** | **101 de 101 requisitos (100%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -120,9 +120,20 @@ Entregue (21/10/2026, migrações 014 a 017), em quatro partes:
 
 ## Fase 7 — Auxílio da IA
 
-Assistente no editor com saída estruturada, vínculo a alimentos da base, prévia e confirmação [IA-01, DIE-22]; leitura de bioimpedância e anamnese [IA-02]. Pré-requisito: termo de consentimento para envio de dados de saúde à OpenAI.
+Assistente no editor com saída estruturada, vínculo a alimentos da base, prévia e confirmação [IA-01, DIE-22]; leitura de bioimpedância e anamnese [IA-02].
 
 Validação do cliente (21/10/2026): 7.1 funcionamento de acordo; 7.2 dados mínimos sem identificação (sexo, idade, peso, altura, metas, TMB/GET, dieta aberta, pedido); 7.3 opção B — sem termo do paciente, só dados sem identificação, com aviso na política de privacidade; 7.4 opção C — alergias/restrições/preferências da anamnese como contexto (o nutricionista vê o que vai) e resumo da anamnese pela IA, sem o nome; 7.5 opção B — exame de sangue, treino e bioimpedância continuam como estão, citados na política de privacidade; 7.6 selo "IA" de acordo; 7.7 limite de 200 pedidos por dia.
+
+Entregue (21/10/2026, migração 018):
+- Botão "Auxílio da IA" fixo no topo do editor. Alcance: dieta inteira, uma refeição ou dieta do zero (metas de energia e macronutrientes, até 4 parâmetros de controle, número de refeições, horários, objetivo, restrições, preferências).
+- "O que vai para a IA" visível antes do envio: sexo, idade, peso de referência, altura, TMB/GET, dieta aberta, pedido, metas e o catálogo da base. Dados da anamnese (alergias, restrições, preferências, hábitos, saúde) só quando o nutricionista marca, editáveis, sem nome nem contato. Resumo da anamnese pela IA, guardado na ficha.
+- A IA escolhe alimentos pelo código do catálogo; código desconhecido não vira alimento parecido (a linha fica sem alimento, com o nome sugerido). Medida caseira só do cadastro; com medida, o peso vem dela. Valores sempre calculados pela base.
+- Conferência das metas: quando a primeira proposta fica fora (energia > 5%, macros > 10%, parâmetros), o sistema devolve à IA os totais calculados e pede um ajuste (uma vez, dentro dos 120 s do nginx). Validado com o modelo real: dieta do zero de 1.800 kcal saiu com 1.774 e 1.872 kcal, sem lactose quando pedido.
+- Prévia: mensagem da IA, pendências, mudanças por refeição (inclusão, exclusão, quantidade, nome/horário, alternativas, refeição nova ou removida) marcáveis uma a uma, "Selecionar tudo"/"Desmarcar tudo", agora × com as alterações por refeição e no dia, diferença para as metas. "Refazer sugestão" mantém as anteriores (abas), cada uma com a sua seleção.
+- "Aplicar alterações selecionadas": nesta dieta (confirmação quando troca ou exclui conteúdo) ou em nova dieta na mesma consulta. Nada é enviado; o ciclo de 33 dias não muda.
+- Selo "IA" na linha e na refeição até editar ou confirmar ("Confirmar sugestões da IA" tira todos); `auxilioIa` fica na dieta e na versão enviada; nunca no PDF nem para o paciente.
+- Limite de 200 pedidos por dia (assistente e resumo da anamnese); registro de cada chamada em `ia_uso` (recurso, modelo, tokens, paciente; nunca o conteúdo), também para exame de sangue, treino, bioimpedância e devolutiva — base do futuro painel de uso e custo.
+- Política de privacidade pública (`/privacidade`, link no login e na área do paciente) com o uso da IA (validação 7.3 e 7.5, opção B). Texto a revisar pelo advogado do cliente.
 
 ## Pendências para depois (fora das fases)
 

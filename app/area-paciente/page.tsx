@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import AvisoDeInstalacao from "@/components/AvisoDeInstalacao";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import EnvioExame from "@/components/EnvioExame";
+import FaixaDeParceiros from "@/components/FaixaDeParceiros";
 import EnvioTreino from "@/components/EnvioTreino";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
@@ -532,6 +533,9 @@ carregarPaciente();
           </div>
         </header>
 
+        {/* Faixa com os parceiros cadastrados (uma vez por sessão). */}
+        <FaixaDeParceiros />
+
         <AvisoDeInstalacao />
 
         {/* Relatório da semana: a ação principal do paciente. */}
@@ -732,6 +736,12 @@ carregarPaciente();
           <i className="pi pi-chevron-right text-sm text-gray-400" aria-hidden />
         </button>
       </div>
+
+      <p className="mt-6 text-center text-sm">
+        <a href="/privacidade" className="text-gray-500 underline">
+          Política de privacidade
+        </a>
+      </p>
     </main>
   );
 }

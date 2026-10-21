@@ -40,7 +40,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const pdf = { caminho, nome: arquivo.name.slice(0, 300) || "bioimpedancia.pdf" };
 
   try {
-    const leitura = await lerPdfDeBioimpedancia(destino, pdf.nome);
+    const leitura = await lerPdfDeBioimpedancia(destino, pdf.nome, avaliacao.patient_id);
     return NextResponse.json({ pdf, leitura });
   } catch (erro) {
     console.error("Erro ao ler PDF de bioimpedância:", erro);

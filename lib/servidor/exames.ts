@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { lerArquivo, resolverCaminho, tipoDoArquivo } from "./arquivos";
 import { obterPool } from "./banco";
+import { registrarUsoDaIa } from "./ia";
 
 // Análise de exame de sangue por IA, para uso exclusivo do nutricionista.
 
@@ -36,8 +37,8 @@ async function atualizar(id: string, campos: Record<string, unknown>) {
 }
 
 export async function analisarExame(id: string) {
-  const resultado = await obterPool().query<{ storage_path: string; file_name: string }>(
-    "select storage_path, file_name from public.blood_exams where id = $1",
+  const resultado = await obterPool().query<{ storage_path: string; file_name: string; patient_id: string }>(
+    "select storage_path, file_name, patient_id from public.blood_exams where id = $1",
     [id]
   );
 
@@ -88,6 +89,7 @@ export async function analisarExame(id: string) {
       ],
     });
 
+    void registrarUsoDaIa({ recurso: "exame", modelo: "gpt-5.4-mini", uso: resposta.usage, pacienteId: exame.patient_id });
     const texto = resposta.output_text.trim();
 
     if (!texto) {

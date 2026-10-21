@@ -34,6 +34,7 @@ export default function ListaDeRefeicoes({
   nutrientes,
   mostrarNutrientes,
   estruturaFixa = false,
+  onAbrirCadastro,
 }: {
   documento: DocumentoDieta;
   base: BaseDosAlimentos;
@@ -43,6 +44,8 @@ export default function ListaDeRefeicoes({
   mostrarNutrientes: boolean;
   // Modelo de refeição: uma refeição só, sem adicionar, remover ou mover.
   estruturaFixa?: boolean;
+  // Cadastro do alimento com volta para cá (sem: abre em outra aba).
+  onAbrirCadastro?: (alimentoId: string) => void;
 }) {
   const copiada = useRefeicaoCopiada();
   const [substituindo, setSubstituindo] = useState<{ opcaoId: string; itemId: string } | null>(null);
@@ -115,6 +118,8 @@ export default function ListaDeRefeicoes({
         substituicoes: [],
         referencia: false,
       });
+      delete alvo.ia;
+      delete alvo.sugeridoIa;
     });
   }
 
@@ -233,6 +238,7 @@ export default function ListaDeRefeicoes({
           }
           onEscolherAlimento={(opcaoId, itemId, alimento) => escolherAlimento(refeicao.id, opcaoId, itemId, alimento)}
           onSubstituicoes={(opcaoId, itemId) => setSubstituindo({ opcaoId, itemId })}
+          onAbrirCadastro={onAbrirCadastro}
           onCopiar={() => {
             copiarParaAreaDeTransferencia(refeicao);
             avisar("Refeição copiada. Selecione onde deseja colar.", "info");
@@ -271,6 +277,7 @@ export default function ListaDeRefeicoes({
         base={base}
         visivel={Boolean(substituindo)}
         garantirAlimentos={garantirAlimentos}
+        onAbrirCadastro={onAbrirCadastro}
         onFechar={() => setSubstituindo(null)}
         onConfirmar={(substituicoes) => {
           const alvo = substituindo;

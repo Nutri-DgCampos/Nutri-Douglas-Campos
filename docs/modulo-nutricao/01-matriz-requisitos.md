@@ -26,7 +26,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | BAS-07 | Indicador de novidade só na área do paciente, some ao abrir | R: comandos de envio §21 | MANTER | `patient_update_views` (tipos `dieta`, `devolutiva`) | Novos tipos se avaliação/orientação forem publicadas ao paciente |
 | BAS-08 | Push ao paciente quando houver atualização | — (já entregue) | MANTER | `lib/servidor/notificacoes.ts`, `/api/notificar-dieta` | Reutilizar no envio pelo editor |
 | BAS-09 | Relatórios, pagamentos, alertas e área do paciente sem mudança de comportamento | S01 §5; S04 | MANTER | rotas e telas atuais | Testes de regressão a cada fase |
-| BAS-10 | Interface para computador, tablet e celular | R: FIG-002; EF 4.1 | COMPLETAR | PrimeReact + Tailwind, layout mobile-first já usado | Editor de dietas é denso; precisa de layout próprio para telas pequenas |
+| BAS-10 | Interface para computador, tablet e celular | R: FIG-002; EF 4.1 | COMPLETAR → **ENTREGUE (fases 0–7)** | PrimeReact + Tailwind, layout mobile-first já usado | Editor de dietas é denso; precisa de layout próprio para telas pequenas |
 
 ## 2. Navegação, ficha e consultas
 
@@ -106,7 +106,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | DIE-19 | Rascunho automático + salvar explícito; ao voltar, escolher rascunho ou última versão salva | S02 Dietas | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-20 | Envio publica a dieta e inicia o ciclo de 33 dias | R; S01; EF §10 | COMPLETAR → **ENTREGUE (Fase 2)** | ciclo e entrega existem (BAS-04/06) | Envio pelo editor gera o PDF e registra a entrega pelo mesmo fluxo |
 | DIE-21 | Versões publicadas imutáveis | R: vários | CRIAR → **ENTREGUE (Fase 2)** | — | — |
-| DIE-22 | Indicação de conteúdo sugerido pela IA | R: AUXÍLIO DA IA §30 | CRIAR | — | — |
+| DIE-22 | Indicação de conteúdo sugerido pela IA | R: AUXÍLIO DA IA §30 | CRIAR → **ENTREGUE (Fase 7)** | selo “IA” na linha e na refeição até editar ou confirmar; `auxilioIa` na dieta e na versão enviada; nunca no PDF nem para o paciente | — |
 
 ## 6. Painel nutricional (Bloco 2)
 
@@ -176,8 +176,8 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 | PDF-03 | Fórmulas, medicação, avaliação física, solicitação de exames, orientações | R | CRIAR → **ENTREGUE (Fase 6)** | PDFs de fórmulas, medicações, solicitação de exames e orientações (a avaliação física veio na Fase 4) | — |
 | PDF-04 | Nomes "Dieta - Nome - dd-mm-aaaa.pdf" etc. | R: COMANDOS §10–12 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | PDF-05 | PDF emitido preservado por versão | R | CRIAR → **ENTREGUE (Fase 2)** | — | — |
-| IA-01 | Auxílio da IA no editor com prévia, confirmação e vínculo a alimentos da base | R: AUXÍLIO DA INTELIGÊNCIA ARTIFICIAL | CRIAR | integração OpenAI no servidor já existe (`lib/servidor/exames.ts`, `treinos.ts`) | Termo de consentimento para envio de dados de saúde |
-| IA-02 | Leitura de bioimpedância e de anamnese pela IA sem dados identificáveis | R; S01 | COMPLETAR | padrão de envio de arquivo à OpenAI já usado | Minimização de dados |
+| IA-01 | Auxílio da IA no editor com prévia, confirmação e vínculo a alimentos da base | R: AUXÍLIO DA INTELIGÊNCIA ARTIFICIAL | CRIAR → **ENTREGUE (Fase 7)** | `lib/nutricao/assistente.ts`, `lib/servidor/assistenteDieta.ts`, `components/nutricao/editor/AssistenteIa.tsx` | Sem termo do paciente (validação 7.3, opção B): só dados sem identificação, citado na política de privacidade (`/privacidade`) |
+| IA-02 | Leitura de bioimpedância e de anamnese pela IA sem dados identificáveis | R; S01 | COMPLETAR → **ENTREGUE (Fase 7)** | anamnese: alergias/restrições/preferências revisadas antes do envio e resumo pela IA, sem nome nem contato; bioimpedância (Fase 4) mantida como está (validação 7.5, opção B) | — |
 | PUB-01 | Área do paciente mostra a dieta enviada (e as opções/observações) | R: COMANDOS §18; ABAS §7 | COMPLETAR → **ENTREGUE (Fase 2)** | `app/area-paciente/dietas/page.tsx` lista PDFs das 2 últimas entregas | Decidir se o paciente vê só o PDF gerado ou também uma versão em tela |
 
 ---
