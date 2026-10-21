@@ -126,6 +126,13 @@ Assistente no editor com saída estruturada, vínculo a alimentos da base, prév
 
 - [ ] **Painel de uso e custo da IA (OpenAI).** Gravar, a cada chamada (exame de sangue, treino, bioimpedância e o assistente da Fase 7), o recurso, o modelo, os tokens de entrada e saída e o paciente (sem enviar nada a mais à OpenAI); tela do nutricionista com custo estimado por dia, por recurso e por paciente (tokens × preço do modelo, tabela de preços editável) e o limite diário de pedidos (ponto 7.7 da validação da Fase 7). O valor exato da fatura continua no painel da OpenAI (Usage e limites de orçamento); a Costs API oficial exige chave de administrador, que não deve ficar no servidor do app. Não usar o script `RGGH/OpenAI_SQL/check_usage.py` (endpoint antigo `/v1/usage`, preços fixos desatualizados e chave exposta no código).
 - [ ] Correspondências USDA para os nutrientes que a TACO não traz (F-01).
+- [ ] **Fase de segurança (análise profunda).** Revisão completa antes de considerar o app encerrado:
+  - Análise de vulnerabilidades: rotas de API (autorização por paciente em todas), links sem login (formulários), uploads e downloads de arquivos, injeção de SQL, XSS, CSRF/origem, limite de tentativas (login, link do paciente, IA), cabeçalhos de segurança (CSP, HSTS) e dependências (`npm audit`).
+  - Criptografia de dados sensíveis: em repouso (banco e volume de arquivos — exames, receitas, fotos, PDFs), campos de saúde mais sensíveis no banco, backups criptografados; em trânsito (HTTPS em todo lugar, inclusive entre os containers se necessário).
+  - Segredos: rotação das chaves expostas no início (OpenAI e Supabase), `SESSAO_SEGREDO` forte, nada sensível no repositório.
+  - LGPD: registro das operações de dados de saúde, termo de consentimento (Fase 7), direito de acesso, correção e exclusão pelo paciente, política de retenção, trilha de auditoria de acessos (quem abriu o quê).
+  - Infraestrutura: backups automáticos testados (banco + arquivos), SSH só com chave, firewall, atualizações do servidor, monitoramento e alertas.
+  - Teste de invasão (pentest) ao final, com relatório e correções.
 
 ## Dependências entre fases
 
