@@ -18,6 +18,8 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
   const entrada = useRef<HTMLInputElement>(null);
   const [exames, setExames] = useState<ExameEnviado[]>([]);
   const [enviando, setEnviando] = useState(false);
+  const [nomeExame, setNomeExame] = useState("");
+  const [dataExame, setDataExame] = useState("");
 
   async function carregar() {
     const resposta = await fetch("/api/exames", { cache: "no-store" });
@@ -58,7 +60,7 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
       const resposta = await fetch("/api/exames", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caminho, nome: arquivo.name }),
+        body: JSON.stringify({ caminho, nome: arquivo.name, nomeExame, dataExame }),
       });
 
       if (!resposta.ok) {
@@ -66,6 +68,8 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
       }
 
       avisar("Exame enviado ao nutricionista com sucesso!", "success");
+      setNomeExame("");
+      setDataExame("");
       carregar();
     } catch (erro) {
       console.error("Erro ao enviar exame:", erro);
@@ -106,13 +110,31 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
         }}
       />
 
+      <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+        <label className="min-w-0">
+          <span className="mb-1 block text-xs font-semibold text-gray-600">Qual exame? (opcional)</span>
+          <input
+            aria-label="Nome do exame"
+            value={nomeExame}
+            maxLength={200}
+            placeholder="Ex.: Hemograma"
+            onChange={(e) => setNomeExame(e.target.value)}
+            className="p-inputtext w-full"
+          />
+        </label>
+        <label>
+          <span className="mb-1 block text-xs font-semibold text-gray-600">Data do exame</span>
+          <input type="date" aria-label="Data do exame" value={dataExame} onChange={(e) => setDataExame(e.target.value)} className="p-inputtext w-36" />
+        </label>
+      </div>
+
       <Button
         type="button"
         icon="pi pi-upload"
         label={enviando ? "Enviando exame..." : "Anexar exame"}
         loading={enviando}
         outlined
-        className="mt-4 w-full"
+        className="mt-3 w-full"
         onClick={() => entrada.current?.click()}
       />
 

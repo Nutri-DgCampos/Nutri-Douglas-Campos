@@ -10,6 +10,7 @@ import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import FormulariosDaFicha from "@/components/nutricao/anamnese/FormulariosDaFicha";
+import ExamesDaFicha from "@/components/nutricao/exames/ExamesDaFicha";
 import Selecao from "@/components/Selecao";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
@@ -288,6 +289,7 @@ export default function PainelDoPacientePage() {
         </div>
 
         <FormulariosDaFicha pacienteId={paciente.id} />
+        <ExamesDaFicha pacienteId={paciente.id} />
       </div>
 
       <Dialog

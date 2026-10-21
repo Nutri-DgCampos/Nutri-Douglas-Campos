@@ -12,6 +12,7 @@ const MENSAGENS = {
   devolutiva: { corpo: "A devolutiva do seu relatório já está disponível.", destino: "/area-paciente/relatorios" },
   avaliacao: { corpo: "O resultado da sua avaliação física já está disponível.", destino: "/area-paciente/avaliacoes" },
   formulario: { corpo: "Seu nutricionista enviou um formulário para você preencher.", destino: "/area-paciente/formularios" },
+  documento: { corpo: "Seu nutricionista enviou um documento para você.", destino: "/area-paciente/documentos" },
 } as const;
 
 export async function enfileirarAtualizacao(

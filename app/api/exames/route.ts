@@ -74,10 +74,16 @@ export async function POST(request: Request) {
   }
 
   const resultado = await obterPool().query<{ id: string }>(
-    `insert into public.blood_exams (patient_id, file_name, storage_path)
-     values ($1, $2, $3)
+    `insert into public.blood_exams (patient_id, file_name, storage_path, exam_name, exam_date)
+     values ($1, $2, $3, $4, $5)
      returning id`,
-    [pacienteId, nome, caminho]
+    [
+      pacienteId,
+      nome,
+      caminho,
+      typeof dados?.nomeExame === "string" && dados.nomeExame.trim() ? dados.nomeExame.trim().slice(0, 200) : null,
+      typeof dados?.dataExame === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dados.dataExame) ? dados.dataExame : null,
+    ]
   );
 
   const id = resultado.rows[0].id;

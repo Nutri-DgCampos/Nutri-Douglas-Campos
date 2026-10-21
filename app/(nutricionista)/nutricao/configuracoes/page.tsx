@@ -32,7 +32,7 @@ const ITENS = [
     icone: "pi-file-edit",
     destino: "/nutricao/configuracoes/anamnese",
   },
-  { titulo: "Exames", descricao: "Modelos de solicitação de exames.", icone: "pi-heart" },
+  { titulo: "Exames", descricao: "Modelos de solicitação de exames.", icone: "pi-heart", destino: "/nutricao/configuracoes/exames" },
   { titulo: "Medicações", descricao: "Cadastro de medicações.", icone: "pi-plus-circle" },
   { titulo: "Fórmulas", descricao: "Modelos de fórmulas e ingredientes.", icone: "pi-box" },
   { titulo: "Orientações", descricao: "Modelos de orientações nutricionais.", icone: "pi-comment" },

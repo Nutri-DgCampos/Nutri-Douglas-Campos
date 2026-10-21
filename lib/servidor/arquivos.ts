@@ -59,6 +59,11 @@ export const BUCKETS: Record<string, Bucket> = {
     tamanhoMaximo: 20 * 1024 * 1024,
     tipos: { "application/pdf": ["pdf"] },
   },
+  // PDFs enviados à área do paciente (solicitação de exames, orientações).
+  documentos: {
+    tamanhoMaximo: 20 * 1024 * 1024,
+    tipos: { "application/pdf": ["pdf"] },
+  },
   fotos: {
     tamanhoMaximo: 10 * 1024 * 1024,
     tipos: {
@@ -71,6 +76,9 @@ export const BUCKETS: Record<string, Bucket> = {
 
 // Buckets em que o paciente grava e lê só dentro da pasta do próprio cadastro.
 const PASTA_DO_PACIENTE = ["exames", "treinos", "fotos"];
+
+// Buckets em que só o nutricionista grava e gerencia.
+const SO_NUTRICIONISTA = ["dietas", "identidade", "avaliacoes", "documentos"];
 
 function pastaBase() {
   return process.env.ARQUIVOS_DIR ?? "/dados/arquivos";
@@ -118,7 +126,7 @@ export function podeEnviar(
   bucket: string,
   caminho: string
 ) {
-  if (bucket === "dietas" || bucket === "identidade" || bucket === "avaliacoes") {
+  if (SO_NUTRICIONISTA.includes(bucket)) {
     return contexto.papel === "nutricionista";
   }
 
@@ -132,7 +140,7 @@ export function podeEnviar(
 }
 
 export function podeGerenciar(contexto: Contexto, bucket: string) {
-  return (bucket === "dietas" || bucket === "identidade" || bucket === "avaliacoes") && contexto.papel === "nutricionista";
+  return SO_NUTRICIONISTA.includes(bucket) && contexto.papel === "nutricionista";
 }
 
 export async function podeBaixar(
@@ -160,6 +168,15 @@ export async function podeBaixar(
   if (bucket === "avaliacoes") {
     const enviado = await obterPool().query(
       "select 1 from public.avaliacoes_envios where storage_path = $1 and patient_id = $2",
+      [caminho, contexto.pacienteId]
+    );
+    return (enviado.rowCount ?? 0) > 0;
+  }
+
+  // Documentos enviados: só os do próprio paciente.
+  if (bucket === "documentos") {
+    const enviado = await obterPool().query(
+      "select 1 from public.documentos_enviados where storage_path = $1 and patient_id = $2",
       [caminho, contexto.pacienteId]
     );
     return (enviado.rowCount ?? 0) > 0;
