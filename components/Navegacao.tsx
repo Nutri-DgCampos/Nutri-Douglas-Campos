@@ -197,7 +197,7 @@ const ITENS_PACIENTE: Item[] = [
     rotulo: "Início",
     icone: "pi-home",
     destino: "/area-paciente",
-    prefixos: ["/area-paciente/acompanhamento", "/area-paciente/parceiros", "/area-paciente/treino", "/area-paciente/avaliacoes"],
+    prefixos: ["/area-paciente/acompanhamento", "/area-paciente/parceiros", "/area-paciente/treino", "/area-paciente/avaliacoes", "/area-paciente/formularios"],
   },
   { rotulo: "Fotos", icone: "pi-camera", destino: "/area-paciente/fotos" },
   { rotulo: "Dieta", icone: "pi-book", destino: "/area-paciente/dietas" },

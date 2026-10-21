@@ -13,12 +13,12 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 0 — Fundação | **Concluída** (39 verificações automáticas) | 20/10/2026 | 18 |
 | 1 — Base de alimentos | **Concluída e aprovada** (19 verificações + 9 testes de cálculo); TACO carregada na produção em 20/10/2026 (597 alimentos, 20.165 valores). Pendente: correspondências USDA (F-01) | 20/10/2026 | 9 |
 | 2 — Editor de dietas | **Concluída e aprovada** (53 verificações de navegação + 16 testes de cálculo); no ar desde 20/10/2026 | 20/10/2026 | 28 |
-| 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); aguardando aprovação do cliente | 20/10/2026 | 7 |
-| 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); aguardando aprovação do cliente | 20/10/2026 | 12 |
-| 5 — Anamnese e recordatório | Não iniciada | — | — |
+| 3 — Modelos e importações | **Concluída** (40 verificações de navegação + 19 testes de cálculo; Fase 2 retestada); **aprovada pelo cliente em 21/10/2026** | 20/10/2026 | 7 |
+| 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); no ar; **aprovada pelo cliente em 21/10/2026** (inclusive METs 60+ com valor adulto e leitura da bioimpedância pela OpenAI) | 20/10/2026 | 12 |
+| 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); aguardando aprovação do cliente | 21/10/2026 | 10 |
 | 6 — Exames, medicações, fórmulas, orientações | Não iniciada | — | — |
 | 7 — Auxílio da IA | Não iniciada | — | — |
-| **Módulo** | **74 de 101 requisitos (73%)** | | |
+| **Módulo** | **84 de 101 requisitos (83%)** | | |
 
 ## Fase 0 — Fundação
 
@@ -98,6 +98,15 @@ Formulário com autosave, peso/altura sincronizados [AVF-01, AVF-02]; substitui 
 Modelos versionados [CFG-01]; ficha presencial/online única [ANA-01, ANA-02, ANA-06]; link seguro sem login e WhatsApp [ANA-03, ANA-04]; bloqueio após o primeiro acesso do nutricionista [ANA-05]; avisos na tela Dietas [ANA-07]; recordatório e importação em cinza [ANA-08, ANA-09].
 
 **Aceite:** link de um paciente não dá acesso a outro; respostas sincronizam sem importação manual; edição simultânea não sobrescreve.
+
+Entregue (21/10/2026, migração 013):
+- Configurações → Anamnese: modelos ilimitados (campo curto, longo, múltipla escolha com uma ou várias respostas, texto livre; obrigatória). Alterar um modelo já usado gera nova versão; fichas guardam a cópia da versão usada.
+- Consulta → seção Anamnese: "Nova anamnese" (escolha do modelo; avisa se já existe ficha do mesmo modelo), pergunta "Deseja enviar esta anamnese para preenchimento pelo paciente?" com opção de enviar junto o recordatório; "Recordatório"; "Link". A ficha abre em página própria da consulta (como a avaliação física).
+- Link individual do paciente (`/formulario/<token>`, sem login, assinado pelo servidor; "Gerar novo link" invalida o anterior) e a mesma tela na área do paciente ("Formulários", com aviso de novidade e push).
+- Paciente salva rascunho sozinho, "Enviar respostas" confere obrigatórias, pode corrigir até o primeiro acesso do nutricionista à resposta; depois só lê. Respostas originais guardadas; observações profissionais e lembrete separados.
+- Situações: no consultório, enviado (aguardando), paciente preenchendo, respondido, concluído; arquivar; excluir só rascunho nunca enviado. PDF individual (só respostas).
+- Tela Dietas pendentes: "Anamnese online recebida" / "Recordatório alimentar recebido" sob o nome; "Preparar dieta" marca como vistos.
+- Editor de dietas: lembrete da anamnese na estrela; Importar → Recordatório do paciente (itens em cinza com o texto do paciente; saem do cinza ao escolher o alimento na base). O texto do paciente nunca vai em cópias para outro paciente ou modelo.
 
 ## Fase 6 — Exames, medicações, fórmulas, orientações
 

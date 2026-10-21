@@ -144,12 +144,24 @@ export default function LinhaDoAlimento({
           <p className="mt-0.5 truncate text-xs text-gray-500">Nutrientes de: {item.nomeOriginal}</p>
         ) : null}
         {alimento?.arquivado ? <p className="mt-0.5 text-xs text-amber-700">Alimento arquivado na base.</p> : null}
+        {item.informado ? (
+          <p className="mt-1 text-xs text-gray-600">
+            <i className="pi pi-comment mr-1" aria-hidden />
+            Paciente informou: <span className="font-semibold">{item.informado}</span>
+          </p>
+        ) : null}
         {item.referencia ? (
           <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-600">
-            <span>Rotina anterior: fora dos totais e do PDF até confirmar.</span>
-            <button type="button" className="font-semibold text-primary-700 underline" onClick={() => onAlterar({ referencia: false })}>
-              Confirmar na dieta
-            </button>
+            {item.alimentoId ? (
+              <>
+                <span>{item.informado ? "Do recordatório" : "Rotina anterior"}: fora dos totais e do PDF até confirmar.</span>
+                <button type="button" className="font-semibold text-primary-700 underline" onClick={() => onAlterar({ referencia: false })}>
+                  Confirmar na dieta
+                </button>
+              </>
+            ) : (
+              <span>Do recordatório: escolha o alimento na base para incluir na dieta.</span>
+            )}
           </p>
         ) : null}
       </div>

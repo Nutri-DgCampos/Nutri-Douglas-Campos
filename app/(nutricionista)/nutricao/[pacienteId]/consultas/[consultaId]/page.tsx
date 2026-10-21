@@ -8,6 +8,7 @@ import { InputText } from "primereact/inputtext";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import BotaoVoltar from "@/components/BotaoVoltar";
+import SecaoAnamnese from "@/components/nutricao/anamnese/SecaoAnamnese";
 import Selecao from "@/components/Selecao";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
@@ -265,7 +266,9 @@ export default function ConsultaPage() {
                 </span>
                 <h2 className="font-bold text-gray-900">{secao.titulo}</h2>
               </div>
-              {secao.titulo === "Avaliação física" ? (
+              {secao.titulo === "Anamnese" ? (
+                <SecaoAnamnese pacienteId={pacienteId} consultaId={consultaId} />
+              ) : secao.titulo === "Avaliação física" ? (
                 <>
                   {avaliacoes.length === 0 ? (
                     <p className="mt-3 text-sm text-gray-500">Nenhuma avaliação registrada.</p>

@@ -49,9 +49,12 @@ export type ItemDaDieta = {
   // Ajuste manual em g/mL. Nulo = vale a quantidade calculada pela medida.
   quantidadeAjustada: number | null;
   substituicoes: SubstituicaoDaLinha[];
-  // Item trazido por "Importar rotina", ainda não confirmado: aparece em
-  // cinza e fica fora dos cálculos, do PDF e da área do paciente.
+  // Item trazido por "Importar rotina" ou pelo recordatório, ainda não
+  // confirmado: aparece em cinza e fica fora dos cálculos, do PDF e da área
+  // do paciente.
   referencia?: boolean;
+  // O que o paciente escreveu no recordatório (só para o nutricionista).
+  informado?: string | null;
 };
 
 export type Opcao = { id: string; itens: ItemDaDieta[] };
@@ -254,6 +257,7 @@ function validarItem(valor: unknown, onde: string): ItemDaDieta {
       validarSubstituicao(s, `${onde}, substituição ${n + 1}`)
     ),
     referencia: i.referencia === true,
+    ...(i.informado ? { informado: textoOuNulo(i.informado, 700, onde) } : {}),
   };
 }
 
@@ -595,9 +599,12 @@ export function alimentosDoDocumento(documento: DocumentoDieta) {
 //
 // Toda cópia ganha identificadores novos: nada fica ligado à origem.
 
+// O texto do recordatório ("informado") é do paciente: nunca vai junto.
 function copiarItem(item: ItemDaDieta, comoReferencia: boolean): ItemDaDieta {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { informado, ...resto } = structuredClone(item);
   return {
-    ...structuredClone(item),
+    ...resto,
     id: novoId(),
     referencia: comoReferencia || Boolean(item.referencia),
     substituicoes: item.substituicoes.map((s) => ({ ...structuredClone(s), id: novoId() })),

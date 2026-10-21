@@ -55,7 +55,7 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| CFG-01 | Modelos de anamnese com versão, arquivamento quando usados | R: FIG-020; S02 Anamnese | CRIAR | — | Tipos de pergunta: curta, longa, múltipla escolha (simples/múltipla), texto livre; obrigatoriedade; sem seções |
+| CFG-01 | Modelos de anamnese com versão, arquivamento quando usados | R: FIG-020; S02 Anamnese | CRIAR → **ENTREGUE (Fase 5)** | Configurações → Anamnese (`modelos_anamnese`, migração 013): campo curto, longo, múltipla escolha (uma ou várias), texto livre; obrigatória; versão sobe ao alterar modelo já usado; excluir só o não usado, senão arquivar | — |
 | CFG-02 | Modelos de solicitação de exames | R: CONFIGURAÇÕES — MODELOS DE SOLICITAÇÃO DE EXAMES | CRIAR | — | — |
 | CFG-03 | Avaliação física em Configurações | R: FIG-029 | NÃO SE APLICA | — | Roteiro descarta |
 | CFG-04 | Modelos de observação da dieta | R: CONFIGURAÇÕES DA DIETA — MODELOS DE OBSERVAÇÕES | CRIAR → **ENTREGUE (Fase 3)** | — | — |
@@ -87,10 +87,10 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 |---|---|---|---|---|---|
 | DIE-01 | Várias dietas por consulta, em abas, com estado próprio | R: ABAS DE MÚLTIPLAS DIETAS; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
 | DIE-02 | Identificação do paciente e da consulta no topo | R: IDENTIFICAÇÃO DO PACIENTE E DA CONSULTA | CRIAR → **ENTREGUE (Fase 2)** | — | Depende de CAD-01/02 |
-| DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR → **ENTREGUE (Fase 2)** | — | Lembrete da anamnese aparece com a Fase 5 |
+| DIE-03 | Painel de informações do paciente; dois lembretes em estrelas, só leitura | R: PAINEL DE INFORMAÇÕES; S02 Dois lembretes | CRIAR → **ENTREGUE (Fase 2)** | — | Lembrete da anamnese entregue na Fase 5 |
 | DIE-04 | Indicadores TMB/GET/GET+METs da avaliação de referência | R: INDICADORES DE GASTO ENERGÉTICO | CRIAR → **ENTREGUE (Fase 4)** | Painel do editor: avaliação finalizada escolhida (padrão: a mais recente), % da dieta sobre cada valor; a versão enviada guarda a referência | — |
 | DIE-05 | Objetivo e título por dieta | R: BLOCO 1 L1 C1–C2 | CRIAR → **ENTREGUE (Fase 2)** | — | — |
-| DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR → **ENTREGUE (Fase 3)** | — | Consultas do paciente, outros pacientes e modelos; recordatório entra com a Fase 5 |
+| DIE-06 | Importar dieta (consultas, recordatório, outros pacientes, modelos) | R: BLOCO 1 L1 C3; S02 | CRIAR → **ENTREGUE (Fase 3)** | — | Consultas do paciente, outros pacientes e modelos; recordatório entregue na Fase 5 |
 | DIE-07 | Gerar nova dieta, duplicar, salvar como modelo | R: BLOCO 1 L1 C4–C6 | CRIAR → **ENTREGUE (Fase 3)** | — | Gerar nova, duplicar e salvar como modelo |
 | DIE-08 | Importar rotina (itens em cinza fora dos cálculos até confirmar) | R: BLOCO 1 L1 C7 | CRIAR → **ENTREGUE (Fase 3)** | — | — |
 | DIE-09 | Refeições: adicionar, remover, nome, horário, mover, observação única | R: BLOCO 1 L2 C1–C8; S02 | CRIAR → **ENTREGUE (Fase 2)** | — | "Remover refeição" cortado no roteiro |
@@ -142,15 +142,15 @@ Levantamento feito em 19/10/2026 sobre o commit `ac67057` (branch `main`).
 
 | ID | Requisito | Fonte | Situação | Evidência no código | Lacuna |
 |---|---|---|---|---|---|
-| ANA-01 | Ficha por consulta a partir de modelo, com cópia da versão | R: ANAMNESE — SELEÇÃO; ABERTURA | CRIAR | — | — |
-| ANA-02 | Presencial e online na mesma ficha, autosave | S02 Anamnese | CRIAR | — | Proteção contra edição simultânea |
-| ANA-03 | Link individual seguro sem login, por paciente, para anamnese e recordatório | S01 Segurança; S02 | CRIAR | todo acesso atual exige login | Token imprevisível, revogável, só leitura/escrita do próprio formulário |
-| ANA-04 | Copiar link e abrir WhatsApp com mensagem pronta | S02 | CRIAR | `lib/contato.ts` já monta links `wa.me` | — |
-| ANA-05 | Paciente edita até o 1º acesso do nutricionista; depois só leitura | S02 | CRIAR | — | — |
-| ANA-06 | Observações profissionais separadas das respostas; lembrete da anamnese | S02 | CRIAR | — | — |
-| ANA-07 | Avisos "Anamnese online recebida" / "Recordatório alimentar recebido" na tela Dietas pendentes | S02 Avisos | COMPLETAR | lista `dietasPendentes` em `app/(nutricionista)/dietas/page.tsx` | Aviso sob o nome do paciente; "Preparar dieta" marca como visto |
-| ANA-08 | Recordatório: refeições, horários, alimentos em texto livre, rascunho, exemplo "MODELO" | S02 Recordatório | CRIAR | — | — |
-| ANA-09 | Importar recordatório para a dieta em cinza | S02; R: ANAMNESE — ENVIO §10 | CRIAR | — | Vinculação do texto livre a alimentos da base |
+| ANA-01 | Ficha por consulta a partir de modelo, com cópia da versão | R: ANAMNESE — SELEÇÃO; ABERTURA | CRIAR → **ENTREGUE (Fase 5)** | Seção Anamnese da consulta: escolha do modelo, cópia das perguntas e da versão na ficha (`anamneses`); aviso de ficha existente do mesmo modelo | — |
+| ANA-02 | Presencial e online na mesma ficha, autosave | S02 Anamnese | CRIAR → **ENTREGUE (Fase 5)** | Mesma ficha no consultório e online, salvamento automático com controle de revisão; enquanto está com o paciente, o nutricionista só lê as respostas | — |
+| ANA-03 | Link individual seguro sem login, por paciente, para anamnese e recordatório | S01 Segurança; S02 | CRIAR → **ENTREGUE (Fase 5)** | Link `/formulario/<token>` por paciente: token assinado (HMAC) pelo servidor, revogável (gerar novo link), só os formulários do próprio paciente; também na área do paciente | — |
+| ANA-04 | Copiar link e abrir WhatsApp com mensagem pronta | S02 | CRIAR → **ENTREGUE (Fase 5)** | Janela "Link do paciente": copiar e abrir `wa.me` com mensagem pronta | — |
+| ANA-05 | Paciente edita até o 1º acesso do nutricionista; depois só leitura | S02 | CRIAR → **ENTREGUE (Fase 5)** | `lido_em`: o primeiro acesso do nutricionista após a resposta encerra a edição pelo paciente (423); respostas originais guardadas em `respostas_paciente` | — |
+| ANA-06 | Observações profissionais separadas das respostas; lembrete da anamnese | S02 | CRIAR → **ENTREGUE (Fase 5)** | Observações profissionais e lembrete da anamnese na ficha; lembrete aparece na estrela do editor de dietas | — |
+| ANA-07 | Avisos "Anamnese online recebida" / "Recordatório alimentar recebido" na tela Dietas pendentes | S02 Avisos | COMPLETAR → **ENTREGUE (Fase 5)** | Avisos sob o nome do paciente na tela Dietas pendentes; "Preparar dieta" marca como vistos | — |
+| ANA-08 | Recordatório: refeições, horários, alimentos em texto livre, rascunho, exemplo "MODELO" | S02 Recordatório | CRIAR → **ENTREGUE (Fase 5)** | Recordatório (`recordatorios`): refeições, horários, alimento e quantidade em texto livre, observações; exemplo MODELO não salvo; rascunho e "Enviar respostas" | — |
+| ANA-09 | Importar recordatório para a dieta em cinza | S02; R: ANAMNESE — ENVIO §10 | CRIAR → **ENTREGUE (Fase 5)** | Importar → Recordatório do paciente: itens em cinza com o texto do paciente, fora dos totais até escolher o alimento na base | — |
 | ANA-10 | Recordatório ≠ relatório semanal | R: §8 | MANTER (regra) | `patient_reports` | — |
 
 ## 9. Exames, medicações, fórmulas, orientações

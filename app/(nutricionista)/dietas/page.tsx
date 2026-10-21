@@ -183,6 +183,28 @@ const [entregasRegistradas, setEntregasRegistradas] = useState<any[]>([]);
 const [renovacoesPendentes, setRenovacoesPendentes] = useState<any[]>([]);
 const [solicitacoesCadastro, setSolicitacoesCadastro] = useState<any[]>([]);
 const [carregandoPendencias, setCarregandoPendencias] = useState(true);
+// Avisos de anamnese/recordatório respondidos pelo paciente (até "Preparar dieta").
+const [avisosFormularios, setAvisosFormularios] = useState<
+  { patient_id: string; name: string; anamnese: boolean; recordatorio: boolean }[]
+>([]);
+
+function carregarAvisosFormularios() {
+  fetch("/api/nutricao/formularios/avisos", { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : { avisos: [] }))
+    .then((d) => setAvisosFormularios(d.avisos ?? []))
+    .catch(() => setAvisosFormularios([]));
+}
+
+function marcarAvisosVistos(pacienteId: string) {
+  if (!avisosFormularios.some((a) => a.patient_id === pacienteId)) return;
+  fetch("/api/nutricao/formularios/avisos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pacienteId }),
+  })
+    .then(() => carregarAvisosFormularios())
+    .catch(() => undefined);
+}
 
 useEffect(() => {
   async function carregarPacientes() {
@@ -295,6 +317,7 @@ useEffect(() => {
   }
 
   carregarPendencias();
+  carregarAvisosFormularios();
 }, []);
 
 const pacientesFiltrados = pacientes.filter((paciente) =>
@@ -361,6 +384,24 @@ observacaoInterna: null,
   observacaoInterna: paciente?.important_note ?? null,
 };
     }),
+
+  // Formulários recebidos de quem não está na lista acima.
+  ...avisosFormularios
+    .filter(
+      (aviso) =>
+        !pacientesPrimeiraDieta.some((paciente) => paciente.id === aviso.patient_id) &&
+        !renovacoesPendentes.some((renovacao) => renovacao.patient_id === aviso.patient_id)
+    )
+    .map((aviso) => ({
+      id: `formularios-${aviso.patient_id}`,
+      tipo: "Formulários recebidos",
+      nome: aviso.name,
+      pacienteId: aviso.patient_id,
+      paciente: pacientes.find((item) => item.id === aviso.patient_id) ?? { id: aviso.patient_id, name: aviso.name },
+      ultimoPeso: null,
+      planoEscolhido: null,
+      observacaoInterna: null,
+    })),
 
   ...solicitacoesCadastro.map((solicitacao) => ({
     id: `cadastro-${solicitacao.id}`,
@@ -1087,6 +1128,25 @@ setArquivosDieta([]);
   {pendencia.tipo}
 </p>
 
+{(() => {
+  const aviso = avisosFormularios.find((a) => a.patient_id === pendencia.pacienteId);
+  if (!aviso) return null;
+  return (
+    <div className="mt-2 flex flex-wrap gap-2">
+      {aviso.anamnese ? (
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
+          <i className="pi pi-file-edit text-[11px]" aria-hidden /> Anamnese online recebida
+        </span>
+      ) : null}
+      {aviso.recordatorio ? (
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
+          <i className="pi pi-list text-[11px]" aria-hidden /> Recordatório alimentar recebido
+        </span>
+      ) : null}
+    </div>
+  );
+})()}
+
 {pendencia.tipo === "Renovação" && (
   <div className="mt-3 space-y-2 rounded-lg border border-primary-100 bg-primary-50 p-3 text-sm">
     <p className="font-semibold text-primary-800">
@@ -1132,6 +1192,7 @@ setArquivosDieta([]);
                 setPacienteSelecionado(pendencia.paciente);
                 setBusca(pendencia.nome);
                 setEhRevisao(false);
+                marcarAvisosVistos(pendencia.paciente.id);
               }}
              
             >

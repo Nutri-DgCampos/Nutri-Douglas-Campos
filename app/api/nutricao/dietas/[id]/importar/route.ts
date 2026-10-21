@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { documentoDoRecordatorio, recordatorioTemConteudo, validarRecordatorio } from "@/lib/nutricao/anamnese";
 import { copiarDocumento, documentoTemConteudo, validarDocumento, type DocumentoDieta } from "@/lib/nutricao/dieta";
 import { registrarAcao } from "@/lib/servidor/auditoria";
 import { obterPool } from "@/lib/servidor/banco";
@@ -7,7 +8,7 @@ import { exigirNutricionista, recusar } from "@/lib/servidor/http";
 
 export const runtime = "nodejs";
 
-type Origem = { tipo: "dieta" | "rotina" | "modelo"; id: string };
+type Origem = { tipo: "dieta" | "rotina" | "modelo" | "recordatorio"; id: string };
 
 // Importar para a dieta aberta:
 // - "dieta": cópia de uma dieta do paciente ou de outro paciente (consultas
@@ -15,6 +16,9 @@ type Origem = { tipo: "dieta" | "rotina" | "modelo"; id: string };
 // - "modelo": cópia de um modelo de dieta completa.
 // - "rotina": organização de uma dieta anterior do mesmo paciente, com os
 //   alimentos em cinza (fora dos cálculos até confirmar) e sem observações.
+// - "recordatorio": refeições e alimentos informados pelo próprio paciente,
+//   em cinza até o nutricionista escolher cada alimento na base. O
+//   recordatório não muda; de outro paciente, nunca.
 //
 // modo "substituir" troca o conteúdo da dieta aberta (exige a revisão atual;
 // a tela confirma antes quando há conteúdo); "nova" cria outra aba e deixa a
@@ -30,7 +34,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const origem = dados?.origem as Origem | undefined;
   const modo = dados?.modo === "nova" ? "nova" : dados?.modo === "substituir" ? "substituir" : null;
 
-  if (!origem || !["dieta", "rotina", "modelo"].includes(origem.tipo) || !UUID.test(String(origem.id))) {
+  if (!origem || !["dieta", "rotina", "modelo", "recordatorio"].includes(origem.tipo) || !UUID.test(String(origem.id))) {
     return recusar("Origem inválida.", 400);
   }
   if (!modo) return recusar("Informe se substitui o conteúdo ou cria uma nova dieta.", 400);
@@ -44,7 +48,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   // Conteúdo de origem
   let fonte: DocumentoDieta;
-  if (origem.tipo === "modelo") {
+  if (origem.tipo === "recordatorio") {
+    const rec = await pool.query<{ patient_id: string; conteudo: unknown }>(
+      "select patient_id, conteudo from public.recordatorios where id = $1",
+      [origem.id]
+    );
+    if (!rec.rows[0]) return recusar("Recordatório não encontrado.", 404);
+    if (rec.rows[0].patient_id !== destino.patient_id) return recusar("O recordatório é de outro paciente.", 400);
+    const validacao = validarRecordatorio(rec.rows[0].conteudo);
+    if ("erro" in validacao) return recusar(validacao.erro, 400);
+    if (!recordatorioTemConteudo(validacao.valor)) return recusar("O recordatório não tem alimentos informados.", 400);
+    fonte = documentoDoRecordatorio(validacao.valor);
+  } else if (origem.tipo === "modelo") {
     const modelo = await pool.query<{ conteudo: unknown }>(
       "select conteudo from public.modelos_nutricao where id = $1 and tipo = 'dieta' and arquivado_em is null",
       [origem.id]
@@ -64,7 +79,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     fonte = validacao.documento;
   }
 
-  const copia = copiarDocumento(fonte, origem.tipo === "rotina" ? "rotina" : "copia");
+  // O recordatório já vem montado (com o texto do paciente); o resto é copiado.
+  const copia = origem.tipo === "recordatorio" ? fonte : copiarDocumento(fonte, origem.tipo === "rotina" ? "rotina" : "copia");
+  const soEstrutura = origem.tipo === "rotina" || origem.tipo === "recordatorio";
   const registroDeOrigem = { tipo: origem.tipo, id: origem.id, em: new Date().toISOString() };
 
   const cliente = await pool.connect();
@@ -83,8 +100,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // Título e objetivo da origem só entram quando estão preenchidos.
       const resultado: DocumentoDieta = {
         ...copia,
-        titulo: (origem.tipo !== "rotina" && copia.titulo.trim()) || atual.rascunho.titulo,
-        objetivo: (origem.tipo !== "rotina" && copia.objetivo.trim()) || atual.rascunho.objetivo,
+        titulo: (!soEstrutura && copia.titulo.trim()) || atual.rascunho.titulo,
+        objetivo: (!soEstrutura && copia.objetivo.trim()) || atual.rascunho.objetivo,
         pesoReferencia: atual.rascunho.pesoReferencia,
         nutrientesAcompanhados: atual.rascunho.nutrientesAcompanhados,
         ...(atual.rascunho.gastoReferencia !== undefined ? { gastoReferencia: atual.rascunho.gastoReferencia } : {}),
@@ -116,8 +133,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const base = await novoDocumento(destino.patient_id, copia.titulo || "Nova dieta");
     const resultado: DocumentoDieta = {
       ...copia,
-      titulo: origem.tipo === "rotina" ? "Nova dieta (rotina anterior)" : copia.titulo.trim() || "Nova dieta",
-      objetivo: (origem.tipo !== "rotina" && copia.objetivo.trim()) || base.objetivo,
+      titulo:
+        origem.tipo === "rotina"
+          ? "Nova dieta (rotina anterior)"
+          : origem.tipo === "recordatorio"
+            ? "Nova dieta (recordatório)"
+            : copia.titulo.trim() || "Nova dieta",
+      objetivo: (!soEstrutura && copia.objetivo.trim()) || base.objetivo,
       pesoReferencia: base.pesoReferencia,
       nutrientesAcompanhados: base.nutrientesAcompanhados,
     };

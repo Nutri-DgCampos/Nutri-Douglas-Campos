@@ -42,6 +42,7 @@ export default function AreaPacientePage() {
 const [devolutivaNaoVisualizada, setDevolutivaNaoVisualizada] = useState(false);
 const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [avaliacoes, setAvaliacoes] = useState<{ total: number; nova: boolean }>({ total: 0, nova: false });
+    const [formularios, setFormularios] = useState<{ total: number; pendentes: number }>({ total: 0, pendentes: 0 });
     const [numeroRelatorio, setNumeroRelatorio] = useState<number | null>(null);
     const [relatorioDisponivel, setRelatorioDisponivel] = useState(false);
     const [ultimoRelatorioDoCiclo, setUltimoRelatorioDoCiclo] = useState(false);
@@ -76,6 +77,14 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
         .then((d: { avaliacoes?: { nova: boolean }[] }) =>
           setAvaliacoes({ total: d.avaliacoes?.length ?? 0, nova: (d.avaliacoes ?? []).some((a) => a.nova) })
         )
+        .catch(() => {});
+      // Formulários (anamnese e recordatório): só para quem recebeu algum.
+      fetch("/api/area-paciente/formularios", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d: { anamneses?: { editavel: boolean; respondido_em: string | null }[]; recordatorios?: { editavel: boolean; respondido_em: string | null }[] } | null) => {
+          const todos = [...(d?.anamneses ?? []), ...(d?.recordatorios ?? [])];
+          setFormularios({ total: todos.length, pendentes: todos.filter((f) => f.editavel && !f.respondido_em).length });
+        })
         .catch(() => {});
     }, []);
     async function sair() {
@@ -439,6 +448,17 @@ carregarPaciente();
       destino: "/area-paciente/relatorios",
       novidade: devolutivaNaoVisualizada,
     },
+    ...(formularios.total
+      ? [
+          {
+            rotulo: "Formulários",
+            descricao: formularios.pendentes ? "Você tem formulário para preencher" : "Anamnese e recordatório",
+            icone: "pi-file-edit",
+            destino: "/area-paciente/formularios",
+            novidade: formularios.pendentes > 0,
+          },
+        ]
+      : []),
     ...(avaliacoes.total
       ? [
           {

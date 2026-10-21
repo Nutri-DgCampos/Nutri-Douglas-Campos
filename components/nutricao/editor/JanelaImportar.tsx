@@ -5,9 +5,12 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";
+import { SITUACOES_DO_FORMULARIO, type Recordatorio, type SituacaoDoFormulario } from "@/lib/nutricao/anamnese";
 import { formatarData } from "@/lib/nutricao/paciente";
 
-export type OrigemDaImportacao = { tipo: "dieta" | "rotina" | "modelo"; id: string };
+export type OrigemDaImportacao = { tipo: "dieta" | "rotina" | "modelo" | "recordatorio"; id: string };
+
+type RecordatorioDeOrigem = { id: string; consulta_data: string; situacao: SituacaoDoFormulario; arquivado_em: string | null; conteudo: Recordatorio };
 
 type DietaDeOrigem = {
   id: string;
@@ -91,6 +94,7 @@ export default function JanelaImportar({
   const [doOutro, setDoOutro] = useState<DietaDeOrigem[] | null>(null);
   const [buscaModelo, setBuscaModelo] = useState("");
   const [modelos, setModelos] = useState<Modelo[] | null>(null);
+  const [recordatorios, setRecordatorios] = useState<RecordatorioDeOrigem[] | null>(null);
   const [escolhida, setEscolhida] = useState<OrigemDaImportacao | null>(null);
   const [confirmando, setConfirmando] = useState(false);
   const [aplicacao, setAplicacao] = useState<"substituir" | "nova">("nova");
@@ -102,6 +106,20 @@ export default function JanelaImportar({
       .then((dados) => setDoPaciente(dados.dietas ?? []))
       .catch(() => setDoPaciente([]));
   }, [pacienteId, dietaId]);
+
+  useEffect(() => {
+    if (modo !== "importar" || aba !== "recordatorio") return;
+    fetch(`/api/nutricao/pacientes/${pacienteId}/formularios`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { recordatorios: [] }))
+      .then((dados) =>
+        setRecordatorios(
+          ((dados.recordatorios ?? []) as RecordatorioDeOrigem[]).filter((r) =>
+            r.conteudo?.refeicoes?.some((ref) => ref.itens.some((i) => i.alimento.trim()))
+          )
+        )
+      )
+      .catch(() => setRecordatorios([]));
+  }, [modo, aba, pacienteId]);
 
   useEffect(() => {
     if (modo !== "importar" || aba !== "modelos") return;
@@ -237,10 +255,37 @@ export default function JanelaImportar({
           ) : null}
 
           {aba === "recordatorio" ? (
-            <p className="text-sm text-gray-600">
-              O recordatório alimentar do paciente chega com a Fase 5 (anamnese e recordatório). Quando estiver disponível, os
-              alimentos informados pelo paciente poderão ser importados aqui, em cinza, até serem vinculados à base.
-            </p>
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">
+                Refeições, horários e alimentos informados pelo paciente chegam em cinza, com o texto dele: ficam fora dos totais, do
+                PDF e da área do paciente até você escolher cada alimento na base. O recordatório não muda.
+              </p>
+              {recordatorios === null ? (
+                <p className="text-sm text-gray-500">Carregando…</p>
+              ) : recordatorios.length === 0 ? (
+                <p className="text-sm text-gray-500">Este paciente não tem recordatório com alimentos informados.</p>
+              ) : (
+                <ul className="max-h-72 space-y-1 overflow-y-auto">
+                  {recordatorios.map((r) => {
+                    const alimentos = r.conteudo.refeicoes.reduce((n, ref) => n + ref.itens.filter((i) => i.alimento.trim()).length, 0);
+                    return (
+                      <li key={r.id}>
+                        <label className={`flex cursor-pointer items-start gap-2 rounded-lg border p-2 ${escolhida?.id === r.id ? "border-primary-400 bg-primary-50" : "border-gray-200"}`}>
+                          <RadioButton checked={escolhida?.id === r.id} onChange={() => setEscolhida({ tipo: "recordatorio", id: r.id })} />
+                          <span className="min-w-0 text-sm">
+                            <span className="block font-semibold text-gray-900">Recordatório da consulta de {formatarData(r.consulta_data)}</span>
+                            <span className="block text-gray-600">
+                              {SITUACOES_DO_FORMULARIO[r.situacao].rotulo} · {r.conteudo.refeicoes.filter((ref) => ref.itens.some((i) => i.alimento.trim())).length} refeição(ões) ·{" "}
+                              {alimentos} alimento(s){r.arquivado_em ? " · arquivado" : ""}
+                            </span>
+                          </span>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
           ) : null}
 
           {aba === "outros" ? (

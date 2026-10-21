@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: Contexto) {
   const pool = obterPool();
   const ids = [...alimentosDoDocumento(dieta.rascunho), ...(dieta.salvo ? alimentosDoDocumento(dieta.salvo) : [])];
 
-  const [paciente, consulta, versoes, anteriores, nutrientes, alimentos, pesoAtual, ciclo, gastos] = await Promise.all([
+  const [paciente, consulta, versoes, anteriores, nutrientes, alimentos, pesoAtual, ciclo, gastos, lembreteAnamnese] = await Promise.all([
     dadosDoPaciente(dieta.patient_id),
     pool.query<{ data: string; tipo: string; status: string }>(
       "select to_char(data, 'YYYY-MM-DD') as data, tipo, status from public.consultas where id = $1",
@@ -67,6 +67,13 @@ export async function GET(request: Request, { params }: Contexto) {
       [dieta.patient_id, dieta.consulta_id]
     ),
     gastosDasAvaliacoes(dieta.patient_id),
+    // Lembrete da anamnese: o último atualizado (só leitura no editor).
+    pool.query<{ lembrete: string }>(
+      `select lembrete from public.anamneses
+        where patient_id = $1 and btrim(lembrete) <> ''
+        order by lembrete_em desc nulls last, atualizado_em desc limit 1`,
+      [dieta.patient_id]
+    ),
   ]);
 
   if (!paciente) return recusar("Paciente não encontrado.", 404);
@@ -76,8 +83,7 @@ export async function GET(request: Request, { params }: Contexto) {
     versoes,
     paciente,
     consulta: consulta.rows[0] ?? null,
-    // Lembrete da anamnese chega com a Fase 5 (anamnese).
-    lembretes: { cadastro: paciente.important_note?.trim() || null, anamnese: null },
+    lembretes: { cadastro: paciente.important_note?.trim() || null, anamnese: lembreteAnamnese.rows[0]?.lembrete.trim() || null },
     anteriores: anteriores.rows,
     nutrientes: nutrientes.rows,
     pesoAtual,
