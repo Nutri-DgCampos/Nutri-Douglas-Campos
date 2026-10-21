@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 
@@ -87,7 +88,7 @@ export default function PagamentosPage() {
       return;
     }
 
-    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    abrirDocumento(data.signedUrl);
   }
 
   async function confirmarPagamentoDinheiro(pagamentoId: string) {

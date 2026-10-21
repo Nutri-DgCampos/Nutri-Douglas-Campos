@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import { Button } from "primereact/button";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
@@ -101,7 +102,7 @@ if (idsDietas.length > 0) {
     carregarDietas();
   }, []);
 
-  async function abrirPDF(caminhoArquivo: string) {
+  async function abrirPDF(caminhoArquivo: string, nome?: string) {
   const { data, error } = await api.storage
     .from("dietas")
     .createSignedUrl(caminhoArquivo, 60);
@@ -112,7 +113,7 @@ if (idsDietas.length > 0) {
     return;
   }
 
-  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  abrirDocumento(data.signedUrl, nome);
 }
 
   return (
@@ -176,7 +177,7 @@ if (idsDietas.length > 0) {
                           type="button"
                           label="Abrir PDF"
                           size="small"
-                          onClick={() => abrirPDF(arquivo.storage_path)}
+                          onClick={() => abrirPDF(arquivo.storage_path, arquivo.file_name)}
                         />
                       </div>
                     ))

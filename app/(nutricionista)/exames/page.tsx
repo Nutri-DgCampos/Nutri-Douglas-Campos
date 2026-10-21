@@ -7,6 +7,7 @@ import { Tag } from "primereact/tag";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 
 type Exame = {
   id: string;
@@ -73,7 +74,7 @@ export default function ExamesPage() {
       return;
     }
 
-    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    abrirDocumento(data.signedUrl);
   }
 
   async function analisarDeNovo(id: string) {

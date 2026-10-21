@@ -8,6 +8,7 @@ import { OverlayPanel } from "primereact/overlaypanel";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import { alimentosDoDocumento, documentoTemConteudo, type DocumentoDieta } from "@/lib/nutricao/dieta";
 import { formatarData, idadeEm, rotuloDoSexo } from "@/lib/nutricao/paciente";
 import DialogoEnvio, { type OpcoesDoEnvio } from "./DialogoEnvio";
@@ -397,16 +398,12 @@ export default function EditorDaDieta({
 
   async function abrirPdf(modelo: "simples" | "detalhado") {
     // O PDF sai do que está gravado: grava antes as últimas alterações.
-    const janela = window.open("", "_blank");
     const ok = await gravar(false);
     if (!ok) {
-      janela?.close();
       avisar("Grave a dieta antes de gerar o PDF.", "warn");
       return;
     }
-    const endereco = `/api/nutricao/dietas/${dietaId}/pdf?modelo=${modelo}`;
-    if (janela) janela.location.href = endereco;
-    else window.open(endereco, "_blank");
+    abrirDocumento(`/api/nutricao/dietas/${dietaId}/pdf?modelo=${modelo}`);
   }
 
   async function abrirEnvio() {

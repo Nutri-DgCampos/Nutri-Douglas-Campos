@@ -15,6 +15,7 @@ import CampoNumero from "@/components/nutricao/editor/CampoNumero";
 import { horaCurta } from "@/components/nutricao/editor/tipos";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import {
   ATIVIDADES,
   CAMPOS_BIOIMPEDANCIA,
@@ -314,7 +315,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
     const caminho = doc?.bioimpedancia.pdf?.caminho;
     if (!caminho) return;
     const { data: assinado } = await api.storage.from("avaliacoes").createSignedUrl(caminho, 120);
-    if (assinado?.signedUrl) window.open(assinado.signedUrl, "_blank", "noopener");
+    if (assinado?.signedUrl) abrirDocumento(assinado.signedUrl);
   }
 
   if (dados === undefined || !doc) return <Skeleton height="20rem" />;
@@ -763,7 +764,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
           outlined
           onClick={async () => {
             if (!finalizada) await gravar();
-            window.open(`/api/nutricao/avaliacoes/${avaliacaoId}/pdf`, "_blank");
+            abrirDocumento(`/api/nutricao/avaliacoes/${avaliacaoId}/pdf`);
           }}
         />
         <span className="flex-1" />

@@ -9,6 +9,7 @@ import BotaoVoltar from "@/components/BotaoVoltar";
 import PainelTreino from "@/components/PainelTreino";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import type { PlanoDeTreino } from "@/lib/treino";
 
 type Treino = {
@@ -72,7 +73,7 @@ export default function TreinoDoPacientePage() {
       return;
     }
 
-    window.open(data.signedUrl, "_blank", "noopener");
+    abrirDocumento(data.signedUrl);
   }
 
   async function lerDeNovo() {

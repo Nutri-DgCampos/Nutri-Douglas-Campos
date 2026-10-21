@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 
@@ -411,7 +412,7 @@ useEffect(() => {
 
   carregarHistorico();
 }, [pacienteSelecionado]);
-async function abrirPDF(caminhoArquivo: string) {
+async function abrirPDF(caminhoArquivo: string, nome?: string) {
   const { data, error } = await api.storage
     .from("dietas")
     .createSignedUrl(caminhoArquivo, 60);
@@ -422,7 +423,7 @@ async function abrirPDF(caminhoArquivo: string) {
     return;
   }
 
-  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  abrirDocumento(data.signedUrl, nome);
 }
 async function enviarDieta() {
   // Impedir uma segunda execução enquanto houver envio em andamento
@@ -1300,7 +1301,7 @@ setArquivosDieta([]);
 
   <Button size="small"
     type="button"
-    onClick={() => abrirPDF(arquivo.storage_path)}
+    onClick={() => abrirPDF(arquivo.storage_path, arquivo.file_name)}
     className="mt-2"
   >
     Abrir PDF
@@ -1348,7 +1349,7 @@ setArquivosDieta([]);
 
   <Button size="small"
     type="button"
-    onClick={() => abrirPDF(arquivo.storage_path)}
+    onClick={() => abrirPDF(arquivo.storage_path, arquivo.file_name)}
     className="mt-2"
   >
     Abrir PDF

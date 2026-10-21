@@ -6,6 +6,7 @@ import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import { formatarData } from "@/lib/nutricao/paciente";
 
@@ -26,13 +27,13 @@ export default function MinhasAvaliacoesPage() {
       .catch(() => setAvaliacoes([]));
   }, []);
 
-  async function abrirPDF(caminho: string) {
+  async function abrirPDF(caminho: string, nome: string) {
     const { data, error } = await api.storage.from("avaliacoes").createSignedUrl(caminho, 60);
     if (error || !data?.signedUrl) {
       avisar("Não foi possível abrir o PDF.");
       return;
     }
-    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    abrirDocumento(data.signedUrl, nome);
   }
 
   return (
@@ -64,7 +65,7 @@ export default function MinhasAvaliacoesPage() {
                     {a.numero > 1 ? <Tag value="Corrigida" severity="secondary" /> : null}
                   </div>
                 </div>
-                <Button type="button" label="Abrir PDF" size="small" onClick={() => abrirPDF(a.storage_path)} />
+                <Button type="button" label="Abrir PDF" size="small" onClick={() => abrirPDF(a.storage_path, a.file_name)} />
               </section>
             ))}
           </div>

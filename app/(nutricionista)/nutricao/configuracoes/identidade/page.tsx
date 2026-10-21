@@ -9,6 +9,7 @@ import BotaoVoltar from "@/components/BotaoVoltar";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { abrirDocumento } from "@/lib/visualizador";
 
 type Configuracao = {
   nome_profissional: string | null;
@@ -184,7 +185,7 @@ export default function IdentidadeVisualPage() {
               outlined
               icon="pi pi-file-pdf"
               label="Ver PDF de exemplo"
-              onClick={() => window.open("/api/nutricao/pdf/exemplo", "_blank", "noopener")}
+              onClick={() => abrirDocumento("/api/nutricao/pdf/exemplo")}
             />
           }
         />

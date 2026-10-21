@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "primeicons/primeicons.css";
 import "./globals.css";
 import Provedores from "@/components/Provedores";
+import VisualizadorDeDocumentos from "@/components/VisualizadorDeDocumentos";
 import RegistrarServiceWorker from "./RegistrarServiceWorker";
 
 // Corpo do texto e títulos. As fontes vêm dos pacotes @fontsource (as mesmas
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Provedores>
           <RegistrarServiceWorker />
           {children}
+          <VisualizadorDeDocumentos />
         </Provedores>
       </body>
     </html>

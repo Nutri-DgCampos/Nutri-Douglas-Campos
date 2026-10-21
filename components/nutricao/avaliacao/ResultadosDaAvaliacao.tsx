@@ -21,6 +21,7 @@ import {
 } from "@/lib/nutricao/avaliacao";
 import type { AvaliacaoDoc, ResultadoAvaliacao } from "@/lib/nutricao/avaliacaoDocumento";
 import { formatarData } from "@/lib/nutricao/paciente";
+import { abrirDocumento } from "@/lib/visualizador";
 
 type Ponto = {
   id: string;
@@ -179,7 +180,7 @@ export default function ResultadosDaAvaliacao({ avaliacaoId, voltar }: { avaliac
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         <Button type="button" icon="pi pi-arrow-left" label="Voltar à avaliação" text onClick={voltar} />
-        <Button type="button" icon="pi pi-file-pdf" label="PDF" outlined onClick={() => window.open(`/api/nutricao/avaliacoes/${avaliacaoId}/pdf`, "_blank")} />
+        <Button type="button" icon="pi pi-file-pdf" label="PDF" outlined onClick={() => abrirDocumento(`/api/nutricao/avaliacoes/${avaliacaoId}/pdf`)} />
       </div>
 
       <div className="cartao grid gap-2 p-4 text-sm sm:grid-cols-5">
