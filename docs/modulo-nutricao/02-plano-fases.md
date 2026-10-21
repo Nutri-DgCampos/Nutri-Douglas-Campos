@@ -133,6 +133,7 @@ Assistente no editor com saída estruturada, vínculo a alimentos da base, prév
   - LGPD: registro das operações de dados de saúde, termo de consentimento (Fase 7), direito de acesso, correção e exclusão pelo paciente, política de retenção, trilha de auditoria de acessos (quem abriu o quê).
   - Infraestrutura: backups automáticos testados (banco + arquivos), SSH só com chave, firewall, atualizações do servidor, monitoramento e alertas.
   - Teste de invasão (pentest) ao final, com relatório e correções.
+- [ ] **Alta disponibilidade (failover).** Hoje tudo roda numa única VPS (app, banco e arquivos). A conversar depois: servidor reserva em outro provedor/região (ativo-passivo, mais simples, ou ativo-ativo); replicação do banco (streaming replication do PostgreSQL) e dos arquivos; troca automática por DNS com verificação de saúde (ex.: Cloudflare, que também resolve a migração de DNS pendente) ou balanceador de carga; ensaio periódico de troca. Pré-requisito: o backup externo automático (abaixo) funcionando e testado.
 
 ## Dependências entre fases
 
