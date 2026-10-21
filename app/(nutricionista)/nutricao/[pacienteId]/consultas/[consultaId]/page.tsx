@@ -270,6 +270,18 @@ export default function ConsultaPage() {
               </div>
               {secao.titulo === "Anamnese" ? (
                 <SecaoAnamnese pacienteId={pacienteId} consultaId={consultaId} />
+              ) : secao.titulo === "Medicações" ? (
+                <>
+                  <p className="mt-3 text-sm text-gray-500">Medicamentos que o paciente usa, receitas e resumo semanal.</p>
+                  <Button
+                    type="button"
+                    icon="pi pi-plus-circle"
+                    label="Abrir medicações"
+                    size="small"
+                    className="mt-3"
+                    onClick={() => router.push(`/nutricao/${pacienteId}/consultas/${consultaId}/medicacoes`)}
+                  />
+                </>
               ) : secao.titulo === "Orientações" ? (
                 <SecaoOrientacoes pacienteId={pacienteId} consultaId={consultaId} />
               ) : secao.titulo === "Exames" ? (

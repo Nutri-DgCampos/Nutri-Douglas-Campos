@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
@@ -79,6 +80,7 @@ export default function EditorDaDieta({
   onAbrirDieta: (id: string) => void;
   onNovaDieta: () => void;
 }) {
+  const router = useRouter();
   const [dados, setDados] = useState<DadosDoEditor | null | undefined>(undefined);
   const [documento, setDocumento] = useState<DocumentoDieta | null>(null);
   const [base, setBase] = useState<BaseDosAlimentos>({ alimentos: {}, composicoes: {} });
@@ -491,7 +493,29 @@ export default function EditorDaDieta({
         <span>{rotuloDoSexo(paciente.sex) ?? <span className="text-gray-400">Sexo não informado</span>}</span>
         {consulta ? <span>Consulta de {formatarData(consulta.data)}</span> : null}
         {paciente.objective ? <span className="text-gray-600">Objetivo do cadastro: {paciente.objective}</span> : null}
-        <span className="ml-auto flex items-center">
+        <span className="ml-auto flex flex-wrap items-center gap-1">
+          <Button
+            type="button"
+            label="Medicação"
+            icon="pi pi-plus-circle"
+            size="small"
+            outlined
+            onClick={async () => {
+              await gravar(false);
+              router.push(`/nutricao/${paciente.id}/consultas/${dados.dieta.consulta_id}/medicacoes`);
+            }}
+          />
+          <Button
+            type="button"
+            label="Fórmulas"
+            icon="pi pi-box"
+            size="small"
+            outlined
+            onClick={async () => {
+              await gravar(false);
+              router.push(`/nutricao/${paciente.id}/consultas/${dados.dieta.consulta_id}/formulas?dieta=${dietaId}`);
+            }}
+          />
           <Lembrete titulo="Lembrete importante do cadastro" texto={dados.lembretes.cadastro} origem="Cadastro do paciente" />
           <Lembrete titulo="Lembrete da anamnese" texto={dados.lembretes.anamnese} origem="Anamnese" />
         </span>

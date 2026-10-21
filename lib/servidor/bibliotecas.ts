@@ -1,4 +1,5 @@
 import { validarListaDeExames } from "@/lib/nutricao/exames";
+import { validarMedicamento } from "@/lib/nutricao/medicacao";
 import { conteudoVazio, validarOrientacao } from "@/lib/nutricao/orientacao";
 import type { ConfiguracaoDaBiblioteca } from "./biblioteca";
 
@@ -19,5 +20,13 @@ export const BIBLIOTECAS: Record<string, ConfiguracaoDaBiblioteca> = {
     conteudoInicial: conteudoVazio(),
     resumo: "(conteudo->>'automatica')::boolean as automatica",
     nomePadrao: "Nova orientação",
+  },
+  medicamentos: {
+    tabela: "medicamentos",
+    campo: "dados",
+    validar: validarMedicamento,
+    conteudoInicial: {},
+    resumo: "dados->>'principioAtivo' as principio_ativo, dados->>'apresentacao' as apresentacao",
+    nomePadrao: "Novo medicamento",
   },
 };
