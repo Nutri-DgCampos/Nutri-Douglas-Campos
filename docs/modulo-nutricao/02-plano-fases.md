@@ -17,7 +17,7 @@ Percentual por requisito da matriz que exige trabalho (COMPLETAR + CRIAR = 101).
 | 4 — Avaliação física | **Concluída** (42 verificações de navegação + testes de cálculo com os exemplos aprovados; fases 0–3 retestadas); no ar; **aprovada pelo cliente em 21/10/2026** (inclusive METs 60+ com valor adulto e leitura da bioimpedância pela OpenAI) | 20/10/2026 | 12 |
 | 5 — Anamnese e recordatório | **Concluída** (62 verificações de navegação + 5 testes de unidade; fases 0–4 retestadas); **aprovada pelo cliente em 21/10/2026** (5.11: recordatório começa com 6 refeições) | 21/10/2026 | 10 |
 | 6 — Exames, medicações, fórmulas, orientações | **Concluída** (86 verificações de navegação + testes de unidade das calculadoras; fases 0–5 retestadas); **aprovada pelo cliente em 21/10/2026** (6.9: texto completado do aviso de medicações confirmado) | 21/10/2026 | 13 |
-| 7 — Auxílio da IA | **Concluída** (35 verificações de navegação com a IA simulada + 7 testes de unidade; validada com o modelo real; fases 0–6 retestadas); aguardando aprovação do cliente | 21/10/2026 | 4 (com BAS-10) |
+| 7 — Auxílio da IA | **Concluída** (35 verificações de navegação com a IA simulada + 7 testes de unidade; validada com o modelo real; fases 0–6 retestadas); **aprovada pelo cliente em 21/10/2026**, inclusive o texto da política de privacidade e as melhorias M1 a M4 | 21/10/2026 | 4 (com BAS-10) |
 | **Módulo** | **101 de 101 requisitos (100%)** | | |
 
 ## Fase 0 — Fundação
