@@ -38,7 +38,23 @@ O computador usa uma chave SSH própria (`~/.ssh/nutri_backup`). No servidor, es
    ```
    e conferir `backup.log` na pasta de destino.
 
-Para remover: `Unregister-ScheduledTask -TaskName "Backup Nutri DG Campos"` e apagar, no servidor, a linha `backup-nutri` de `/root/.ssh/authorized_keys`.
+### Em outro computador (por exemplo, o do cliente)
+
+O computador do backup não precisa de acesso ao servidor. A chave é criada nele, e quem administra o servidor autoriza a chave pública.
+
+1. Copie para uma pasta fixa do computador (ex.: `C:\BackupNutri`) os arquivos `backup-vps.ps1` e `instalar-backup.ps1`. A tarefa agendada roda o script dessa pasta: não apague nem mova a pasta depois.
+2. Nessa pasta, no PowerShell (sem administrador), informando o IP do servidor:
+   ```
+   powershell -ExecutionPolicy Bypass -File instalar-backup.ps1 -Endereco <IP do servidor>
+   ```
+   O instalador cria a chave, mostra a chave **pública** (uma linha começando com `ssh-ed25519`) e a salva em `chave-publica-backup.txt`. A chave pública pode ir por e-mail ou mensagem; a privada (`~/.ssh/nutri_backup`) nunca sai daquele computador.
+3. No computador de quem administra o servidor, com a chave pública entre aspas:
+   ```
+   "ssh-ed25519 AAAA... backup-nutri-NOMEDOPC" | ssh nutri "sh /opt/nutri/backup/autorizar-chave.sh"
+   ```
+4. No computador do backup: `Start-ScheduledTask -TaskName "Backup Nutri DG Campos"` e confira `backup.log` no destino. A identidade do servidor fica guardada na primeira conexão.
+
+Para remover: `Unregister-ScheduledTask -TaskName "Backup Nutri DG Campos"` e apagar, no servidor, a linha da chave (`backup-nutri-<nome do computador>`) de `/root/.ssh/authorized_keys`.
 
 ## Restauração (servidor novo)
 
