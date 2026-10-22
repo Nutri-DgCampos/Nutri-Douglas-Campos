@@ -9,6 +9,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { segundasPrevistas } from "@/lib/cronograma";
+import { OPCOES_HORMONIOS, PERGUNTA_HORMONIOS, REGRAS_ATUAIS } from "@/lib/relatorios/pontos";
 
 export default function RelatorioPage() {
   const router = useRouter();
@@ -64,8 +65,8 @@ const [libido, setLibido] = useState("");
 const [consumiuAlcool, setConsumiuAlcool] = useState("");
 const [quantidadeAlcool, setQuantidadeAlcool] = useState("");
 
-const [mudancaMedicamentos, setMudancaMedicamentos] = useState("");
-const [descricaoMudancaMedicamentos, setDescricaoMudancaMedicamentos] = useState("");
+// Pergunta de hormônios (substituiu a de mudança de medicamentos em 22/10/2026).
+const [usoHormonios, setUsoHormonios] = useState("");
 
 const [observacoesGerais, setObservacoesGerais] = useState("");
 
@@ -624,14 +625,9 @@ weight:
     ? "sim"
     : `sim - ${quantidadeAlcool} doses`,
 
-    medication_changes:
-  mudancaMedicamentos === ""
-    ? null
-    : mudancaMedicamentos === "nao"
-    ? "nao"
-    : descricaoMudancaMedicamentos.trim() === ""
-    ? "sim"
-    : `sim - ${descricaoMudancaMedicamentos}`,
+    hormonios_uso: usoHormonios === "" ? null : usoHormonios,
+    // Regras dos pontos de atenção deste relatório (lib/relatorios/pontos.ts).
+    regras_versao: REGRAS_ATUAIS,
 
     general_notes:
   observacoesGerais.trim() === "" ? null : observacoesGerais,
@@ -1677,37 +1673,20 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
 
 <div className="mt-6">
   <label className="font-medium text-gray-900">
-    Houve alguma mudança no uso de medicamentos nesta semana?
+    {PERGUNTA_HORMONIOS}
   </label>
 
   <Selecao
-  value={mudancaMedicamentos}
-  onChange={(e) => setMudancaMedicamentos(e.target.value)}
+  value={usoHormonios}
+  onChange={(e) => setUsoHormonios(e.target.value)}
   className="w-full"
 >
     <option value="">Selecione uma opção</option>
-
-<option value="nao_se_aplica">Não se aplica / não utilizo </option>
-<option value="nao">Não houve mudança</option>
-<option value="sim">Sim, houve mudança</option>
+    {OPCOES_HORMONIOS.map((opcao) => (
+      <option key={opcao.valor} value={opcao.valor}>{opcao.rotulo}</option>
+    ))}
   </Selecao>
 </div>
-
-{mudancaMedicamentos === "sim" && (
-<div className="mt-6">
-  <label className="font-medium text-gray-900">
-    Se houve alguma mudança, descreva qual.
-  </label>
-
-  <InputTextarea autoResize
-    rows={2}
-    value={descricaoMudancaMedicamentos}
-    onChange={(e) => setDescricaoMudancaMedicamentos(e.target.value)}
-    placeholder="Informe o medicamento e o que mudou."
-    className="w-full mt-3"
-  />
-</div>
-)}
 
 <div className="mt-8 border-t border-gray-200 pt-6">
   <label className="font-medium text-gray-900">

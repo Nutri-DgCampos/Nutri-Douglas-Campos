@@ -6,10 +6,10 @@ import { buscarAvaliacao, historicoAte, pessoaDoPaciente, resultadosDe } from "@
 import { obterPool } from "@/lib/servidor/banco";
 import { UUID } from "@/lib/servidor/dietas";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
-import { enfileirarAtualizacao } from "@/lib/servidor/notificacoes";
 import { nomeDoArquivo } from "@/lib/servidor/pdf/documento";
 import { gerarPdfDaAvaliacao } from "@/lib/servidor/pdf/avaliacao";
 import { carregarIdentidade } from "@/lib/servidor/pdf/identidade";
+import { avisarPublicacao, publicar } from "@/lib/servidor/publicacoes";
 
 export const runtime = "nodejs";
 
@@ -87,12 +87,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       { avaliacao_id: id, numero: numero.rows[0].numero }
     );
 
+    // Publicação na aba Dietas do paciente (mesma transação).
+    const publicacao = await publicar("avaliacao", envio.rows[0].id, contexto.usuarioId, cliente);
+    if (!publicacao) throw new Error("Envio da avaliação não encontrado.");
+
     await cliente.query("commit");
     gravado = null;
 
-    enfileirarAtualizacao("avaliacao", avaliacao.patient_id, envio.rows[0].id).catch((erro) =>
-      console.error("Erro ao registrar aviso da avaliação:", erro)
-    );
+    avisarPublicacao("avaliacao", avaliacao.patient_id, publicacao.id);
 
     return NextResponse.json({ numero: numero.rows[0].numero, arquivo: caminho });
   } catch (erro) {

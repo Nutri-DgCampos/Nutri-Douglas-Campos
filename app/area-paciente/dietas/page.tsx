@@ -9,6 +9,7 @@ import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import DietaEmTela from "@/components/DietaEmTela";
+import DocumentosDaAbaDietas from "@/components/DocumentosDaAbaDietas";
 
 export default function MinhasDietasPage() {
   const [dietas, setDietas] = useState<any[]>([]);
@@ -121,8 +122,10 @@ if (idsDietas.length > 0) {
       <div className="mx-auto max-w-md">
         <CabecalhoPagina
           titulo="Meu plano"
-          descricao="As dietas mais recentes enviadas pelo seu nutricionista."
+          descricao="Dietas, fórmulas e avaliações físicas enviadas pelo seu nutricionista."
         />
+
+        <h2 className="mt-6 text-lg font-bold text-gray-900">Dietas</h2>
 
         <DietaEmTela />
 
@@ -191,6 +194,8 @@ if (idsDietas.length > 0) {
             ))}
           </div>
         )}
+
+        <DocumentosDaAbaDietas />
       </div>
     </main>
   );

@@ -37,6 +37,7 @@ import {
 } from "@/lib/nutricao/avaliacao";
 import { calcularAvaliacao, type AvaliacaoDoc } from "@/lib/nutricao/avaliacaoDocumento";
 import { formatarData, idadeEm, rotuloDoSexo } from "@/lib/nutricao/paciente";
+import EnvioAoPaciente from "@/components/nutricao/EnvioAoPaciente";
 
 type Dados = {
   avaliacao: { id: string; patient_id: string; data: string; status: string; documento: AvaliacaoDoc; revisao: number; finalizada_em: string | null };
@@ -737,14 +738,12 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
         ) : (
           <>
             <Button type="button" icon="pi pi-pencil" label="Reabrir para correção" outlined onClick={reabrir} />
-            <Button
-              type="button"
-              icon="pi pi-send"
-              label={enviadaEstaVersao ? `Enviada (v${ultimoEnvio.numero})` : "Enviar ao paciente"}
-              severity="success"
-              disabled={enviadaEstaVersao}
-              onClick={() => setPerguntarEnvio(true)}
-            />
+            {enviadaEstaVersao ? (
+              // Já enviada: reenviar o mesmo PDF e ver o histórico de envios.
+              <EnvioAoPaciente tipo="avaliacao" origemId={ultimoEnvio.id} paciente={paciente.nome} tamanho="large" />
+            ) : (
+              <Button type="button" icon="pi pi-send" label="Enviar ao paciente" severity="success" onClick={() => setPerguntarEnvio(true)} />
+            )}
           </>
         )}
         <Button
@@ -778,12 +777,18 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
         className="w-[min(30rem,calc(100vw-1rem))]"
         footer={
           <div className="flex flex-wrap justify-end gap-2">
-            <Button type="button" label="Não, manter somente no prontuário" text onClick={() => setPerguntarEnvio(false)} />
-            <Button type="button" label="Sim, gerar e enviar" icon="pi pi-send" loading={enviando} onClick={enviar} />
+            <Button type="button" label="Cancelar" text onClick={() => setPerguntarEnvio(false)} />
+            <Button type="button" label="Confirmar envio" icon="pi pi-send" loading={enviando} onClick={enviar} />
           </div>
         }
       >
-        <p>Deseja gerar e enviar o PDF desta avaliação física para a área do paciente?</p>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+          <dt className="font-semibold text-gray-700">Paciente</dt>
+          <dd>{paciente.nome}</dd>
+          <dt className="font-semibold text-gray-700">Documento</dt>
+          <dd>Avaliação física</dd>
+        </dl>
+        <p className="mt-3 text-sm text-gray-600">O PDF desta avaliação é gerado e aparece na aba Dietas do paciente.</p>
         <p className="mt-2 text-sm text-gray-500">Enviar não publica dieta nem mexe no ciclo de 33 dias.</p>
       </Dialog>
 

@@ -165,15 +165,30 @@ export default function FotosPacientePage() {
                     )}
                   </button>
 
-                  <Button
-                    type="button"
-                    size="small"
-                    text
-                    label={foto ? "Trocar" : "Anexar"}
-                    disabled={enviando !== null}
-                    onClick={() => escolher(chave)}
-                    className="mt-1 w-full justify-center"
-                  />
+                  <div className="mt-1 flex justify-center">
+                    <Button
+                      type="button"
+                      size="small"
+                      text
+                      label={foto ? "Trocar" : "Anexar"}
+                      disabled={enviando !== null}
+                      onClick={() => escolher(chave)}
+                      className={foto ? "px-2" : "w-full justify-center"}
+                    />
+                    {foto ? (
+                      // Foto anexada por engano: o paciente remove direto daqui.
+                      <Button
+                        type="button"
+                        size="small"
+                        text
+                        severity="danger"
+                        icon="pi pi-trash"
+                        aria-label={`Remover foto de ${rotulo.toLowerCase()}`}
+                        disabled={enviando !== null}
+                        onClick={() => remover(foto)}
+                      />
+                    ) : null}
+                  </div>
                 </div>
               );
             })}
@@ -200,16 +215,25 @@ export default function FotosPacientePage() {
                         const endereco = foto ? enderecos[foto.storage_path] : null;
 
                         return foto && endereco ? (
-                          <button
-                            key={chave}
-                            type="button"
-                            onClick={() => setAmpliada(foto)}
-                            className="aspect-[3/4] overflow-hidden rounded-lg bg-gray-100"
-                            aria-label={`Ver foto de ${rotulo.toLowerCase()} de ${formatarData(data)}`}
-                          >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={endereco} alt="" className="h-full w-full object-cover" />
-                          </button>
+                          <div key={chave} className="relative">
+                            <button
+                              type="button"
+                              onClick={() => setAmpliada(foto)}
+                              className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-gray-100"
+                              aria-label={`Ver foto de ${rotulo.toLowerCase()} de ${formatarData(data)}`}
+                            >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={endereco} alt="" className="h-full w-full object-cover" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => remover(foto)}
+                              className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-red-600 shadow"
+                              aria-label={`Remover foto de ${rotulo.toLowerCase()} de ${formatarData(data)}`}
+                            >
+                              <i className="pi pi-trash text-xs" aria-hidden />
+                            </button>
+                          </div>
                         ) : (
                           <div key={chave} className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gray-50 text-xs text-gray-400">
                             {rotulo}

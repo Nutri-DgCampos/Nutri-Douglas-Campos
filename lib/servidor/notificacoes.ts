@@ -10,7 +10,8 @@ export const TITULO_ATUALIZACAO = "Olá! Você tem atualização do seu nutricio
 const MENSAGENS = {
   dieta: { corpo: "Sua nova dieta já está disponível no aplicativo.", destino: "/area-paciente/dietas" },
   devolutiva: { corpo: "A devolutiva do seu relatório já está disponível.", destino: "/area-paciente/relatorios" },
-  avaliacao: { corpo: "O resultado da sua avaliação física já está disponível.", destino: "/area-paciente/avaliacoes" },
+  avaliacao: { corpo: "O resultado da sua avaliação física já está disponível.", destino: "/area-paciente/dietas" },
+  formula: { corpo: "Seu nutricionista enviou as suas fórmulas.", destino: "/area-paciente/dietas" },
   formulario: { corpo: "Seu nutricionista enviou um formulário para você preencher.", destino: "/area-paciente/formularios" },
   documento: { corpo: "Seu nutricionista enviou um documento para você.", destino: "/area-paciente/documentos" },
 } as const;

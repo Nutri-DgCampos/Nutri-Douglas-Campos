@@ -14,6 +14,7 @@ import { pendenciasDaFormula, type Formula } from "@/lib/nutricao/formula";
 import { formatarData } from "@/lib/nutricao/paciente";
 import { abrirDocumento } from "@/lib/visualizador";
 import EditorDeFormula from "./EditorDeFormula";
+import EnvioAoPaciente from "@/components/nutricao/EnvioAoPaciente";
 
 type Linha = { id: string; dieta_id: string | null; ordem: number; conteudo: Formula; origem: { tipo: string } | null; pendente_revisao: boolean; salva_em: string | null; revisao: number };
 type Dados = {
@@ -338,10 +339,11 @@ export default function FormulasDaConsulta({ consultaId, dietaInicial }: { consu
           <p className="font-semibold text-gray-900">PDFs emitidos nesta consulta</p>
           <ul>
             {dados.emitidos.map((d) => (
-              <li key={d.id}>
+              <li key={d.id} className="flex flex-wrap items-center gap-x-2">
                 <button type="button" className="text-primary-700 hover:underline" onClick={() => abrirEmitido(d)}>
                   {new Date(d.emitido_em).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" })} — {d.file_name}
                 </button>
+                <EnvioAoPaciente tipo="formulas" origemId={d.id} paciente={dados.paciente} documento={d.file_name} />
               </li>
             ))}
           </ul>

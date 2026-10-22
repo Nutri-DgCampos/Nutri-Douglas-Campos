@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { obterPool } from "./banco";
 import type { Contexto } from "./permissoes";
+import { publicacaoAtiva } from "./publicacoes";
 
 // Arquivos enviados (dietas em PDF, comprovantes de pagamento, exames de
 // sangue, treinos e fotos de evolução).
@@ -174,22 +175,20 @@ export async function podeBaixar(
     return false;
   }
 
-  // Avaliação física: só os PDFs enviados ao próprio paciente.
+  // Avaliação física: só os PDFs com envio ativo ao próprio paciente (um
+  // documento excluído pelo paciente não abre mais, nem pelo link antigo).
   if (bucket === "avaliacoes") {
-    const enviado = await obterPool().query(
-      "select 1 from public.avaliacoes_envios where storage_path = $1 and patient_id = $2",
-      [caminho, contexto.pacienteId]
-    );
-    return (enviado.rowCount ?? 0) > 0;
+    return publicacaoAtiva(contexto.pacienteId, caminho);
   }
 
-  // Documentos enviados: só os do próprio paciente.
+  // Documentos enviados (orientações, solicitações) e fórmulas publicadas:
+  // só os do próprio paciente.
   if (bucket === "documentos") {
     const enviado = await obterPool().query(
       "select 1 from public.documentos_enviados where storage_path = $1 and patient_id = $2",
       [caminho, contexto.pacienteId]
     );
-    return (enviado.rowCount ?? 0) > 0;
+    return (enviado.rowCount ?? 0) > 0 || publicacaoAtiva(contexto.pacienteId, caminho);
   }
 
   // Dieta: o paciente só abre arquivos das suas duas entregas mais recentes.

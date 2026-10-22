@@ -42,7 +42,8 @@ export default function AreaPacientePage() {
     const [dietaNaoVisualizada, setDietaNaoVisualizada] = useState(false);
 const [devolutivaNaoVisualizada, setDevolutivaNaoVisualizada] = useState(false);
 const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
-    const [avaliacoes, setAvaliacoes] = useState<{ total: number; nova: boolean }>({ total: 0, nova: false });
+    // Fórmulas e avaliações físicas novas (ficam na aba Dietas).
+    const [documentoNaDieta, setDocumentoNaDieta] = useState(false);
     const [formularios, setFormularios] = useState<{ total: number; pendentes: number }>({ total: 0, pendentes: 0 });
     const [documentos, setDocumentos] = useState<{ total: number; novos: number }>({ total: 0, novos: 0 });
     const [numeroRelatorio, setNumeroRelatorio] = useState<number | null>(null);
@@ -72,13 +73,11 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
         .catch(() => {});
     }, []);
 
-    // Atalho das avaliações físicas: só aparece para quem já recebeu alguma.
+    // Fórmulas e avaliações físicas não abertas acendem o aviso da Dieta.
     useEffect(() => {
-      fetch("/api/area-paciente/avaliacoes", { cache: "no-store" })
-        .then((r) => (r.ok ? r.json() : { avaliacoes: [] }))
-        .then((d: { avaliacoes?: { nova: boolean }[] }) =>
-          setAvaliacoes({ total: d.avaliacoes?.length ?? 0, nova: (d.avaliacoes ?? []).some((a) => a.nova) })
-        )
+      fetch("/api/area-paciente/publicacoes", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : { documentos: [] }))
+        .then((d: { documentos?: { novo: boolean }[] }) => setDocumentoNaDieta((d.documentos ?? []).some((doc) => doc.novo)))
         .catch(() => {});
       // Documentos (solicitação de exames, orientações): só para quem recebeu algum.
       fetch("/api/area-paciente/documentos", { cache: "no-store" })
@@ -443,10 +442,14 @@ carregarPaciente();
   const atalhos = [
     {
       rotulo: "Dieta",
-      descricao: dietaNaoVisualizada ? "Você tem uma dieta nova" : "Meu plano alimentar",
+      descricao: dietaNaoVisualizada
+        ? "Você tem uma dieta nova"
+        : documentoNaDieta
+          ? "Novo documento disponível"
+          : "Dietas, fórmulas e avaliações",
       icone: "pi-book",
       destino: "/area-paciente/dietas",
-      novidade: dietaNaoVisualizada,
+      novidade: dietaNaoVisualizada || documentoNaDieta,
     },
     {
       rotulo: "Relatórios",
@@ -476,17 +479,6 @@ carregarPaciente();
             icone: "pi-file-edit",
             destino: "/area-paciente/formularios",
             novidade: formularios.pendentes > 0,
-          },
-        ]
-      : []),
-    ...(avaliacoes.total
-      ? [
-          {
-            rotulo: "Avaliação física",
-            descricao: avaliacoes.nova ? "Chegou o resultado da sua avaliação" : "Meus resultados",
-            icone: "pi-chart-line",
-            destino: "/area-paciente/avaliacoes",
-            novidade: avaliacoes.nova,
           },
         ]
       : []),

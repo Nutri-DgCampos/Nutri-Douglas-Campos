@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
-import { Button } from "primereact/button";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
+import DevolutivaERelatorio from "@/components/relatorios/DevolutivaERelatorio";
+import { classificacaoDoScore } from "@/lib/relatorios/pontos";
 import { segundasPrevistas, somarDias } from "@/lib/cronograma";
 function obterSegundaFeiraAtualBrasil() {
   const partes = new Intl.DateTimeFormat("en-US", {
@@ -50,8 +50,6 @@ export default function RelatoriosPage() {
      const [pacientesAtrasados, setPacientesAtrasados] = useState<any[]>([]);
      const [historicoPesos, setHistoricoPesos] = useState<any[]>([]);
      const [historicoAlcool, setHistoricoAlcool] = useState<any[]>([]);
-     const [devolutivasIA, setDevolutivasIA] = useState<Record<string, string>>({});
-const [gerandoIA, setGerandoIA] = useState<string | null>(null);
 
      useEffect(() => {
   async function carregarRelatorios() {
@@ -260,73 +258,9 @@ if (erroHistoricoAlcool) {
   };
 }, []);
 
-async function gerarDevolutivaIA(
-  relatorio: any,
-  pontosPositivos: string[],
-  pontosAtencao: string[]
-) {
-  setGerandoIA(relatorio.id);
+async function publicarDevolutiva(relatorio: any, texto: string) {
 
-  try {
-    const resposta = await fetch("/api/gerar-devolutiva", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        paciente: relatorio.patients?.name ?? "Paciente",
-        pontuacao: relatorio.adherence_score,
-        classificacao:
-  relatorio.adherence_score >= 90
-    ? "Excelente"
-    : relatorio.adherence_score >= 80
-    ? "Muito bom"
-    : relatorio.adherence_score >= 70
-    ? "Bom"
-    : relatorio.adherence_score >= 60
-    ? "Atenção"
-    : "Baixa adesão",
-        pontosPositivos,
-        pontosAtencao,
-        offPlanCount: relatorio.off_plan_count,
-offPlanFoods: relatorio.off_plan_foods ?? "",
-        observacoes: relatorio.general_notes ?? "",
-      }),
-    });
-
-    const textoResposta = await resposta.text();
-
-console.log("Status da API de IA:", resposta.status);
-console.log("Resposta da API de IA:", textoResposta);
-
-if (!resposta.ok) {
-  avisar(`Erro ao gerar devolutiva. Código: ${resposta.status}`);
-  return;
-}
-
-let dados;
-
-try {
-  dados = JSON.parse(textoResposta);
-} catch {
-  avisar("A API não retornou um JSON válido.");
-  return;
-}
-
-    setDevolutivasIA((anterior) => ({
-      ...anterior,
-      [relatorio.id]: dados.texto ?? "",
-    }));
-  } catch (error) {
-    console.error("Erro ao gerar devolutiva com IA:", error);
-  } finally {
-    setGerandoIA(null);
-  }
-}
-
-async function publicarDevolutiva(relatorio: any) {
-
-  const textoFinal = devolutivasIA[relatorio.id]?.trim();
+  const textoFinal = texto.trim();
 
   if (!textoFinal) {
     avisar("Gere ou escreva uma devolutiva antes de publicar.");
@@ -517,258 +451,7 @@ if (relatorio.alcohol_use != null) {
 
 const ultimasTendenciasAlcool = tendenciasAlcool.slice(-3);
 
-  const pontosPositivos: string[] = [];
-  const pontosAtencao: string[] = [];
-
-  if (relatorio.diet_days != null) {
-  if (relatorio.diet_days === 7) {
-    pontosPositivos.push(
-      `Excelente adesão alimentar: seguiu o plano por ${relatorio.diet_days} dias.`
-    );
-  } else if (relatorio.diet_days === 6) {
-    pontosPositivos.push(
-      `Boa adesão alimentar: seguiu o plano por ${relatorio.diet_days} dias.`
-    );
-  } else if (relatorio.diet_days === 5) {
-    pontosAtencao.push(
-      `Atenção à adesão alimentar: seguiu o plano por ${relatorio.diet_days} dias.`
-    );
-  } else {
-    pontosAtencao.push(
-      `Adesão alimentar muito abaixo do planejado: seguiu o plano por ${relatorio.diet_days} dias.`
-    );
-  }
-}
-
-if (
-  relatorio.diet_changed === true &&
-  relatorio.diet_change_equivalent === false
-) {
-  pontosAtencao.push(
-    relatorio.diet_change_notes
-      ? `Alteração fora da lista de equivalências: ${relatorio.diet_change_notes}`
-      : "Realizou alteração fora da lista de equivalências."
-  );
-}
-
-if (
-  relatorio.diet_difficulty &&
-  relatorio.diet_difficulty.trim() !== ""
-) {
-  pontosAtencao.push(
-    `Dificuldade com o plano alimentar: ${relatorio.diet_difficulty}`
-  );
-}
-
-if (relatorio.water_goal_days != null) {
-  if (relatorio.water_goal_days === 7) {
-    pontosPositivos.push(
-      "Meta de hidratação cumprida: atingiu a meta planejada."
-    );
-  } else if (relatorio.water_goal_days === 6) {
-    pontosPositivos.push(
-      `Boa hidratação: atingiu a meta de água por ${relatorio.water_goal_days} dias.`
-    );
-  } else if (relatorio.water_goal_days === 5) {
-    pontosAtencao.push(
-      `Atenção à hidratação: atingiu a meta de água por ${relatorio.water_goal_days} dias.`
-    );
-  } else {
-    pontosAtencao.push(
-      `Hidratação muito abaixo do planejado: atingiu a meta de água por ${relatorio.water_goal_days} dias.`
-    );
-  }
-}
-
-if (relatorio.urine_color === "muito_amarela") {
-  pontosAtencao.push(
-    "Urina muito amarela: atenção à hidratação."
-  );
-}
-
-if (relatorio.urine_color === "turva") {
-  pontosAtencao.push(
-    "Urina turva: merece muita atenção."
-  );
-}
-
-if (
-  relatorio.training_applicable === true &&
-  relatorio.training_planned != null &&
-  relatorio.training_completed != null &&
-  relatorio.training_planned > 0
-) {
-  const percentualTreino =
-    relatorio.training_completed / relatorio.training_planned;
-
-  if (percentualTreino >= 1) {
-  pontosPositivos.push(
-    "Meta de treinos cumprida: atingiu a meta planejada."
-  );
-} else if (percentualTreino < 0.7) {
-  pontosAtencao.push(
-    "Atenção: sua meta de treinos ficou abaixo de 70% do planejado."
-  );
-}
-}
-
-if (
-  relatorio.cardio_applicable === true &&
-  relatorio.cardio_planned != null &&
-  relatorio.cardio_completed != null &&
-  relatorio.cardio_planned > 0
-) {
-  const percentualAerobico =
-    relatorio.cardio_completed / relatorio.cardio_planned;
-
-  if (percentualAerobico >= 1) {
-  pontosPositivos.push(
-    "Meta de atividade aeróbica cumprida: atingiu a meta planejada."
-  );
-} else if (percentualAerobico < 0.7) {
-  pontosAtencao.push(
-    "Atenção: sua meta de atividade aeróbica ficou abaixo de 70% do planejado."
-  );
-}
-}
-
-if (relatorio.sleep_hours != null) {
-  const horasSono = Number(relatorio.sleep_hours);
-
-  if (horasSono < 6) {
-    pontosAtencao.push(
-      `Sono muito abaixo do recomendado: média de ${horasSono} horas por noite.`
-    );
-  } else if (horasSono < 7) {
-    pontosAtencao.push(
-      `Atenção ao sono: média de ${horasSono} horas por noite.`
-    );
-  }
-}
-if (relatorio.sleep_quality === "ruim") {
-  pontosAtencao.push(
-    "Atenção à qualidade do sono: paciente percebeu o sono como ruim."
-  );
-}
-
-if (relatorio.sleep_quality === "muito_ruim") {
-  pontosAtencao.push(
-    "Qualidade do sono muito comprometida: paciente percebeu o sono como muito ruim."
-  );
-}
-
-if (relatorio.off_plan_count != null) {
-  const refeicoesForaPlano = Number(relatorio.off_plan_count);
-
-  if (refeicoesForaPlano === 0) {
-    pontosPositivos.push(
-      "Excelente adesão: não realizou refeições fora do plano."
-    );
-  } else if (refeicoesForaPlano === 2) {
-    pontosAtencao.push(
-      "Atenção às refeições fora do plano: ocorreram 2 vezes nesta semana."
-    );
-  } else if (refeicoesForaPlano >= 3) {
-    pontosAtencao.push(
-      `Frequência elevada de refeições fora do plano: ocorreram ${refeicoesForaPlano} vezes nesta semana.`
-    );
-  }
-}
-
-if (
-  relatorio.supplements_applicable === true &&
-  relatorio.supplements_days != null
-) {
-  const diasSuplementacao = Number(relatorio.supplements_days);
-
-  if (diasSuplementacao === 7) {
-    pontosPositivos.push(
-      "Meta de suplementação cumprida: atingiu a meta planejada."
-    );
-  } else if (diasSuplementacao === 5) {
-    pontosAtencao.push(
-      "Atenção à suplementação: adesão abaixo do planejado."
-    );
-  } else if (diasSuplementacao <= 4) {
-    pontosAtencao.push(
-      "Baixa adesão à suplementação: adesão muito abaixo do planejado."
-    );
-  }
-}
-
-if (
-  relatorio.individual_goal_planned != null &&
-  relatorio.individual_goal_completed != null &&
-  relatorio.individual_goal_planned > 0
-) {
-  const percentualMetaIndividual =
-    relatorio.individual_goal_completed /
-    relatorio.individual_goal_planned;
-
-  if (percentualMetaIndividual >= 1) {
-    pontosPositivos.push(
-      "Meta individual cumprida: atingiu a meta planejada."
-    );
-  } else if (percentualMetaIndividual < 0.7) {
-    pontosAtencao.push(
-      "Atenção à meta individual: ficou abaixo de 70% do planejado."
-    );
-  }
-}
-
-if (
-  relatorio.individual_goal_difficulty &&
-  relatorio.individual_goal_difficulty.trim() !== ""
-) {
-  pontosAtencao.push(
-    `Dificuldade na meta individual: ${relatorio.individual_goal_difficulty}`
-  );
-}
-
-if (
-  relatorio.stool_consistency === "tipo_1" ||
-  relatorio.stool_consistency === "tipo_2"
-) {
-  pontosAtencao.push(
-    "Funcionamento intestinal: fezes endurecidas, com tendência à constipação."
-  );
-} else if (relatorio.stool_consistency === "tipo_5") {
-  pontosAtencao.push(
-    "Funcionamento intestinal: fezes mais amolecidas que o ideal."
-  );
-} else if (
-  relatorio.stool_consistency === "tipo_6" ||
-  relatorio.stool_consistency === "tipo_7"
-) {
-  pontosAtencao.push(
-    "Funcionamento intestinal: fezes muito amolecidas ou líquidas."
-  );
-}
-
-if (
-  relatorio.medication_changes &&
-  relatorio.medication_changes !== "nao"
-) {
-  pontosAtencao.push(
-    relatorio.medication_changes.startsWith("sim - ")
-      ? `Mudança no uso de medicamentos: ${relatorio.medication_changes.replace(
-          "sim - ",
-          ""
-        )}`
-      : "Houve mudança no uso de medicamentos nesta semana."
-  );
-}
-
-  const classificacao =
-    relatorio.adherence_score >= 90
-      ? "Excelente"
-      : relatorio.adherence_score >= 80
-      ? "Muito bom"
-      : relatorio.adherence_score >= 70
-      ? "Bom"
-      : relatorio.adherence_score >= 60
-      ? "Atenção"
-      : "Baixa adesão";
+  const classificacao = classificacaoDoScore(relatorio.adherence_score);
 
   return (
     <section key={relatorio.id} className="cartao p-5 lg:p-6">
@@ -870,125 +553,14 @@ if (
         )}
       </dl>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        {pontosPositivos.length > 0 && (
-          <div>
-            <p className="font-semibold text-primary-700">Pontos positivos</p>
-
-            <ul className="mt-2 space-y-2 text-sm text-gray-700">
-              {pontosPositivos.map((ponto, index) => (
-                <li key={index} className="flex gap-2">
-                  <i
-                    className="pi pi-check-circle mt-0.5 text-primary-600"
-                    aria-hidden
-                  />
-                  <span>{ponto}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {pontosAtencao.length > 0 && (
-          <div>
-            <p className="font-semibold text-atencao-700">Pontos de atenção</p>
-
-            <ul className="mt-2 space-y-2 text-sm text-gray-700">
-              {pontosAtencao.map((ponto, index) => (
-                <li key={index} className="flex gap-2">
-                  <i
-                    className="pi pi-exclamation-circle mt-0.5 text-atencao-600"
-                    aria-hidden
-                  />
-                  <span>
-                    {ponto.startsWith("Dificuldade com o plano alimentar:") ? (
-                      <>
-                        Dificuldade com o plano alimentar:{" "}
-                        <strong>
-                          {ponto
-                            .replace("Dificuldade com o plano alimentar:", "")
-                            .trim()}
-                        </strong>
-                      </>
-                    ) : (
-                      ponto
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {relatorio.general_notes && relatorio.general_notes.trim() !== "" && (
-        <div className="mt-5 rounded-xl bg-gray-50 p-4">
-          <p className="font-semibold text-gray-900">Observações do paciente</p>
-          <p className="mt-1 whitespace-pre-line text-sm text-gray-700">
-            {relatorio.general_notes}
-          </p>
-        </div>
-      )}
-
-      <div className="mt-6 border-t border-gray-200 pt-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <label
-            htmlFor={`devolutiva-${relatorio.id}`}
-            className="font-semibold text-gray-900"
-          >
-            Devolutiva ao paciente
-          </label>
-
-          <Button
-            type="button"
-            outlined
-            size="small"
-            icon="pi pi-sparkles"
-            loading={gerandoIA === relatorio.id}
-            onClick={() =>
-              gerarDevolutivaIA(relatorio, pontosPositivos, pontosAtencao)
-            }
-            label={
-              gerandoIA === relatorio.id
-                ? "Gerando devolutiva..."
-                : "Gerar devolutiva com IA"
-            }
-          />
-        </div>
-
-        <InputTextarea
-          id={`devolutiva-${relatorio.id}`}
-          autoResize
-          rows={6}
-          value={devolutivasIA[relatorio.id] ?? ""}
-          onChange={(e) =>
-            setDevolutivasIA((anterior) => ({
-              ...anterior,
-              [relatorio.id]: e.target.value,
-            }))
-          }
-          className="mt-3 w-full"
-        />
-
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <Button
-            type="button"
-            severity="danger"
-            text
-            size="small"
-            icon="pi pi-trash"
-            label="Excluir relatório"
-            onClick={() => excluirRelatorio(relatorio)}
-          />
-
-          <Button
-            type="button"
-            icon="pi pi-send"
-            label="Enviar devolutiva ao paciente"
-            onClick={() => publicarDevolutiva(relatorio)}
-          />
-        </div>
-      </div>
+      <DevolutivaERelatorio
+        relatorio={relatorio}
+        onRelatorio={(mudanca) =>
+          setRelatorios((atuais) => atuais.map((item) => (item.id === relatorio.id ? { ...item, ...mudanca } : item)))
+        }
+        onEnviar={(texto) => publicarDevolutiva(relatorio, texto)}
+        onExcluir={() => excluirRelatorio(relatorio)}
+      />
     </section>
   );
 })}
