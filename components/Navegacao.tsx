@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "primereact/sidebar";
+import SinoDeAvisos from "@/components/SinoDeAvisos";
 import { api } from "@/lib/api";
 
 type Item = {
@@ -89,14 +90,8 @@ export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educa
         <Marca subtitulo={subtitulo} />
 
         <div className="flex items-center gap-1">
-          {educador ? null : <Link
-            href={ALERTAS.destino}
-            aria-label="Alertas"
-            aria-current={atual(caminho, ALERTAS) ? "page" : undefined}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-white/80 hover:bg-white/10 aria-[current=page]:bg-white aria-[current=page]:text-primary-800"
-          >
-            <i className="pi pi-bell text-lg" aria-hidden />
-          </Link>}
+          {/* Sino de notificações (o atalho de Alertas segue no menu "Mais"). */}
+          {educador ? null : <SinoDeAvisos variante="barra" />}
 
           <button
             type="button"
@@ -113,6 +108,12 @@ export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educa
         <div className="mb-8 px-2">
           <Marca subtitulo={subtitulo} />
         </div>
+
+        {educador ? null : (
+          <div className="mb-3">
+            <SinoDeAvisos variante="menu" />
+          </div>
+        )}
 
         <nav className="flex flex-1 flex-col gap-1" aria-label="Principal">
           {menuLateral.map((item) => (

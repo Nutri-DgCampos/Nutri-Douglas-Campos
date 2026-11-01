@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { UUID } from "./dietas";
 import { Recusa, formulariosDoPaciente, gravarDoPaciente, pacienteDoToken, type TipoDeFormulario } from "./formularios";
 import { origemPermitida, recusar } from "./http";
+import { processarFilaProfissional } from "./pushProfissional";
 import { obterContexto } from "./sessao";
 
 // Rotas do paciente para anamnese e recordatório. Duas portas de entrada com
@@ -28,7 +29,12 @@ export async function gravar(request: Request, pacienteId: string, tipo: string,
   if (!UUID.test(id)) return recusar("Formulário inválido.", 400);
   const corpo = await request.json().catch(() => null);
   try {
-    return NextResponse.json(await gravarDoPaciente(tipo as TipoDeFormulario, pacienteId, id, corpo, enviar));
+    const gravado = await gravarDoPaciente(tipo as TipoDeFormulario, pacienteId, id, corpo, enviar);
+    // Anamnese enviada: o aviso ao nutricionista nasceu por gatilho; envia o push agora.
+    if (enviar && tipo === "anamnese") {
+      after(() => processarFilaProfissional().catch((erro) => console.error("Erro no push ao nutricionista:", erro)));
+    }
+    return NextResponse.json(gravado);
   } catch (erro) {
     if (erro instanceof Recusa) return NextResponse.json({ erro: erro.message, ...erro.extra }, { status: erro.status });
     console.error("Erro ao gravar formulário do paciente:", erro);

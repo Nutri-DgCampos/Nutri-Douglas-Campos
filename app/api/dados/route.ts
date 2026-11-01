@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import type { Consulta } from "@/lib/consulta";
 import { obterPool } from "@/lib/servidor/banco";
 import { origemPermitida, recusar } from "@/lib/servidor/http";
 import { criarRegras } from "@/lib/servidor/permissoes";
+import { processarFilaProfissional } from "@/lib/servidor/pushProfissional";
 import { obterContexto } from "@/lib/servidor/sessao";
 import { executarConsulta } from "@/lib/servidor/sql";
 
@@ -83,6 +84,9 @@ export async function POST(request: Request) {
 
   if (resultado.error) {
     console.error("Erro em /api/dados:", consulta.tabela, resultado.error);
+  } else if (consulta.acao === "insert" && ["patient_reports", "renewal_requests"].includes(consulta.tabela)) {
+    // O aviso ao nutricionista já foi criado por gatilho no banco; envia o push agora.
+    after(() => processarFilaProfissional().catch((erro) => console.error("Erro no push ao nutricionista:", erro)));
   }
 
   return NextResponse.json(resultado, {

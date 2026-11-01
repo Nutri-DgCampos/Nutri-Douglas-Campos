@@ -31,49 +31,60 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
     carregar();
   }, []);
 
-  async function enviar(arquivo: File) {
-    const extensao = TIPOS[arquivo.type];
-
-    if (!extensao) {
+  // Um ou vários arquivos de uma vez: todos no mesmo lote, para o
+  // nutricionista receber um único aviso com a quantidade.
+  async function enviar(arquivos: File[]) {
+    if (arquivos.some((arquivo) => !TIPOS[arquivo.type])) {
       avisar("Envie o exame em PDF, JPG ou PNG.", "warn");
       return;
     }
 
-    if (arquivo.size > 20 * 1024 * 1024) {
-      avisar("O arquivo deve ter no máximo 20 MB.", "warn");
+    if (arquivos.some((arquivo) => arquivo.size > 20 * 1024 * 1024)) {
+      avisar("Cada arquivo deve ter no máximo 20 MB.", "warn");
       return;
     }
 
     setEnviando(true);
+    const lote = crypto.randomUUID();
+    let enviados = 0;
 
     try {
-      const caminho = `${pacienteId}/${crypto.randomUUID()}.${extensao}`;
+      for (const arquivo of arquivos) {
+        const caminho = `${pacienteId}/${crypto.randomUUID()}.${TIPOS[arquivo.type]}`;
 
-      const { error: erroEnvio } = await api.storage
-        .from("exames")
-        .upload(caminho, arquivo, { contentType: arquivo.type });
+        const { error: erroEnvio } = await api.storage
+          .from("exames")
+          .upload(caminho, arquivo, { contentType: arquivo.type });
 
-      if (erroEnvio) {
-        throw new Error(erroEnvio.message);
+        if (erroEnvio) {
+          throw new Error(erroEnvio.message);
+        }
+
+        const resposta = await fetch("/api/exames", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ caminho, nome: arquivo.name, nomeExame, dataExame, lote }),
+        });
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível registrar o exame.");
+        }
+        enviados++;
       }
 
-      const resposta = await fetch("/api/exames", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caminho, nome: arquivo.name, nomeExame, dataExame }),
-      });
-
-      if (!resposta.ok) {
-        throw new Error("Não foi possível registrar o exame.");
-      }
-
-      avisar("Exame enviado ao nutricionista com sucesso!", "success");
+      avisar(arquivos.length > 1 ? `${arquivos.length} exames enviados ao nutricionista com sucesso!` : "Exame enviado ao nutricionista com sucesso!", "success");
       setNomeExame("");
       setDataExame("");
       carregar();
     } catch (erro) {
       console.error("Erro ao enviar exame:", erro);
-      avisar("Não foi possível enviar o exame. Tente novamente.", "error");
+      avisar(
+        enviados > 0
+          ? `${enviados} de ${arquivos.length} exames foram enviados. Envie de novo os que faltaram.`
+          : "Não foi possível enviar o exame. Tente novamente.",
+        "error"
+      );
+      if (enviados > 0) carregar();
     } finally {
       setEnviando(false);
 
@@ -103,10 +114,11 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
         id="arquivo-exame"
         type="file"
         accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+        multiple
         className="sr-only"
         onChange={(evento) => {
-          const arquivo = evento.target.files?.[0];
-          if (arquivo) enviar(arquivo);
+          const arquivos = Array.from(evento.target.files ?? []).slice(0, 10);
+          if (arquivos.length) enviar(arquivos);
         }}
       />
 
@@ -131,7 +143,7 @@ export default function EnvioExame({ pacienteId }: { pacienteId: string }) {
       <Button
         type="button"
         icon="pi pi-upload"
-        label={enviando ? "Enviando exame..." : "Anexar exame"}
+        label={enviando ? "Enviando..." : "Anexar exame (um ou vários arquivos)"}
         loading={enviando}
         outlined
         className="mt-3 w-full"

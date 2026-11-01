@@ -49,6 +49,8 @@ export async function GET(request: Request) {
 }
 
 // Registra um exame já enviado para a pasta do paciente e dispara a análise.
+const LOTE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function POST(request: Request) {
   const pacienteId = await pacienteConectado(request);
 
@@ -74,8 +76,8 @@ export async function POST(request: Request) {
   }
 
   const resultado = await obterPool().query<{ id: string }>(
-    `insert into public.blood_exams (patient_id, file_name, storage_path, exam_name, exam_date)
-     values ($1, $2, $3, $4, $5)
+    `insert into public.blood_exams (patient_id, file_name, storage_path, exam_name, exam_date, lote_envio)
+     values ($1, $2, $3, $4, $5, $6)
      returning id`,
     [
       pacienteId,
@@ -83,6 +85,8 @@ export async function POST(request: Request) {
       caminho,
       typeof dados?.nomeExame === "string" && dados.nomeExame.trim() ? dados.nomeExame.trim().slice(0, 200) : null,
       typeof dados?.dataExame === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dados.dataExame) ? dados.dataExame : null,
+      // Exames enviados juntos: um único aviso ao nutricionista, com a contagem.
+      typeof dados?.lote === "string" && LOTE.test(dados.lote) ? dados.lote : crypto.randomUUID(),
     ]
   );
 

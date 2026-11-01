@@ -414,7 +414,7 @@ async function reconhecerAlerta(alerta: any) {
         </p>
 
         {/* RENOVAÇÕES */}
-        <section className="mt-8">
+        <section id="renovacoes" className="mt-8 scroll-mt-20">
           <h2 className="text-lg font-semibold text-gray-900">
             Renovações
           </h2>

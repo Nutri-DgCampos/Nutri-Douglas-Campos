@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { descricaoDoAparelho } from "@/lib/servidor/avisos";
 import { obterPool } from "@/lib/servidor/banco";
 import { recusar } from "@/lib/servidor/http";
 import { exigirProfissionalDeTreino } from "@/lib/servidor/treinoAcesso";
@@ -20,10 +21,11 @@ export async function POST(request: Request) {
     return recusar("Inscrição inválida.", 400);
   }
   await obterPool().query(
-    `insert into public.push_profissionais (usuario_id, endpoint, p256dh, auth_key) values ($1, $2, $3, $4)
+    `insert into public.push_profissionais (usuario_id, endpoint, p256dh, auth_key, descricao) values ($1, $2, $3, $4, $5)
      on conflict (endpoint) do update
-       set usuario_id = excluded.usuario_id, p256dh = excluded.p256dh, auth_key = excluded.auth_key, atualizado_em = now()`,
-    [profissional.usuarioId, endpoint, p256dh, auth]
+       set usuario_id = excluded.usuario_id, p256dh = excluded.p256dh, auth_key = excluded.auth_key,
+           descricao = excluded.descricao, ativo = true, atualizado_em = now()`,
+    [profissional.usuarioId, endpoint, p256dh, auth, descricaoDoAparelho(request.headers.get("user-agent"))]
   );
   return NextResponse.json({ sucesso: true });
 }
@@ -33,6 +35,6 @@ export async function GET(request: Request) {
   const profissional = await exigirProfissionalDeTreino(request);
   if (profissional instanceof NextResponse) return profissional;
   const endpoint = new URL(request.url).searchParams.get("endpoint") ?? "";
-  const r = await obterPool().query("select 1 from public.push_profissionais where usuario_id = $1 and endpoint = $2", [profissional.usuarioId, endpoint]);
+  const r = await obterPool().query("select 1 from public.push_profissionais where usuario_id = $1 and endpoint = $2 and ativo", [profissional.usuarioId, endpoint]);
   return NextResponse.json({ inscrito: (r.rowCount ?? 0) > 0 });
 }

@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { avisar } from "@/lib/avisos";
 
-// O profissional ativa, neste navegador ou celular, os alertas imediatos do
-// Treino (relato de desconforto). Mesmo service worker e chaves do app.
+// O profissional ativa, neste navegador ou celular, os alertas imediatos
+// (Treino: relato de desconforto; Nutrição: avisos do sino). Mesmo service
+// worker e chaves do app. A permissão só é pedida no clique.
 
 function chaveVapid(chave: string): Uint8Array<ArrayBuffer> {
   const base64 = (chave + "=".repeat((4 - (chave.length % 4)) % 4)).replace(/-/g, "+").replace(/_/g, "/");
@@ -19,7 +20,7 @@ function suportado() {
   return typeof window !== "undefined" && "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
 }
 
-export default function AtivarAlertas() {
+export default function AtivarAlertas({ onAtivado }: { onAtivado?: () => void } = {}) {
   const [estado, setEstado] = useState<"verificando" | "ativo" | "inativo" | "sem_suporte">("verificando");
   const [ativando, setAtivando] = useState(false);
 
@@ -64,7 +65,8 @@ export default function AtivarAlertas() {
         return;
       }
       setEstado("ativo");
-      avisar("Alertas do Treino ativados neste aparelho.", "success");
+      avisar("Alertas ativados neste aparelho.", "success");
+      onAtivado?.();
     } catch {
       avisar("Não foi possível ativar os alertas.", "error");
     } finally {

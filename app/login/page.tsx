@@ -94,6 +94,13 @@ export default function Login() {
       .eq("auth_user_id", user.id)
       .maybeSingle();
 
+    // Link de aviso (sino ou push) aberto sem sessão: volta para ele.
+    const voltar = new URLSearchParams(window.location.search).get("voltar");
+    if (!paciente && voltar && /^\/avisos\/[0-9a-f-]{36}$/i.test(voltar)) {
+      router.push(voltar);
+      return;
+    }
+
     router.push(paciente ? "/area-paciente" : "/");
   }
 

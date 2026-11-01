@@ -3,7 +3,9 @@ import webpush from "web-push";
 import { obterPool } from "./banco";
 import { configurarWebPush } from "./filaDeNotificacoes";
 
-// Push para os profissionais (alerta de desconforto do Treino).
+// Push para os profissionais: alerta de desconforto do Treino e avisos ao
+// nutricionista (anamnese, relatório, exames e renovação, criados por gatilho
+// no banco; ver migração 023).
 //
 // Mesmo provedor e mesmas chaves VAPID do push do paciente, com inscrições e
 // fila próprias: um aviso de profissional nunca vai para o celular de um
@@ -45,7 +47,8 @@ async function reservar() {
       where n.id = (
         select id from public.notificacoes_profissionais
          -- Nova tentativa só depois de alguns minutos (a cada passada do agendador).
-         where (status = 'pendente' and (tentativas = 0 or criada_em < now() - interval '2 minutes' * tentativas))
+         where (status = 'pendente' and liberar_em <= now()
+                and (tentativas = 0 or criada_em < now() - interval '2 minutes' * tentativas))
             or (status = 'processando' and processando_desde < now() - interval '5 minutes')
          order by criada_em
          for update skip locked
@@ -67,7 +70,7 @@ async function finalizar(id: string, status: "enviada" | "falhou" | "sem_disposi
 
 async function enviar(aviso: Reservada) {
   const dispositivos = await obterPool().query<{ id: string; endpoint: string; p256dh: string; auth_key: string }>(
-    "select id, endpoint, p256dh, auth_key from public.push_profissionais where usuario_id = $1",
+    "select id, endpoint, p256dh, auth_key from public.push_profissionais where usuario_id = $1 and ativo",
     [aviso.usuario_id]
   );
   if (!dispositivos.rows.length) return finalizar(aviso.id, "sem_dispositivo", null);

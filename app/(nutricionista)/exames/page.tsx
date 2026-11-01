@@ -11,6 +11,7 @@ import { abrirDocumento } from "@/lib/visualizador";
 
 type Exame = {
   id: string;
+  patient_id: string;
   file_name: string;
   storage_path: string;
   uploaded_at: string;
@@ -33,11 +34,13 @@ export default function ExamesPage() {
   const [exames, setExames] = useState<Exame[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [analisando, setAnalisando] = useState<string | null>(null);
+  // Vindo de um aviso do sino: mostra só os exames daquele paciente.
+  const [pacienteFiltrado, setPacienteFiltrado] = useState<string | null>(null);
 
   async function carregar() {
     const { data, error } = await api
       .from("blood_exams")
-      .select("id, file_name, storage_path, uploaded_at, analysis_status, analysis_text, analysis_error, patients ( name )")
+      .select("id, patient_id, file_name, storage_path, uploaded_at, analysis_status, analysis_text, analysis_error, patients ( name )")
       .order("uploaded_at", { ascending: false });
 
     if (error) {
@@ -51,8 +54,13 @@ export default function ExamesPage() {
   }
 
   useEffect(() => {
+    const paciente = new URLSearchParams(window.location.search).get("paciente");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPacienteFiltrado(paciente && /^[0-9a-f-]{36}$/i.test(paciente) ? paciente : null);
     carregar();
   }, []);
+
+  const exibidos = pacienteFiltrado ? exames.filter((exame) => exame.patient_id === pacienteFiltrado) : exames;
 
   // Enquanto houver análise em andamento, atualiza a lista sozinha.
   useEffect(() => {
@@ -109,7 +117,7 @@ export default function ExamesPage() {
           <div className="mt-6 space-y-3">
             <Skeleton height="10rem" borderRadius="16px" />
           </div>
-        ) : exames.length === 0 ? (
+        ) : exibidos.length === 0 ? (
           <div className="cartao mt-6 p-6 text-center">
             <i className="pi pi-heart text-3xl text-gray-400" aria-hidden />
             <p className="mt-3 font-semibold text-gray-900">Nenhum exame enviado ainda.</p>
@@ -119,7 +127,15 @@ export default function ExamesPage() {
           </div>
         ) : (
           <ul className="mt-6 space-y-4">
-            {exames.map((exame) => (
+            {pacienteFiltrado ? (
+              <li className="flex flex-wrap items-center justify-between gap-2 text-sm text-gray-600">
+                <span>Exames de {exibidos[0]?.patients?.name ?? "um paciente"}, do mais recente para o mais antigo.</span>
+                <button type="button" className="font-semibold text-primary-700 hover:underline" onClick={() => setPacienteFiltrado(null)}>
+                  Ver exames de todos os pacientes
+                </button>
+              </li>
+            ) : null}
+            {exibidos.map((exame) => (
               <li key={exame.id} className="cartao p-5 lg:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
