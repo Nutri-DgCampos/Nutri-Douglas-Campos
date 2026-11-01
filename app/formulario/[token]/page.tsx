@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import FormulariosDoPaciente from "@/components/nutricao/anamnese/FormulariosDoPaciente";
+import FotosCorporais from "@/components/nutricao/anamnese/FotosCorporais";
 
 // Link individual do paciente: anamnese e recordatório sem login.
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export default async function FormularioPage({ params }: { params: Promise<{ tok
       <div className="mx-auto max-w-2xl">
         <p className="text-sm font-semibold text-primary-700">Douglas Campos · Acompanhamento nutricional</p>
         <FormulariosDoPaciente base={`/api/formulario/${encodeURIComponent(token)}`} saudacao />
+        <FotosCorporais base={`/api/formulario/${encodeURIComponent(token)}`} />
         <p className="mt-8 text-center text-xs text-gray-400">
           Este link é só seu. Não compartilhe: ele dá acesso às suas respostas.
         </p>

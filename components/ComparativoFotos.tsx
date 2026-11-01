@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "primereact/button";
 import { SelectButton } from "primereact/selectbutton";
+import SobreposicaoDeFotos from "@/components/SobreposicaoDeFotos";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
 import { type FotoEvolucao, type Perfil, PERFIS, enderecosParaExibir, formatarData } from "@/lib/fotos";
@@ -9,7 +11,8 @@ import { type FotoEvolucao, type Perfil, PERFIS, enderecosParaExibir, formatarDa
 const MAXIMO_DATAS = 3;
 
 // Comparativo das fotos de evolução: um perfil, até três datas lado a lado.
-// Datas favoritas ficam marcadas e entram na seleção inicial.
+// Datas favoritas ficam marcadas e entram na seleção inicial. Arrastar uma
+// foto sobre outra (ou "Sobrepor", no celular) abre a sobreposição.
 export default function ComparativoFotos({ pacienteId }: { pacienteId: string }) {
   const [fotos, setFotos] = useState<FotoEvolucao[] | null>(null);
   const [enderecos, setEnderecos] = useState<Record<string, string>>({});
@@ -17,17 +20,24 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
   const [perfil, setPerfil] = useState<Perfil>("frente");
   // Datas escolhidas pelo nutricionista em cada perfil (enquanto não escolhe, vale a seleção inicial).
   const [escolhas, setEscolhas] = useState<Partial<Record<Perfil, string[]>>>({});
+  // Número do ciclo de dieta de cada foto (só para exibir).
+  const [ciclos, setCiclos] = useState<Record<string, number>>({});
+  const [sobrepor, setSobrepor] = useState<{ base: FotoEvolucao; topo: FotoEvolucao } | null>(null);
+  const arrastada = useRef<FotoEvolucao | null>(null);
 
   useEffect(() => {
     Promise.all([
       api
         .from("fotos_evolucao")
-        .select("id, perfil, data, storage_path")
+        .select("id, perfil, data, storage_path, ciclo_id")
         .eq("patient_id", pacienteId)
         .order("data", { ascending: true }),
       api.from("fotos_datas_favoritas").select("data").eq("patient_id", pacienteId),
-    ]).then(async ([resultadoFotos, resultadoFavoritas]) => {
+      api.from("diet_cycles").select("id, cycle_number").eq("patient_id", pacienteId),
+    ]).then(async ([resultadoFotos, resultadoFavoritas, resultadoCiclos]) => {
       const lista = (resultadoFotos.data ?? []) as FotoEvolucao[];
+      const numeros = Object.fromEntries(((resultadoCiclos.data ?? []) as { id: string; cycle_number: number }[]).map((c) => [c.id, c.cycle_number]));
+      setCiclos(Object.fromEntries(lista.filter((f) => f.ciclo_id && numeros[f.ciclo_id]).map((f) => [f.id, numeros[f.ciclo_id as string]])));
 
       setFavoritas(new Set((resultadoFavoritas.data ?? []).map((item: { data: string }) => item.data)));
       setFotos(lista);
@@ -93,6 +103,8 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
     .filter((foto) => selecionadas.includes(foto.data))
     .sort((a, b) => a.data.localeCompare(b.data));
 
+  const rotuloDaFoto = (foto: FotoEvolucao) => `${formatarData(foto.data)}${ciclos[foto.id] ? ` · ciclo ${ciclos[foto.id]}` : ""}`;
+
   return (
     <section className="mt-6 cartao p-5 lg:p-6">
       <h2 className="text-xl font-bold text-gray-900">Comparativo de fotos</h2>
@@ -148,6 +160,10 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
                             }`}
                           >
                             {formatarData(data)}
+                            {(() => {
+                              const foto = doPerfil.find((f) => f.data === data);
+                              return foto && ciclos[foto.id] ? <span className="ml-1 text-xs font-normal opacity-80">· ciclo {ciclos[foto.id]}</span> : null;
+                            })()}
                           </button>
                           <button
                             type="button"
@@ -172,12 +188,44 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
                   Selecione as datas para comparar.
                 </div>
               ) : (
+                <>
+                {comparadas.length >= 2 ? (
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-gray-500">
+                    <span className="hidden md:inline">Arraste uma foto sobre a outra para sobrepor.</span>
+                    {comparadas.length === 2 ? (
+                      <Button
+                        type="button"
+                        outlined
+                        size="small"
+                        icon="pi pi-clone"
+                        label="Sobrepor as duas fotos"
+                        onClick={() => setSobrepor({ base: comparadas[0], topo: comparadas[1] })}
+                      />
+                    ) : (
+                      <span className="md:hidden">Para sobrepor no celular, deixe duas datas selecionadas.</span>
+                    )}
+                  </div>
+                ) : null}
                 <div className={`grid gap-3 ${comparadas.length === 1 ? "grid-cols-1 sm:max-w-xs" : comparadas.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
                   {comparadas.map((foto) => (
-                    <figure key={foto.id} className="min-w-0">
+                    <figure
+                      key={foto.id}
+                      className="min-w-0"
+                      draggable={comparadas.length >= 2}
+                      onDragStart={() => (arrastada.current = foto)}
+                      onDragOver={(e) => {
+                        if (arrastada.current && arrastada.current.id !== foto.id) e.preventDefault();
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        const topo = arrastada.current;
+                        arrastada.current = null;
+                        if (topo && topo.id !== foto.id) setSobrepor({ base: foto, topo });
+                      }}
+                    >
                       <figcaption className="mb-2 flex items-center justify-center gap-1 text-sm font-semibold text-gray-800">
                         {favoritas.has(foto.data) && <i className="pi pi-star-fill text-xs text-amber-500" aria-hidden />}
-                        {formatarData(foto.data)}
+                        {rotuloDaFoto(foto)}
                       </figcaption>
                       <a href={enderecos[foto.storage_path]} target="_blank" rel="noopener noreferrer" className="block aspect-[3/4] overflow-hidden rounded-xl bg-gray-100">
                         {enderecos[foto.storage_path] && (
@@ -186,17 +234,26 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
                             src={enderecos[foto.storage_path]}
                             alt={`${PERFIS.find((p) => p.chave === foto.perfil)?.rotulo} em ${formatarData(foto.data)}`}
                             className="h-full w-full object-cover"
+                            draggable={false}
                           />
                         )}
                       </a>
                     </figure>
                   ))}
                 </div>
+                </>
               )}
             </div>
           </div>
         </>
       )}
+      {sobrepor && enderecos[sobrepor.base.storage_path] && enderecos[sobrepor.topo.storage_path] ? (
+        <SobreposicaoDeFotos
+          base={{ src: enderecos[sobrepor.base.storage_path], rotulo: rotuloDaFoto(sobrepor.base) }}
+          topo={{ src: enderecos[sobrepor.topo.storage_path], rotulo: rotuloDaFoto(sobrepor.topo) }}
+          onFechar={() => setSobrepor(null)}
+        />
+      ) : null}
     </section>
   );
 }

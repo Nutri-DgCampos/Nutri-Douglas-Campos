@@ -16,6 +16,8 @@ export type FotoEvolucao = {
   perfil: Perfil;
   data: string;
   storage_path: string;
+  // Ciclo de dieta da foto (nulo: antes do 1º ciclo ou entre ciclos).
+  ciclo_id?: string | null;
 };
 
 export function formatarData(dataISO: string) {
