@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { buscarAlimentos } from "@/lib/servidor/alimentos";
 import { obterPool } from "@/lib/servidor/banco";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
+import { criarCopia, gravarNutrientesDaCopia } from "@/lib/servidor/copiaDeAlimento";
+import { UUID } from "@/lib/servidor/dietas";
 import { gravarNutrientes, validarDadosDoAlimento } from "./validacao";
 
 export const runtime = "nodejs";
@@ -26,7 +28,9 @@ export async function GET(request: Request) {
   return NextResponse.json({ alimentos }, { headers: { "Cache-Control": "no-store" } });
 }
 
-// Cadastro manual de alimento (origem distinta da TACO).
+// Cadastro manual de alimento (origem distinta da TACO). Com copiarDe, cria
+// a cópia de outro alimento (valores, medidas e substituições) e aplica por
+// cima só os valores alterados no formulário.
 export async function POST(request: Request) {
   const contexto = await exigirNutricionista(request);
 
@@ -34,7 +38,12 @@ export async function POST(request: Request) {
     return contexto;
   }
 
-  const validado = await validarDadosDoAlimento(await request.json().catch(() => null), true);
+  const corpo = await request.json().catch(() => null);
+  const copiarDe = corpo && typeof corpo === "object" ? (corpo as { copiarDe?: unknown }).copiarDe : undefined;
+  if (copiarDe !== undefined && (typeof copiarDe !== "string" || !UUID.test(copiarDe))) {
+    return recusar("Alimento de origem inválido.", 400);
+  }
+  const validado = await validarDadosDoAlimento(corpo, true);
 
   if ("erro" in validado) {
     return recusar(validado.erro, 400);
@@ -46,14 +55,24 @@ export async function POST(request: Request) {
   try {
     await cliente.query("begin");
 
-    const resultado = await cliente.query<{ id: string }>(
-      `insert into public.alimentos (nome, categoria_id, fonte, unidade_base, densidade_g_ml)
-       values ($1, $2, 'manual', $3, $4) returning id`,
-      [nome, categoriaId, unidadeBase, densidade]
-    );
-
-    const id = resultado.rows[0].id;
-    await gravarNutrientes(cliente, id, "manual", nutrientes ?? {});
+    let id: string;
+    if (copiarDe) {
+      const copia = await criarCopia(cliente, copiarDe, { nome: nome!, categoriaId: categoriaId ?? null, unidadeBase: unidadeBase!, densidade: densidade ?? null });
+      if (!copia) {
+        await cliente.query("rollback");
+        return recusar("Alimento de origem não encontrado.", 404);
+      }
+      id = copia;
+      await gravarNutrientesDaCopia(cliente, id, nutrientes ?? {});
+    } else {
+      const resultado = await cliente.query<{ id: string }>(
+        `insert into public.alimentos (nome, categoria_id, fonte, unidade_base, densidade_g_ml)
+         values ($1, $2, 'manual', $3, $4) returning id`,
+        [nome, categoriaId, unidadeBase, densidade]
+      );
+      id = resultado.rows[0].id;
+      await gravarNutrientes(cliente, id, "manual", nutrientes ?? {});
+    }
 
     await cliente.query("commit");
     return NextResponse.json({ id }, { status: 201 });

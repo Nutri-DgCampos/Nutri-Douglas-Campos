@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { composicoes, fonteDoAlimento } from "@/lib/servidor/alimentos";
 import { obterPool } from "@/lib/servidor/banco";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
+import { gravarNutrientesDaCopia, reclassificarCopia } from "@/lib/servidor/copiaDeAlimento";
 import { gravarNutrientes, validarDadosDoAlimento } from "../validacao";
 
 export const runtime = "nodejs";
@@ -29,8 +30,10 @@ export async function GET(
   const pool = obterPool();
   const alimento = await pool.query(
     `select a.id, a.nome, a.categoria_id, c.nome as categoria, a.fonte, f.nome as fonte_nome,
-            a.codigo_origem, a.unidade_base, a.densidade_g_ml::float as densidade_g_ml, a.arquivado
+            a.codigo_origem, a.unidade_base, a.densidade_g_ml::float as densidade_g_ml, a.arquivado,
+            a.copiado_de, o.nome as copiado_de_nome, o.codigo_origem as copiado_de_codigo
        from public.alimentos a
+       left join public.alimentos o on o.id = a.copiado_de
        join public.alimentos_fontes f on f.codigo = a.fonte
        left join public.alimentos_categorias c on c.id = a.categoria_id
       where a.id = $1`,
@@ -128,6 +131,7 @@ export async function PATCH(
     }
 
     const importado = atual.fonte !== "manual";
+    const copia = atual.copiado_de !== null;
 
     if (importado && (validado.nome !== undefined || validado.categoriaId !== undefined || validado.unidadeBase !== undefined)) {
       await cliente.query("rollback");
@@ -172,7 +176,11 @@ export async function PATCH(
         }
       }
 
-      await gravarNutrientes(cliente, id, "manual", validado.nutrientes);
+      if (copia) await gravarNutrientesDaCopia(cliente, id, validado.nutrientes);
+      else await gravarNutrientes(cliente, id, "manual", validado.nutrientes);
+    } else if (copia && validado.unidadeBase !== undefined) {
+      // Mudou a unidade: valores deixam de ser comparáveis com o original.
+      await reclassificarCopia(cliente, id);
     }
 
     await cliente.query("commit");

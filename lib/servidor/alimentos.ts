@@ -87,8 +87,8 @@ export async function buscarAlimentos(texto: string, opcoes: { limite?: number; 
 }
 
 export async function fonteDoAlimento(cliente: PoolClient, id: string) {
-  const resultado = await cliente.query<{ fonte: string; unidade_base: string }>(
-    "select fonte, unidade_base from public.alimentos where id = $1 for update",
+  const resultado = await cliente.query<{ fonte: string; unidade_base: string; copiado_de: string | null }>(
+    "select fonte, unidade_base, copiado_de from public.alimentos where id = $1 for update",
     [id]
   );
   return resultado.rows[0] ?? null;

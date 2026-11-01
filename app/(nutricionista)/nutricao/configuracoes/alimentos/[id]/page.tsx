@@ -35,7 +35,12 @@ type Alimento = {
   unidade_base: "g" | "ml";
   densidade_g_ml: number | null;
   arquivado: boolean;
+  copiado_de?: string | null;
+  copiado_de_nome?: string | null;
+  copiado_de_codigo?: string | null;
 };
+// Alimento de origem no modo "Copiar alimento" (nada é gravado até Salvar).
+type Origem = { id: string; nome: string; codigo: string | null; valores: Record<string, Valor>; medidas: number; substituicoes: number };
 type MedidaEditavel = { id?: string; nome_singular: string; nome_plural: string; quantidade: string; padrao: boolean; sugerida?: boolean };
 type MedidaDoSubstituto = { id: string; nome_singular: string; nome_plural: string; quantidade: number; padrao: boolean };
 type SubstituicaoEditavel = {
@@ -116,6 +121,12 @@ function comPadroes(cadastradas: MedidaEditavel[]): MedidaEditavel[] {
 }
 
 // Volta para a dieta em elaboração (melhoria 2.0): só caminhos do módulo.
+function alimentoACopiar() {
+  if (typeof window === "undefined") return null;
+  const valor = new URLSearchParams(window.location.search).get("copiar");
+  return valor && /^[0-9a-f-]{36}$/i.test(valor) ? valor : null;
+}
+
 function caminhoDeVolta() {
   if (typeof window === "undefined") return null;
   const valor = new URLSearchParams(window.location.search).get("voltar");
@@ -146,6 +157,7 @@ export default function AlimentoPage() {
   const [medidas, setMedidas] = useState<MedidaEditavel[]>([]);
   const [substituicoes, setSubstituicoes] = useState<SubstituicaoEditavel[]>([]);
   const [salvando, setSalvando] = useState<string | null>(null);
+  const [origem, setOrigem] = useState<Origem | null>(null);
 
   // Recarrega só as seções indicadas, para não descartar o que ainda não
   // foi salvo nas outras (ex.: salvar medidas não apaga substituições em edição).
@@ -159,7 +171,30 @@ export default function AlimentoPage() {
       setCategorias((listaCategorias.data ?? []) as { id: number; nome: string }[]);
     }
 
-    if (novo) return;
+    if (novo) {
+      // "Copiar alimento": formulário preenchido com o original.
+      const copiar = alimentoACopiar();
+      if (!copiar || !secoes.includes("dados")) return;
+      const r = await fetch(`/api/nutricao/alimentos/${copiar}`, { cache: "no-store" });
+      if (!r.ok) return;
+      const d = await r.json();
+      const original = d.alimento as Alimento;
+      const valoresOriginais = Object.fromEntries((d.valores as Valor[]).map((v) => [v.nutriente, v]));
+      setOrigem({
+        id: original.id,
+        nome: original.nome,
+        codigo: original.codigo_origem,
+        valores: valoresOriginais,
+        medidas: (d.medidas as unknown[]).length,
+        substituicoes: (d.substituicoes as unknown[]).length,
+      });
+      setValores(valoresOriginais);
+      setNome(`${original.nome} (Cópia)`);
+      setCategoriaId(original.categoria_id ? String(original.categoria_id) : "");
+      setUnidade(original.unidade_base);
+      setDensidade(texto(original.densidade_g_ml));
+      return;
+    }
 
     const resposta = await fetch(`/api/nutricao/alimentos/${id}`, { cache: "no-store" });
     if (!resposta.ok) {
@@ -237,16 +272,19 @@ export default function AlimentoPage() {
     }
 
     if (novo) {
-      const nutrientes: Record<string, number> = {};
+      const nutrientes: Record<string, number | null> = {};
       for (const [codigo, valor] of Object.entries(composicaoEditada)) {
         const convertido = numero(valor);
         if (valor.trim() !== "" && convertido === null) {
           avisar("Há valores de composição inválidos.", "warn");
           return;
         }
+        // Na cópia, campo esvaziado = remover o valor copiado (fica "—", nunca zero).
         if (convertido !== null) nutrientes[codigo] = convertido;
+        else if (origem?.valores[codigo]) nutrientes[codigo] = null;
       }
       corpo.nutrientes = nutrientes;
+      if (origem) corpo.copiarDe = origem.id;
     }
 
     setSalvando("dados");
@@ -263,7 +301,7 @@ export default function AlimentoPage() {
       return;
     }
 
-    avisar(novo ? "Alimento cadastrado." : "Dados salvos.", "success");
+    avisar(novo ? (origem ? "Cópia criada." : "Alimento cadastrado.") : "Dados salvos.", "success");
     if (novo) router.replace(`/nutricao/configuracoes/alimentos/${resultado.id}`);
     else carregar(["dados"]);
   }
@@ -290,6 +328,23 @@ export default function AlimentoPage() {
 
   // ---------------------------------------------------------- composição
   const editavel = (codigo: string) => novo || !importado || !valores[codigo] || valores[codigo].fonte === "manual";
+  const ehCopia = Boolean(origem || alimento?.copiado_de);
+
+  // Selo da fonte do valor. Na cópia: "TACO" enquanto igual ao original,
+  // "Personalizado" quando alterado ou preenchido (no modo cópia, ao vivo).
+  function seloDaFonte(codigo: string) {
+    const valor = valores[codigo];
+    if (origem) {
+      const editado = composicaoEditada[codigo];
+      if (editado === undefined) return valor ? (valor.fonte === "manual" ? "Personalizado" : valor.fonte) : "";
+      const convertido = numero(editado);
+      if (convertido === null) return "";
+      return valor && !valor.traco && valor.valor === convertido && valor.fonte !== "manual" ? valor.fonte : "Personalizado";
+    }
+    if (!valor) return "";
+    if (valor.fonte === "manual") return ehCopia ? "Personalizado" : "próprio";
+    return valor.fonte;
+  }
 
   async function salvarComposicao() {
     const nutrientes: Record<string, number | null> = {};
@@ -512,10 +567,37 @@ export default function AlimentoPage() {
                 severity={novo || !importado ? "success" : "info"}
                 className="selo-status"
               />
+              {ehCopia ? (
+                <Tag
+                  value={`Cópia de ${origem?.nome ?? alimento?.copiado_de_nome ?? "alimento"}`}
+                  severity="secondary"
+                  className="selo-status"
+                />
+              ) : null}
               {alimento?.arquivado && <Tag value="Arquivado" severity="secondary" className="selo-status" />}
             </div>
-            <h1 className="mt-2 text-3xl font-bold text-gray-900">{novo ? "Novo alimento" : alimento?.nome}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900">{novo ? (origem ? "Copiar alimento" : "Novo alimento") : alimento?.nome}</h1>
+              {importado && !novo ? (
+                <Button
+                  type="button"
+                  outlined
+                  size="small"
+                  icon="pi pi-copy"
+                  label="Copiar alimento"
+                  onClick={() => router.push(`/nutricao/configuracoes/alimentos/novo?copiar=${id}`)}
+                />
+              ) : null}
+            </div>
             {importado && <p className="mt-1 text-sm text-gray-500">{alimento?.fonte_nome}</p>}
+            {origem ? (
+              <p className="mt-1 max-w-2xl text-sm text-gray-600">
+                Nada é gravado até você clicar em Salvar cópia. O original ({origem.codigo ? `TACO nº ${origem.codigo}` : origem.nome}) não muda.
+                {origem.medidas || origem.substituicoes
+                  ? ` Também serão copiadas ${origem.medidas} ${origem.medidas === 1 ? "medida caseira" : "medidas caseiras"} e ${origem.substituicoes} ${origem.substituicoes === 1 ? "substituição" : "substituições"}.`
+                  : ""}
+              </p>
+            ) : null}
           </div>
           {!novo && (
             <Button
@@ -591,6 +673,11 @@ export default function AlimentoPage() {
             <h2 className="font-bold text-gray-900">Composição por 100 {unidadeTexto}</h2>
             <span className="text-xs text-gray-500">“Tr” = traço · “—” = dado não disponível</span>
           </div>
+          {ehCopia && (
+            <p className="border-b border-gray-200 bg-gray-50 px-5 py-2 text-xs text-gray-600">
+              “TACO” = valor igual ao original · “Personalizado” = valor alterado ou preenchido por você. Campo em branco = dado não disponível (não é zero).
+            </p>
+          )}
           {importado && (
             <p className="border-b border-gray-200 bg-gray-50 px-5 py-2 text-xs text-gray-600">
               Valores da TACO não podem ser alterados. Os campos em branco podem ser completados por você e ficam identificados como cadastro próprio.
@@ -627,7 +714,7 @@ export default function AlimentoPage() {
                                   aria-label={item.nome}
                                   inputMode="decimal"
                                   value={composicaoEditada[item.codigo] ?? texto(valor?.valor)}
-                                  placeholder="—"
+                                  placeholder={valor?.traco ? "Tr" : "—"}
                                   onChange={(evento) => setComposicaoEditada((atuais) => ({ ...atuais, [item.codigo]: evento.target.value }))}
                                   className="h-8 w-full px-2 text-right"
                                 />
@@ -637,7 +724,7 @@ export default function AlimentoPage() {
                             </td>
                             <td className="w-12 py-1 pl-2 text-xs text-gray-500">{item.unidade}</td>
                             <td className="w-16 py-1 text-right text-[10px] uppercase text-gray-400">
-                              {valor ? (valor.fonte === "manual" ? "próprio" : valor.fonte) : ""}
+                              {seloDaFonte(item.codigo)}
                             </td>
                           </tr>
                         );
@@ -649,7 +736,12 @@ export default function AlimentoPage() {
           </div>
           <div className="flex justify-end border-t border-gray-200 px-5 py-3">
             {novo ? (
-              <Button type="button" icon="pi pi-check" label="Cadastrar alimento" loading={salvando === "dados"} onClick={salvarDados} />
+              <div className="flex gap-2">
+                {origem ? (
+                  <Button type="button" label="Cancelar" severity="secondary" outlined onClick={() => router.push(`/nutricao/configuracoes/alimentos/${origem.id}`)} />
+                ) : null}
+                <Button type="button" icon="pi pi-check" label={origem ? "Salvar cópia" : "Cadastrar alimento"} loading={salvando === "dados"} onClick={salvarDados} />
+              </div>
             ) : (
               <Button type="button" icon="pi pi-check" label="Salvar composição" loading={salvando === "composicao"} onClick={salvarComposicao} />
             )}
