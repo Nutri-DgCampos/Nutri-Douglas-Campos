@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { obterPool } from "@/lib/servidor/banco";
 import { origemPermitida, recusar } from "@/lib/servidor/http";
 import { obterContexto } from "@/lib/servidor/sessao";
+import { profissionalDeTreino, podeAcompanharAluno } from "@/lib/servidor/treinoAcesso";
 import { analisarTreino } from "@/lib/servidor/treinos";
 
 export const runtime = "nodejs";
@@ -9,7 +10,7 @@ export const runtime = "nodejs";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Refaz a leitura de um treino (por exemplo, depois de uma falha).
-// Vale para o nutricionista e para o próprio paciente.
+// Vale para o próprio paciente e para os profissionais do Treino que o acompanham.
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -37,10 +38,13 @@ export async function POST(
 
   const treino = resultado.rows[0];
 
-  if (
-    !treino ||
-    (contexto.papel !== "nutricionista" && treino.patient_id !== contexto.pacienteId)
-  ) {
+  const profissional = await profissionalDeTreino(contexto);
+  const autorizado =
+    treino &&
+    (treino.patient_id === contexto.pacienteId ||
+      (profissional !== null && (await podeAcompanharAluno(profissional, treino.patient_id))));
+
+  if (!autorizado) {
     return recusar("Treino não encontrado.", 404);
   }
 

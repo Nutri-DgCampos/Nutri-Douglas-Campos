@@ -315,7 +315,7 @@ buscarRelatorios();
                       ? "Leitura falhou"
                       : "Em leitura"
               }
-              onClick={treino ? () => router.push(`/pacientes/${paciente.id}/treino`) : undefined}
+              onClick={() => router.push(`/treino/alunos/${paciente.id}?de=ficha`)}
             />
 
           </div>

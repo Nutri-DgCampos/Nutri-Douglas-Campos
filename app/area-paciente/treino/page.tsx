@@ -7,7 +7,7 @@ import BotaoVoltar from "@/components/BotaoVoltar";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import PainelTreino, { type RegistroDoDia } from "@/components/PainelTreino";
 import { avisar } from "@/lib/avisos";
-import { planoComRegistros, type ChaveDia, type ExercicioRegistrado, type PlanoDeTreino, type SessaoRegistrada } from "@/lib/treino";
+import { planoComRegistros, type ChaveDia, type RelatoDeDesconforto, type ExercicioRegistrado, type PlanoDeTreino, type SessaoRegistrada } from "@/lib/treino";
 
 type Treino = {
   prescricao: { id: string; origem: "externa" | "profissional"; plano: PlanoDeTreino };
@@ -50,6 +50,19 @@ export default function TreinoPacientePage() {
     return true;
   }
 
+  // Devolve null quando gravado; senão, a mensagem para o aluno. Sem
+  // conexão, não afirma que o profissional foi avisado.
+  async function relatarDesconforto(relato: RelatoDeDesconforto) {
+    const resposta = await fetch("/api/area-paciente/treino/desconforto", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(relato),
+    }).catch(() => null);
+    if (!resposta) return "Sem conexão: o relato ainda não foi enviado. Tente de novo quando a internet voltar.";
+    if (!resposta.ok) return (await resposta.json().catch(() => null))?.erro ?? "Não foi possível enviar o relato. Tente de novo.";
+    return null;
+  }
+
   return (
     <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6">
       <div className="mx-auto max-w-md lg:max-w-5xl">
@@ -77,6 +90,7 @@ export default function TreinoPacientePage() {
               anteriores={treino.anteriores}
               datas={treino.datas}
               onRegistrar={registrar}
+              onRelatarDesconforto={relatarDesconforto}
             />
           )}
         </div>

@@ -25,13 +25,13 @@ function atual(caminho: string, item: Item) {
   return caminho.startsWith(item.destino);
 }
 
-function Marca() {
+function Marca({ subtitulo = "Acompanhamento nutricional" }: { subtitulo?: string }) {
   return (
     <div className="leading-tight">
       <p className="font-[family-name:var(--fonte-titulo)] text-lg font-bold tracking-tight">
         Douglas Campos
       </p>
-      <p className="text-xs text-white/60">Acompanhamento nutricional</p>
+      <p className="text-xs text-white/60">{subtitulo}</p>
     </div>
   );
 }
@@ -58,34 +58,45 @@ const PAGAMENTOS: Item = { rotulo: "Pagamentos", icone: "pi-wallet", destino: "/
 const EXAMES: Item = { rotulo: "Exames de sangue", icone: "pi-heart", destino: "/exames" };
 const PARCEIROS: Item = { rotulo: "Parceiros", icone: "pi-briefcase", destino: "/parceiros" };
 const NUTRICAO: Item = { rotulo: "Módulo de Nutrição", icone: "pi-th-large", destino: "/nutricao" };
+const TREINO: Item = { rotulo: "Módulo de Treino", icone: "pi-bolt", destino: "/treino" };
 
 // Menu lateral (computador): todos os itens.
-const MENU_LATERAL = [INICIO, PACIENTES, NUTRICAO, RELATORIOS, DIETAS, ALERTAS, PAGAMENTOS, EXAMES, PARCEIROS];
+const MENU_LATERAL = [INICIO, PACIENTES, NUTRICAO, TREINO, RELATORIOS, DIETAS, ALERTAS, PAGAMENTOS, EXAMES, PARCEIROS];
 
 // Barra inferior (celular): quatro abas e "Mais" com o restante.
 const ABAS_CELULAR = [INICIO, PACIENTES, RELATORIOS, DIETAS];
-const MENU_MAIS = [NUTRICAO, PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
+const MENU_MAIS = [NUTRICAO, TREINO, PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
 
-export function NavegacaoNutri() {
+// Educador físico: só o Módulo de Treino.
+const TREINO_EDUCADOR: Item = { rotulo: "Alunos", icone: "pi-bolt", destino: "/treino" };
+const MENUS = {
+  admin: { lateral: MENU_LATERAL, abas: ABAS_CELULAR, mais: MENU_MAIS },
+  educador: { lateral: [TREINO_EDUCADOR], abas: [TREINO_EDUCADOR], mais: [] as Item[] },
+};
+
+export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educador" }) {
   const caminho = usePathname();
   const sair = useSair();
   const [maisAberto, setMaisAberto] = useState(false);
-  const algumDoMaisAtual = MENU_MAIS.some((item) => atual(caminho, item));
+  const { lateral: menuLateral, abas: abasCelular, mais: menuMais } = MENUS[perfil];
+  const educador = perfil === "educador";
+  const subtitulo = educador ? "Módulo de Treino" : undefined;
+  const algumDoMaisAtual = menuMais.some((item) => atual(caminho, item));
 
   return (
     <>
       <header className="barra-superior">
-        <Marca />
+        <Marca subtitulo={subtitulo} />
 
         <div className="flex items-center gap-1">
-          <Link
+          {educador ? null : <Link
             href={ALERTAS.destino}
             aria-label="Alertas"
             aria-current={atual(caminho, ALERTAS) ? "page" : undefined}
             className="flex h-11 w-11 items-center justify-center rounded-full text-white/80 hover:bg-white/10 aria-[current=page]:bg-white aria-[current=page]:text-primary-800"
           >
             <i className="pi pi-bell text-lg" aria-hidden />
-          </Link>
+          </Link>}
 
           <button
             type="button"
@@ -100,11 +111,11 @@ export function NavegacaoNutri() {
 
       <aside className="menu-lateral">
         <div className="mb-8 px-2">
-          <Marca />
+          <Marca subtitulo={subtitulo} />
         </div>
 
         <nav className="flex flex-1 flex-col gap-1" aria-label="Principal">
-          {MENU_LATERAL.map((item) => (
+          {menuLateral.map((item) => (
             <Link
               key={item.destino}
               href={item.destino}
@@ -129,7 +140,7 @@ export function NavegacaoNutri() {
       </aside>
 
       <nav className="barra-inferior" aria-label="Principal">
-        {ABAS_CELULAR.map((item) => (
+        {abasCelular.map((item) => (
           <Link
             key={item.destino}
             href={item.destino}
@@ -161,7 +172,7 @@ export function NavegacaoNutri() {
         className="h-auto rounded-t-2xl"
       >
         <nav className="flex flex-col gap-1 pb-[env(safe-area-inset-bottom)]" aria-label="Mais opções">
-          {MENU_MAIS.map((item) => (
+          {menuMais.map((item) => (
             <Link
               key={item.destino}
               href={item.destino}

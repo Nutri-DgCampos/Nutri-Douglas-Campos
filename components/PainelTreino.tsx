@@ -18,11 +18,13 @@ import {
   type PlanoDeTreino,
   type SessaoRegistrada,
   type SituacaoDaSessao,
+  type RelatoDeDesconforto as Relato,
   formatarNumero,
   kcalSemanais,
   nivelDoTreino,
   volumePorGrupo,
 } from "@/lib/treino";
+import RelatoDeDesconforto from "@/components/treino/RelatoDeDesconforto";
 
 const COR_DO_NIVEL: Record<Nivel, "info" | "success" | "warning" | "danger"> = {
   Iniciante: "info",
@@ -54,6 +56,7 @@ function dataCurta(iso: string) {
 // gasto calórico estimado. Com onRegistrar, o aluno informa o que fez na
 // sessão da semana: os números, a situação e uma observação. A prescrição
 // (prescricao) não muda; o painel mostra os valores mais recentes (plano).
+// Com onRelatarDesconforto, o modal do dia oferece "Relatar desconforto".
 export default function PainelTreino({
   plano,
   prescricao,
@@ -61,6 +64,7 @@ export default function PainelTreino({
   anteriores,
   datas,
   onRegistrar,
+  onRelatarDesconforto,
 }: {
   plano: PlanoDeTreino;
   prescricao?: PlanoDeTreino;
@@ -68,11 +72,14 @@ export default function PainelTreino({
   anteriores?: Partial<Record<ChaveDia, Record<number, { carga_kg: number; data: string }>>>;
   datas?: Record<ChaveDia, string>;
   onRegistrar?: (registro: RegistroDoDia) => Promise<boolean>;
+  // Devolve null quando o relato foi gravado, ou a mensagem de erro.
+  onRelatarDesconforto?: (relato: Relato) => Promise<string | null>;
 }) {
   const [diaAberto, setDiaAberto] = useState<ChaveDia | null>(null);
   const [rascunho, setRascunho] = useState<DiaDeTreino | null>(null);
   const [avaliacao, setAvaliacao] = useState<Avaliacao>({ situacao: null, dataEfetiva: "", motivo: "", observacao: "" });
   const [salvando, setSalvando] = useState(false);
+  const [relatando, setRelatando] = useState(false);
   const onSalvar = onRegistrar;
 
   const volumes = useMemo(() => volumePorGrupo(plano), [plano]);
@@ -353,7 +360,31 @@ export default function PainelTreino({
             </label>
           </section>
         ) : null}
+
+        {rascunho && onRelatarDesconforto ? (
+          <div className="mt-3 flex justify-start">
+            <Button
+              type="button"
+              text
+              severity="danger"
+              size="small"
+              icon="pi pi-exclamation-triangle"
+              label="Relatar desconforto"
+              onClick={() => setRelatando(true)}
+            />
+          </div>
+        ) : null}
       </Dialog>
+
+      {onRelatarDesconforto ? (
+        <RelatoDeDesconforto
+          visivel={relatando}
+          dia={rascunho?.dia ?? null}
+          exercicios={rascunho?.exercicios.map((e) => e.nome) ?? []}
+          onFechar={() => setRelatando(false)}
+          onEnviar={onRelatarDesconforto}
+        />
+      ) : null}
     </div>
   );
 }

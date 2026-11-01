@@ -9,7 +9,8 @@ import { banco } from "./banco";
 // A reserva usa "for update skip locked": várias execuções ao mesmo tempo
 // (agendador e envio imediato) não pegam o mesmo aviso.
 
-function configurarWebPush() {
+// Também usada pelo push dos profissionais (pushProfissional.ts).
+export function configurarWebPush() {
   const chavePublica = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const chavePrivada = process.env.VAPID_PRIVATE_KEY;
   const identificacao = process.env.VAPID_SUBJECT;

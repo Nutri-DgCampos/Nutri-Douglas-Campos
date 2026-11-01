@@ -245,3 +245,77 @@ export function planoComRegistros(plano: PlanoDeTreino, ultimos: Record<string, 
     })),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Relato de desconforto (T2). Percepção do aluno: desconforto leve, ele
+// continua; incômodo mais acentuado, ele para o exercício. O sistema só
+// registra e avisa o profissional; não diagnostica nem muda o treino.
+
+export const REGIOES_DO_CORPO = [
+  "Pescoço",
+  "Ombro",
+  "Cotovelo",
+  "Punho ou mão",
+  "Peito",
+  "Costas (parte alta)",
+  "Lombar",
+  "Abdômen",
+  "Quadril",
+  "Coxa",
+  "Joelho",
+  "Panturrilha",
+  "Tornozelo ou pé",
+] as const;
+
+export type CondutaNoDesconforto = "continuei" | "parei";
+
+export const CONDUTAS: { valor: CondutaNoDesconforto; rotulo: string }[] = [
+  { valor: "continuei", rotulo: "Desconforto leve: continuei o exercício" },
+  { valor: "parei", rotulo: "Incômodo mais acentuado: parei o exercício" },
+];
+
+export const ORIENTACAO_DESCONFORTO = [
+  "Desconforto leve: você pode continuar, com atenção ao movimento.",
+  "Incômodo mais acentuado: pare o exercício.",
+  "Dor forte ou repentina, dor no peito, falta de ar, tontura ou desmaio: interrompa o treino e procure atendimento médico.",
+];
+
+export type RelatoDeDesconforto = {
+  chaveCliente: string;
+  dia: ChaveDia | null;
+  exercicio: string | null;
+  regiao: string;
+  intensidade: number;
+  conduta: CondutaNoDesconforto;
+  comentario: string | null;
+};
+
+const UUID_RELATO = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function textoDoRelato(valor: unknown, limite: number, umaLinha = true) {
+  if (valor === null || valor === undefined) return null;
+  if (typeof valor !== "string") return undefined;
+  const limpo = umaLinha ? valor.trim().replace(/\s+/g, " ") : valor.trim();
+  if (limpo.length > limite) return undefined;
+  return limpo || null;
+}
+
+// Confere o relato (no aparelho e no servidor). Devolve o relato limpo ou a
+// mensagem do primeiro problema.
+export function validarDesconforto(corpo: unknown): { relato: RelatoDeDesconforto } | { erro: string } {
+  const d = (corpo ?? {}) as Record<string, unknown>;
+  if (typeof d.chaveCliente !== "string" || !UUID_RELATO.test(d.chaveCliente)) return { erro: "Relato inválido." };
+  const dia = d.dia === null || d.dia === undefined ? null : (d.dia as ChaveDia);
+  if (dia !== null && !DIAS.some((x) => x.chave === dia)) return { erro: "Dia inválido." };
+  const regiao = textoDoRelato(d.regiao, 80);
+  if (!regiao) return { erro: "Informe a região do desconforto." };
+  const intensidade = d.intensidade;
+  if (typeof intensidade !== "number" || !Number.isInteger(intensidade) || intensidade < 0 || intensidade > 10)
+    return { erro: "Informe a intensidade, de 0 a 10." };
+  if (d.conduta !== "continuei" && d.conduta !== "parei") return { erro: "Informe se continuou ou parou o exercício." };
+  const exercicio = textoDoRelato(d.exercicio, 160);
+  if (exercicio === undefined) return { erro: "Exercício inválido." };
+  const comentario = textoDoRelato(d.comentario, 1000, false);
+  if (comentario === undefined) return { erro: "Comentário com mais de 1000 caracteres." };
+  return { relato: { chaveCliente: d.chaveCliente, dia, exercicio, regiao, intensidade, conduta: d.conduta, comentario } };
+}

@@ -1,4 +1,5 @@
 import { processarFila } from "@/lib/servidor/filaDeNotificacoes";
+import { processarFilaProfissional } from "@/lib/servidor/pushProfissional";
 import { autorizadoPorCron as chamadaDoCron } from "@/lib/servidor/http";
 import { obterContexto } from "@/lib/servidor/sessao";
 import { NextResponse } from "next/server";
@@ -62,6 +63,11 @@ if (autorizadoPorCron) {
 }
 
 const resultado = await processarFila(autorizadoPorCron ? 50 : 1);
+
+// Alertas aos profissionais (Treino) que não saíram no envio imediato.
+if (autorizadoPorCron) {
+  await processarFilaProfissional(50).catch((erro) => console.error("Erro no push aos profissionais:", erro));
+}
 
 return NextResponse.json({ success: true, ...resultado });
   } catch (erro) {

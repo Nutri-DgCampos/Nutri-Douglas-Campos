@@ -95,8 +95,58 @@ Cada etapa sai com:
   - `tests/navegacao/treinoT1.mjs` (22 verificações);
   - `tests/navegacao/fumaca.mjs` (18 telas da Nutrição e do paciente).
 
-## 6. Para seguir (T2 em diante), precisamos de
+**T7a e T2 entregues em 01/11/2026** (migração `021_treino_educadores_e_desconforto.sql`, só acrescenta):
 
-- **D1:** de acordo com a ordem acima (T2: relatar desconforto com push ao profissional; T3: relatório semanal)?
-- **D2:** quem prescreve o treino hoje (o mesmo login do nutricionista, ou outra pessoa e outro login)? Isso define se T7 vem antes de T4.
-- **D3:** na T1, a situação da sessão e a observação ficaram no próprio modal do dia, abaixo dos exercícios (sem tela nova). Confirma?
+- Papéis (respostas D1–D2 do cliente):
+  - o nutricionista é o administrador: vê todos os alunos no Módulo de Treino, cadastra educadores físicos e faz os vínculos;
+  - o educador físico tem login próprio (papel `educador_fisico`, senha provisória trocada no primeiro acesso). Ele vê só o Módulo de Treino, e só dos alunos vinculados a ele;
+  - qualquer outra tela ou rota continua exigindo o papel de nutricionista, e o educador é recusado também pela API (teste automático);
+  - desativar o educador corta o acesso na hora; vínculos e histórico ficam guardados;
+  - um aluno pode ter mais de um educador.
+- Navegação:
+  - "Módulo de Treino" no menu, abaixo de Nutrição;
+  - o cartão Treino da ficha abre o painel geral do aluno (`/treino/alunos/[id]`): treino vigente, registros, histórico de cargas, relatos de desconforto e educadores vinculados;
+  - o endereço antigo `pacientes/[id]/treino` redireciona para o painel.
+- Relato de desconforto (T2):
+  - botão "Relatar desconforto" no modal do dia, sem sair dele;
+  - campos: região, intensidade 0–10, exercício (opcional), percepção ("Desconforto leve: continuei o exercício" / "Incômodo mais acentuado: parei o exercício") e comentário;
+  - orientação de segurança no topo;
+  - o relato é gravado na hora. Reenviar o mesmo relato não duplica (chave gerada no aparelho, base para o offline da T5);
+  - sem conexão, o app diz que o relato ainda não foi enviado.
+- Alerta ao profissional:
+  - push imediato aos educadores vinculados e ativos; sem educador vinculado, vai aos administradores;
+  - inscrições e fila próprias dos profissionais, com as mesmas chaves VAPID e o mesmo service worker do push do paciente; a fila do paciente não muda;
+  - o profissional ativa os alertas em "Ativar alertas neste aparelho", no início do Módulo de Treino;
+  - o relato fica sempre listado no painel, mesmo sem push, com "Marcar como visto" e quem viu;
+  - no aviso da tela bloqueada vão só o primeiro nome e a intensidade.
+- Testes:
+  - `tests/navegacao/treinoT2.mjs`: 40 verificações;
+  - `treinoT1.mjs`: 22 verificações;
+  - `fumaca.mjs`: 21 telas;
+  - 58 testes unitários.
+
+## 6. Decisões do cliente (01/11/2026)
+
+- **D1:** de acordo com a ordem.
+  - Desconforto: pela percepção do aluno. Leve, ele continua; mais acentuado, ele para o exercício.
+  - Relatório: a devolutiva chega no cartão Relatórios ("Chegou a devolutiva do seu Personal Trainer"). O personal responde os relatórios do Treino na área Relatórios, a mesma em que o nutricionista responde, com a indicação "Nutricional" ou "Treino".
+- **D2:** o nutricionista é o admin e também prescreve. Haverá cadastro de outros educadores físicos, com acesso só ao Módulo de Treino.
+- **D3:** sem resposta. Mantido como entregue (situação e observação no modal do dia).
+
+## 7. Pontos para o cliente confirmar
+
+1. **Orientação de segurança** no relato de desconforto. As duas primeiras linhas seguem a resposta do cliente; a terceira é proposta nossa, para os sinais de alerta:
+   - "Desconforto leve: você pode continuar, com atenção ao movimento."
+   - "Incômodo mais acentuado: pare o exercício."
+   - "Dor forte ou repentina, dor no peito, falta de ar, tontura ou desmaio: interrompa o treino e procure atendimento médico."
+2. **Quem recebe o alerta:** os educadores vinculados ao aluno; sem nenhum vinculado, o administrador. O administrador também deve receber quando há educador?
+3. **Alunos do educador:** hoje só o administrador cadastra alunos e faz os vínculos. O educador poderá cadastrar alunos próprios, que não são pacientes da Nutrição?
+4. **Regiões do corpo** oferecidas no relato: pescoço, ombro, cotovelo, punho ou mão, peito, costas (parte alta), lombar, abdômen, quadril, coxa, joelho, panturrilha e tornozelo ou pé, mais "Outra região".
+
+## 8. Próxima etapa: T3 (relatório semanal)
+
+- Fechamento no domingo 00:00, no horário de Brasília.
+- Consolidação dos registros, observações e desconfortos da semana.
+- Devolutiva pelo profissional na área Relatórios, com a indicação Nutricional/Treino.
+- Aviso no cartão Relatórios do paciente.
+- Pendências, atraso após 2 relatórios sem resposta, e lista de atenção.

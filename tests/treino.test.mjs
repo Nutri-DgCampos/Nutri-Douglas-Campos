@@ -35,3 +35,19 @@ test("painel mostra os valores registrados por cima, sem mudar a prescrição", 
   assert.equal(painel.dias[0].exercicios[0].series, 4, "campo não registrado fica o prescrito");
   assert.deepEqual(prescricao, copia, "a prescrição não muda");
 });
+
+test("relato de desconforto: região, intensidade 0 a 10 e percepção obrigatórias", async () => {
+  const { validarDesconforto } = await import("../lib/treino.ts");
+  const base = { chaveCliente: "0b8f2c4e-1d3a-4c5b-9e7f-112233445566", dia: "seg", regiao: " Ombro ", intensidade: 6, conduta: "parei", exercicio: "Supino", comentario: "Começou\nna 3ª série" };
+  const ok = validarDesconforto(base);
+  assert.ok("relato" in ok);
+  assert.equal(ok.relato.regiao, "Ombro");
+  assert.equal(ok.relato.comentario, "Começou\nna 3ª série", "comentário mantém as quebras de linha");
+  assert.ok("erro" in validarDesconforto({ ...base, intensidade: 11 }));
+  assert.ok("erro" in validarDesconforto({ ...base, intensidade: 5.5 }));
+  assert.ok("erro" in validarDesconforto({ ...base, regiao: "  " }));
+  assert.ok("erro" in validarDesconforto({ ...base, conduta: "talvez" }));
+  assert.ok("erro" in validarDesconforto({ ...base, chaveCliente: "x" }), "sem chave não há como evitar duplicidade");
+  assert.ok("erro" in validarDesconforto({ ...base, dia: "xyz" }));
+  assert.ok("relato" in validarDesconforto({ ...base, intensidade: 0, exercicio: null, comentario: null, dia: null }));
+});

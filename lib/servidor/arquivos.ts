@@ -3,6 +3,9 @@ import path from "node:path";
 import { obterPool } from "./banco";
 import type { Contexto } from "./permissoes";
 import { publicacaoAtiva } from "./publicacoes";
+import { PAPEL_EDUCADOR, podeAcompanharAluno, profissionalDeTreino } from "./treinoAcesso";
+
+const UUID_ALUNO = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Arquivos enviados (dietas em PDF, comprovantes de pagamento, exames de
 // sangue, treinos e fotos de evolução).
@@ -165,6 +168,13 @@ export async function podeBaixar(
 
   if (bucket === "comprovantes") {
     return caminho.startsWith(`${contexto.usuarioId}/`);
+  }
+
+  // Educador físico: só o arquivo de treino dos alunos vinculados a ele.
+  if (contexto.papel === PAPEL_EDUCADOR) {
+    const profissional = await profissionalDeTreino(contexto);
+    const aluno = caminho.split("/")[0];
+    return bucket === "treinos" && profissional !== null && UUID_ALUNO.test(aluno) && podeAcompanharAluno(profissional, aluno);
   }
 
   if (PASTA_DO_PACIENTE.includes(bucket)) {
