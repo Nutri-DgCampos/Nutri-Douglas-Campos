@@ -81,7 +81,7 @@ As migrações só acrescentam e trazem a reversão no cabeçalho. Regressão: t
 **Como ficou:**
 - **Seção "Fotos Corporais" no link de anamnese e recordatório:**
   - posições Frente, Lateral e Costas, todas opcionais;
-  - silhueta conforme o sexo do cadastro. Sem sexo, nenhuma silhueta é presumida e aparece um aviso neutro. Lateral mostra só um ícone;
+  - avatares de frente, lado e costas conforme o sexo do cadastro, recortados dos modelos aprovados (imagens 07 e 08) com fundo transparente, em `public/nutricao/avatares/fotos-corporais/`. Sem sexo, nenhum avatar é presumido e aparece um aviso neutro;
   - o servidor confere o tipo real do arquivo, pelos primeiros bytes, e o tamanho;
   - uma posição já enviada no dia não é substituída: o paciente exclui e envia de novo;
   - pelo link, o paciente vê e exclui só as fotos de hoje, porque o link não tem login e não deve expor o histórico.
@@ -98,7 +98,7 @@ As migrações só acrescentam e trazem a reversão no cabeçalho. Regressão: t
   - nada é salvo (opção B), e as fotos originais não mudam.
 
 **Para o cliente:**
-1. **Avatar lateral:** não existe. Se o Douglas quiser, pode fornecer uma ilustração lateral (masculina e feminina) no mesmo estilo; até lá, aparece um ícone.
+1. **Avatares:** vieram dos modelos 07 e 08, em resolução de tela (cerca de 190 × 530 px). Se houver os arquivos originais em resolução maior, basta substituir mantendo os nomes.
 2. **Área do Paciente:** a tela "Fotos" continua com o comportamento anterior: uma nova foto no mesmo dia e posição substitui a anterior. O link não substitui, como pede a SPEC. Quer que a Área do Paciente passe a não substituir também?
 
 ## 4. Rotulagem nutricional: plano e pré-requisitos

@@ -16,33 +16,28 @@ const POSICOES: { chave: Perfil; rotulo: string }[] = [
 const TIPOS = ["image/jpeg", "image/png", "image/webp"];
 const MAXIMO = 10 * 1024 * 1024;
 
-// Silhuetas já usadas na avaliação física (frente à esquerda, costas à
-// direita da mesma imagem). Não existe avatar lateral: a posição Lateral
-// mostra só um ícone. Sem sexo no cadastro, nenhuma silhueta é presumida.
+// Avatares de referência das três posições, conforme o sexo do cadastro
+// (recortados dos modelos aprovados, em public/nutricao/avatares/fotos-corporais).
+// Sem sexo no cadastro, nenhum avatar é presumido: só a indicação da posição.
+const ARQUIVO_DA_POSICAO: Record<Perfil, string> = { frente: "frente", lado: "lateral", costas: "costas" };
+const DESCRICAO_DA_POSICAO: Record<Perfil, string> = { frente: "de frente", lado: "de lado", costas: "de costas" };
+
 function Avatar({ sexo, perfil }: { sexo: Sexo; perfil: Perfil }) {
-  if (!sexo || perfil === "lado") {
+  if (!sexo) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 text-gray-400" aria-hidden>
         <i className="pi pi-user text-5xl" />
-        <span className="text-xs">{perfil === "lado" ? "De lado, braços relaxados" : "Posição de referência"}</span>
+        <span className="text-xs">Posição: {DESCRICAO_DA_POSICAO[perfil]}</span>
       </div>
     );
   }
-  // Cada metade da imagem (1024 × 1536) tem proporção 1:3; a figura inteira
-  // cabe na altura do cartão.
   return (
-    <div className="flex h-full justify-center">
-      <div
-        role="img"
-        aria-label={`Silhueta ${sexo}, ${perfil === "frente" ? "de frente" : "de costas"}`}
-        className="aspect-[1/3] h-full rounded-lg bg-no-repeat"
-        style={{
-          backgroundImage: `url(/nutricao/avatares/silhueta-${sexo === "masculino" ? "masculina" : "feminina"}.png)`,
-          backgroundSize: "200% 100%",
-          backgroundPosition: perfil === "frente" ? "0% 0%" : "100% 0%",
-        }}
-      />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/nutricao/avatares/fotos-corporais/${sexo}-${ARQUIVO_DA_POSICAO[perfil]}.png`}
+      alt={`Avatar ${sexo}, ${DESCRICAO_DA_POSICAO[perfil]}`}
+      className="mx-auto h-full w-full object-contain"
+    />
   );
 }
 
@@ -112,7 +107,13 @@ export default function FotosCorporais({ base }: { base: string }) {
       </div>
 
       <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary-50 px-3 py-1.5 text-sm text-primary-800">
-        <i className={`pi ${dados.sexo ? "pi-user" : "pi-info-circle"}`} aria-hidden />
+        {dados.sexo ? (
+          <span className="text-lg leading-none" aria-hidden>
+            {dados.sexo === "masculino" ? "♂" : "♀"}
+          </span>
+        ) : (
+          <i className="pi pi-info-circle" aria-hidden />
+        )}
         {dados.sexo ? (
           <span>
             Paciente: <strong>{dados.sexo === "masculino" ? "Masculino" : "Feminino"}</strong>

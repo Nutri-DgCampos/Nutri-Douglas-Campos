@@ -63,9 +63,23 @@ await a.pagina.goto(link, { waitUntil: "networkidle" });
 await a.pagina.waitForTimeout(1500);
 const secao = a.pagina.locator('section[aria-label="Fotos Corporais"]');
 conferir("link mostra a seção Fotos Corporais", (await secao.count()) === 1, null);
-conferir("sexo do cadastro (feminino) e avatares de frente e costas", (await secao.getByText("Feminino").count()) === 1 && (await secao.getByRole("img", { name: "Silhueta feminino, de frente" }).count()) === 1 && (await secao.getByRole("img", { name: "Silhueta feminino, de costas" }).count()) === 1, null);
+conferir("sexo do cadastro (feminino) e avatares de frente, lado e costas", (await secao.getByText("Feminino").count()) === 1 && (await secao.getByRole("img", { name: "Avatar feminino, de frente" }).count()) === 1 && (await secao.getByRole("img", { name: "Avatar feminino, de lado" }).count()) === 1 && (await secao.getByRole("img", { name: "Avatar feminino, de costas" }).count()) === 1, null);
 conferir("anamnese continua no link, sem exigir fotos", (await a.pagina.getByText(/anamnese|recordatório|Nenhum formulário para preencher/i).count()) >= 1, null);
 await a.pagina.screenshot({ path: path.join(PASTA, "m3-link-celular.png"), fullPage: true });
+// Mesmo link com o cadastro masculino (o sexo original volta em seguida).
+const SEXO = sql(`select coalesce(sex, '') from patients where id = '${P}';`);
+sql(`update patients set sex = 'masculino' where id = '${P}';`);
+await a.pagina.reload({ waitUntil: "networkidle" });
+await a.pagina.waitForTimeout(1200);
+conferir("cadastro masculino mostra os avatares masculinos", (await secao.getByRole("img", { name: /^Avatar masculino/ }).count()) === 3, null);
+await secao.screenshot({ path: path.join(PASTA, "m3-link-masculino.png") });
+sql(`update patients set sex = null where id = '${P}';`);
+await a.pagina.reload({ waitUntil: "networkidle" });
+await a.pagina.waitForTimeout(1200);
+conferir("sem sexo no cadastro, nenhum avatar é presumido", (await secao.getByRole("img", { name: /^Avatar/ }).count()) === 0 && (await secao.getByText("Sexo não informado no cadastro", { exact: false }).count()) === 1, null);
+sql(`update patients set sex = ${SEXO ? `'${SEXO}'` : "null"} where id = '${P}';`);
+await a.pagina.reload({ waitUntil: "networkidle" });
+await a.pagina.waitForTimeout(1200);
 
 await secao.getByLabel("Foto de Frente").setInputFiles(IMAGEM);
 await a.pagina.waitForTimeout(2000);
