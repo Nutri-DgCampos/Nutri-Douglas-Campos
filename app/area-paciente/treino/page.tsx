@@ -5,49 +5,48 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
-import PainelTreino from "@/components/PainelTreino";
-import { api } from "@/lib/api";
+import PainelTreino, { type RegistroDoDia } from "@/components/PainelTreino";
 import { avisar } from "@/lib/avisos";
-import type { PlanoDeTreino } from "@/lib/treino";
+import { planoComRegistros, type ChaveDia, type ExercicioRegistrado, type PlanoDeTreino, type SessaoRegistrada } from "@/lib/treino";
 
-type Treino = { id: string; plano: PlanoDeTreino | null; analisado_em: string | null };
+type Treino = {
+  prescricao: { id: string; origem: "externa" | "profissional"; plano: PlanoDeTreino };
+  datas: Record<ChaveDia, string>;
+  sessoes: Partial<Record<ChaveDia, SessaoRegistrada>>;
+  ultimos: Record<string, Record<number, ExercicioRegistrado>>;
+  anteriores: Partial<Record<ChaveDia, Record<number, { carga_kg: number; data: string }>>>;
+};
 
-// Treino do paciente organizado por dia, com séries, repetições, carga e
-// descanso editáveis.
+// Treino do aluno por dia: o que ele informa (séries, repetições, carga,
+// descanso, situação e observação) é registrado na semana, sem alterar o
+// treino prescrito.
 export default function TreinoPacientePage() {
   const router = useRouter();
   const [treino, setTreino] = useState<Treino | null | undefined>(undefined);
 
   useEffect(() => {
-    api
-      .from("treinos")
-      .select("id, plano, analisado_em")
-      .eq("status", "concluido")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (error) console.error("Erro ao carregar treino:", error);
-        setTreino((data as Treino | null) ?? null);
-      });
+    fetch("/api/area-paciente/treino", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { treino: null }))
+      .then((dados) => setTreino(dados.treino ?? null))
+      .catch(() => setTreino(null));
   }, []);
 
-  async function salvar(plano: PlanoDeTreino) {
+  async function registrar(registro: RegistroDoDia) {
     if (!treino) return false;
+    const resposta = await fetch("/api/area-paciente/treino", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...registro, prescricaoId: treino.prescricao.id }),
+    }).catch(() => null);
+    const dados = await resposta?.json().catch(() => null);
 
-    const { error } = await api
-      .from("treinos")
-      .update({ plano, atualizado_em: new Date().toISOString() })
-      .eq("id", treino.id);
-
-    if (error) {
-      console.error("Erro ao salvar treino:", error);
-      avisar("Não foi possível salvar as alterações.", "error");
+    if (!resposta?.ok) {
+      avisar(dados?.erro ?? "Não foi possível salvar. Confira a conexão e tente de novo.", "error");
       return false;
     }
 
-    setTreino({ ...treino, plano });
-    avisar("Treino atualizado.", "success");
+    setTreino(dados.treino);
+    avisar("Treino registrado.", "success");
     return true;
   }
 
@@ -64,14 +63,21 @@ export default function TreinoPacientePage() {
         <div className="mt-6">
           {treino === undefined ? (
             <Skeleton height="24rem" borderRadius="16px" />
-          ) : !treino?.plano ? (
+          ) : !treino ? (
             <div className="cartao p-6 text-center">
               <i className="pi pi-bolt text-3xl text-gray-400" aria-hidden />
               <p className="mt-3 font-semibold text-gray-900">Nenhum treino organizado ainda.</p>
               <p className="mt-1 text-sm text-gray-500">Anexe seu treino na tela inicial.</p>
             </div>
           ) : (
-            <PainelTreino plano={treino.plano} onSalvar={salvar} />
+            <PainelTreino
+              plano={planoComRegistros(treino.prescricao.plano, treino.ultimos)}
+              prescricao={treino.prescricao.plano}
+              sessoes={treino.sessoes}
+              anteriores={treino.anteriores}
+              datas={treino.datas}
+              onRegistrar={registrar}
+            />
           )}
         </div>
       </div>

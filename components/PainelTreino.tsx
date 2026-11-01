@@ -4,14 +4,20 @@ import { useMemo, useState } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
 import {
   DIAS,
+  SITUACOES,
   type ChaveDia,
   type DiaDeTreino,
   type Exercicio,
+  type ExercicioRegistrado,
   type Nivel,
   type PlanoDeTreino,
+  type SessaoRegistrada,
+  type SituacaoDaSessao,
   formatarNumero,
   kcalSemanais,
   nivelDoTreino,
@@ -27,18 +33,47 @@ const COR_DO_NIVEL: Record<Nivel, "info" | "success" | "warning" | "danger"> = {
 
 type CampoEditavel = "series" | "repeticoes" | "descanso_segundos" | "carga_kg";
 
+export type RegistroDoDia = {
+  dia: ChaveDia;
+  exercicios: ExercicioRegistrado[];
+  situacao: SituacaoDaSessao | null;
+  dataEfetiva: string | null;
+  motivo: string | null;
+  observacao: string | null;
+};
+
+type Avaliacao = { situacao: SituacaoDaSessao | null; dataEfetiva: string; motivo: string; observacao: string };
+
+const ROTULO_DA_SITUACAO = Object.fromEntries(SITUACOES.map((s) => [s.valor, s.rotulo])) as Record<SituacaoDaSessao, string>;
+
+function dataCurta(iso: string) {
+  return iso.slice(0, 10).split("-").reverse().slice(0, 2).join("/");
+}
+
 // Treino organizado por dia da semana, com volume por grupo muscular, nível e
-// gasto calórico estimado. Com onSalvar, o paciente ajusta os números.
+// gasto calórico estimado. Com onRegistrar, o aluno informa o que fez na
+// sessão da semana: os números, a situação e uma observação. A prescrição
+// (prescricao) não muda; o painel mostra os valores mais recentes (plano).
 export default function PainelTreino({
   plano,
-  onSalvar,
+  prescricao,
+  sessoes,
+  anteriores,
+  datas,
+  onRegistrar,
 }: {
   plano: PlanoDeTreino;
-  onSalvar?: (plano: PlanoDeTreino) => Promise<boolean>;
+  prescricao?: PlanoDeTreino;
+  sessoes?: Partial<Record<ChaveDia, SessaoRegistrada>>;
+  anteriores?: Partial<Record<ChaveDia, Record<number, { carga_kg: number; data: string }>>>;
+  datas?: Record<ChaveDia, string>;
+  onRegistrar?: (registro: RegistroDoDia) => Promise<boolean>;
 }) {
   const [diaAberto, setDiaAberto] = useState<ChaveDia | null>(null);
   const [rascunho, setRascunho] = useState<DiaDeTreino | null>(null);
+  const [avaliacao, setAvaliacao] = useState<Avaliacao>({ situacao: null, dataEfetiva: "", motivo: "", observacao: "" });
   const [salvando, setSalvando] = useState(false);
+  const onSalvar = onRegistrar;
 
   const volumes = useMemo(() => volumePorGrupo(plano), [plano]);
   const { nivel } = useMemo(() => nivelDoTreino(volumes), [volumes]);
@@ -46,11 +81,31 @@ export default function PainelTreino({
   const temCarga = volumes.some((volume) => volume.cargaKg > 0);
 
   function abrir(chave: ChaveDia) {
-    const dia = plano.dias.find((item) => item.dia === chave);
+    // Os campos partem da prescrição; o que já foi registrado nesta semana
+    // aparece por cima.
+    const dia = (prescricao ?? plano).dias.find((item) => item.dia === chave);
     if (!dia) return;
 
+    const sessao = sessoes?.[chave];
+    const copia = structuredClone(dia);
+    for (const registro of sessao?.exercicios ?? []) {
+      const exercicio = copia.exercicios[registro.indice];
+      if (!exercicio) continue;
+      Object.assign(exercicio, {
+        series: registro.series,
+        repeticoes: registro.repeticoes,
+        carga_kg: registro.carga_kg,
+        descanso_segundos: registro.descanso_segundos,
+      });
+    }
     setDiaAberto(chave);
-    setRascunho(structuredClone(dia));
+    setRascunho(copia);
+    setAvaliacao({
+      situacao: sessao?.situacao ?? null,
+      dataEfetiva: sessao?.data_efetiva ?? "",
+      motivo: sessao?.motivo ?? "",
+      observacao: sessao?.observacao ?? "",
+    });
   }
 
   function alterar(indice: number, campo: CampoEditavel, valor: number | null) {
@@ -70,7 +125,18 @@ export default function PainelTreino({
 
     setSalvando(true);
     const ok = await onSalvar({
-      dias: plano.dias.map((dia) => (dia.dia === rascunho.dia ? rascunho : dia)),
+      dia: rascunho.dia,
+      exercicios: rascunho.exercicios.map((exercicio, indice) => ({
+        indice,
+        series: exercicio.series,
+        repeticoes: exercicio.repeticoes,
+        carga_kg: exercicio.carga_kg,
+        descanso_segundos: exercicio.descanso_segundos,
+      })),
+      situacao: avaliacao.situacao,
+      dataEfetiva: avaliacao.situacao === "reagendado" ? avaliacao.dataEfetiva || null : null,
+      motivo: avaliacao.situacao && avaliacao.situacao !== "concluido" ? avaliacao.motivo.trim() || null : null,
+      observacao: avaliacao.observacao.trim() || null,
     });
     setSalvando(false);
 
@@ -115,6 +181,14 @@ export default function PainelTreino({
                         {dia.kcal_estimadas ? ` · ~${formatarNumero(dia.kcal_estimadas)} kcal` : ""}
                       </span>
                     )}
+                    {dia && sessoes?.[chave]?.situacao ? (
+                      <span className="mt-0.5 block text-xs font-semibold text-primary-700">
+                        {ROTULO_DA_SITUACAO[sessoes[chave]!.situacao!]}
+                        {sessoes[chave]!.situacao === "reagendado" && sessoes[chave]!.data_efetiva
+                          ? ` para ${dataCurta(sessoes[chave]!.data_efetiva!)}`
+                          : ""}
+                      </span>
+                    ) : null}
                   </span>
 
                   {dia && <i className="pi pi-chevron-right text-gray-400" aria-hidden />}
@@ -173,7 +247,11 @@ export default function PainelTreino({
       </div>
 
       <Dialog
-        header={rascunho ? `${diaSelecionado?.nome} · ${rascunho.titulo}` : ""}
+        header={
+          rascunho
+            ? `${diaSelecionado?.nome}${datas?.[rascunho.dia] ? ` (${dataCurta(datas[rascunho.dia])})` : ""} · ${rascunho.titulo}`
+            : ""
+        }
         visible={Boolean(diaAberto && rascunho)}
         onHide={() => !salvando && setDiaAberto(null)}
         className="w-[48rem] max-w-[calc(100vw-2rem)]"
@@ -200,11 +278,81 @@ export default function PainelTreino({
                 key={indice}
                 exercicio={exercicio}
                 editavel={Boolean(onSalvar)}
+                anterior={anteriores?.[rascunho.dia]?.[indice]?.carga_kg ?? null}
                 onAlterar={(campo, valor) => alterar(indice, campo, valor)}
               />
             ))}
           </ul>
         )}
+
+        {rascunho && onSalvar ? (
+          <section className="mt-4 rounded-xl border border-gray-200 p-3" aria-label="Como foi este treino">
+            <p className="font-semibold text-gray-900">Como foi este treino?</p>
+            <p className="text-xs text-gray-500">
+              Salvar os números não marca o treino como feito: escolha a situação quando terminar (opcional).
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Situação do treino">
+              {SITUACOES.map((opcao) => (
+                <button
+                  key={opcao.valor}
+                  type="button"
+                  role="radio"
+                  aria-checked={avaliacao.situacao === opcao.valor}
+                  onClick={() =>
+                    setAvaliacao((atual) => ({ ...atual, situacao: atual.situacao === opcao.valor ? null : opcao.valor }))
+                  }
+                  className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${
+                    avaliacao.situacao === opcao.valor
+                      ? "border-primary-700 bg-primary-700 text-white"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-primary-400"
+                  }`}
+                >
+                  {opcao.rotulo}
+                </button>
+              ))}
+            </div>
+
+            {avaliacao.situacao === "reagendado" ? (
+              <label className="mt-3 block">
+                <span className="mb-1 block text-xs font-semibold text-gray-600">Nova data</span>
+                <InputText
+                  type="date"
+                  aria-label="Nova data do treino"
+                  value={avaliacao.dataEfetiva}
+                  onChange={(e) => setAvaliacao((atual) => ({ ...atual, dataEfetiva: e.target.value }))}
+                  className="w-48"
+                />
+              </label>
+            ) : null}
+
+            {avaliacao.situacao && avaliacao.situacao !== "concluido" ? (
+              <label className="mt-3 block">
+                <span className="mb-1 block text-xs font-semibold text-gray-600">Motivo (opcional)</span>
+                <InputText
+                  aria-label="Motivo"
+                  value={avaliacao.motivo}
+                  maxLength={500}
+                  onChange={(e) => setAvaliacao((atual) => ({ ...atual, motivo: e.target.value }))}
+                  className="w-full"
+                />
+              </label>
+            ) : null}
+
+            <label className="mt-3 block">
+              <span className="mb-1 block text-xs font-semibold text-gray-600">Observações (opcional)</span>
+              <InputTextarea
+                aria-label="Observações do treino"
+                value={avaliacao.observacao}
+                maxLength={2000}
+                autoResize
+                rows={2}
+                placeholder="Troca de academia, substituição de exercício, dificuldade, sintomas ou comentários"
+                onChange={(e) => setAvaliacao((atual) => ({ ...atual, observacao: e.target.value }))}
+                className="w-full"
+              />
+            </label>
+          </section>
+        ) : null}
       </Dialog>
     </div>
   );
@@ -213,10 +361,13 @@ export default function PainelTreino({
 function CartaoExercicio({
   exercicio,
   editavel,
+  anterior,
   onAlterar,
 }: {
   exercicio: Exercicio;
   editavel: boolean;
+  // Última carga registrada antes desta sessão (só referência, não preenche).
+  anterior?: number | null;
   onAlterar: (campo: CampoEditavel, valor: number | null) => void;
 }) {
   const campos: { campo: CampoEditavel; rotulo: string; sufixo?: string; decimais?: boolean }[] = [
@@ -258,6 +409,9 @@ function CartaoExercicio({
                 {exercicio[campo] === null ? "-" : `${exercicio[campo]!.toLocaleString("pt-BR")}${sufixo ?? ""}`}
               </span>
             )}
+            {campo === "carga_kg" && anterior ? (
+              <span className="mt-0.5 block text-center text-xs text-gray-500">Anterior: {anterior.toLocaleString("pt-BR")} kg</span>
+            ) : null}
           </label>
         ))}
       </div>

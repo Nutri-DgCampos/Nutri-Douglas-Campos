@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { DIAS, GRUPOS, OUTROS_GRUPOS, planoValido } from "@/lib/treino";
 import { lerArquivo, resolverCaminho, tipoDoArquivo } from "./arquivos";
 import { obterPool } from "./banco";
+import { publicarPrescricaoExterna } from "./treinoRegistros";
 import { registrarUsoDaIa } from "./ia";
 
 // Leitura do treino enviado pelo paciente: a IA lê o arquivo (inclusive foto
@@ -258,6 +259,9 @@ export async function analisarTreino(id: string) {
       comentario_ia: typeof dados.comentario === "string" ? dados.comentario.trim() : null,
       analisado_em: new Date().toISOString(),
     });
+    // O treino importado passa a valer como prescrição externa (o aluno
+    // registra por cima dela, sem alterá-la).
+    await publicarPrescricaoExterna(id);
   } catch (erro) {
     console.error("Erro ao analisar treino:", id, erro);
 

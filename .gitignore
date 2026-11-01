@@ -53,3 +53,6 @@ deploy.log
 /banco/importacao/*.sql
 !/banco/importacao/modelo-pacientes.csv
 !/banco/importacao/exemplo-preenchido.csv
+
+# Capturas dos testes de navegação
+tests/navegacao/visual/

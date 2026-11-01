@@ -1,4 +1,3 @@
-import { planoValido } from "@/lib/treino";
 import type { Regra, Regras } from "./sql";
 
 // Quem pode ler e alterar o quê.
@@ -182,17 +181,11 @@ export function criarRegras(contexto: Contexto): Regras {
     },
 
     // Treino: enviado pela rota /api/treinos (que dispara a IA). O paciente
-    // vê o próprio treino e ajusta séries, repetições, carga e descanso.
+    // vê o próprio treino; o que ele ajusta (séries, repetições, carga,
+    // descanso) vira registro em /api/area-paciente/treino, sem alterar o
+    // treino organizado (prescrição).
     treinos: {
       select: nutricionista ? TUDO : { usando: doPaciente },
-      update: paciente
-        ? {
-            usando: doPaciente,
-            validarValores: (valores) =>
-              Object.keys(valores).every((campo) => campo === "plano" || campo === "atualizado_em") &&
-              planoValido(valores.plano),
-          }
-        : null,
     },
 
     // Fotos de evolução: gravadas e removidas pela rota /api/fotos.

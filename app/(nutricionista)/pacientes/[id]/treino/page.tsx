@@ -7,6 +7,7 @@ import { Message } from "primereact/message";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import PainelTreino from "@/components/PainelTreino";
+import RegistrosDoTreino from "@/components/RegistrosDoTreino";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
 import { abrirDocumento } from "@/lib/visualizador";
@@ -139,6 +140,7 @@ export default function TreinoDoPacientePage() {
               Enviado em {new Date(treino.created_at).toLocaleDateString("pt-BR")}
               {treino.atualizado_em &&
                 ` · ajustado pelo paciente em ${new Date(treino.atualizado_em).toLocaleDateString("pt-BR")}`}
+              {treino.storage_path || treino.texto_enviado ? " · treino de origem externa (enviado pelo aluno)" : ""}
             </p>
 
             {lendo && (
@@ -161,6 +163,8 @@ export default function TreinoDoPacientePage() {
             )}
 
             {treino.plano && <PainelTreino plano={treino.plano} />}
+
+            <RegistrosDoTreino pacienteId={params.id} />
 
             {treino.texto_enviado && (
               <details className="cartao p-5">

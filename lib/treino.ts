@@ -157,3 +157,91 @@ export function planoValido(valor: unknown): valor is PlanoDeTreino {
         )
     );
 }
+
+// ---------------------------------------------------------------------------
+// Registro do aluno (Módulo de Treino, etapa T1)
+//
+// A prescrição (o plano publicado) não muda quando o aluno ajusta números:
+// o que ele informa vira um registro da sessão daquela semana. Semana de
+// domingo a sábado, no horário de Brasília (mesma regra do relatório
+// semanal de treino).
+
+export type SituacaoDaSessao = "concluido" | "parcial" | "nao_concluido" | "reagendado";
+
+export const SITUACOES: { valor: SituacaoDaSessao; rotulo: string }[] = [
+  { valor: "concluido", rotulo: "Concluído" },
+  { valor: "parcial", rotulo: "Parcialmente concluído" },
+  { valor: "nao_concluido", rotulo: "Não concluído" },
+  { valor: "reagendado", rotulo: "Reagendado" },
+];
+
+// Posição de cada dia a partir do domingo que abre a semana.
+const DESDE_O_DOMINGO: Record<ChaveDia, number> = { dom: 0, seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6 };
+
+function somarDiasISO(dataISO: string, dias: number) {
+  const data = new Date(`${dataISO}T12:00:00Z`);
+  data.setUTCDate(data.getUTCDate() + dias);
+  return data.toISOString().slice(0, 10);
+}
+
+export function domingoDaSemana(dataISO: string) {
+  const diaDaSemana = new Date(`${dataISO}T12:00:00Z`).getUTCDay();
+  return somarDiasISO(dataISO, -diaDaSemana);
+}
+
+// Data planejada de cada dia de treino na semana da data informada.
+export function datasDaSemana(dataISO: string): Record<ChaveDia, string> {
+  const domingo = domingoDaSemana(dataISO);
+  return Object.fromEntries(DIAS.map(({ chave }) => [chave, somarDiasISO(domingo, DESDE_O_DOMINGO[chave])])) as Record<ChaveDia, string>;
+}
+
+// Nome normalizado do exercício: liga a mesma atividade entre semanas.
+export function chaveDoExercicio(nome: string) {
+  return nome
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+export type ExercicioRegistrado = {
+  indice: number;
+  series: number | null;
+  repeticoes: number | null;
+  carga_kg: number | null;
+  descanso_segundos: number | null;
+};
+
+export type SessaoRegistrada = {
+  id: string;
+  dia: ChaveDia;
+  data_planejada: string;
+  situacao: SituacaoDaSessao | null;
+  data_efetiva: string | null;
+  motivo: string | null;
+  observacao: string | null;
+  atualizado_em: string;
+  exercicios: ExercicioRegistrado[];
+};
+
+// Plano para os números do painel: a prescrição com os valores mais
+// recentes que o aluno registrou em cada exercício (a prescrição não muda).
+export function planoComRegistros(plano: PlanoDeTreino, ultimos: Record<string, Record<number, ExercicioRegistrado>>): PlanoDeTreino {
+  return {
+    dias: plano.dias.map((dia) => ({
+      ...dia,
+      exercicios: dia.exercicios.map((exercicio, indice) => {
+        const registro = ultimos[dia.dia]?.[indice];
+        if (!registro) return exercicio;
+        return {
+          ...exercicio,
+          series: registro.series ?? exercicio.series,
+          repeticoes: registro.repeticoes ?? exercicio.repeticoes,
+          carga_kg: registro.carga_kg ?? exercicio.carga_kg,
+          descanso_segundos: registro.descanso_segundos ?? exercicio.descanso_segundos,
+        };
+      }),
+    })),
+  };
+}
