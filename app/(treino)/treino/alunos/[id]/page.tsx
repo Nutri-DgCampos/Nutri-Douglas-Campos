@@ -9,6 +9,7 @@ import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import PainelTreino from "@/components/PainelTreino";
 import RegistrosDoTreino from "@/components/RegistrosDoTreino";
+import AcompanhamentoSemanal from "@/components/treino/AcompanhamentoSemanal";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
@@ -170,6 +171,8 @@ export default function AlunoNoTreinoPage() {
                   <ListaDeDesconfortos desconfortos={painel.desconfortos} onVisto={visto} />
                 </section>
               ) : null}
+
+              <AcompanhamentoSemanal alunoId={painel.aluno.id} admin={painel.admin} />
 
               {painel.admin ? (
                 <section className="cartao p-5" aria-label="Educadores físicos do aluno">

@@ -125,6 +125,46 @@ Cada etapa sai com:
   - `fumaca.mjs`: 21 telas;
   - 58 testes unitários.
 
+**T3 entregue em 01/11/2026** (migração `025_treino_relatorio_semanal.sql`, só acrescenta):
+
+- **Acompanhamento semanal** (painel do aluno no Treino), por profissional:
+  - "Ativar acompanhamento semanal": só esses alunos geram relatório (B3);
+  - adesão mínima, 60% por padrão e editável por aluno (B4);
+  - metas em texto livre (B5);
+  - pausas com início, fim e motivo (B6).
+- **Fechamento:**
+  - a semana de domingo a sábado (Brasília) vira relatório no domingo 00:00, um por aluno e profissional (B1, B2);
+  - roda no agendador e ao abrir o painel, sem duplicar;
+  - recupera até 4 semanas se o agendador ficar parado;
+  - o relatório guarda uma cópia consolidada da semana: o que o aluno mudar depois não altera um relatório fechado.
+- **Conteúdo do relatório:**
+  - sessões com a situação, o motivo e a observação do aluno;
+  - prescrito × registrado por exercício: séries, reps, carga, diferença em kg e em %, e a carga anterior;
+  - desconfortos da semana, metas e pausa;
+  - adesão da semana e da anterior.
+- **Regras de adesão:**
+  - parcial = meia sessão;
+  - reagendado só conta quando o aluno confirma que fez (muda para concluído ou parcial). Até lá, fica fora da conta e aparece como "Reagendado (sem confirmação)";
+  - dia sem registro conta como planejado, mas aparece como "Sem registro", nunca como "não concluído";
+  - semana sem nenhum registro: sem adesão, com o aviso de que isso não significa que o aluno não treinou.
+- **Devolutiva** (B2, B9, B10):
+  - cada profissional responde o próprio relatório;
+  - rascunho gravado automaticamente, com "Gerar rascunho com IA" (o profissional revisa);
+  - depois de enviada, a devolutiva não muda (trava no banco);
+  - o aluno recebe o push "Chegou a devolutiva do seu Personal Trainer", o mesmo texto do cartão Relatórios;
+  - na tela Relatórios do aluno, as devolutivas aparecem com o selo "Treino", e as da Nutrição com "Nutricional";
+  - abrir a tela marca como lida.
+- **Painel do profissional** (B7, B8; só no painel, sem push):
+  - relatórios pendentes, com "atraso" a partir de 2 sem resposta do mesmo aluno;
+  - lista de atenção: 2 semanas seguidas com a mesma causa (sem registros, baixa adesão ou meta não atingida);
+  - semanas em pausa não contam, inclusive com pausa registrada depois do fechamento;
+  - o administrador vê os relatórios dos educadores no painel do aluno, mas só responde os dele;
+  - os pendentes do Treino também aparecem na tela Relatórios do nutricionista (D1).
+- **Testes:**
+  - `tests/treinoRelatorio.test.mjs`: 6 testes;
+  - `tests/navegacao/treinoT3.mjs`: 32 verificações;
+  - regressão: T1, T2, melhorias de 01/11, telas principais e 64 testes unitários.
+
 ## 6. Decisões do cliente (01/11/2026)
 
 - **D1:** de acordo com a ordem.
@@ -203,20 +243,16 @@ Perguntas em `Downloads/Arquivos/Perguntas para o tecnico - Treino e Melhorias 2
 **J. Ordem**
 - **J1:** mantida.
 
-## 8. Próxima etapa: T3 (relatório semanal)
+## 8. Próxima etapa
 
-Com as respostas B1–B10:
-- Fechamento no domingo 00:00, horário de Brasília, só para os alunos marcados "com acompanhamento".
-- Consolidação dos registros, observações e desconfortos da semana. Adesão com parcial = 0,5 e reagendado feito = 1; baixa adesão abaixo de 60% por padrão, editável por aluno.
-- Metas em texto livre, marcadas à mão.
-- Pausas registradas pelo profissional (início e fim) tiram o aluno da lista de atenção.
-- Uma devolutiva por educador vinculado, na área Relatórios, com a indicação Nutricional/Treino e rascunho da IA.
-- Aviso ao aluno no cartão Relatórios e por push, com o mesmo texto.
-- Lista de atenção e atraso (2 relatórios sem resposta): só para o profissional responsável, só no painel, sem push. Sem educador vinculado, o responsável é o nutricionista.
+Conforme a resposta J1 e a confirmação do técnico sobre a A7:
+1. **T7b:** alunos próprios do educador (seção 9).
+2. **T4:** editor de treino, biblioteca de exercícios e academias.
+3. Offline, corrida e ciclismo, planos e contratos, anamnese, avaliações e PDFs de treino.
 
 ## 9. Mudanças de escopo trazidas pelas respostas
 
-- **T7b, alunos próprios do educador (A7):** o educador cadastra alunos que pertencem só a ele. Isso pede um dono por cadastro de paciente. A lista do nutricionista, a busca, os relatórios, os avisos e todas as rotas da Nutrição passam a filtrar por dono, e o aluno do educador entra na Área do Paciente vendo só o Treino. É a mudança de maior risco até aqui. Sugestão: fazer logo depois da T3, antes do editor, porque F1, G1–G5 e H1 dependem do mesmo conceito de "profissional dono".
+- **T7b, alunos próprios do educador (A7):** o educador cadastra alunos que pertencem só a ele. Isso pede um dono por cadastro de paciente. A lista do nutricionista, a busca, os relatórios, os avisos e todas as rotas da Nutrição passam a filtrar por dono, e o aluno do educador entra na Área do Paciente vendo só o Treino. É a mudança de maior risco até aqui. Confirmado pelo técnico: vem logo depois da T3, antes do editor, porque F1, G1–G5 e H1 dependem do mesmo conceito de "profissional dono".
 - **Editor (T4):** inclui academias e equipamentos (C5), links do YouTube (C2) e vibração no fim do descanso (C6).
 - **Offline (T5):** mantido na ordem, com escopo mínimo (D1).
 - **Planos (T8):** um plano por profissional, cada um com preço, confirmação de pagamento e tolerância próprios (G1–G5).

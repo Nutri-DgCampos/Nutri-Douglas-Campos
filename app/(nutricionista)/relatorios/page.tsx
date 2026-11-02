@@ -7,6 +7,7 @@ import { Tag } from "primereact/tag";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import DevolutivaERelatorio from "@/components/relatorios/DevolutivaERelatorio";
+import PainelDeRelatorios from "@/components/treino/PainelDeRelatorios";
 import { classificacaoDoScore } from "@/lib/relatorios/pontos";
 import { segundasPrevistas, somarDias } from "@/lib/cronograma";
 function obterSegundaFeiraAtualBrasil() {
@@ -395,6 +396,7 @@ async function excluirRelatorio(relatorio: any) {
         />
 
         <div className="mt-6 space-y-4">
+          <PainelDeRelatorios somentePendentes />
   {relatorios.map((relatorio) => {
    const relatorioAnterior = historicoPesos.find(
   (item) => item.patient_id === relatorio.patient_id

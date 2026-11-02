@@ -1,5 +1,6 @@
 import { processarFila } from "@/lib/servidor/filaDeNotificacoes";
 import { processarFilaProfissional } from "@/lib/servidor/pushProfissional";
+import { fecharSemanas } from "@/lib/servidor/treinoRelatorios";
 import { autorizadoPorCron as chamadaDoCron } from "@/lib/servidor/http";
 import { obterContexto } from "@/lib/servidor/sessao";
 import { NextResponse } from "next/server";
@@ -66,6 +67,8 @@ const resultado = await processarFila(autorizadoPorCron ? 50 : 1);
 
 // Alertas aos profissionais (Treino) que não saíram no envio imediato.
 if (autorizadoPorCron) {
+  // Relatórios semanais do Treino das semanas já fechadas (idempotente).
+  await fecharSemanas().catch((erro) => console.error("Erro no fechamento semanal do Treino:", erro));
   await processarFilaProfissional(50).catch((erro) => console.error("Erro no push aos profissionais:", erro));
 }
 

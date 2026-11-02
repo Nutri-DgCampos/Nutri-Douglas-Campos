@@ -9,6 +9,7 @@ npm install --no-save playwright-core
 node tests/navegacao/fumaca.mjs
 node tests/navegacao/treinoT1.mjs --limpar
 node tests/navegacao/treinoT2.mjs --limpar
+node tests/navegacao/treinoT3.mjs --limpar
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -19,6 +20,8 @@ Rode os testes do Treino com `--limpar`: cada um cria a própria prescrição de
 - `fumaca.mjs`: as telas principais da Nutrição e do paciente abrem sem erro.
 - `treinoT1.mjs`: Módulo de Treino, etapa T1 (prescrição × registro do aluno).
 - `treinoT2.mjs`: etapas T7a e T2. Cobre o cadastro do educador físico, o vínculo, a troca da senha provisória e o bloqueio da Nutrição para o educador. Também cobre o relato de desconforto e o alerta só para o educador vinculado, além da desativação do educador. Cria o usuário `teste.educador@local.test` e o apaga ao final.
+
+- `treinoT3.mjs`: etapa T3 (relatório semanal, devolutiva, atraso, lista de atenção e pausa). Cria duas semanas de registros do paciente de teste e apaga tudo com `--limpar`.
 
 As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.
 - `melhorias1101.mjs`, `avisos1101.mjs`, `fotos1101.mjs`: melhorias de 01/11/2026 (cópia de alimento, avisos ao nutricionista, fotos no link e sobreposição). Ver `docs/melhorias-2026-11-01.md`. O de fotos precisa da mesma `ARQUIVOS_DIR` do servidor de desenvolvimento.

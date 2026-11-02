@@ -14,6 +14,8 @@ const MENSAGENS = {
   formula: { corpo: "Seu nutricionista enviou as suas fórmulas.", destino: "/area-paciente/dietas" },
   formulario: { corpo: "Seu nutricionista enviou um formulário para você preencher.", destino: "/area-paciente/formularios" },
   documento: { corpo: "Seu nutricionista enviou um documento para você.", destino: "/area-paciente/documentos" },
+  // Treino (B10): o push tem o mesmo texto do cartão Relatórios.
+  devolutiva_treino: { titulo: "Chegou a devolutiva do seu Personal Trainer", corpo: "Abra para ler a devolutiva do seu treino.", destino: "/area-paciente/relatorios" },
 } as const;
 
 export async function enfileirarAtualizacao(
@@ -23,14 +25,16 @@ export async function enfileirarAtualizacao(
   // Chave para não repetir o aviso; por padrão, um aviso por referência.
   chave: string = referenciaId
 ) {
-  const { corpo, destino } = MENSAGENS[tipo];
+  const mensagem = MENSAGENS[tipo];
+  const { corpo, destino } = mensagem;
+  const titulo = "titulo" in mensagem ? mensagem.titulo : TITULO_ATUALIZACAO;
 
   await obterPool().query(
     `insert into public.notification_queue
        (patient_id, notification_type, title, body, target_url, reference_id, dedup_key, status)
      values ($1, $2, $3, $4, $5, $6, $7, 'pendente')
      on conflict (dedup_key) do nothing`,
-    [pacienteId, tipo, TITULO_ATUALIZACAO, corpo, destino, referenciaId, `${tipo}:${chave}`]
+    [pacienteId, tipo, titulo, corpo, destino, referenciaId, `${tipo}:${chave}`]
   );
 
   // Envia já, depois da resposta, sem esperar a próxima passada do agendador

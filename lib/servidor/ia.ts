@@ -11,7 +11,7 @@ import { obterPool } from "./banco";
 //   anamnese. Os recursos anteriores só registram (validação 7.5).
 // - IA_SIMULADA=1 (só para testes locais): nenhuma chamada sai do servidor.
 
-export type RecursoDaIa = "assistente_dieta" | "resumo_anamnese" | "exame" | "treino" | "bioimpedancia" | "devolutiva";
+export type RecursoDaIa = "assistente_dieta" | "resumo_anamnese" | "exame" | "treino" | "bioimpedancia" | "devolutiva" | "devolutiva_treino";
 
 const COM_LIMITE: RecursoDaIa[] = ["assistente_dieta", "resumo_anamnese"];
 

@@ -8,6 +8,7 @@ import { Tag } from "primereact/tag";
 import AnelDeAdesao from "@/components/AnelDeAdesao";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import { pontosDoRelatorio } from "@/lib/relatorios/pontos";
+import DevolutivasDoTreino from "@/components/treino/DevolutivasDoTreino";
 
 export default function RelatoriosPacientePage() {
 
@@ -185,10 +186,11 @@ console.log("RELATÓRIOS ENVIADOS:", relatoriosEnviados);
       <div className="mx-auto max-w-md">
         <CabecalhoPagina
           titulo="Relatórios"
-          descricao="Seus resultados e as devolutivas do nutricionista."
+          descricao="Seus resultados e as devolutivas do nutricionista e do treino."
         />
 
         <div className="mt-6 space-y-4">
+          <DevolutivasDoTreino />
   {relatorios.map((relatorio) => {
     const indiceAlcool = historicoAlcool.findIndex(
   (item) => item.id === relatorio.id
@@ -283,6 +285,7 @@ const tendenciasPeso = pesosAteEsteRelatorio
         />
 
         <div className="min-w-0">
+          <span className="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-bold text-primary-800">Nutricional</span>
           <p className="font-[family-name:var(--fonte-titulo)] text-xl font-bold text-gray-900">
             Relatório {relatorio.cycle_report_number ?? "-"}
           </p>

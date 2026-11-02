@@ -9,6 +9,7 @@ import { Skeleton } from "primereact/skeleton";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import AtivarAlertas from "@/components/treino/AtivarAlertas";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
+import PainelDeRelatorios from "@/components/treino/PainelDeRelatorios";
 
 type Aluno = { id: string; nome: string; situacao: string; tem_treino: boolean; desconfortos_novos: number; educadores: string[] };
 
@@ -67,6 +68,8 @@ export default function TreinoPage() {
         />
 
         <AtivarAlertas />
+
+        <PainelDeRelatorios />
 
         {dados === null ? (
           <Skeleton height="16rem" borderRadius="16px" />

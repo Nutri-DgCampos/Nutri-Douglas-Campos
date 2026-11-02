@@ -73,6 +73,15 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
         .catch(() => {});
     }, []);
 
+    // Devolutiva do Treino ainda não lida (B10): aviso próprio no cartão Relatórios.
+    const [devolutivaDoTreino, setDevolutivaDoTreino] = useState(false);
+    useEffect(() => {
+      fetch("/api/area-paciente/treino/relatorios", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : { devolutivas: [] }))
+        .then((d: { devolutivas?: { lida_em: string | null }[] }) => setDevolutivaDoTreino((d.devolutivas ?? []).some((x) => !x.lida_em)))
+        .catch(() => setDevolutivaDoTreino(false));
+    }, []);
+
     // Fórmulas e avaliações físicas não abertas acendem o aviso da Dieta.
     useEffect(() => {
       fetch("/api/area-paciente/publicacoes", { cache: "no-store" })
@@ -453,12 +462,14 @@ carregarPaciente();
     },
     {
       rotulo: "Relatórios",
-      descricao: devolutivaNaoVisualizada
-        ? "Chegou uma devolutiva do nutricionista"
-        : "Minhas devolutivas e evolução",
+      descricao: devolutivaDoTreino
+        ? "Chegou a devolutiva do seu Personal Trainer"
+        : devolutivaNaoVisualizada
+          ? "Chegou uma devolutiva do nutricionista"
+          : "Minhas devolutivas e evolução",
       icone: "pi-chart-bar",
       destino: "/area-paciente/relatorios",
-      novidade: devolutivaNaoVisualizada,
+      novidade: devolutivaNaoVisualizada || devolutivaDoTreino,
     },
     ...(documentos.total
       ? [
