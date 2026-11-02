@@ -16,6 +16,14 @@ const POSICOES: { chave: Perfil; rotulo: string }[] = [
 const TIPOS = ["image/jpeg", "image/png", "image/webp"];
 const MAXIMO = 10 * 1024 * 1024;
 
+// Cores dos cartões conforme o sexo do cadastro, tiradas dos modelos 07 e 08
+// (resposta I7 do cliente). Sem sexo, o verde do aplicativo.
+const CORES: Record<"masculino" | "feminino" | "neutro", { titulo: string; selo: string; arrastando: string }> = {
+  masculino: { titulo: "bg-[#10427a]", selo: "bg-[#f4f7fc] text-[#10427a]", arrastando: "border-[#10427a] bg-[#f4f7fc]" },
+  feminino: { titulo: "bg-[#8c0c50]", selo: "bg-[#faf5f8] text-[#8c0c50]", arrastando: "border-[#8c0c50] bg-[#faf5f8]" },
+  neutro: { titulo: "bg-primary-800", selo: "bg-primary-50 text-primary-800", arrastando: "border-primary-700 bg-primary-50" },
+};
+
 // Avatares de referência das três posições, conforme o sexo do cadastro
 // (recortados dos modelos aprovados, em public/nutricao/avatares/fotos-corporais).
 // Sem sexo no cadastro, nenhum avatar é presumido: só a indicação da posição.
@@ -93,6 +101,7 @@ export default function FotosCorporais({ base }: { base: string }) {
   }
 
   if (!dados) return null;
+  const cores = CORES[dados.sexo ?? "neutro"];
 
   return (
     <section className="cartao mt-6 p-5" aria-label="Fotos Corporais">
@@ -106,7 +115,7 @@ export default function FotosCorporais({ base }: { base: string }) {
         </div>
       </div>
 
-      <p className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary-50 px-3 py-1.5 text-sm text-primary-800">
+      <p className={`mt-3 inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm ${cores.selo}`}>
         {dados.sexo ? (
           <span className="text-lg leading-none" aria-hidden>
             {dados.sexo === "masculino" ? "♂" : "♀"}
@@ -128,7 +137,7 @@ export default function FotosCorporais({ base }: { base: string }) {
           const foto = dados.fotos.find((f) => f.perfil === chave);
           return (
             <div key={chave} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <p className="bg-primary-800 py-2 text-center font-bold text-white">{rotulo}</p>
+              <p className={`${cores.titulo} py-2 text-center font-bold text-white`}>{rotulo}</p>
               <div className="aspect-[3/4] bg-gray-50 p-2">
                 {foto ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -159,7 +168,7 @@ export default function FotosCorporais({ base }: { base: string }) {
                       enviar(chave, e.dataTransfer.files?.[0]);
                     }}
                     className={`flex cursor-pointer flex-col items-center gap-1 rounded-lg border-2 border-dashed px-2 py-3 text-center text-sm ${
-                      arrastando === chave ? "border-primary-700 bg-primary-50" : "border-gray-300 hover:border-primary-500"
+                      arrastando === chave ? cores.arrastando : "border-gray-300 hover:border-gray-500"
                     }`}
                   >
                     <i className={`pi ${enviando === chave ? "pi-spin pi-spinner" : "pi-cloud-upload"} text-xl text-primary-700`} aria-hidden />

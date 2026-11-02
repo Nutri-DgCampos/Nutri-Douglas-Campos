@@ -92,6 +92,12 @@ export default function FotosPacientePage() {
         body: JSON.stringify({ perfil, caminho }),
       });
 
+      if (resposta.status === 409) {
+        avisar((await resposta.json().catch(() => null))?.erro ?? "Você já enviou a foto desta posição hoje.", "warn");
+        await carregar();
+        return;
+      }
+
       if (!resposta.ok) throw new Error("Não foi possível registrar a foto.");
 
       avisar("Foto salva!", "success");
@@ -166,28 +172,32 @@ export default function FotosPacientePage() {
                   </button>
 
                   <div className="mt-1 flex justify-center">
-                    <Button
-                      type="button"
-                      size="small"
-                      text
-                      label={foto ? "Trocar" : "Anexar"}
-                      disabled={enviando !== null}
-                      onClick={() => escolher(chave)}
-                      className={foto ? "px-2" : "w-full justify-center"}
-                    />
                     {foto ? (
-                      // Foto anexada por engano: o paciente remove direto daqui.
+                      // Uma posição enviada hoje não é substituída: o paciente
+                      // exclui e envia de novo.
                       <Button
                         type="button"
                         size="small"
                         text
                         severity="danger"
                         icon="pi pi-trash"
-                        aria-label={`Remover foto de ${rotulo.toLowerCase()}`}
+                        label="Excluir"
+                        aria-label={`Excluir foto de ${rotulo.toLowerCase()}`}
                         disabled={enviando !== null}
                         onClick={() => remover(foto)}
+                        className="px-2"
                       />
-                    ) : null}
+                    ) : (
+                      <Button
+                        type="button"
+                        size="small"
+                        text
+                        label="Anexar"
+                        disabled={enviando !== null}
+                        onClick={() => escolher(chave)}
+                        className="w-full justify-center"
+                      />
+                    )}
                   </div>
                 </div>
               );

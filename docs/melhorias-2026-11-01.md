@@ -97,9 +97,10 @@ As migrações só acrescentam e trazem a reversão no cabeçalho. Regressão: t
   - controles: transparência, ajustar a foto de cima ou a de baixo, arrastar com mouse ou dedo, zoom, setas de alinhamento fino, trocar a ordem e reiniciar;
   - nada é salvo (opção B), e as fotos originais não mudam.
 
-**Para o cliente:**
-1. **Avatares:** vieram dos modelos 07 e 08, em resolução de tela (cerca de 190 × 530 px). Se houver os arquivos originais em resolução maior, basta substituir mantendo os nomes.
-2. **Área do Paciente:** a tela "Fotos" continua com o comportamento anterior: uma nova foto no mesmo dia e posição substitui a anterior. O link não substitui, como pede a SPEC. Quer que a Área do Paciente passe a não substituir também?
+**Respostas do cliente (I5–I7):**
+1. **Área do Paciente (I5):** passou a funcionar igual ao link. Uma posição enviada no dia não é substituída: o botão "Trocar" saiu, e o paciente usa "Excluir" e envia de novo. O servidor recusa a segunda foto (409) e apaga o arquivo recusado.
+2. **Avatares (I6):** o cliente tem os originais em resolução maior. Basta substituir os arquivos mantendo os nomes.
+3. **Cores (I7):** os cartões usam azul para masculino (#10427a) e vinho/rosa para feminino (#8c0c50), tirados dos modelos 07 e 08. Sem sexo no cadastro, fica o verde do aplicativo.
 
 ## 4. Rotulagem nutricional: plano e pré-requisitos
 
@@ -115,12 +116,17 @@ A SPEC pede para verificar as normas da ANVISA vigentes e proíbe inventar limit
   - exceções e dispensas.
 - Normas de lista de ingredientes, alergênicos (RDC 727/2022) e glúten (Lei 10.674/2003).
 
-Posso baixar os PDFs no portal da ANVISA, ou o cliente envia os arquivos que usa. Preciso da sua autorização para baixar.
-
-**Decisões do cliente:**
-1. **Açúcares adicionados:** a TACO não traz açúcares totais nem adicionados. Proposta: marcar no cadastro os ingredientes que são açúcar adicionado (açúcar, mel, xaropes etc.) e informar os açúcares totais quando houver fonte. Sem esses dados, a lupa de açúcar fica "verificação pendente".
-2. **Cálculo pelo peso final:** composição por 100 g = soma dos nutrientes dos ingredientes ÷ peso final real medido × 100. Isso considera só a perda de água, sem fatores de retenção. Fatores de retenção só entram com fonte confiável indicada pelo cliente. Confirma?
-3. **Etiqueta:** tamanhos usados com mais frequência, e se a tabela e a lupa saem juntas ou em arquivos separados.
+**Respostas do cliente:**
+- **I1:** autorizado baixar os textos no portal da ANVISA.
+- **I2:** de acordo:
+  - marcar no cadastro os ingredientes que são açúcar adicionado;
+  - açúcares totais quando houver fonte;
+  - sem dados, a lupa de açúcar fica "verificação pendente".
+- **I3:** de acordo com o cálculo pelo peso final, considerando só a perda de água. Fatores de retenção só com fonte indicada pelo cliente.
+- **I4:**
+  - etiqueta de 7 cm;
+  - tabela e lupa no mesmo arquivo;
+  - impressão em impressora doméstica, papel A4 (várias etiquetas por folha).
 
 **Etapas propostas (cada uma com migração, teste e aprovação):**
 - **R1:** clientes e receitas.

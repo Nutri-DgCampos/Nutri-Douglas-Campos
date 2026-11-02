@@ -174,6 +174,10 @@ conferir("educador físico não usa a rota do aluno", (await api(e.pagina, "/api
 await esperar(2000);
 const avisos = sql(`select usuario_id || '|' || status from notificacoes_profissionais where patient_id = '${P}';`);
 conferir("aviso só para o educador vinculado (sem aparelho: fica registrado)", avisos === `${EDUCADOR}|sem_dispositivo`, avisos);
+const leve = await api(a.pagina, "/api/area-paciente/treino/desconforto", "POST", { chaveCliente: crypto.randomUUID(), dia: "seg", regiao: "Joelho", intensidade: 3, conduta: "continuei" });
+await esperar(1000);
+conferir("relato leve (continuou) é gravado, sem push", leve.status === 201 && sql(`select count(*) from notificacoes_profissionais where patient_id = '${P}';`) === "1", leve);
+sql(`delete from treino_desconfortos where patient_id = '${P}' and conduta = 'continuei';`);
 conferir("nada vai para a fila de push do paciente", sql(`select count(*) from notification_queue where patient_id = '${P}' and created_at > now() - interval '5 minutes';`) === "0", null);
 conferir("sem erros (aluno)", a.erros.length === 0, a.erros);
 

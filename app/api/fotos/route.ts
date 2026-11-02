@@ -33,13 +33,14 @@ async function apagarArquivo(caminho: string) {
 
   if (destino) {
     await removerArquivo(destino).catch((erro) =>
-      console.error("Não foi possível remover a foto antiga:", erro)
+      console.error("Não foi possível remover o arquivo da foto:", erro)
     );
   }
 }
 
-// Registra a foto do dia para um perfil. Uma nova foto no mesmo dia e perfil
-// substitui a anterior.
+// Registra a foto do dia para um perfil. Uma posição já enviada no dia não é
+// substituída (resposta I5 do cliente, igual ao link de anamnese): o paciente
+// exclui e envia de novo.
 export async function POST(request: Request) {
   const pacienteId = await pacienteConectado(request);
 
@@ -62,25 +63,20 @@ export async function POST(request: Request) {
     return recusar("O arquivo da foto não foi encontrado.", 400);
   }
 
-  const resultado = await obterPool().query<{ id: string; anterior: string | null }>(
-    `with anterior as (
-       select storage_path from public.fotos_evolucao
-        where patient_id = $1 and perfil = $2 and data = $3
-     )
-     insert into public.fotos_evolucao (patient_id, perfil, data, storage_path)
+  const resultado = await obterPool().query<{ id: string }>(
+    `insert into public.fotos_evolucao (patient_id, perfil, data, storage_path)
      values ($1, $2, $3, $4)
-     on conflict (patient_id, perfil, data) do update set storage_path = excluded.storage_path, created_at = now()
-     returning id, (select storage_path from anterior) as anterior`,
+     on conflict (patient_id, perfil, data) do nothing
+     returning id`,
     [pacienteId, perfil, hojeNoBrasil(), caminho]
   );
 
-  const { id, anterior } = resultado.rows[0];
-
-  if (anterior && anterior !== caminho) {
-    await apagarArquivo(anterior);
+  if (!resultado.rows[0]) {
+    await apagarArquivo(caminho);
+    return recusar("Você já enviou a foto desta posição hoje. Exclua a foto para enviar outra.", 409);
   }
 
-  return NextResponse.json({ sucesso: true, id }, { status: 201 });
+  return NextResponse.json({ sucesso: true, id: resultado.rows[0].id }, { status: 201 });
 }
 
 // Remove uma foto do próprio paciente.

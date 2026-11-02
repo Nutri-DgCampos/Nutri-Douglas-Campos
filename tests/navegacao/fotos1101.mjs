@@ -159,8 +159,34 @@ conferir("ajustes descartados ao fechar (opção B)", (await dialogo.getByText("
 conferir("foto original intacta", fs.readFileSync(path.join(ARQUIVOS, "fotos", antigo)).toString("base64") === hashAntes, null);
 conferir("sem erros (nutricionista)", n.erros.length === 0, n.erros);
 
+// --- Área do Paciente: também não substitui (resposta I5) ------------------
+const pac = await entrar("teste.paciente@local.test", "654987", 390);
+sql(`delete from fotos_evolucao where patient_id = '${P}' and data = '${HOJE}' and perfil = 'costas';`);
+const arquivoDoPaciente = (nome) => {
+  fs.mkdirSync(path.join(ARQUIVOS, "fotos", P), { recursive: true });
+  fs.copyFileSync(IMAGEM, path.join(ARQUIVOS, "fotos", P, nome));
+  return `${P}/${nome}`;
+};
+const registrar = (caminho) =>
+  pac.pagina.evaluate(async (c) => {
+    const r = await fetch("/api/fotos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ perfil: "costas", caminho: c }) });
+    return r.status;
+  }, caminho);
+const primeira = arquivoDoPaciente(`teste-i5-1-${Date.now()}.png`);
+const segunda = arquivoDoPaciente(`teste-i5-2-${Date.now()}.png`);
+const status1 = await registrar(primeira);
+const status2 = await registrar(segunda);
+conferir("Área do Paciente: segunda foto da mesma posição no dia é recusada", status1 === 201 && status2 === 409 && sql(`select storage_path from fotos_evolucao where patient_id = '${P}' and data = '${HOJE}' and perfil = 'costas';`) === primeira, { status1, status2 });
+conferir("arquivo recusado não fica guardado", !fs.existsSync(path.join(ARQUIVOS, "fotos", segunda)), null);
+await pac.pagina.goto(`${B}/area-paciente/fotos`, { waitUntil: "networkidle" });
+await pac.pagina.waitForTimeout(1500);
+conferir("tela Fotos: sem \"Trocar\", com \"Excluir\" na posição enviada", (await pac.pagina.getByRole("button", { name: "Trocar" }).count()) === 0 && (await pac.pagina.getByRole("button", { name: "Excluir foto de costas" }).count()) === 1, null);
+await pac.pagina.screenshot({ path: path.join(PASTA, "m3-area-paciente-fotos.png"), fullPage: true });
+conferir("sem erros (Área do Paciente)", pac.erros.length === 0, pac.erros);
+
 await navegador.close();
 if (process.argv.includes("--limpar")) {
+  fs.rmSync(path.join(ARQUIVOS, "fotos", primeira), { force: true });
   limpar();
   fs.rmSync(path.join(ARQUIVOS, "fotos", antigo), { force: true });
 }

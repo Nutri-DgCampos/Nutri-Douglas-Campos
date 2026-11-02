@@ -131,22 +131,92 @@ Cada etapa sai com:
   - Desconforto: pela percepção do aluno. Leve, ele continua; mais acentuado, ele para o exercício.
   - Relatório: a devolutiva chega no cartão Relatórios ("Chegou a devolutiva do seu Personal Trainer"). O personal responde os relatórios do Treino na área Relatórios, a mesma em que o nutricionista responde, com a indicação "Nutricional" ou "Treino".
 - **D2:** o nutricionista é o admin e também prescreve. Haverá cadastro de outros educadores físicos, com acesso só ao Módulo de Treino.
-- **D3:** sem resposta. Mantido como entregue (situação e observação no modal do dia).
+- **D3:** sem resposta. Mantido como entregue (situação e observação no modal do dia). Confirmado depois na resposta A5.
 
-## 7. Pontos para o cliente confirmar
+## 7. Respostas do técnico (01/11/2026)
 
-1. **Orientação de segurança** no relato de desconforto. As duas primeiras linhas seguem a resposta do cliente; a terceira é proposta nossa, para os sinais de alerta:
-   - "Desconforto leve: você pode continuar, com atenção ao movimento."
-   - "Incômodo mais acentuado: pare o exercício."
-   - "Dor forte ou repentina, dor no peito, falta de ar, tontura ou desmaio: interrompa o treino e procure atendimento médico."
-2. **Quem recebe o alerta:** os educadores vinculados ao aluno; sem nenhum vinculado, o administrador. O administrador também deve receber quando há educador?
-3. **Alunos do educador:** hoje só o administrador cadastra alunos e faz os vínculos. O educador poderá cadastrar alunos próprios, que não são pacientes da Nutrição?
-4. **Regiões do corpo** oferecidas no relato: pescoço, ombro, cotovelo, punho ou mão, peito, costas (parte alta), lombar, abdômen, quadril, coxa, joelho, panturrilha e tornozelo ou pé, mais "Outra região".
+Perguntas em `Downloads/Arquivos/Perguntas para o tecnico - Treino e Melhorias 2026-11-01.md`.
+
+**A. O que já está pronto**
+- **A1:** aprovado o texto das três linhas de orientação de segurança.
+- **A2:** se o aluno tem educador, o alerta vai só para o educador. Já era assim.
+- **A3:** push só para os relatos mais fortes. Aplicado: o push sai quando o aluno parou o exercício, que é o próprio critério do cliente para "mais acentuado" (D1). O relato leve fica só no painel.
+- **A4:** regiões do corpo mantidas.
+- **A5:** situação e observações no modal do dia, confirmado.
+- **A6:** personal e educador físico são a mesma função, um perfil só.
+- **A7:** o educador pode cadastrar alunos próprios:
+  - esses alunos **não** aparecem na lista de pacientes do nutricionista;
+  - eles têm acesso à Área do Paciente.
+  
+  Ainda não implementado: é uma etapa nova (T7b, seção 9).
+
+**B. Relatório semanal e lista de atenção (T3)**
+- **B1:** horário de Brasília para todos.
+- **B2:** cada educador envia a própria devolutiva (opção a).
+- **B3:** só os alunos marcados pelo profissional como "com acompanhamento" (opção b).
+- **B4:** aprovadas as sugestões:
+  - parcial = meia sessão;
+  - reagendado e feito = feito;
+  - baixa adesão < 60%, padrão inicial editável por aluno.
+- **B5:** meta em texto livre, marcada à mão como atingida ou não.
+- **B6:** a pausa é registrada só pelo profissional, com início e fim (opção a).
+- **B7:** a lista de atenção aparece só para o educador, só no painel, sem push.
+- **B8:** o atraso de devolutiva aparece só para o educador.
+- **B9:** IA escreve o rascunho da devolutiva, como na Nutrição. O profissional revisa antes de enviar.
+- **B10:** o push ao aluno tem o mesmo texto do cartão.
+
+**C. Editor e biblioteca**
+- **C1:** nós montamos a lista inicial de exercícios, para revisão do cliente.
+- **C2:** vídeos são links do YouTube gravados pelo próprio cliente, que tem o direito de uso.
+- **C3:** aprovada a sugestão. O aluno vê séries, repetições, carga, descanso e observação; cadência, RPE, RIR, aquecimento e técnicas ficam no editor.
+- **C4:** aprovada a sugestão. O publicado por último é o vigente, e o anterior vai para o histórico.
+- **C5:** academias e equipamentos entram **agora**, na etapa do editor.
+- **C6:** fim do descanso só vibra o celular.
+
+**D. Offline**
+- **D1:** treinam em academias com sinal bom. O offline perde prioridade.
+- **D2:** celular compartilhado não é comum.
+
+**E. Corrida e ciclismo**
+- **E1:** o profissional informa as zonas de FC de cada aluno. Sem fórmula.
+- **E2:** zonas por FTP, 7 zonas de Coggan, e o profissional também pode informar à mão. Antes de programar, conferir os percentuais de Coggan em fonte publicada e mostrar ao cliente.
+- **E3:** controle de quilometragem dos tênis, com aviso em km como padrão editável.
+- **E4:** Garmin e Strava: estrutura pronta agora, integração depois.
+
+**F. Vários profissionais**
+- **F1:**
+  - aluno compartilhado (cadastrado com os dois profissionais): o educador vê toda a avaliação física, sem autorização extra;
+  - o educador também faz avaliação física, e o nutricionista vê a dele quando o aluno é compartilhado.
+- **F2:** cada profissional tem a própria anamnese, que os outros não veem.
+- **F3:** as observações privadas de um profissional ficam invisíveis para os outros, inclusive o nutricionista.
+
+**G. Planos e pagamentos**
+- **G1:** cada profissional cria os próprios planos e preços.
+- **G2:** cada profissional confirma o pagamento dos próprios alunos.
+- **G3:** formas de pagamento iguais às da Nutrição.
+- **G4:** tolerância após o vencimento: padrão editável por profissional.
+- **G5:** Nutrição e Treino são pagos e renovados separadamente.
+
+**H. PDFs**
+- **H1:** cada PDF sai com a identidade de quem prescreveu.
+
+**J. Ordem**
+- **J1:** mantida.
 
 ## 8. Próxima etapa: T3 (relatório semanal)
 
-- Fechamento no domingo 00:00, no horário de Brasília.
-- Consolidação dos registros, observações e desconfortos da semana.
-- Devolutiva pelo profissional na área Relatórios, com a indicação Nutricional/Treino.
-- Aviso no cartão Relatórios do paciente.
-- Pendências, atraso após 2 relatórios sem resposta, e lista de atenção.
+Com as respostas B1–B10:
+- Fechamento no domingo 00:00, horário de Brasília, só para os alunos marcados "com acompanhamento".
+- Consolidação dos registros, observações e desconfortos da semana. Adesão com parcial = 0,5 e reagendado feito = 1; baixa adesão abaixo de 60% por padrão, editável por aluno.
+- Metas em texto livre, marcadas à mão.
+- Pausas registradas pelo profissional (início e fim) tiram o aluno da lista de atenção.
+- Uma devolutiva por educador vinculado, na área Relatórios, com a indicação Nutricional/Treino e rascunho da IA.
+- Aviso ao aluno no cartão Relatórios e por push, com o mesmo texto.
+- Lista de atenção e atraso (2 relatórios sem resposta): só para o profissional responsável, só no painel, sem push. Sem educador vinculado, o responsável é o nutricionista.
+
+## 9. Mudanças de escopo trazidas pelas respostas
+
+- **T7b, alunos próprios do educador (A7):** o educador cadastra alunos que pertencem só a ele. Isso pede um dono por cadastro de paciente. A lista do nutricionista, a busca, os relatórios, os avisos e todas as rotas da Nutrição passam a filtrar por dono, e o aluno do educador entra na Área do Paciente vendo só o Treino. É a mudança de maior risco até aqui. Sugestão: fazer logo depois da T3, antes do editor, porque F1, G1–G5 e H1 dependem do mesmo conceito de "profissional dono".
+- **Editor (T4):** inclui academias e equipamentos (C5), links do YouTube (C2) e vibração no fim do descanso (C6).
+- **Offline (T5):** mantido na ordem, com escopo mínimo (D1).
+- **Planos (T8):** um plano por profissional, cada um com preço, confirmação de pagamento e tolerância próprios (G1–G5).
