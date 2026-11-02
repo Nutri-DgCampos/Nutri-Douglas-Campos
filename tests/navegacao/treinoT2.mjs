@@ -177,7 +177,11 @@ conferir("aviso só para o educador vinculado (sem aparelho: fica registrado)", 
 const leve = await api(a.pagina, "/api/area-paciente/treino/desconforto", "POST", { chaveCliente: crypto.randomUUID(), dia: "seg", regiao: "Joelho", intensidade: 3, conduta: "continuei" });
 await esperar(1000);
 conferir("relato leve (continuou) é gravado, sem push", leve.status === 201 && sql(`select count(*) from notificacoes_profissionais where patient_id = '${P}';`) === "1", leve);
-sql(`delete from treino_desconfortos where patient_id = '${P}' and conduta = 'continuei';`);
+const forte = await api(a.pagina, "/api/area-paciente/treino/desconforto", "POST", { chaveCliente: crypto.randomUUID(), dia: "seg", regiao: "Lombar", intensidade: 7, conduta: "continuei" });
+await esperar(1000);
+conferir("intensidade 7 gera push mesmo sem parar", forte.status === 201 && sql(`select count(*) from notificacoes_profissionais where patient_id = '${P}' and referencia_id = '${forte.corpo.id}';`) === "1", forte);
+sql(`delete from notificacoes_profissionais where patient_id = '${P}' and referencia_id = '${forte.corpo.id}';
+     delete from treino_desconfortos where patient_id = '${P}' and conduta = 'continuei';`);
 conferir("nada vai para a fila de push do paciente", sql(`select count(*) from notification_queue where patient_id = '${P}' and created_at > now() - interval '5 minutes';`) === "0", null);
 conferir("sem erros (aluno)", a.erros.length === 0, a.erros);
 

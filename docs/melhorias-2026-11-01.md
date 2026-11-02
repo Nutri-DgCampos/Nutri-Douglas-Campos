@@ -81,7 +81,7 @@ As migrações só acrescentam e trazem a reversão no cabeçalho. Regressão: t
 **Como ficou:**
 - **Seção "Fotos Corporais" no link de anamnese e recordatório:**
   - posições Frente, Lateral e Costas, todas opcionais;
-  - avatares de frente, lado e costas conforme o sexo do cadastro, recortados dos modelos aprovados (imagens 07 e 08) com fundo transparente, em `public/nutricao/avatares/fotos-corporais/`. Sem sexo, nenhum avatar é presumido e aparece um aviso neutro;
+  - avatares de frente, lado e costas conforme o sexo do cadastro, nos arquivos originais enviados pelo cliente (resposta I6), com fundo transparente, em `public/nutricao/avatares/fotos-corporais/`. Sem sexo, nenhum avatar é presumido e aparece um aviso neutro;
   - o servidor confere o tipo real do arquivo, pelos primeiros bytes, e o tamanho;
   - uma posição já enviada no dia não é substituída: o paciente exclui e envia de novo;
   - pelo link, o paciente vê e exclui só as fotos de hoje, porque o link não tem login e não deve expor o histórico.
@@ -99,7 +99,7 @@ As migrações só acrescentam e trazem a reversão no cabeçalho. Regressão: t
 
 **Respostas do cliente (I5–I7):**
 1. **Área do Paciente (I5):** passou a funcionar igual ao link. Uma posição enviada no dia não é substituída: o botão "Trocar" saiu, e o paciente usa "Excluir" e envia de novo. O servidor recusa a segunda foto (409) e apaga o arquivo recusado.
-2. **Avatares (I6):** o cliente tem os originais em resolução maior. Basta substituir os arquivos mantendo os nomes.
+2. **Avatares (I6):** o cliente enviou os originais (1024 × 1536). Foram recortados e salvos em WEBP com 1000 px de altura (33 a 69 KB cada). A frente feminina veio com o xadrez de transparência pintado no fundo, removido no recorte.
 3. **Cores (I7):** os cartões usam azul para masculino (#10427a) e vinho/rosa para feminino (#8c0c50), tirados dos modelos 07 e 08. Sem sexo no cadastro, fica o verde do aplicativo.
 
 ## 4. Rotulagem nutricional: plano e pré-requisitos

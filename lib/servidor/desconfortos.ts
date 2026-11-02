@@ -6,8 +6,10 @@ import { prescricaoVigente } from "./treinoRegistros";
 import { responsaveisPeloAluno, type ProfissionalDeTreino } from "./treinoAcesso";
 
 // Relatos de desconforto do aluno (T2): gravados na hora. O push ao
-// profissional responsável sai só para os mais fortes (o aluno parou o
-// exercício, resposta A3 do cliente); os leves ficam no painel.
+// profissional responsável sai só para os mais fortes: o aluno parou o
+// exercício ou deu intensidade 7 ou mais (resposta A3 do cliente). Os demais
+// ficam no painel.
+const INTENSIDADE_FORTE = 7;
 
 export type Desconforto = {
   id: string;
@@ -47,7 +49,7 @@ export async function registrarDesconforto(patientId: string, relato: RelatoDeDe
   }
 
   const id = inserido.rows[0].id;
-  if (relato.conduta !== "parei") return { id, novo: true };
+  if (relato.conduta !== "parei" && relato.intensidade < INTENSIDADE_FORTE) return { id, novo: true };
 
   const nome = await obterPool().query<{ name: string }>("select name from public.patients where id = $1", [patientId]);
   const primeiroNome = nome.rows[0]?.name.trim().split(/\s+/)[0] ?? "Aluno";
@@ -57,7 +59,7 @@ export async function registrarDesconforto(patientId: string, relato: RelatoDeDe
     tipo: "desconforto",
     pacienteId: patientId,
     titulo: "Relato de desconforto no treino",
-    corpo: `${primeiroNome} relatou desconforto (intensidade ${relato.intensidade}/10) e parou o exercício.`,
+    corpo: `${primeiroNome} relatou desconforto (intensidade ${relato.intensidade}/10)${relato.conduta === "parei" ? " e parou o exercício" : ""}.`,
     destino: `/treino/alunos/${patientId}`,
     referenciaId: id,
   });

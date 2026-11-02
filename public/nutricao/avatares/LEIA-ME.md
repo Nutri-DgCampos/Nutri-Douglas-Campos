@@ -12,4 +12,4 @@ Na avaliação aparece só o conjunto do sexo do paciente.
 
 ## Fotos corporais (link de anamnese)
 
-`fotos-corporais/{masculino,feminino}-{frente,lateral,costas}.png`: recortados, com fundo transparente, dos modelos visuais aprovados na SPEC de 01/11/2026 (imagens 07 e 08). Aparecem como referência de posição na seção "Fotos Corporais" do link do paciente. Para trocar por versões em maior resolução, substitua os arquivos mantendo os nomes.
+`fotos-corporais/{masculino,feminino}-{frente,lateral,costas}.webp`: arquivos originais enviados pelo cliente em 01/11/2026 (1024 × 1536), recortados, com fundo transparente e reduzidos a 1000 px de altura. Aparecem como referência de posição na seção "Fotos Corporais" do link do paciente. Para trocar, substitua os arquivos mantendo os nomes.

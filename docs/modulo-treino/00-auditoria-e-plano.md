@@ -140,7 +140,7 @@ Perguntas em `Downloads/Arquivos/Perguntas para o tecnico - Treino e Melhorias 2
 **A. O que já está pronto**
 - **A1:** aprovado o texto das três linhas de orientação de segurança.
 - **A2:** se o aluno tem educador, o alerta vai só para o educador. Já era assim.
-- **A3:** push só para os relatos mais fortes. Aplicado: o push sai quando o aluno parou o exercício, que é o próprio critério do cliente para "mais acentuado" (D1). O relato leve fica só no painel.
+- **A3:** push só para os relatos mais fortes. Confirmado pelo técnico: mais forte = o aluno parou o exercício **ou** deu intensidade 7 ou mais. Os demais relatos ficam só no painel, sem push.
 - **A4:** regiões do corpo mantidas.
 - **A5:** situação e observações no modal do dia, confirmado.
 - **A6:** personal e educador físico são a mesma função, um perfil só.

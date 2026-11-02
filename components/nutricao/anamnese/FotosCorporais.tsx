@@ -25,7 +25,7 @@ const CORES: Record<"masculino" | "feminino" | "neutro", { titulo: string; selo:
 };
 
 // Avatares de referência das três posições, conforme o sexo do cadastro
-// (recortados dos modelos aprovados, em public/nutricao/avatares/fotos-corporais).
+// (arquivos originais enviados pelo cliente, em public/nutricao/avatares/fotos-corporais).
 // Sem sexo no cadastro, nenhum avatar é presumido: só a indicação da posição.
 const ARQUIVO_DA_POSICAO: Record<Perfil, string> = { frente: "frente", lado: "lateral", costas: "costas" };
 const DESCRICAO_DA_POSICAO: Record<Perfil, string> = { frente: "de frente", lado: "de lado", costas: "de costas" };
@@ -42,7 +42,7 @@ function Avatar({ sexo, perfil }: { sexo: Sexo; perfil: Perfil }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`/nutricao/avatares/fotos-corporais/${sexo}-${ARQUIVO_DA_POSICAO[perfil]}.png`}
+      src={`/nutricao/avatares/fotos-corporais/${sexo}-${ARQUIVO_DA_POSICAO[perfil]}.webp`}
       alt={`Avatar ${sexo}, ${DESCRICAO_DA_POSICAO[perfil]}`}
       className="mx-auto h-full w-full object-contain"
     />
