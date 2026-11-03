@@ -179,6 +179,18 @@ Nenhuma constante das imagens será copiada. O sistema vai respeitar estes ponto
   - R8: identidade dos PDFs;
   - R9: bloqueio por pagamento vencido;
   - R10: desativar ou excluir o aluno próprio.
+- **Segunda resposta (03/11/2026, arquivo antigo P/Q):**
+  - aprovados P2, P3, P4, P5, Q1, Q3 e Q4;
+  - Q5: aprovada, e cada modalidade conta separadamente na lista de atenção;
+  - Q6: o aluno vê o relatório completo e se a meta foi atingida;
+  - Q7: o aluno vê a faixa, e o volume usa o **maior** valor da faixa;
+  - Q8 e Q9: mantidas a ordem e o offline na T5.
+- **Ainda falta (reenviado no arquivo "Concluir o Treino"):**
+  - P1, sem resposta;
+  - C1: a Q2 veio "aprovado", o que contradiz a primeira resposta (o aluno informa as kcal) — até confirmar, vale a primeira;
+  - C2: volume realizado com as repetições registradas pelo aluno;
+  - C3: o aluno vê a adesão mínima?;
+  - R1–R10.
 - **Publicação:** o cliente publica o módulo só quando estiver 100% pronto. As migrações 021 em diante ficam acumuladas até lá.
 
 ## 8. T7b entregue: alunos próprios do educador (03/11/2026)
