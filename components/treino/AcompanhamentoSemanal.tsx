@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
-import { diaMes, formatarAdesao, rotuloDaSemana } from "@/lib/treinoRelatorio";
+import { ROTULO_DA_MODALIDADE, diaMes, formatarAdesao, rotuloDaSemana } from "@/lib/treinoRelatorio";
+
+type Modalidade = keyof typeof ROTULO_DA_MODALIDADE;
 
 type Dados = {
   acompanhamento: { adesao_minima: number; inicio: string } | null;
   adesao_padrao: number;
-  metas: { id: string; texto: string; ativa: boolean }[];
+  metas: { id: string; texto: string; ativa: boolean; modalidade?: Modalidade | null }[];
   pausas: { id: string; inicio: string; fim: string; motivo: string | null }[];
   relatorios: {
     id: string;
@@ -22,6 +24,7 @@ type Dados = {
     em_pausa: boolean;
     respondido: boolean;
     meu: boolean;
+    modalidade?: Modalidade;
   }[];
 };
 
@@ -32,6 +35,7 @@ export default function AcompanhamentoSemanal({ alunoId, admin }: { alunoId: str
   const [dados, setDados] = useState<Dados | null>(null);
   const [minimo, setMinimo] = useState("");
   const [meta, setMeta] = useState("");
+  const [modalidadeDaMeta, setModalidadeDaMeta] = useState<Modalidade | "">("");
   const [pausa, setPausa] = useState({ inicio: "", fim: "", motivo: "" });
   const [salvando, setSalvando] = useState<string | null>(null);
 
@@ -122,7 +126,8 @@ export default function AcompanhamentoSemanal({ alunoId, admin }: { alunoId: str
         )}
       </div>
       <p className="text-xs text-gray-500">
-        Baixa adesão = abaixo deste mínimo. Parcialmente concluído vale meia sessão; reagendado só conta quando o aluno confirma que fez.
+        Baixa adesão = abaixo deste mínimo, em cada modalidade (musculação, corrida e ciclismo têm relatórios separados). Parcialmente concluído vale meia sessão; reagendado só conta se
+        for feito na mesma semana (feito em outra semana não conta em nenhuma das duas).
       </p>
 
       <div>
@@ -133,7 +138,10 @@ export default function AcompanhamentoSemanal({ alunoId, admin }: { alunoId: str
           <ul className="mt-1 divide-y divide-gray-100">
             {metasAtivas.map((m) => (
               <li key={m.id} className="flex items-center gap-2 py-1.5 text-sm">
-                <span className="min-w-0 flex-1 break-words text-gray-800">{m.texto}</span>
+                <span className="min-w-0 flex-1 break-words text-gray-800">
+                  {m.texto}
+                  <span className="ml-1 text-xs text-gray-500">· {m.modalidade ? ROTULO_DA_MODALIDADE[m.modalidade] : "todas as modalidades"}</span>
+                </span>
                 <Button type="button" text size="small" label="Encerrar" onClick={() => enviar("encerrar_meta", { id: m.id }, "Meta encerrada.")} />
               </li>
             ))}
@@ -141,6 +149,14 @@ export default function AcompanhamentoSemanal({ alunoId, admin }: { alunoId: str
         )}
         <div className="mt-2 flex gap-2">
           <InputText value={meta} onChange={(e) => setMeta(e.target.value)} maxLength={500} placeholder="Ex.: treinar 4 vezes na semana" aria-label="Nova meta" className="min-w-0 flex-1" />
+          <select value={modalidadeDaMeta} onChange={(e) => setModalidadeDaMeta(e.target.value as Modalidade | "")} aria-label="Modalidade da meta" className="p-inputtext w-40">
+            <option value="">Todas</option>
+            {(Object.keys(ROTULO_DA_MODALIDADE) as Modalidade[]).map((m) => (
+              <option key={m} value={m}>
+                {ROTULO_DA_MODALIDADE[m]}
+              </option>
+            ))}
+          </select>
           <Button
             type="button"
             outlined
@@ -149,7 +165,7 @@ export default function AcompanhamentoSemanal({ alunoId, admin }: { alunoId: str
             loading={salvando === "nova_meta"}
             disabled={!meta.trim()}
             onClick={async () => {
-              if (await enviar("nova_meta", { texto: meta }, "Meta adicionada.")) setMeta("");
+              if (await enviar("nova_meta", { texto: meta, modalidade: modalidadeDaMeta || null }, "Meta adicionada.")) setMeta("");
             }}
           />
         </div>
@@ -208,7 +224,9 @@ export default function AcompanhamentoSemanal({ alunoId, admin }: { alunoId: str
               <li key={r.id}>
                 <Link href={`/treino/relatorios/${r.id}`} className="flex items-center gap-2 py-2 text-sm hover:bg-primary-50">
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold text-gray-900">Semana {rotuloDaSemana(r.semana_inicio, r.semana_fim)}</span>
+                    <span className="block font-semibold text-gray-900">
+                      Semana {rotuloDaSemana(r.semana_inicio, r.semana_fim)} · {ROTULO_DA_MODALIDADE[r.modalidade ?? "musculacao"]}
+                    </span>
                     <span className="block text-xs text-gray-500">
                       {r.em_pausa ? "Em pausa · " : ""}
                       {r.sem_registros ? "Sem registros" : `Adesão ${formatarAdesao(r.adesao)}`}

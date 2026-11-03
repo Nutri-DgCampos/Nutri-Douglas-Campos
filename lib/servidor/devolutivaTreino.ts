@@ -1,5 +1,5 @@
 import { DIAS } from "@/lib/treino";
-import { ROTULO_DA_CAUSA, causasDaSemana, diferencaDeCarga, type DadosDoRelatorio } from "@/lib/treinoRelatorio";
+import { ROTULO_DA_CAUSA, ROTULO_DA_MODALIDADE, causasDaSemana, diferencaDeCarga, foraDaSemana, type DadosDoRelatorio } from "@/lib/treinoRelatorio";
 import { obterPool } from "./banco";
 import { clienteDaIa, iaSimulada, registrarUsoDaIa } from "./ia";
 import type { ProfissionalDeTreino } from "./treinoAcesso";
@@ -43,6 +43,19 @@ const num = (v: number | null) => (v === null ? "—" : v.toLocaleString("pt-BR"
 export function textoDoPedidoDeTreino(r: RelatorioDoTreino) {
   const d: DadosDoRelatorio = r.dados;
   const primeiroNome = r.paciente.trim().split(/\s+/)[0] || "Aluno";
+  const semana = { inicio: r.semana_inicio, fim: r.semana_fim };
+  // Corrida e ciclismo (T3b): sessões planejadas e atividades registradas.
+  const sessoesDeEndurance = (d.endurance?.sessoes ?? []).map((s) => {
+    const situacao = s.extra ? "atividade sem sessão planejada (fora da adesão)" : foraDaSemana(s, semana) ? "feita ou reagendada para outra semana (fora da conta)" : SITUACAO[s.situacao];
+    const planejado = s.planejado ? `planejado ${num(s.planejado.distancia_km)} km / ${num(s.planejado.duracao_min)} min${s.planejado.zona ? ` (${s.planejado.zona})` : ""}` : "";
+    const g = s.registrado;
+    const registrado = g ? `registrado ${num(g.distancia_km)} km em ${g.duracao_segundos === null ? "—" : `${Math.round(g.duracao_segundos / 60)} min`}${g.fc_media !== null ? `, FC média ${g.fc_media}` : ""}${g.rpe !== null ? `, RPE ${num(g.rpe)}` : ""}` : "sem registro";
+    const linhas = [`- ${s.data_planejada ?? g?.data ?? ""} ${s.tipo ?? ""}: ${situacao}; ${planejado} ${registrado}`.replace(/\s+/g, " ")];
+    if (g?.consumos.length) linhas.push(`  Consumo informado: ${g.consumos.join("; ")}`);
+    if (s.motivo) linhas.push(`  Motivo informado: ${s.motivo}`);
+    if (s.observacao) linhas.push(`  Observação do aluno: ${s.observacao}`);
+    return linhas.join("\n");
+  });
   const sessoes = d.sessoes.map((s) => {
     const linhas = [`- ${nomeDoDia(s.dia)} (${s.data_planejada}): ${SITUACAO[s.situacao]}${s.data_efetiva ? `, nova data ${s.data_efetiva}` : ""}`];
     if (s.motivo) linhas.push(`  Motivo informado: ${s.motivo}`);
@@ -62,14 +75,16 @@ export function textoDoPedidoDeTreino(r: RelatorioDoTreino) {
   return `${INSTRUCOES}
 
 Aluno: ${primeiroNome}
+Modalidade: ${ROTULO_DA_MODALIDADE[r.modalidade ?? "musculacao"]}
 Semana: ${r.semana_inicio} a ${r.semana_fim}
+Calorias informadas pelo aluno: ${d.kcal === null || d.kcal === undefined ? "não informado" : `${num(d.kcal)} kcal`}
 ${r.em_pausa ? "Semana com pausa autorizada pelo profissional.\n" : ""}${r.sem_registros ? "O aluno não fez nenhum registro nesta semana.\n" : ""}Adesão: ${r.adesao === null ? "não calculada" : `${num(r.adesao)}% (mínimo combinado: ${r.adesao_minima}%)`}
 Adesão da semana anterior: ${r.adesao_anterior === null ? "não disponível" : `${num(r.adesao_anterior)}%`}
 Sessões planejadas: ${d.contagem.planejadas}; concluídas: ${d.contagem.concluidas}; parciais: ${d.contagem.parciais}; não concluídas: ${d.contagem.nao_concluidas}; sem registro: ${d.contagem.sem_registro}; reagendadas: ${d.contagem.reagendadas}
 Pontos de atenção do sistema: ${causas.length ? causas.join("; ") : "nenhum"}
 
 Sessões:
-${sessoes.length ? sessoes.join("\n") : "- Nenhuma sessão planejada."}
+${[...sessoes, ...sessoesDeEndurance].length ? [...sessoes, ...sessoesDeEndurance].join("\n") : "- Nenhuma sessão planejada."}
 
 Desconfortos relatados:
 ${d.desconfortos.length ? d.desconfortos.map((x) => `- ${x.data}: ${x.regiao}, intensidade ${x.intensidade}/10, ${x.conduta === "parei" ? "parou o exercício" : "continuou"}${x.exercicio ? `, no ${x.exercicio}` : ""}${x.comentario ? `. Comentário: ${x.comentario}` : ""}`).join("\n") : "- Nenhum."}

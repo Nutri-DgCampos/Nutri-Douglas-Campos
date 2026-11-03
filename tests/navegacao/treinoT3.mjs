@@ -64,7 +64,8 @@ function sessao(domingo, diaDaSemana, n, situacao, extra = "") {
 const s1seg = sessao(S1, "seg", 1, "concluido", "Troquei de academia.");
 sql(`insert into treino_exercicios_registro (sessao_id, indice, nome, chave, series, repeticoes, carga_kg) values ('${s1seg}', 0, 'Remada baixa', 'remada baixa', 3, 12, 45);`);
 sessao(S1, "qua", 3, "parcial");
-// S2: não concluído + reagendado (fora da conta) + concluído → 1 de 2 = 50%.
+// S2: não concluído + reagendado para a mesma semana (R4: planejado, ainda
+// não feito) + concluído → 1 de 3 = 33,3%.
 sessao(S2, "seg", 1, "nao_concluido");
 sessao(S2, "qua", 3, "reagendado");
 sessao(S2, "sex", 5, "concluido");
@@ -119,7 +120,7 @@ sql(`update treino_acompanhamentos set inicio = '${S1}' where patient_id = '${P}
 await n.pagina.goto(`${B}/treino`, { waitUntil: "networkidle" });
 await n.pagina.waitForTimeout(2000);
 const relatorios = sql(`select to_char(semana_inicio, 'YYYY-MM-DD') || '|' || adesao || '|' || sem_registros from treino_relatorios where patient_id = '${P}' order by semana_inicio;`);
-conferir("duas semanas fechadas, adesão 50% (parcial = meia; reagendado fora)", relatorios === `${S1}|50.0|false\n${S2}|50.0|false`, relatorios);
+conferir("duas semanas fechadas: 50% (parcial = meia) e 33,3% (reagendado na mesma semana conta como planejado, R4)", relatorios === `${S1}|50.0|false\n${S2}|33.3|false`, relatorios);
 const pendentes = n.pagina.locator('section[aria-label="Relatórios semanais pendentes"]');
 conferir("2 relatórios sem resposta acusam atraso do profissional", (await pendentes.getByText("2 pendentes · atraso").count()) === 1 && (await pendentes.getByText("Devolutiva atrasada para 1 aluno", { exact: false }).count()) === 1, await pendentes.textContent());
 const atencao = n.pagina.locator('section[aria-label="Lista de atenção"]');
@@ -198,13 +199,14 @@ await a.pagina.waitForTimeout(2000);
 conferir("cartão Relatórios: “Chegou a devolutiva do seu Personal Trainer”", (await a.pagina.getByText("Chegou a devolutiva do seu Personal Trainer").count()) >= 1, null);
 await a.pagina.goto(`${B}/area-paciente/relatorios`, { waitUntil: "networkidle" });
 await a.pagina.waitForTimeout(2000);
-const devolutivaDoAluno = a.pagina.locator('section[aria-label^="Devolutiva do treino"]');
+const devolutivaDoAluno = a.pagina.locator('section[aria-label^="Relatório do treino"]', { hasText: "Vamos focar" });
 conferir("devolutiva identificada como Treino na tela Relatórios", (await devolutivaDoAluno.getByText("Treino", { exact: true }).count()) === 1 && (await devolutivaDoAluno.getByText("Vamos focar", { exact: false }).count()) === 1, null);
 await a.pagina.screenshot({ path: path.join(PASTA, "t3-aluno-relatorios.png"), fullPage: true });
 await esperar(800);
 conferir("abrir a tela marca como lida", sql(`select lida_em is not null from treino_relatorios where id = '${R2}';`) === "t", null);
 conferir("aluno não acessa o relatório do profissional", (await api(a.pagina, `/api/treino/relatorios/${R2}`)).status === 403, null);
-conferir("aluno não vê o rascunho nem o consolidado", JSON.stringify((await api(a.pagina, "/api/area-paciente/treino/relatorios")).corpo).includes("dados") === false, null);
+// Desde a T3b o aluno vê o relatório completo (Q6); o rascunho nunca.
+conferir("aluno vê o consolidado, nunca o rascunho", JSON.stringify((await api(a.pagina, "/api/area-paciente/treino/relatorios")).corpo).includes('"rascunho"') === false, null);
 await a.pagina.goto(`${B}/area-paciente`, { waitUntil: "networkidle" });
 await a.pagina.waitForTimeout(2000);
 conferir("depois de lida, o cartão volta ao normal", (await a.pagina.getByText("Chegou a devolutiva do seu Personal Trainer").count()) === 0, null);

@@ -153,7 +153,7 @@ export default function PainelTreino({
         descanso_segundos: exercicio.descanso_segundos,
       })),
       situacao: avaliacao.situacao,
-      dataEfetiva: avaliacao.situacao === "reagendado" ? avaliacao.dataEfetiva || null : null,
+      dataEfetiva: avaliacao.situacao && avaliacao.situacao !== "nao_concluido" ? avaliacao.dataEfetiva || null : null,
       motivo: avaliacao.situacao && avaliacao.situacao !== "concluido" ? avaliacao.motivo.trim() || null : null,
       observacao: avaliacao.observacao.trim() || null,
       kcal: avaliacao.kcal,
@@ -345,6 +345,20 @@ export default function PainelTreino({
                 </button>
               ))}
             </div>
+
+            {avaliacao.situacao === "concluido" || avaliacao.situacao === "parcial" ? (
+              <label className="mt-3 block">
+                <span className="mb-1 block text-xs font-semibold text-gray-600">Fez em outro dia? Informe a data (opcional)</span>
+                <InputText
+                  type="date"
+                  aria-label="Data em que fez o treino"
+                  value={avaliacao.dataEfetiva}
+                  onChange={(e) => setAvaliacao((atual) => ({ ...atual, dataEfetiva: e.target.value }))}
+                  className="w-48"
+                />
+                <span className="mt-1 block text-xs text-gray-500">Treino feito em outra semana não conta na adesão de nenhuma das duas.</span>
+              </label>
+            ) : null}
 
             {avaliacao.situacao === "reagendado" ? (
               <label className="mt-3 block">

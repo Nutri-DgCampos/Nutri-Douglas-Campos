@@ -6,6 +6,10 @@ import {
   adesaoDaSemana,
   causasDeAtencao,
   contarSemana,
+  diferencaDeCarga,
+  notaDaSemana,
+  pontosDaSemana,
+  type NotaDaSemana,
   type CausaDeAtencao,
   type DadosDoRelatorio,
   type ExercicioDoRelatorio,
@@ -14,6 +18,10 @@ import {
 } from "@/lib/treinoRelatorio";
 import { obterPool } from "./banco";
 import { enfileirarAtualizacao } from "./notificacoes";
+import { consolidarEndurance } from "./treinoRelatorioEndurance";
+
+export type Modalidade = "musculacao" | "corrida" | "ciclismo";
+const MODALIDADES: Modalidade[] = ["musculacao", "corrida", "ciclismo"];
 import type { ProfissionalDeTreino } from "./treinoAcesso";
 
 // Relatório semanal do Treino (T3). Regras em lib/treinoRelatorio.ts.
@@ -47,6 +55,7 @@ type SessaoGravada = {
   data_efetiva: string | null;
   motivo: string | null;
   observacao: string | null;
+  kcal: number | null;
   exercicios: { indice: number; nome: string; series: number | null; repeticoes: number | null; carga_kg: number | null; descanso_segundos: number | null }[];
 };
 
@@ -54,7 +63,8 @@ function valores(e: Partial<ValoresDoExercicio> | undefined | null): ValoresDoEx
   return { series: e?.series ?? null, repeticoes: e?.repeticoes ?? null, carga_kg: e?.carga_kg ?? null, descanso_segundos: e?.descanso_segundos ?? null };
 }
 
-export async function consolidarSemana(patientId: string, profissionalId: string, semanaInicio: string) {
+export async function consolidarSemana(patientId: string, profissionalId: string, semanaInicio: string, modalidade: Modalidade = "musculacao") {
+  if (modalidade !== "musculacao") return consolidarEndurance(patientId, profissionalId, semanaInicio, modalidade);
   const pool = obterPool();
   const semanaFim = somarDias(semanaInicio, 6);
 
@@ -68,7 +78,7 @@ export async function consolidarSemana(patientId: string, profissionalId: string
     ),
     pool.query<SessaoGravada>(
       `select s.id, s.prescricao_id, s.dia, to_char(s.data_planejada, 'YYYY-MM-DD') as data_planejada, s.situacao,
-              to_char(s.data_efetiva, 'YYYY-MM-DD') as data_efetiva, s.motivo, s.observacao,
+              to_char(s.data_efetiva, 'YYYY-MM-DD') as data_efetiva, s.motivo, s.observacao, s.kcal,
               coalesce(json_agg(json_build_object('indice', e.indice, 'nome', e.nome, 'series', e.series, 'repeticoes', e.repeticoes,
                                                   'carga_kg', e.carga_kg, 'descanso_segundos', e.descanso_segundos)
                                 order by e.indice) filter (where e.indice is not null), '[]') as exercicios
@@ -99,6 +109,7 @@ export async function consolidarSemana(patientId: string, profissionalId: string
         where patient_id = $1 and profissional_id = $2
           and criada_em < (($3::date + 1)::timestamp at time zone '${FUSO}')
           and (ativa or encerrada_em >= ($4::date::timestamp at time zone '${FUSO}'))
+          and (modalidade is null or modalidade = 'musculacao')
         order by criada_em`,
       [patientId, profissionalId, semanaFim, semanaInicio]
     ),
@@ -172,9 +183,12 @@ export async function consolidarSemana(patientId: string, profissionalId: string
   }
   lista.sort((a, b) => a.data_planejada.localeCompare(b.data_planejada));
 
-  const contagem = contarSemana(lista);
+  const contagem = contarSemana(lista, { inicio: semanaInicio, fim: semanaFim });
   const temRegistro = sessoes.rows.length > 0 || desconfortos.rows.length > 0;
+  const calorias = sessoes.rows.map((s) => s.kcal).filter((k): k is number => k !== null);
   const dados: DadosDoRelatorio = {
+    modalidade: "musculacao",
+    kcal: calorias.length ? calorias.reduce((t, k) => t + k, 0) : null,
     prescricao: prescricao ? { id: prescricao.id, origem: prescricao.origem, versao: prescricao.versao } : null,
     sessoes: lista,
     desconfortos: desconfortos.rows,
@@ -190,14 +204,17 @@ export function ultimaSemanaFechada(hoje = hojeNoBrasil()) {
   return somarDias(domingoDaSemana(hoje), -7);
 }
 
-// Gera os relatórios das semanas já fechadas que ainda não existem.
+// Gera os relatórios das semanas já fechadas que ainda não existem, um por
+// modalidade (Q5). Musculação sempre (como na T3); corrida e ciclismo só
+// quando houver planilha na semana ou atividade registrada.
 export async function fecharSemanas(hoje = hojeNoBrasil(), filtro?: { profissionalId?: string; patientId?: string }) {
   const fechada = ultimaSemanaFechada(hoje);
   const limite = somarDias(fechada, -7 * (SEMANAS_RECUPERAVEIS - 1));
-  const pendentes = await obterPool().query<{ patient_id: string; profissional_id: string; adesao_minima: number; semana: string }>(
-    `select a.patient_id, a.profissional_id, a.adesao_minima, to_char(semana, 'YYYY-MM-DD') as semana
+  const pendentes = await obterPool().query<{ patient_id: string; profissional_id: string; adesao_minima: number; semana: string; modalidade: Modalidade }>(
+    `select a.patient_id, a.profissional_id, a.adesao_minima, to_char(semana, 'YYYY-MM-DD') as semana, m.modalidade
        from public.treino_acompanhamentos a
        cross join lateral generate_series(greatest(a.inicio, $2::date), $1::date, interval '7 days') as semana
+       cross join unnest($5::text[]) as m(modalidade)
       where a.ativo
         and ($3::uuid is null or a.profissional_id = $3)
         and ($4::uuid is null or a.patient_id = $4)
@@ -206,20 +223,22 @@ export async function fecharSemanas(hoje = hojeNoBrasil(), filtro?: { profission
                           join public.educadores_fisicos e on e.usuario_id = v.profissional_id and e.ativo
                          where v.patient_id = a.patient_id and v.profissional_id = a.profissional_id and v.fim is null))
         and not exists (select 1 from public.treino_relatorios r
-                         where r.patient_id = a.patient_id and r.profissional_id = a.profissional_id and r.semana_inicio = semana::date)
+                         where r.patient_id = a.patient_id and r.profissional_id = a.profissional_id and r.semana_inicio = semana::date
+                           and r.modalidade = m.modalidade)
       order by semana`,
-    [fechada, limite, filtro?.profissionalId ?? null, filtro?.patientId ?? null]
+    [fechada, limite, filtro?.profissionalId ?? null, filtro?.patientId ?? null, MODALIDADES]
   );
 
   let criados = 0;
   for (const p of pendentes.rows) {
-    const semana = await consolidarSemana(p.patient_id, p.profissional_id, p.semana);
+    const semana = await consolidarSemana(p.patient_id, p.profissional_id, p.semana, p.modalidade);
+    if (!semana) continue;
     const r = await obterPool().query(
       `insert into public.treino_relatorios
-         (patient_id, profissional_id, semana_inicio, semana_fim, dados, sem_registros, adesao, adesao_minima, em_pausa)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       on conflict (patient_id, profissional_id, semana_inicio) do nothing`,
-      [p.patient_id, p.profissional_id, p.semana, semana.semanaFim, semana.dados, semana.semRegistros, semana.adesao, p.adesao_minima, semana.emPausa]
+         (patient_id, profissional_id, semana_inicio, semana_fim, dados, sem_registros, adesao, adesao_minima, em_pausa, modalidade)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       on conflict (patient_id, profissional_id, semana_inicio, modalidade) do nothing`,
+      [p.patient_id, p.profissional_id, p.semana, semana.semanaFim, semana.dados, semana.semRegistros, semana.adesao, p.adesao_minima, semana.emPausa, p.modalidade]
     );
     criados += r.rowCount ?? 0;
   }
@@ -229,8 +248,8 @@ export async function fecharSemanas(hoje = hojeNoBrasil(), filtro?: { profission
 // ---------------------------------------------------------------------------
 // Painel do profissional: relatórios pendentes, atraso e lista de atenção
 
-export type PendenciaDoAluno = { patient_id: string; nome: string; pendentes: number; atraso: boolean; mais_antigo: string; relatorio_id: string };
-export type AlunoEmAtencao = { patient_id: string; nome: string; causas: CausaDeAtencao[]; semanas: string[] };
+export type PendenciaDoAluno = { patient_id: string; nome: string; pendentes: number; atraso: boolean; mais_antigo: string; relatorio_id: string; modalidades: Modalidade[] };
+export type AlunoEmAtencao = { patient_id: string; nome: string; modalidade: Modalidade; causas: CausaDeAtencao[]; semanas: string[] };
 
 export async function painelDeRelatorios(profissional: ProfissionalDeTreino) {
   await fecharSemanas(hojeNoBrasil(), { profissionalId: profissional.usuarioId });
@@ -239,7 +258,8 @@ export async function painelDeRelatorios(profissional: ProfissionalDeTreino) {
   const pendentes = await pool.query<PendenciaDoAluno>(
     `select r.patient_id, p.name as nome, count(*)::int as pendentes, count(*) >= $2 as atraso,
             to_char(min(r.semana_inicio), 'YYYY-MM-DD') as mais_antigo,
-            (array_agg(r.id order by r.semana_inicio))[1] as relatorio_id
+            (array_agg(r.id order by r.semana_inicio))[1] as relatorio_id,
+            array_agg(distinct r.modalidade) as modalidades
        from public.treino_relatorios r
        join public.patients p on p.id = r.patient_id
       where r.profissional_id = $1 and r.devolutiva is null
@@ -257,8 +277,9 @@ export async function painelDeRelatorios(profissional: ProfissionalDeTreino) {
     adesao_minima: number;
     em_pausa: boolean;
     meta_nao_atingida: boolean;
+    modalidade: Modalidade;
   }>(
-    `select r.patient_id, p.name as nome, to_char(r.semana_inicio, 'YYYY-MM-DD') as semana_inicio, r.sem_registros,
+    `select r.patient_id, p.name as nome, r.modalidade, to_char(r.semana_inicio, 'YYYY-MM-DD') as semana_inicio, r.sem_registros,
             r.adesao::float8 as adesao, a.adesao_minima,
             -- Pausa registrada depois do fechamento também vale (B6).
             (r.em_pausa or exists (select 1 from public.treino_pausas z
@@ -271,15 +292,16 @@ export async function painelDeRelatorios(profissional: ProfissionalDeTreino) {
     [profissional.usuarioId, somarDias(ultimaSemanaFechada(), -7)]
   );
 
+  // Cada modalidade conta separadamente (Q5).
   const porAluno = new Map<string, typeof semanas.rows>();
-  for (const s of semanas.rows) porAluno.set(s.patient_id, [...(porAluno.get(s.patient_id) ?? []), s]);
+  for (const s of semanas.rows) porAluno.set(`${s.patient_id}:${s.modalidade}`, [...(porAluno.get(`${s.patient_id}:${s.modalidade}`) ?? []), s]);
   const atencao: AlunoEmAtencao[] = [];
-  for (const [patientId, lista] of porAluno) {
+  for (const lista of porAluno.values()) {
     // O mínimo de adesão vale o atual do aluno (editável pelo profissional).
     const resultado = causasDeAtencao(lista);
-    if (resultado.causas.length) atencao.push({ patient_id: patientId, nome: lista[0].nome, ...resultado });
+    if (resultado.causas.length) atencao.push({ patient_id: lista[0].patient_id, nome: lista[0].nome, modalidade: lista[0].modalidade, ...resultado });
   }
-  atencao.sort((a, b) => a.nome.localeCompare(b.nome));
+  atencao.sort((a, b) => a.nome.localeCompare(b.nome) || a.modalidade.localeCompare(b.modalidade));
 
   return { pendentes: pendentes.rows, atencao };
 }
@@ -289,6 +311,7 @@ export async function painelDeRelatorios(profissional: ProfissionalDeTreino) {
 
 export type RelatorioDoTreino = {
   id: string;
+  modalidade: Modalidade;
   patient_id: string;
   paciente: string;
   profissional_id: string;
@@ -308,26 +331,51 @@ export type RelatorioDoTreino = {
   metas_marcadas: Record<string, boolean>;
   adesao_anterior: number | null;
   pode_responder: boolean;
+  // Calculados ao abrir (as metas são marcadas depois do fechamento).
+  nota: NotaDaSemana;
+  pontos: { positivos: string[]; atencao: string[] };
 };
+
+// Nota (Q1) e pontos positivos e de atenção (Q3) do relatório.
+export function avaliarRelatorio(r: Omit<RelatorioDoTreino, "pode_responder" | "nota" | "pontos">) {
+  const marcadas = r.dados.metas.filter((m) => r.metas_marcadas[m.id] !== undefined).map((m) => r.metas_marcadas[m.id]);
+  const e = r.dados.endurance;
+  return {
+    nota: notaDaSemana({ adesao: r.sem_registros ? null : r.adesao, metas: marcadas, adesaoAnterior: r.adesao_anterior }),
+    pontos: pontosDaSemana({
+      semRegistros: r.sem_registros,
+      emPausa: r.em_pausa,
+      adesao: r.sem_registros ? null : r.adesao,
+      adesaoMinima: r.adesao_minima,
+      adesaoAnterior: r.adesao_anterior,
+      contagem: r.dados.contagem,
+      metas: r.dados.metas.map((m) => ({ texto: m.texto, atingida: r.metas_marcadas[m.id] })),
+      desconfortos: r.dados.desconfortos,
+      cargasAcima: [...new Set(r.dados.sessoes.flatMap((s) => s.exercicios.filter((x) => (diferencaDeCarga(x)?.kg ?? 0) > 0).map((x) => x.nome)))],
+      distancia: e ? { planejada: e.totais.planejado_km, registrada: e.totais.registrado_km } : undefined,
+    }),
+  };
+}
 
 const NOME_DO_PROFISSIONAL = `coalesce((select e.nome from public.educadores_fisicos e where e.usuario_id = r.profissional_id), 'Nutricionista')`;
 
 export async function lerRelatorio(profissional: ProfissionalDeTreino, id: string): Promise<RelatorioDoTreino | null> {
-  const r = await obterPool().query<Omit<RelatorioDoTreino, "pode_responder">>(
-    `select r.id, r.patient_id, p.name as paciente, r.profissional_id, ${NOME_DO_PROFISSIONAL} as profissional,
+  const r = await obterPool().query<Omit<RelatorioDoTreino, "pode_responder" | "nota" | "pontos">>(
+    `select r.id, r.modalidade, r.patient_id, p.name as paciente, r.profissional_id, ${NOME_DO_PROFISSIONAL} as profissional,
             to_char(r.semana_inicio, 'YYYY-MM-DD') as semana_inicio, to_char(r.semana_fim, 'YYYY-MM-DD') as semana_fim,
             r.dados, r.sem_registros, r.adesao::float8 as adesao, r.adesao_minima, r.em_pausa, r.rascunho, r.rascunho_revisao,
             r.devolutiva, r.devolutiva_enviada_em, r.lida_em,
             coalesce((select jsonb_object_agg(m.meta_id, m.atingida) from public.treino_metas_semana m where m.relatorio_id = r.id), '{}') as metas_marcadas,
             (select a.adesao::float8 from public.treino_relatorios a
-              where a.patient_id = r.patient_id and a.profissional_id = r.profissional_id and a.semana_inicio = r.semana_inicio - 7) as adesao_anterior
+              where a.patient_id = r.patient_id and a.profissional_id = r.profissional_id and a.modalidade = r.modalidade
+                and a.semana_inicio = r.semana_inicio - 7) as adesao_anterior
        from public.treino_relatorios r
        join public.patients p on p.id = r.patient_id
       where r.id = $1 and (($2 and p.educador_dono_id is null) or r.profissional_id = $3)`,
     [id, profissional.admin, profissional.usuarioId]
   );
   const linha = r.rows[0];
-  return linha ? { ...linha, pode_responder: linha.profissional_id === profissional.usuarioId && linha.devolutiva === null } : null;
+  return linha ? { ...linha, ...avaliarRelatorio(linha), pode_responder: linha.profissional_id === profissional.usuarioId && linha.devolutiva === null } : null;
 }
 
 // Relatórios de um aluno (painel do aluno no Treino). O educador vê só os
@@ -344,14 +392,15 @@ export async function relatoriosDoAluno(profissional: ProfissionalDeTreino, pati
     em_pausa: boolean;
     respondido: boolean;
     meu: boolean;
+    modalidade: Modalidade;
   }>(
-    `select r.id, to_char(r.semana_inicio, 'YYYY-MM-DD') as semana_inicio, to_char(r.semana_fim, 'YYYY-MM-DD') as semana_fim,
+    `select r.id, r.modalidade, to_char(r.semana_inicio, 'YYYY-MM-DD') as semana_inicio, to_char(r.semana_fim, 'YYYY-MM-DD') as semana_fim,
             ${NOME_DO_PROFISSIONAL} as profissional, r.sem_registros, r.adesao::float8 as adesao, r.em_pausa,
             r.devolutiva is not null as respondido, r.profissional_id = $3 as meu
        from public.treino_relatorios r
       where r.patient_id = $1 and ($2 or r.profissional_id = $3)
-      order by r.semana_inicio desc, profissional
-      limit 30`,
+      order by r.semana_inicio desc, profissional, r.modalidade
+      limit 60`,
     [patientId, profissional.admin, profissional.usuarioId]
   );
   return r.rows;
@@ -408,8 +457,8 @@ export async function configuracaoDoAluno(profissional: ProfissionalDeTreino, pa
       "select ativo, adesao_minima, to_char(inicio, 'YYYY-MM-DD') as inicio from public.treino_acompanhamentos where patient_id = $1 and profissional_id = $2",
       [patientId, profissional.usuarioId]
     ),
-    pool.query<{ id: string; texto: string; ativa: boolean; criada_em: string }>(
-      "select id, texto, ativa, criada_em from public.treino_metas where patient_id = $1 and profissional_id = $2 order by ativa desc, criada_em desc",
+    pool.query<{ id: string; texto: string; ativa: boolean; criada_em: string; modalidade: Modalidade | null }>(
+      "select id, texto, ativa, criada_em, modalidade from public.treino_metas where patient_id = $1 and profissional_id = $2 order by ativa desc, criada_em desc",
       [patientId, profissional.usuarioId]
     ),
     pool.query<{ id: string; inicio: string; fim: string; motivo: string | null }>(
@@ -467,7 +516,13 @@ export async function alterarConfiguracao(profissional: ProfissionalDeTreino, pa
       );
       return;
     case "nova_meta":
-      await pool.query("insert into public.treino_metas (patient_id, profissional_id, texto) values ($1, $2, $3)", [patientId, quem, texto(dados.texto, 500, true)]);
+      if (dados.modalidade !== undefined && dados.modalidade !== null && !MODALIDADES.includes(dados.modalidade as Modalidade)) throw new DadosInvalidos("Modalidade inválida.");
+      await pool.query("insert into public.treino_metas (patient_id, profissional_id, texto, modalidade) values ($1, $2, $3, $4)", [
+        patientId,
+        quem,
+        texto(dados.texto, 500, true),
+        dados.modalidade ?? null,
+      ]);
       return;
     case "encerrar_meta":
       await pool.query(
@@ -522,4 +577,34 @@ export async function devolutivasDoAluno(patientId: string) {
 
 export async function marcarDevolutivasLidas(patientId: string) {
   await obterPool().query("update public.treino_relatorios set lida_em = now() where patient_id = $1 and devolutiva is not null and lida_em is null", [patientId]);
+}
+
+// ---------------------------------------------------------------------------
+// Aluno: relatórios completos (REL-01/02/03, respostas Q6 e C3). O aluno vê
+// a semana inteira, a nota, a adesão e o mínimo combinado, as metas e se
+// foram atingidas, os desconfortos e a devolutiva. Nunca o rascunho.
+
+export async function relatoriosParaAluno(patientId: string) {
+  const r = await obterPool().query<Omit<RelatorioDoTreino, "pode_responder" | "nota" | "pontos" | "rascunho" | "rascunho_revisao">>(
+    `select r.id, r.modalidade, r.patient_id, p.name as paciente, r.profissional_id, ${NOME_DO_PROFISSIONAL} as profissional,
+            to_char(r.semana_inicio, 'YYYY-MM-DD') as semana_inicio, to_char(r.semana_fim, 'YYYY-MM-DD') as semana_fim,
+            r.dados, r.sem_registros, r.adesao::float8 as adesao, r.adesao_minima, r.em_pausa,
+            r.devolutiva, r.devolutiva_enviada_em, r.lida_em,
+            coalesce((select jsonb_object_agg(m.meta_id, m.atingida) from public.treino_metas_semana m where m.relatorio_id = r.id), '{}') as metas_marcadas,
+            (select a.adesao::float8 from public.treino_relatorios a
+              where a.patient_id = r.patient_id and a.profissional_id = r.profissional_id and a.modalidade = r.modalidade
+                and a.semana_inicio = r.semana_inicio - 7) as adesao_anterior
+       from public.treino_relatorios r
+       join public.patients p on p.id = r.patient_id
+      where r.patient_id = $1
+      order by r.semana_inicio desc, r.modalidade, profissional
+      limit 24`,
+    [patientId]
+  );
+  return r.rows.map((linha) => {
+    const avaliado = avaliarRelatorio({ ...linha, rascunho: "", rascunho_revisao: 0 });
+    // O aluno não recebe as notas privadas nem outros detalhes do editor: o
+    // consolidado já guarda só o que ele registrou e o que foi prescrito.
+    return { ...linha, ...avaliado };
+  });
 }

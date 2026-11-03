@@ -373,3 +373,54 @@ Aluno (Meu treino):
 
 Teste: `tests/navegacao/treinoT4c.mjs` (30 verificações).
 - O teste encontrou e corrigiu um erro real: o texto digitado na descrição se perdia.
+
+## 12. T3b entregue: relatório semanal por modalidade (03/11/2026)
+
+Migração `030_treino_relatorio_por_modalidade.sql`:
+- `treino_relatorios.modalidade`, com padrão musculação, então os relatórios antigos continuam valendo. A chave única passa a incluir a modalidade.
+- `treino_metas.modalidade`: vazio vale para todas as modalidades.
+
+Regras (`lib/treinoRelatorio.ts`):
+- **Um relatório por modalidade (Q5):**
+  - musculação, como antes;
+  - corrida e ciclismo, quando houver planilha na semana ou atividade registrada;
+  - cada relatório tem a própria devolutiva e o próprio push.
+- **Lista de atenção:** conta cada modalidade separadamente.
+- **Reagendado (R4/R4b):**
+  - para a mesma semana, conta como planejado e só vira feito quando o aluno confirma;
+  - reagendado ou feito em outra semana fica fora da conta das duas semanas, com o rótulo "feito/reagendado em outra semana".
+  - Para isso, o modal do dia ganhou "Fez em outro dia? Informe a data", e a data do reagendamento não se perde mais quando o aluno marca "Concluído".
+- **Nota 0 a 100 (Q1):**
+  - 60% adesão, 25% metas atingidas entre as avaliadas, 15% manter ou evoluir a adesão;
+  - sem alguma das partes (meta não avaliada ou primeira semana), aparece "N/A" e as partes disponíveis ficam visíveis;
+  - é calculada ao abrir, porque as metas são marcadas depois do fechamento.
+- **Pontos positivos e de atenção (Q3):** só fatos, sem conclusão de saúde.
+  - Adesão e mínimo, comparação com a semana anterior e todas as sessões concluídas.
+  - Sessões não concluídas e reagendadas sem confirmação.
+  - Metas atingidas e não atingidas.
+  - Desconfortos, com a maior intensidade.
+  - Carga acima da prescrita.
+  - Distância registrada × planejada.
+- **Corrida e ciclismo:**
+  - sessões planejadas × registradas (ligadas pela T4c);
+  - atividade sem sessão planejada aparece como "extra", fora da adesão;
+  - somas e médias só do que o aluno informou: km, tempo, ritmo ou velocidade, FC, RPE, altitude e TSS;
+  - quilometragem dos tênis ou bicicletas;
+  - consumo e observações.
+- **Calorias informadas pelo aluno (C1):** aparecem no relatório.
+
+Telas:
+- **Profissional (REL-04):**
+  - componente `RelatorioDaSemana`, com modalidade, nota, adesão e mínimo, indicadores, pontos, sessões, desconfortos e metas (marcar atingida ou não);
+  - link para os registros originais e devolutiva com IA;
+  - o pedido à IA inclui a modalidade, as atividades e as calorias.
+- **Aluno (REL-01/02/03, Q6 e C3):**
+  - a tela Relatórios mostra cada semana e modalidade com nota, adesão (mínimo) e devolutiva;
+  - "Ver o relatório completo" abre o mesmo relatório, sem o rascunho.
+- **Painel e ficha:**
+  - os pendentes listam as modalidades, e a lista de atenção indica a modalidade;
+  - as metas podem ser de uma modalidade ou de todas.
+
+Testes:
+- `tests/navegacao/treinoT3b.mjs` (16 verificações).
+- `treinoT3.mjs` atualizado para as regras aprovadas: o reagendado na mesma semana conta como planejado, e o aluno vê o consolidado.

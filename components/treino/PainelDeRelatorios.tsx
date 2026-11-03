@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ROTULO_DA_CAUSA, diaMes, type CausaDeAtencao } from "@/lib/treinoRelatorio";
+import { ROTULO_DA_CAUSA, ROTULO_DA_MODALIDADE, diaMes, type CausaDeAtencao } from "@/lib/treinoRelatorio";
+
+type Modalidade = keyof typeof ROTULO_DA_MODALIDADE;
 
 type Painel = {
-  pendentes: { patient_id: string; nome: string; pendentes: number; atraso: boolean; mais_antigo: string; relatorio_id: string }[];
-  atencao: { patient_id: string; nome: string; causas: CausaDeAtencao[]; semanas: string[] }[];
+  pendentes: { patient_id: string; nome: string; pendentes: number; atraso: boolean; mais_antigo: string; relatorio_id: string; modalidades?: Modalidade[] }[];
+  atencao: { patient_id: string; nome: string; modalidade?: Modalidade; causas: CausaDeAtencao[]; semanas: string[] }[];
 };
 
 // Relatórios semanais do profissional conectado (T3): pendentes de
@@ -47,7 +49,10 @@ export default function PainelDeRelatorios({ somentePendentes = false }: { somen
                 <Link href={`/treino/relatorios/${p.relatorio_id}`} className="flex items-center gap-3 py-2 hover:bg-primary-50">
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-semibold text-gray-900">{p.nome}</span>
-                    <span className="block text-xs text-gray-500">Desde a semana de {diaMes(p.mais_antigo)}</span>
+                    <span className="block text-xs text-gray-500">
+                      Desde a semana de {diaMes(p.mais_antigo)}
+                      {p.modalidades?.length ? ` · ${p.modalidades.map((m) => ROTULO_DA_MODALIDADE[m]).join(", ")}` : ""}
+                    </span>
                   </span>
                   <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${p.atraso ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-900"}`}>
                     {p.pendentes} {p.pendentes === 1 ? "pendente" : "pendentes"}
@@ -64,16 +69,18 @@ export default function PainelDeRelatorios({ somentePendentes = false }: { somen
       {somentePendentes ? null : (
       <section className="cartao p-5" aria-label="Lista de atenção">
         <h2 className="font-bold text-gray-900">Lista de atenção</h2>
-        <p className="text-xs text-gray-500">Duas semanas seguidas com a mesma causa. Semanas em pausa não contam.</p>
+        <p className="text-xs text-gray-500">Duas semanas seguidas com a mesma causa, em cada modalidade. Semanas em pausa não contam.</p>
         {painel.atencao.length === 0 ? (
           <p className="mt-2 text-sm text-gray-500">Nenhum aluno na lista de atenção.</p>
         ) : (
           <ul className="mt-2 divide-y divide-gray-100">
             {painel.atencao.map((a) => (
-              <li key={a.patient_id}>
+              <li key={`${a.patient_id}-${a.modalidade ?? "musculacao"}`}>
                 <Link href={`/treino/alunos/${a.patient_id}`} className="flex items-center gap-3 py-2 hover:bg-primary-50">
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-gray-900">{a.nome}</span>
+                    <span className="block truncate font-semibold text-gray-900">
+                      {a.nome} <span className="font-normal text-gray-500">· {ROTULO_DA_MODALIDADE[a.modalidade ?? "musculacao"]}</span>
+                    </span>
                     <span className="block text-xs text-gray-600">
                       {a.causas.map((c) => ROTULO_DA_CAUSA[c]).join(" · ")} (semanas de {a.semanas.map(diaMes).join(" e ")})
                     </span>
