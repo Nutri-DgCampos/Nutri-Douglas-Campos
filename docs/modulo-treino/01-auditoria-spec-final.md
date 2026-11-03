@@ -206,6 +206,11 @@ Nenhuma constante das imagens será copiada. O sistema vai respeitar estes ponto
   - **R8:** PDF com nome, CREF, contato e logotipo opcional do educador.
   - **R9:** com pagamento vencido após a tolerância, fica só o histórico; sem treino novo nem registro.
   - **R10:** desativar (reversível), excluir de vez só a pedido do aluno, com confirmação; o educador só encerra a conta sem alunos ativos.
+- **Últimos detalhes (03/11/2026):**
+  - **R1:** aviso do tênis em 500 km, editável por aluno e por tênis.
+  - **R4b:** o reagendado feito em outra semana fica no histórico, com as cargas, mas não conta na adesão de nenhuma semana. No relatório aparece "Reagendado e feito em outra semana".
+  - **R7b:** na avaliação física compartilhada, os dois profissionais veem tudo, com data e autor. Cada um corrige ou apaga só o que lançou. As observações privadas continuam separadas (F3).
+- **Todas as decisões do módulo estão tomadas.** Não há pergunta pendente com o técnico.
 - **Publicação:** o cliente publica o módulo só quando estiver 100% pronto. As migrações 021 em diante ficam acumuladas até lá.
 
 ## 8. T7b entregue: alunos próprios do educador (03/11/2026)
