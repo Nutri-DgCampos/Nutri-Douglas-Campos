@@ -258,6 +258,8 @@ export type SessaoRegistrada = {
   data_efetiva: string | null;
   motivo: string | null;
   observacao: string | null;
+  // Calorias informadas pelo aluno (C1).
+  kcal?: number | null;
   atualizado_em: string;
   exercicios: ExercicioRegistrado[];
 };

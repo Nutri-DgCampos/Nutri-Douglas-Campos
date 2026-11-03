@@ -348,7 +348,7 @@ export default function AlunoNoTreinoPage() {
                 </>
               )}
 
-              {treino || painel.vigente ? <RegistrosDoTreino pacienteId={params.id} /> : null}
+              <RegistrosDoTreino pacienteId={params.id} />
             </div>
           </>
         )}

@@ -298,3 +298,40 @@ Fora desta etapa:
 - **Estimativa de tempo da sessão:** não entra, porque exige um tempo por série que ninguém aprovou.
 - **Pedido de troca de academia pelo aluno:** fica para a etapa do registro.
 - **Calorias:** o card "Gasto estimado" do aluno continua mostrando só o que a importação antiga trazia. Na T4b passa a mostrar as calorias informadas pelo aluno (C1).
+
+## 10. T4b entregue: registro de corrida e ciclismo pelo aluno (03/11/2026)
+
+Migração `028_treino_corrida_ciclismo_registro.sql` (só acrescenta):
+- `treino_sessoes.kcal`: calorias da sessão de musculação informadas pelo aluno (C1).
+- `treino_equipamentos`: tênis e bicicletas do aluno (P4).
+  - Quilometragem = km inicial + distâncias registradas com o equipamento.
+  - Tênis com aviso de troca em 500 km por padrão (R1), alterável pelo profissional por aluno e por tênis.
+  - Bicicleta sem aviso de desgaste.
+- `treino_atividades`: corrida e pedal registrados pelo aluno.
+  - Distância, tempo, FC média e máxima, RPE, calorias, ganho de altitude e, no pedal, potência média e normalizada, cadência e TSS do aparelho.
+  - Tudo é informado; nada é estimado.
+  - `chave_cliente` torna o reenvio idempotente (base do uso sem internet, T5).
+- `treino_consumos`: hidratação, alimentação e suplementação durante a atividade (P5).
+  - Várias entradas, com horário ou minuto de treino, sem nada obrigatório nem calculado.
+  - Correções ficam registradas.
+
+Aluno (Meu treino):
+- **Musculação:** o modal do dia ganhou "Calorias do seu relógio ou app". O card "Gasto estimado" virou "Calorias informadas na semana" (musculação, corrida e pedal). A Nutrição continua vendo a estimativa antiga da importação.
+- **Corrida e ciclismo:**
+  - "Registrar corrida" e "Registrar pedal", com data, tênis ou bicicleta (dá para cadastrar ali mesmo), situação, números e consumo;
+  - o ritmo ou a velocidade aparecem como conta do que ele informou;
+  - tem observação e relato de desconforto;
+  - registros desta semana e da anterior podem ser corrigidos ou apagados.
+- **Meus tênis e bicicletas:** quilometragem, aviso de troca do tênis, editar, aposentar e reativar.
+
+Profissional (ficha do aluno › registros):
+- **Registros:** corridas e pedais com todos os números, consumo e observações, e as calorias de cada sessão de musculação.
+- **Equipamentos:** tênis e bicicletas com quilometragem e o campo "Avisar em … km" de cada tênis.
+
+Regras conferidas no teste `treinoT4b.mjs`:
+- trocar o tênis de uma corrida move os km sem duplicar;
+- o reenvio com a mesma chave atualiza, não duplica;
+- data no futuro ou de semana fechada é recusada;
+- um aluno não usa equipamento nem chave de outro.
+
+Ligação com sessões prescritas de corrida e ciclismo: entra com os editores (T4c). As colunas `prescricao_id` e `sessao_indice` já existem.

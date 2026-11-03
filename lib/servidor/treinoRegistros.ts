@@ -57,6 +57,7 @@ type LinhaRegistro = {
   data_efetiva: string | null;
   motivo: string | null;
   observacao: string | null;
+  kcal: number | null;
   atualizado_em: string;
   prescricao_id: string;
   indice: number | null;
@@ -72,7 +73,7 @@ const numero = (v: string | number | null) => (v === null || v === undefined ? n
 async function registrosDoAluno(patientId: string) {
   const linhas = await obterPool().query<LinhaRegistro>(
     `select s.id as sessao_id, s.dia, to_char(s.data_planejada, 'YYYY-MM-DD') as data_planejada, s.situacao,
-            to_char(s.data_efetiva, 'YYYY-MM-DD') as data_efetiva, s.motivo, s.observacao, s.atualizado_em, s.prescricao_id,
+            to_char(s.data_efetiva, 'YYYY-MM-DD') as data_efetiva, s.motivo, s.observacao, s.kcal, s.atualizado_em, s.prescricao_id,
             e.indice, e.chave, e.series::text, e.repeticoes::text, e.carga_kg::text, e.descanso_segundos
        from public.treino_sessoes s
        left join public.treino_exercicios_registro e on e.sessao_id = s.id
@@ -114,6 +115,7 @@ export async function treinoDoAluno(patientId: string, hoje = hojeNoBrasil()) {
       data_efetiva: l.data_efetiva,
       motivo: l.motivo,
       observacao: l.observacao,
+      kcal: l.kcal,
       atualizado_em: l.atualizado_em,
       exercicios: [],
     });
@@ -181,6 +183,8 @@ export async function salvarRegistro(patientId: string, corpo: unknown, hoje = h
   if (situacao === "reagendado" && !DATA.test(dataEfetiva ?? "")) throw new RegistroInvalido("Informe a nova data do treino reagendado.");
   const motivo = situacao && situacao !== "concluido" ? textoValido(dados.motivo, 500) : null;
   const observacao = textoValido(dados.observacao, 2000);
+  // Calorias do relógio do aluno (C1): informadas, nunca estimadas.
+  const kcal = numeroValido(dados.kcal, 20000);
 
   const lista = Array.isArray(dados.exercicios) ? dados.exercicios : [];
   if (lista.length > diaDoPlano.exercicios.length) throw new RegistroInvalido("Exercícios inválidos.");
@@ -205,13 +209,13 @@ export async function salvarRegistro(patientId: string, corpo: unknown, hoje = h
   try {
     await cliente.query("begin");
     const sessao = await cliente.query<{ id: string }>(
-      `insert into public.treino_sessoes (patient_id, prescricao_id, dia, data_planejada, situacao, data_efetiva, motivo, observacao)
-       values ($1, $2, $3, $4, $5, $6, $7, $8)
+      `insert into public.treino_sessoes (patient_id, prescricao_id, dia, data_planejada, situacao, data_efetiva, motivo, observacao, kcal)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        on conflict (patient_id, prescricao_id, dia, data_planejada) do update
          set situacao = excluded.situacao, data_efetiva = excluded.data_efetiva, motivo = excluded.motivo,
-             observacao = excluded.observacao, atualizado_em = now()
+             observacao = excluded.observacao, kcal = excluded.kcal, atualizado_em = now()
        returning id`,
-      [patientId, prescricao.id, dia, dataPlanejada, situacao, dataEfetiva, motivo, observacao]
+      [patientId, prescricao.id, dia, dataPlanejada, situacao, dataEfetiva, motivo, observacao, kcal === null ? null : Math.round(kcal)]
     );
     const sessaoId = sessao.rows[0].id;
     await cliente.query("delete from public.treino_exercicios_registro where sessao_id = $1", [sessaoId]);
@@ -259,6 +263,7 @@ export async function registrosParaProfissional(patientId: string) {
           data_efetiva: l.data_efetiva,
           motivo: l.motivo,
           observacao: l.observacao,
+          kcal: l.kcal,
           atualizado_em: l.atualizado_em,
           exercicios: [],
           nomes: {},

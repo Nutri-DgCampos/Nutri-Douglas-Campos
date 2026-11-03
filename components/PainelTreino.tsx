@@ -43,9 +43,10 @@ export type RegistroDoDia = {
   dataEfetiva: string | null;
   motivo: string | null;
   observacao: string | null;
+  kcal: number | null;
 };
 
-type Avaliacao = { situacao: SituacaoDaSessao | null; dataEfetiva: string; motivo: string; observacao: string };
+type Avaliacao = { situacao: SituacaoDaSessao | null; dataEfetiva: string; motivo: string; observacao: string; kcal: number | null };
 
 const ROTULO_DA_SITUACAO = Object.fromEntries(SITUACOES.map((s) => [s.valor, s.rotulo])) as Record<SituacaoDaSessao, string>;
 
@@ -66,6 +67,7 @@ export default function PainelTreino({
   datas,
   onRegistrar,
   onRelatarDesconforto,
+  caloriasInformadas,
 }: {
   plano: PlanoDeTreino;
   prescricao?: PlanoDeTreino;
@@ -75,10 +77,13 @@ export default function PainelTreino({
   onRegistrar?: (registro: RegistroDoDia) => Promise<boolean>;
   // Devolve null quando o relato foi gravado, ou a mensagem de erro.
   onRelatarDesconforto?: (relato: Relato) => Promise<string | null>;
+  // Módulo de Treino (C1): calorias que o aluno informou na semana, no lugar
+  // da estimativa da importação (que só a Nutrição continua vendo).
+  caloriasInformadas?: number | null;
 }) {
   const [diaAberto, setDiaAberto] = useState<ChaveDia | null>(null);
   const [rascunho, setRascunho] = useState<DiaDeTreino | null>(null);
-  const [avaliacao, setAvaliacao] = useState<Avaliacao>({ situacao: null, dataEfetiva: "", motivo: "", observacao: "" });
+  const [avaliacao, setAvaliacao] = useState<Avaliacao>({ situacao: null, dataEfetiva: "", motivo: "", observacao: "", kcal: null });
   const [salvando, setSalvando] = useState(false);
   const [relatando, setRelatando] = useState(false);
   const onSalvar = onRegistrar;
@@ -118,6 +123,7 @@ export default function PainelTreino({
       dataEfetiva: sessao?.data_efetiva ?? "",
       motivo: sessao?.motivo ?? "",
       observacao: sessao?.observacao ?? "",
+      kcal: sessao?.kcal ?? null,
     });
   }
 
@@ -150,6 +156,7 @@ export default function PainelTreino({
       dataEfetiva: avaliacao.situacao === "reagendado" ? avaliacao.dataEfetiva || null : null,
       motivo: avaliacao.situacao && avaliacao.situacao !== "concluido" ? avaliacao.motivo.trim() || null : null,
       observacao: avaliacao.observacao.trim() || null,
+      kcal: avaliacao.kcal,
     });
     setSalvando(false);
 
@@ -226,12 +233,21 @@ export default function PainelTreino({
             </div>
           </div>
 
-          <div className="cartao p-4">
-            <p className="text-sm text-gray-500">Gasto estimado na semana</p>
-            <p className="mt-1 text-xl font-bold text-gray-900">
-              {kcal ? `${formatarNumero(kcal)} kcal` : "—"}
-            </p>
-          </div>
+          {caloriasInformadas !== undefined ? (
+            <div className="cartao p-4">
+              <p className="text-sm text-gray-500">Calorias informadas na semana</p>
+              <p className="mt-1 text-xl font-bold text-gray-900">
+                {caloriasInformadas !== null ? `${formatarNumero(caloriasInformadas)} kcal` : "Não informado"}
+              </p>
+            </div>
+          ) : (
+            <div className="cartao p-4">
+              <p className="text-sm text-gray-500">Gasto estimado na semana</p>
+              <p className="mt-1 text-xl font-bold text-gray-900">
+                {kcal ? `${formatarNumero(kcal)} kcal` : "—"}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -355,6 +371,21 @@ export default function PainelTreino({
                 />
               </label>
             ) : null}
+
+            <label className="mt-3 block">
+              <span className="mb-1 block text-xs font-semibold text-gray-600">Calorias do seu relógio ou app (opcional)</span>
+              <InputNumber
+                value={avaliacao.kcal}
+                onValueChange={(e) => setAvaliacao((atual) => ({ ...atual, kcal: e.value ?? null }))}
+                min={0}
+                max={20000}
+                suffix=" kcal"
+                locale="pt-BR"
+                aria-label="Calorias informadas"
+                placeholder="Ex.: 350 kcal"
+                inputClassName="w-40"
+              />
+            </label>
 
             <label className="mt-3 block">
               <span className="mb-1 block text-xs font-semibold text-gray-600">Observações (opcional)</span>

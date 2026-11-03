@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import PainelTreino, { type RegistroDoDia } from "@/components/PainelTreino";
+import AtividadesDoAluno from "@/components/treino/AtividadesDoAluno";
 import { avisar } from "@/lib/avisos";
 import { planoComRegistros, type ChaveDia, type RelatoDeDesconforto, type ExercicioRegistrado, type PlanoDeTreino, type SessaoRegistrada } from "@/lib/treino";
 
@@ -17,19 +18,28 @@ type Treino = {
   anteriores: Partial<Record<ChaveDia, Record<number, { carga_kg: number; data: string }>>>;
 };
 
+type Resposta = { treino: Treino | null; caloriasInformadas: number | null };
+
 // Treino do aluno por dia: o que ele informa (séries, repetições, carga,
-// descanso, situação e observação) é registrado na semana, sem alterar o
-// treino prescrito.
+// descanso, situação, calorias e observação) é registrado na semana, sem
+// alterar o treino prescrito. Corrida e ciclismo têm registro próprio (T4b).
 export default function TreinoPacientePage() {
   const router = useRouter();
-  const [treino, setTreino] = useState<Treino | null | undefined>(undefined);
+  const [dados, setDados] = useState<Resposta | null | undefined>(undefined);
+
+  const buscar = useCallback(
+    () =>
+      fetch("/api/area-paciente/treino", { cache: "no-store" })
+        .then((r) => (r.ok ? (r.json() as Promise<Resposta>) : { treino: null, caloriasInformadas: null }))
+        .catch(() => ({ treino: null, caloriasInformadas: null })),
+    []
+  );
 
   useEffect(() => {
-    fetch("/api/area-paciente/treino", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : { treino: null }))
-      .then((dados) => setTreino(dados.treino ?? null))
-      .catch(() => setTreino(null));
-  }, []);
+    buscar().then(setDados);
+  }, [buscar]);
+
+  const treino = dados?.treino ?? null;
 
   async function registrar(registro: RegistroDoDia) {
     if (!treino) return false;
@@ -38,14 +48,14 @@ export default function TreinoPacientePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...registro, prescricaoId: treino.prescricao.id }),
     }).catch(() => null);
-    const dados = await resposta?.json().catch(() => null);
+    const corpo = await resposta?.json().catch(() => null);
 
     if (!resposta?.ok) {
-      avisar(dados?.erro ?? "Não foi possível salvar. Confira a conexão e tente de novo.", "error");
+      avisar(corpo?.erro ?? "Não foi possível salvar. Confira a conexão e tente de novo.", "error");
       return false;
     }
 
-    setTreino(dados.treino);
+    setDados(corpo);
     avisar("Treino registrado.", "success");
     return true;
   }
@@ -70,17 +80,17 @@ export default function TreinoPacientePage() {
 
         <CabecalhoPagina
           titulo="Meu treino"
-          descricao="Toque em um dia para ver os exercícios e ajustar séries, repetições, carga e descanso."
+          descricao="Toque em um dia para ver os exercícios e ajustar séries, repetições, carga e descanso. Corridas e pedais ficam logo abaixo."
         />
 
-        <div className="mt-6">
-          {treino === undefined ? (
+        <div className="mt-6 space-y-4">
+          {dados === undefined ? (
             <Skeleton height="24rem" borderRadius="16px" />
           ) : !treino ? (
             <div className="cartao p-6 text-center">
               <i className="pi pi-bolt text-3xl text-gray-400" aria-hidden />
-              <p className="mt-3 font-semibold text-gray-900">Nenhum treino organizado ainda.</p>
-              <p className="mt-1 text-sm text-gray-500">Anexe seu treino na tela inicial.</p>
+              <p className="mt-3 font-semibold text-gray-900">Nenhum treino de musculação organizado ainda.</p>
+              <p className="mt-1 text-sm text-gray-500">Anexe seu treino na tela inicial ou aguarde o envio do seu profissional.</p>
             </div>
           ) : (
             <PainelTreino
@@ -91,8 +101,11 @@ export default function TreinoPacientePage() {
               datas={treino.datas}
               onRegistrar={registrar}
               onRelatarDesconforto={relatarDesconforto}
+              caloriasInformadas={dados?.caloriasInformadas ?? null}
             />
           )}
+
+          {dados !== undefined ? <AtividadesDoAluno onRelatarDesconforto={relatarDesconforto} onAlterado={() => buscar().then(setDados)} /> : null}
         </div>
       </div>
     </main>
