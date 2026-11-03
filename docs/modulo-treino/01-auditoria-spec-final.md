@@ -191,6 +191,21 @@ Nenhuma constante das imagens será copiada. O sistema vai respeitar estes ponto
   - C2: volume realizado com as repetições registradas pelo aluno;
   - C3: o aluno vê a adesão mínima?;
   - R1–R10.
+- **Terceira resposta (03/11/2026, arquivo "Concluir o Treino"):**
+  - **P1:** aprovada (Opção = alternativa por exercício, o profissional decide se o aluno vê).
+  - **C1:** calorias e ganho de altitude são informados pelo aluno no registro, conforme o equipamento dele. O sistema não estima.
+  - **C2:** confirmado. Prescrito = maior valor da faixa; realizado = repetições registradas; sem registro = maior valor.
+  - **C3:** o aluno vê a adesão mínima combinada.
+  - **R1:** "concordo", mas sem o valor em km. **Falta o número** (bloqueia só o aviso do tênis, T4b).
+  - **R2:** percentuais de Coggan aprovados como na tabela enviada.
+  - **R3:** TSS informado pelo aluno; o sistema não calcula.
+  - **R4:** o reagendado só conta se o treino for feito **na mesma semana**. Feito em outra semana, não conta em nenhuma. Continua exigindo a confirmação do aluno.
+  - **R5:** offline aprovado como sugerido.
+  - **R6:** anamnese do educador com as perguntas abertas sugeridas.
+  - **R7:** mesmos métodos da Nutrição. Aluno compartilhado (educador + nutricionista): os dois usam **a mesma** avaliação física.
+  - **R8:** PDF com nome, CREF, contato e logotipo opcional do educador.
+  - **R9:** com pagamento vencido após a tolerância, fica só o histórico; sem treino novo nem registro.
+  - **R10:** desativar (reversível), excluir de vez só a pedido do aluno, com confirmação; o educador só encerra a conta sem alunos ativos.
 - **Publicação:** o cliente publica o módulo só quando estiver 100% pronto. As migrações 021 em diante ficam acumuladas até lá.
 
 ## 8. T7b entregue: alunos próprios do educador (03/11/2026)
