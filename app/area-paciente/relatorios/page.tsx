@@ -13,6 +13,8 @@ import DevolutivasDoTreino from "@/components/treino/DevolutivasDoTreino";
 export default function RelatoriosPacientePage() {
 
     const [pacienteId, setPacienteId] = useState<string | null>(null);
+    // Aluno próprio de educador físico (T7b): só as devolutivas do Treino.
+    const [somenteTreino, setSomenteTreino] = useState<boolean | null>(null);
     const [nomePaciente, setNomePaciente] = useState<string>("");
     const [pesoInicial, setPesoInicial] = useState<number | null>(null);
     const [relatorios, setRelatorios] = useState<any[]>([]);
@@ -85,6 +87,7 @@ useEffect(() => {
     } = await api.auth.getUser();
 
     if (!user) return;
+    setSomenteTreino(user.somenteTreino);
 
     const { data, error } = await api
       .from("patients")
@@ -186,11 +189,15 @@ console.log("RELATÓRIOS ENVIADOS:", relatoriosEnviados);
       <div className="mx-auto max-w-md">
         <CabecalhoPagina
           titulo="Relatórios"
-          descricao="Seus resultados e as devolutivas do nutricionista e do treino."
+          descricao={
+            somenteTreino
+              ? "As devolutivas do seu Personal Trainer."
+              : "Seus resultados e as devolutivas do nutricionista e do treino."
+          }
         />
 
         <div className="mt-6 space-y-4">
-          <DevolutivasDoTreino />
+          <DevolutivasDoTreino mostrarVazio={somenteTreino === true} />
   {relatorios.map((relatorio) => {
     const indiceAlcool = historicoAlcool.findIndex(
   (item) => item.id === relatorio.id
@@ -425,7 +432,7 @@ const tendenciasPeso = pesosAteEsteRelatorio
     </section>
   );
 })}
-          {relatorios.length === 0 && (
+          {relatorios.length === 0 && somenteTreino === false && (
             <div className="cartao p-6 text-center">
               <i className="pi pi-chart-bar text-3xl text-gray-400" aria-hidden />
               <p className="mt-3 font-semibold text-gray-900">

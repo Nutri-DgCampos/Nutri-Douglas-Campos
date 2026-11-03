@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   try {
     await cliente.query("begin");
 
-    const paciente = await cliente.query("select 1 from public.patients where id = $1", [pacienteId]);
+    const paciente = await cliente.query("select 1 from public.patients where id = $1 and educador_dono_id is null", [pacienteId]);
 
     if (paciente.rowCount === 0) {
       await cliente.query("rollback");

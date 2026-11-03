@@ -32,7 +32,7 @@ export async function DELETE(
     await cliente.query("begin");
 
     const paciente = await cliente.query<{ auth_user_id: string | null }>(
-      "select auth_user_id from public.patients where id = $1 for update",
+      "select auth_user_id from public.patients where id = $1 and educador_dono_id is null for update",
       [id]
     );
 

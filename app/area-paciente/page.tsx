@@ -8,6 +8,7 @@ import AnelDeAdesao from "@/components/AnelDeAdesao";
 import EnvioExame from "@/components/EnvioExame";
 import FaixaDeParceiros from "@/components/FaixaDeParceiros";
 import EnvioTreino from "@/components/EnvioTreino";
+import InicioDoAlunoDoTreino from "@/components/treino/InicioDoAlunoDoTreino";
 import { api } from "@/lib/api";
 import { avisar } from "@/lib/avisos";
 import {
@@ -56,6 +57,8 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
     const [enviandoRenovacao, setEnviandoRenovacao] = useState(false);
     const [ativandoNotificacoes, setAtivandoNotificacoes] = useState(false);
     const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
+    // Aluno próprio de educador físico (T7b): início só com o Treino.
+    const [somenteTreino, setSomenteTreino] = useState<boolean | null>(null);
 
     // Se este aparelho já está inscrito, não oferece a ativação de novo.
     useEffect(() => {
@@ -170,6 +173,7 @@ async function pedirRenovacao(planoEscolhido: string) {
 
     console.log("USUÁRIO LOGADO:", user);
     if (!user) return;
+    setSomenteTreino(user.somenteTreino);
 
 const { data, error } = await api
   .from("patients")
@@ -501,6 +505,25 @@ carregarPaciente();
       novidade: pagamentoAtrasado,
     },
   ];
+
+  // Até saber quem é, não mostra o início da Nutrição a quem só usa o Treino.
+  if (somenteTreino === null) {
+    return <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6" />;
+  }
+
+  if (somenteTreino) {
+    return (
+      <InicioDoAlunoDoTreino
+        primeiroNome={primeiroNome}
+        pacienteId={paciente?.id ?? null}
+        devolutivaNova={devolutivaDoTreino}
+        notificacoesAtivas={notificacoesAtivas}
+        ativandoNotificacoes={ativandoNotificacoes}
+        onAtivarNotificacoes={ativarNotificacoes}
+        onSair={sair}
+      />
+    );
+  }
 
   return (
     <main className="px-4 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] sm:px-6">

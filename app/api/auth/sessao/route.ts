@@ -13,6 +13,7 @@ export async function GET() {
         : null,
       papel: contexto?.papel ?? null,
       pacienteId: contexto?.pacienteId ?? null,
+      somenteTreino: contexto?.somenteTreino ?? false,
       deveTrocarSenha: contexto?.deveTrocarSenha ?? false,
     },
     { headers: { "Cache-Control": "no-store" } }

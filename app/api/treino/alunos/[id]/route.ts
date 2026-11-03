@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { alterarAlunoProprio, cadastroDoAlunoProprio } from "@/lib/servidor/alunosProprios";
 import { obterPool } from "@/lib/servidor/banco";
 import { desconfortosDoAluno } from "@/lib/servidor/desconfortos";
 import { UUID } from "@/lib/servidor/dietas";
 import { DadosInvalidos, desvincular, listarEducadores, vincular, vinculosDoAluno } from "@/lib/servidor/educadores";
 import { recusar } from "@/lib/servidor/http";
 import { exigirAdminDoTreino, exigirProfissionalDeTreino, podeAcompanharAluno } from "@/lib/servidor/treinoAcesso";
+import { EmailJaCadastrado } from "@/lib/servidor/usuarios";
 
 export const runtime = "nodejs";
 
@@ -16,7 +18,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   if (!UUID.test(id) || !(await podeAcompanharAluno(profissional, id))) return recusar("Aluno não encontrado.", 404);
 
-  const [aluno, treino, vinculos, desconfortos, educadores] = await Promise.all([
+  const [aluno, treino, vinculos, desconfortos, educadores, cadastro] = await Promise.all([
     obterPool().query<{ id: string; nome: string }>("select id, name as nome from public.patients where id = $1", [id]),
     obterPool().query(
       `select id, status, erro, file_name, storage_path, texto_enviado, plano, comentario_ia, created_at, atualizado_em
@@ -26,6 +28,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     vinculosDoAluno(id),
     desconfortosDoAluno(id),
     profissional.admin ? listarEducadores() : Promise.resolve(null),
+    cadastroDoAlunoProprio(profissional, id),
   ]);
 
   return NextResponse.json({
@@ -35,7 +38,26 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     vinculos,
     desconfortos,
     educadores: educadores?.filter((e) => e.ativo).map((e) => ({ usuario_id: e.usuario_id, nome: e.nome })) ?? null,
+    // Aluno próprio: o educador dono vê e altera o cadastro e o acesso.
+    cadastro: cadastro ? { nome: cadastro.nome, telefone: cadastro.telefone, email: cadastro.email } : null,
   });
+}
+
+// Cadastro e senha provisória do aluno próprio: só o educador dono.
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const profissional = await exigirProfissionalDeTreino(request);
+  if (profissional instanceof NextResponse) return profissional;
+  const { id } = await params;
+  if (!UUID.test(id)) return recusar("Aluno não encontrado.", 404);
+  try {
+    const ok = await alterarAlunoProprio(profissional, id, (await request.json().catch(() => ({}))) ?? {});
+    return ok ? NextResponse.json({ sucesso: true }) : recusar("Aluno não encontrado.", 404);
+  } catch (erro) {
+    if (erro instanceof DadosInvalidos) return recusar(erro.message, 400);
+    if (erro instanceof EmailJaCadastrado) return recusar("Este e-mail já é usado por outro acesso.", 409);
+    console.error("Erro ao alterar aluno próprio:", erro);
+    return recusar("Não foi possível salvar.", 500);
+  }
 }
 
 // Vínculos com educadores físicos: só o administrador.

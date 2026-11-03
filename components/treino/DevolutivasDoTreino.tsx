@@ -7,9 +7,10 @@ type Devolutiva = { id: string; semana_inicio: string; semana_fim: string; profi
 
 // Devolutivas do Treino na tela Relatórios do aluno, identificadas como
 // "Treino" ao lado das devolutivas da Nutrição (D1). Abrir a tela marca como
-// lidas.
-export default function DevolutivasDoTreino() {
-  const [devolutivas, setDevolutivas] = useState<Devolutiva[]>([]);
+// lidas. mostrarVazio: aviso quando ainda não há nenhuma (aluno que só usa o
+// Treino).
+export default function DevolutivasDoTreino({ mostrarVazio = false }: { mostrarVazio?: boolean }) {
+  const [devolutivas, setDevolutivas] = useState<Devolutiva[] | null>(null);
 
   useEffect(() => {
     fetch("/api/area-paciente/treino/relatorios", { cache: "no-store" })
@@ -22,7 +23,16 @@ export default function DevolutivasDoTreino() {
       .catch(() => setDevolutivas([]));
   }, []);
 
-  if (!devolutivas.length) return null;
+  if (devolutivas === null) return null;
+  if (!devolutivas.length) {
+    return mostrarVazio ? (
+      <div className="cartao p-6 text-center">
+        <i className="pi pi-chart-bar text-3xl text-gray-400" aria-hidden />
+        <p className="mt-3 font-semibold text-gray-900">Nenhuma devolutiva por enquanto.</p>
+        <p className="mt-1 text-sm text-gray-500">Quando o seu Personal Trainer responder à semana de treino, a devolutiva aparece aqui.</p>
+      </div>
+    ) : null;
+  }
 
   return (
     <>

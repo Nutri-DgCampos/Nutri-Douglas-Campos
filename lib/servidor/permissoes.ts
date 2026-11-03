@@ -13,6 +13,8 @@ export type Contexto = {
   papel: string | null;
   // Cadastro de paciente vinculado ao usuário, quando existe.
   pacienteId: string | null;
+  // Aluno próprio de um educador físico (T7b): na Área do Paciente só o Treino.
+  somenteTreino: boolean;
   // Senha provisória: precisa ser trocada antes de usar o sistema.
   deveTrocarSenha: boolean;
 };
@@ -37,6 +39,17 @@ export function criarRegras(contexto: Contexto): Regras {
   const nutricionista = contexto.papel === "nutricionista";
   const usuario = literal(contexto.usuarioId);
   const paciente = contexto.pacienteId ? literal(contexto.pacienteId) : null;
+  // Aluno próprio de educador: não envia relatório, renovação nem comprovante.
+  const pacienteDaNutricao = contexto.somenteTreino ? null : paciente;
+
+  // Alunos próprios de educadores físicos (T7b) não são da clínica: o
+  // nutricionista não lê nem grava nada deles por aqui.
+  const daClinica = (alias: string) =>
+    `not exists (select 1 from public.patients dono
+                  where dono.id = ${alias}.patient_id
+                    and dono.educador_dono_id is not null)`;
+  const CLINICA: Regra = { usando: daClinica, verificando: daClinica };
+  const cadastroDaClinica = (alias: string) => `${alias}.educador_dono_id is null`;
 
   // Linha pertence ao paciente conectado.
   const doPaciente = (alias: string) =>
@@ -54,10 +67,10 @@ export function criarRegras(contexto: Contexto): Regras {
   const tabelas: Record<string, Partial<Record<Operacao, Regra | null>>> = {
     patients: {
       select: nutricionista
-        ? TUDO
+        ? { usando: cadastroDaClinica }
         : { usando: (a) => `${a}.auth_user_id = ${usuario}` },
-      insert: nutricionista ? TUDO : null,
-      update: nutricionista ? TUDO : null,
+      insert: nutricionista ? { verificando: cadastroDaClinica } : null,
+      update: nutricionista ? { usando: cadastroDaClinica } : null,
     },
 
     profiles: {
@@ -65,43 +78,43 @@ export function criarRegras(contexto: Contexto): Regras {
     },
 
     patient_reports: {
-      select: nutricionista ? TUDO : { usando: doPaciente },
+      select: nutricionista ? CLINICA : { usando: doPaciente },
       // Só o próprio paciente envia relatório, e apenas de semanas válidas do ciclo.
-      insert: paciente
+      insert: pacienteDaNutricao
         ? {
             verificando: (v) =>
               `${v}.patient_id = ${paciente}
                and public.validar_data_relatorio_ciclo(${v}.patient_id, ${v}.cycle_id, ${v}.scheduled_week_start)`,
           }
         : null,
-      update: nutricionista ? TUDO : null,
-      delete: nutricionista ? TUDO : null,
+      update: nutricionista ? CLINICA : null,
+      delete: nutricionista ? CLINICA : null,
     },
 
     patient_alerts: {
-      select: nutricionista ? TUDO : null,
-      insert: nutricionista ? TUDO : null,
-      update: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : null,
+      insert: nutricionista ? CLINICA : null,
+      update: nutricionista ? CLINICA : null,
     },
 
     patient_progress: {
-      select: nutricionista ? TUDO : { usando: doPaciente },
-      insert: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : { usando: doPaciente },
+      insert: nutricionista ? CLINICA : null,
     },
 
     diet_cycles: {
-      select: nutricionista ? TUDO : { usando: doPaciente },
-      insert: nutricionista ? TUDO : null,
-      update: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : { usando: doPaciente },
+      insert: nutricionista ? CLINICA : null,
+      update: nutricionista ? CLINICA : null,
     },
 
     diet_deliveries: {
       select: nutricionista
-        ? TUDO
+        ? CLINICA
         : { usando: (a) => `${a}.id in ${entregasVisiveis}` },
-      insert: nutricionista ? TUDO : null,
-      update: nutricionista ? TUDO : null,
-      delete: nutricionista ? TUDO : null,
+      insert: nutricionista ? CLINICA : null,
+      update: nutricionista ? CLINICA : null,
+      delete: nutricionista ? CLINICA : null,
     },
 
     diet_delivery_files: {
@@ -113,16 +126,16 @@ export function criarRegras(contexto: Contexto): Regras {
 
     renewal_requests: {
       // O paciente vê as próprias solicitações (para não pedir de novo).
-      select: nutricionista ? TUDO : { usando: doPaciente },
-      insert: paciente
+      select: nutricionista ? CLINICA : { usando: doPaciente },
+      insert: pacienteDaNutricao
         ? { verificando: (v) => `${v}.patient_id = ${paciente}` }
         : null,
-      update: nutricionista ? TUDO : null,
+      update: nutricionista ? CLINICA : null,
     },
 
     payments: {
       select: nutricionista
-        ? TUDO
+        ? CLINICA
         : {
             usando: (a) =>
               paciente
@@ -130,11 +143,12 @@ export function criarRegras(contexto: Contexto): Regras {
                     or ${a}.cycle_id in (select c.id from public.diet_cycles c where c.patient_id = ${paciente}))`
                 : "false",
           },
-      insert: nutricionista ? TUDO : null,
+      insert: nutricionista ? CLINICA : null,
       // O paciente só pode anexar o comprovante de um pagamento ainda pendente.
       update: nutricionista
-        ? TUDO
-        : {
+        ? CLINICA
+        : pacienteDaNutricao
+        ? {
             usando: (a) =>
               `${doPaciente(a)}
                and ${a}.status = 'pendente'
@@ -152,7 +166,8 @@ export function criarRegras(contexto: Contexto): Regras {
               valores.receipt_file_path.length > 0 &&
               typeof valores.receipt_uploaded_at === "string" &&
               valores.receipt_uploaded_at.length > 0,
-          },
+          }
+        : null,
     },
 
     push_subscriptions: {
@@ -175,9 +190,9 @@ export function criarRegras(contexto: Contexto): Regras {
     // A análise por IA é só do nutricionista. O paciente envia e lista os
     // próprios exames pela rota /api/exames, que não devolve a análise.
     blood_exams: {
-      select: nutricionista ? TUDO : null,
-      update: nutricionista ? TUDO : null,
-      delete: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : null,
+      update: nutricionista ? CLINICA : null,
+      delete: nutricionista ? CLINICA : null,
     },
 
     // Treino: enviado pela rota /api/treinos (que dispara a IA). O paciente
@@ -185,32 +200,32 @@ export function criarRegras(contexto: Contexto): Regras {
     // descanso) vira registro em /api/area-paciente/treino, sem alterar o
     // treino organizado (prescrição).
     treinos: {
-      select: nutricionista ? TUDO : { usando: doPaciente },
+      select: nutricionista ? CLINICA : { usando: doPaciente },
     },
 
     // Fotos de evolução: gravadas e removidas pela rota /api/fotos.
     fotos_evolucao: {
-      select: nutricionista ? TUDO : { usando: doPaciente },
+      select: nutricionista ? CLINICA : { usando: doPaciente },
     },
 
     fotos_datas_favoritas: {
-      select: nutricionista ? TUDO : null,
-      insert: nutricionista ? TUDO : null,
-      delete: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : null,
+      insert: nutricionista ? CLINICA : null,
+      delete: nutricionista ? CLINICA : null,
     },
 
     // Módulo de Nutrição. Consultas são criadas, alteradas e excluídas pelas
     // rotas /api/nutricao/consultas (com auditoria); aqui só a leitura.
     consultas: {
-      select: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : null,
     },
 
     auditoria_clinica: {
-      select: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : null,
     },
 
     historico_peso: {
-      select: nutricionista ? TUDO : null,
+      select: nutricionista ? CLINICA : null,
     },
 
     // Base de alimentos: leitura do nutricionista; gravação pelas rotas

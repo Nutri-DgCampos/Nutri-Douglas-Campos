@@ -323,7 +323,7 @@ export async function lerRelatorio(profissional: ProfissionalDeTreino, id: strin
               where a.patient_id = r.patient_id and a.profissional_id = r.profissional_id and a.semana_inicio = r.semana_inicio - 7) as adesao_anterior
        from public.treino_relatorios r
        join public.patients p on p.id = r.patient_id
-      where r.id = $1 and ($2 or r.profissional_id = $3)`,
+      where r.id = $1 and (($2 and p.educador_dono_id is null) or r.profissional_id = $3)`,
     [id, profissional.admin, profissional.usuarioId]
   );
   const linha = r.rows[0];
@@ -331,7 +331,7 @@ export async function lerRelatorio(profissional: ProfissionalDeTreino, id: strin
 }
 
 // Relatórios de um aluno (painel do aluno no Treino). O educador vê só os
-// dele; o administrador vê todos.
+// dele; o administrador vê todos (o aluno já foi autorizado pela rota).
 export async function relatoriosDoAluno(profissional: ProfissionalDeTreino, patientId: string) {
   await fecharSemanas(hojeNoBrasil(), { patientId });
   const r = await obterPool().query<{

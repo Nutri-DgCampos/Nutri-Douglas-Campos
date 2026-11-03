@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { resolverCaminho } from "@/lib/servidor/arquivos";
 import { obterPool } from "@/lib/servidor/banco";
 import { analisarExame } from "@/lib/servidor/exames";
+import { recusarAlunoDoTreino } from "@/lib/servidor/clinica";
 import { origemPermitida, recusar } from "@/lib/servidor/http";
 import { obterContexto } from "@/lib/servidor/sessao";
 
@@ -21,6 +22,12 @@ async function pacienteConectado(request: Request) {
 
   if (!contexto.pacienteId) {
     return recusar("Somente pacientes enviam exames.", 403);
+  }
+
+  const alunoDoTreino = recusarAlunoDoTreino(contexto);
+
+  if (alunoDoTreino) {
+    return alunoDoTreino;
   }
 
   return contexto.pacienteId;

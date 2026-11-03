@@ -159,3 +159,39 @@ Nenhuma constante das imagens será copiada. O sistema vai respeitar estes ponto
 - TSS só com potência e FTP;
 - o mesmo score na tela do aluno e na do profissional;
 - "nenhum desconforto" nunca aparece quando houver relato na semana.
+
+## 7. Respostas do técnico (03/11/2026)
+
+- **Q1, score 0–100:** aprovada a sugestão: 60% adesão, 25% metas e 15% evolução. Sem dado de uma parte, a tela mostra "N/A" em vez de inventar.
+- **Q2, calorias:** o aluno informa as calorias e o ganho de altitude, medidos pelos equipamentos dele. O sistema não estima kcal. Sem informação, a tela mostra "Não informado". Entra na T4b como campo opcional do registro.
+- **Q4, Excluir relatório:** de acordo. O botão não será implementado.
+- **Q8, offline:** a maioria treina com bom sinal, mas o sinal pode cair em horário de pico na academia ou em área sem cobertura. O registro do aluno precisa funcionar sem internet e sincronizar depois (T5, na ordem aprovada).
+- **Q9, ordem:** aceita como na seção 5. Começa pela T7b.
+- **Sem resposta ainda:** P1–P5, Q3, Q5, Q6 e Q7. Cada uma bloqueia só a etapa indicada na seção 5. A T7b não depende delas.
+
+## 8. T7b entregue: alunos próprios do educador (03/11/2026)
+
+Migração `026_treino_alunos_proprios.sql` (só acrescenta):
+- `patients.educador_dono_id`: vazio = paciente da clínica (todos os existentes); preenchido = aluno próprio daquele educador.
+- O dono não muda depois do cadastro (gatilho `proteger_dono_do_aluno`), e a conta do educador não pode ser apagada enquanto tiver alunos. Assim o aluno nunca "cai" para a clínica.
+- `plan` deixa de ser obrigatório só para o aluno próprio.
+- `avisar_nutricionistas` ignora os alunos próprios.
+
+Educador:
+- **Módulo de Treino › Cadastrar aluno:** nome, telefone, e-mail e senha provisória. O vínculo é criado na hora e o aluno aparece como "aluno próprio" na lista.
+- **Ficha do aluno:** cartão "Cadastro do aluno", com Editar e Nova senha provisória, só para o educador dono.
+- **Sem exclusão nesta etapa:** apagar um aluno envolve LGPD e histórico de treino. Fica para a T8, com regra aprovada.
+
+Nutricionista (administrador), isolamento no servidor:
+- **API genérica `/api/dados`:** pacientes e todas as tabelas da Nutrição (relatórios, ciclos, dietas, pagamentos, renovações, exames, treinos, fotos, consultas, auditoria, histórico de peso) filtram os pacientes da clínica, na leitura e na gravação. `iniciar_ciclo_dieta` recusa o aluno próprio.
+- **Rotas que recebem o id do paciente:** nova consulta, exclusão, acesso, exames, formulários, link de formulários e importação de dietas devolvem 404 para o aluno próprio. O engajamento e o push personalizado deixam o aluno de fora.
+- **Arquivos:** as pastas de exames, treinos e fotos do aluno próprio não abrem para o nutricionista.
+- **Módulo de Treino do admin:** o aluno próprio não aparece na lista, no painel, nos registros, nos relatos de desconforto nem nos relatórios. A contagem de alunos de cada educador mostra só os da clínica. O relato do aluno avisa só o educador dono, nunca o administrador.
+
+Aluno próprio, na Área do Paciente:
+- **Telas:** só Início, Treino e Relatórios. As outras telas voltam ao início.
+- **Início próprio:** Meu treino, Relatórios, envio do treino e notificações da devolutiva.
+- **Relatórios:** só as devolutivas do Personal Trainer.
+- **Bloqueios no servidor:** não envia relatório nutricional, renovação, comprovante, exames nem fotos.
+
+Teste: `tests/navegacao/treinoT7b.mjs`, com 49 verificações. Regressão OK: fumaça, T1, T2, T3, melhorias, avisos, fotos, 64 testes unitários e build.

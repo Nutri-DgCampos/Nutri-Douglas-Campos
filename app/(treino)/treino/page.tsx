@@ -2,24 +2,30 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "primereact/button";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Skeleton } from "primereact/skeleton";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
 import AtivarAlertas from "@/components/treino/AtivarAlertas";
+import { NovoAluno } from "@/components/treino/CadastroDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import PainelDeRelatorios from "@/components/treino/PainelDeRelatorios";
 
-type Aluno = { id: string; nome: string; situacao: string; tem_treino: boolean; desconfortos_novos: number; educadores: string[] };
+type Aluno = { id: string; nome: string; situacao: string; tem_treino: boolean; desconfortos_novos: number; educadores: string[]; proprio: boolean };
 
 function semAcento(texto: string) {
   return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
 // Início do Módulo de Treino: relatos de desconforto ainda não vistos e os
-// alunos do profissional (o administrador vê todos).
+// alunos do profissional (o administrador vê todos os da clínica). O educador
+// cadastra os próprios alunos aqui (T7b).
 export default function TreinoPage() {
+  const router = useRouter();
+  const [novoAluno, setNovoAluno] = useState(false);
   const [dados, setDados] = useState<{ admin: boolean; alunos: Aluno[]; desconfortos: DesconfortoNaTela[] } | null>(null);
   const [busca, setBusca] = useState("");
 
@@ -63,9 +69,13 @@ export default function TreinoPage() {
                 <i className="pi pi-id-card" aria-hidden />
                 Educadores físicos
               </Link>
+            ) : dados ? (
+              <Button type="button" icon="pi pi-user-plus" label="Cadastrar aluno" onClick={() => setNovoAluno(true)} />
             ) : undefined
           }
         />
+
+        <NovoAluno aberto={novoAluno} onFechar={() => setNovoAluno(false)} onCriado={(id) => router.push(`/treino/alunos/${id}`)} />
 
         <AtivarAlertas />
 
@@ -99,7 +109,9 @@ export default function TreinoPage() {
 
               {dados.alunos.length === 0 ? (
                 <p className="mt-3 text-sm text-gray-500">
-                  {dados.admin ? "Nenhum aluno cadastrado." : "Nenhum aluno vinculado a você ainda. O administrador faz o vínculo."}
+                  {dados.admin
+                    ? "Nenhum aluno cadastrado."
+                    : "Nenhum aluno ainda. Cadastre seus alunos em “Cadastrar aluno” ou peça ao administrador o vínculo com alunos da clínica."}
                 </p>
               ) : (
                 <ul className="mt-3 divide-y divide-gray-100">
@@ -110,6 +122,7 @@ export default function TreinoPage() {
                           <span className="block truncate font-semibold text-gray-900">{a.nome}</span>
                           <span className="block text-xs text-gray-500">
                             {a.tem_treino ? "Com treino" : "Sem treino"}
+                            {a.proprio ? " · aluno próprio" : ""}
                             {dados.admin && a.educadores.length ? ` · ${a.educadores.join(", ")}` : ""}
                           </span>
                         </span>

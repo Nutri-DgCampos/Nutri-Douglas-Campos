@@ -73,7 +73,7 @@ const CAMPOS = `d.id, d.patient_id, p.name as paciente, d.dia, d.data::text as d
 
 function filtroDoProfissional(profissional: ProfissionalDeTreino, parametro: string) {
   return profissional.admin
-    ? "true"
+    ? "not exists (select 1 from public.patients dono where dono.id = d.patient_id and dono.educador_dono_id is not null)"
     : `exists (select 1 from public.treino_vinculos v where v.patient_id = d.patient_id and v.profissional_id = ${parametro} and v.fim is null)`;
 }
 

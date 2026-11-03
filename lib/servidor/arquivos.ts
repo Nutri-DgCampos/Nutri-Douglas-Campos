@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { obterPool } from "./banco";
+import { pacienteDaClinica } from "./clinica";
 import type { Contexto } from "./permissoes";
 import { publicacaoAtiva } from "./publicacoes";
 import { PAPEL_EDUCADOR, podeAcompanharAluno, profissionalDeTreino } from "./treinoAcesso";
@@ -145,7 +146,9 @@ export function podeEnviar(
   }
 
   // Exame, treino e fotos: o paciente grava na pasta do próprio cadastro.
+  // Aluno próprio de educador físico: só o treino.
   if (PASTA_DO_PACIENTE.includes(bucket)) {
+    if (contexto.somenteTreino && bucket !== "treinos") return false;
     return Boolean(contexto.pacienteId) && caminho.startsWith(`${contexto.pacienteId}/`);
   }
 
@@ -162,8 +165,10 @@ export async function podeBaixar(
   bucket: string,
   caminho: string
 ) {
+  // Nutricionista: tudo, menos as pastas de alunos próprios de educadores.
   if (contexto.papel === "nutricionista") {
-    return true;
+    const pasta = caminho.split("/")[0];
+    return !PASTA_DO_PACIENTE.includes(bucket) || !UUID_ALUNO.test(pasta) || pacienteDaClinica(pasta);
   }
 
   if (bucket === "comprovantes") {

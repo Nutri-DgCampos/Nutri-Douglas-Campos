@@ -16,7 +16,8 @@ export async function GET(request: Request) {
             (select count(*)::int from public.push_subscriptions s where s.patient_id = p.id) as aparelhos,
             p.ultimo_acesso_em,
             p.app_instalado_em
-       from public.patients p`
+       from public.patients p
+      where p.educador_dono_id is null`
   );
 
   return NextResponse.json({ pacientes: resultado.rows });

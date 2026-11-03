@@ -188,7 +188,7 @@ Perguntas em `Downloads/Arquivos/Perguntas para o tecnico - Treino e Melhorias 2
   - esses alunos **não** aparecem na lista de pacientes do nutricionista;
   - eles têm acesso à Área do Paciente.
   
-  Ainda não implementado: é uma etapa nova (T7b, seção 9).
+  Implementado na T7b (03/11/2026, migração 026; ver 01-auditoria-spec-final.md, seção 8).
 
 **B. Relatório semanal e lista de atenção (T3)**
 - **B1:** horário de Brasília para todos.

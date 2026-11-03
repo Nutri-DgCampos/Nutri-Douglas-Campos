@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { banco } from "@/lib/servidor/banco";
+import { pacienteDaClinica } from "@/lib/servidor/clinica";
 import { origemPermitida, recusar } from "@/lib/servidor/http";
 import { podeChamarFuncao } from "@/lib/servidor/permissoes";
 import { obterContexto } from "@/lib/servidor/sessao";
@@ -30,6 +31,11 @@ export async function POST(request: Request) {
 
   if (!podeChamarFuncao(contexto, dados.nome)) {
     return recusar("Operação não permitida.", 403);
+  }
+
+  // Aluno próprio de educador físico não recebe ciclo da Nutrição.
+  if (dados.nome === "iniciar_ciclo_dieta" && !(await pacienteDaClinica(dados.argumentos.p_patient_id))) {
+    return recusar("Paciente não encontrado.", 404);
   }
 
   return NextResponse.json(await banco.rpc(dados.nome, dados.argumentos), {

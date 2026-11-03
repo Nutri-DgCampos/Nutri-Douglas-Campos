@@ -87,6 +87,7 @@ export async function obterContexto(
     email: string;
     papel: string | null;
     paciente_id: string | null;
+    somente_treino: boolean;
     deve_trocar_senha: boolean;
   }>(
     `select u.email,
@@ -95,7 +96,11 @@ export async function obterContexto(
             (select pa.id from public.patients pa
               where pa.auth_user_id = u.id
               order by pa.created_at
-              limit 1) as paciente_id
+              limit 1) as paciente_id,
+            coalesce((select pa.educador_dono_id is not null from public.patients pa
+              where pa.auth_user_id = u.id
+              order by pa.created_at
+              limit 1), false) as somente_treino
        from public.users u
        left join public.profiles p on p.id = u.id
       where u.id = $1`,
@@ -129,6 +134,7 @@ export async function obterContexto(
     email: usuario.email,
     papel: usuario.papel,
     pacienteId: usuario.paciente_id,
+    somenteTreino: usuario.somente_treino,
     deveTrocarSenha: usuario.deve_trocar_senha,
   };
 }

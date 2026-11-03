@@ -10,7 +10,7 @@ type Contexto = { params: Promise<{ id: string }> };
 
 async function responder(request: Request, pacienteId: string, usuarioId: string, novo: boolean) {
   const paciente = await obterPool().query<{ name: string; phone: string | null }>(
-    "select name, phone from public.patients where id = $1",
+    "select name, phone from public.patients where id = $1 and educador_dono_id is null",
     [pacienteId]
   );
   if (!paciente.rows[0]) return recusar("Paciente não encontrado.", 404);

@@ -39,6 +39,7 @@ export async function POST(request: Request) {
     .from("patients")
     .select("auth_user_id")
     .eq("id", pacienteId)
+    .is("educador_dono_id", null)
     .maybeSingle();
 
   if (erroPaciente || !paciente) {
@@ -103,6 +104,7 @@ const { data: paciente, error: pacienteError } = await banco
   .from("patients")
   .select("id, auth_user_id")
   .eq("id", pacienteId)
+  .is("educador_dono_id", null)
   .maybeSingle();
 
 if (pacienteError) {

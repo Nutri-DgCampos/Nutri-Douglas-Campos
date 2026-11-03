@@ -217,12 +217,19 @@ const ITENS_PACIENTE: Item[] = [
   { rotulo: "Pagamentos", icone: "pi-credit-card", destino: "/area-paciente/pagamentos" },
 ];
 
-export function NavegacaoPaciente() {
+// Aluno próprio de educador físico (T7b): só o Treino.
+const ITENS_ALUNO_DO_TREINO: Item[] = [
+  { rotulo: "Início", icone: "pi-home", destino: "/area-paciente" },
+  { rotulo: "Treino", icone: "pi-bolt", destino: "/area-paciente/treino" },
+  { rotulo: "Relatórios", icone: "pi-chart-bar", destino: "/area-paciente/relatorios" },
+];
+
+export function NavegacaoPaciente({ somenteTreino = false }: { somenteTreino?: boolean }) {
   const caminho = usePathname();
 
   return (
     <nav className="barra-inferior" aria-label="Principal">
-      {ITENS_PACIENTE.map((item) => (
+      {(somenteTreino ? ITENS_ALUNO_DO_TREINO : ITENS_PACIENTE).map((item) => (
         <Link
           key={item.destino}
           href={item.destino}

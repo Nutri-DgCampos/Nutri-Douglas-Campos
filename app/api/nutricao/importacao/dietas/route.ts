@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { obterPool } from "@/lib/servidor/banco";
 import { UUID } from "@/lib/servidor/dietas";
+import { pacienteDaClinica } from "@/lib/servidor/clinica";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
 
 export const runtime = "nodejs";
@@ -15,6 +16,7 @@ export async function GET(request: Request) {
   const paciente = url.searchParams.get("paciente") ?? "";
   const exceto = url.searchParams.get("exceto");
   if (!UUID.test(paciente) || (exceto && !UUID.test(exceto))) return recusar("Parâmetros inválidos.", 400);
+  if (!(await pacienteDaClinica(paciente))) return NextResponse.json({ dietas: [] });
 
   const resultado = await obterPool().query(
     `select d.id, to_char(c.data, 'YYYY-MM-DD') as consulta_data,

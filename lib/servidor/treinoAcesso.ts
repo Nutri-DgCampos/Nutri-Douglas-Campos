@@ -6,10 +6,12 @@ import { obterContexto } from "./sessao";
 
 // Quem acessa o Módulo de Treino.
 //
-// - Nutricionista: administrador. Vê todos os alunos, cadastra educadores
-//   físicos e faz os vínculos.
+// - Nutricionista: administrador. Vê todos os alunos da clínica, cadastra
+//   educadores físicos e faz os vínculos.
 // - Educador físico: só o Módulo de Treino, e só dos alunos vinculados a ele
 //   (vínculo ativo). Conta desativada perde o acesso na hora.
+// - Alunos próprios do educador (T7b, resposta A7): cadastrados por ele,
+//   vinculados a ele e invisíveis ao administrador.
 //
 // O resto do sistema continua exigindo papel === "nutricionista": o educador
 // não alcança nada da Nutrição, nem pela API.
@@ -51,10 +53,10 @@ export async function exigirAdminDoTreino(request: Request): Promise<Profissiona
   return profissional;
 }
 
-// O profissional acompanha este aluno? (admin: qualquer aluno cadastrado)
+// O profissional acompanha este aluno? (admin: qualquer paciente da clínica)
 export async function podeAcompanharAluno(profissional: ProfissionalDeTreino, patientId: string) {
   const r = profissional.admin
-    ? await obterPool().query("select 1 from public.patients where id = $1", [patientId])
+    ? await obterPool().query("select 1 from public.patients where id = $1 and educador_dono_id is null", [patientId])
     : await obterPool().query(
         "select 1 from public.treino_vinculos where patient_id = $1 and profissional_id = $2 and fim is null",
         [patientId, profissional.usuarioId]
@@ -65,7 +67,7 @@ export async function podeAcompanharAluno(profissional: ProfissionalDeTreino, pa
 // Alunos visíveis ao profissional, com o resumo do Treino.
 export async function alunosDoProfissional(profissional: ProfissionalDeTreino) {
   const filtro = profissional.admin
-    ? ""
+    ? "where p.educador_dono_id is null"
     : "where exists (select 1 from public.treino_vinculos v where v.patient_id = p.id and v.profissional_id = $1 and v.fim is null)";
   const r = await obterPool().query<{
     id: string;
@@ -74,8 +76,10 @@ export async function alunosDoProfissional(profissional: ProfissionalDeTreino) {
     tem_treino: boolean;
     desconfortos_novos: number;
     educadores: string[];
+    proprio: boolean;
   }>(
     `select p.id, p.name as nome, p.payment_status as situacao,
+            p.educador_dono_id is not null and p.educador_dono_id = $1 as proprio,
             exists (select 1 from public.treino_prescricoes t where t.patient_id = p.id and t.status = 'publicada') as tem_treino,
             (select count(*)::int from public.treino_desconfortos d where d.patient_id = p.id and d.visto_em is null) as desconfortos_novos,
             coalesce((select array_agg(e.nome order by e.nome)
@@ -85,13 +89,14 @@ export async function alunosDoProfissional(profissional: ProfissionalDeTreino) {
        from public.patients p
        ${filtro}
       order by p.name`,
-    profissional.admin ? [] : [profissional.usuarioId]
+    [profissional.usuarioId]
   );
   return r.rows;
 }
 
 // Quem recebe o aviso imediato de um aluno: os educadores vinculados e ativos;
-// sem nenhum, os administradores (nutricionistas).
+// sem nenhum, os administradores (nutricionistas). Aluno próprio de educador
+// nunca vai para o administrador.
 export async function responsaveisPeloAluno(patientId: string) {
   const educadores = await obterPool().query<{ id: string }>(
     `select v.profissional_id as id
@@ -101,6 +106,11 @@ export async function responsaveisPeloAluno(patientId: string) {
     [patientId]
   );
   if (educadores.rows.length) return educadores.rows.map((l) => l.id);
-  const admins = await obterPool().query<{ id: string }>("select id from public.profiles where role = 'nutricionista'");
+  const admins = await obterPool().query<{ id: string }>(
+    `select id from public.profiles
+      where role = 'nutricionista'
+        and exists (select 1 from public.patients where id = $1 and educador_dono_id is null)`,
+    [patientId]
+  );
   return admins.rows.map((l) => l.id);
 }

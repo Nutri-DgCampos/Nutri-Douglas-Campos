@@ -1,5 +1,5 @@
 
-import { banco } from "@/lib/servidor/banco";
+import { banco, obterPool } from "@/lib/servidor/banco";
 import { exigirNutricionista } from "@/lib/servidor/http";
 import { NextResponse } from "next/server";
 import webpush from "web-push";
@@ -83,6 +83,17 @@ export async function POST(request: Request) {
 
       pagina++;
     }
+
+    // Alunos próprios de educadores físicos não recebem avisos da Nutrição.
+    const doTreino = await obterPool().query<{ id: string }>(
+      `select s.id from public.push_subscriptions s
+         join public.patients p on p.id = s.patient_id
+        where p.educador_dono_id is not null`
+    );
+    const foraDaClinica = new Set(doTreino.rows.map((l) => l.id));
+    const daClinica = dispositivos.filter((d) => !foraDaClinica.has(d.id));
+    dispositivos.length = 0;
+    dispositivos.push(...daClinica);
 
     if (dispositivos.length === 0) {
       return NextResponse.json({

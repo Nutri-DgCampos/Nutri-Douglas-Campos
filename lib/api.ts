@@ -9,7 +9,8 @@ import {
 // A sessão vai em cookie httpOnly, então nenhuma chamada precisa enviar token.
 
 // deveTrocarSenha: senha provisória, que precisa ser trocada antes de usar o sistema.
-type Usuario = { id: string; email: string; deveTrocarSenha: boolean };
+// somenteTreino: aluno próprio de um educador físico, que só usa o Treino.
+type Usuario = { id: string; email: string; deveTrocarSenha: boolean; somenteTreino: boolean };
 
 async function chamar(
   caminho: string,
@@ -69,7 +70,7 @@ async function usuarioAtual(): Promise<Usuario | null> {
   const { dados } = await chamar("/api/auth/sessao");
 
   return dados?.usuario
-    ? { ...dados.usuario, deveTrocarSenha: dados.deveTrocarSenha === true }
+    ? { ...dados.usuario, deveTrocarSenha: dados.deveTrocarSenha === true, somenteTreino: dados.somenteTreino === true }
     : null;
 }
 

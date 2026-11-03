@@ -33,7 +33,9 @@ function texto(valor: unknown, limite: number, obrigatorio = false) {
 export async function listarEducadores(): Promise<Educador[]> {
   const r = await obterPool().query<Educador>(
     `select e.usuario_id, e.nome, u.email, e.cref, e.telefone, e.ativo, e.criado_em,
-            (select count(*)::int from public.treino_vinculos v where v.profissional_id = e.usuario_id and v.fim is null) as alunos
+            (select count(*)::int from public.treino_vinculos v
+               join public.patients p on p.id = v.patient_id and p.educador_dono_id is null
+              where v.profissional_id = e.usuario_id and v.fim is null) as alunos
        from public.educadores_fisicos e
        join public.users u on u.id = e.usuario_id
       order by e.ativo desc, e.nome`

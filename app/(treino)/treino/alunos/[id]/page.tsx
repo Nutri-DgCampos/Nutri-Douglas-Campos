@@ -10,6 +10,7 @@ import BotaoVoltar from "@/components/BotaoVoltar";
 import PainelTreino from "@/components/PainelTreino";
 import RegistrosDoTreino from "@/components/RegistrosDoTreino";
 import AcompanhamentoSemanal from "@/components/treino/AcompanhamentoSemanal";
+import { CartaoDoAluno, type DadosDoAluno } from "@/components/treino/CadastroDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
@@ -38,6 +39,8 @@ type Painel = {
   vinculos: Vinculo[];
   desconfortos: DesconfortoNaTela[];
   educadores: { usuario_id: string; nome: string }[] | null;
+  // Aluno próprio do educador conectado (T7b).
+  cadastro: DadosDoAluno | null;
 };
 
 // Painel geral do aluno no Módulo de Treino: treino vigente, registros,
@@ -171,6 +174,8 @@ export default function AlunoNoTreinoPage() {
                   <ListaDeDesconfortos desconfortos={painel.desconfortos} onVisto={visto} />
                 </section>
               ) : null}
+
+              {painel.cadastro ? <CartaoDoAluno alunoId={painel.aluno.id} dados={painel.cadastro} onAlterado={carregar} /> : null}
 
               <AcompanhamentoSemanal alunoId={painel.aluno.id} admin={painel.admin} />
 

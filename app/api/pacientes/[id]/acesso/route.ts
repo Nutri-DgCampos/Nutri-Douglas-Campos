@@ -17,7 +17,7 @@ async function usuarioDoPaciente(id: string) {
     `select p.auth_user_id, pr.role
        from public.patients p
        left join public.profiles pr on pr.id = p.auth_user_id
-      where p.id = $1`,
+      where p.id = $1 and p.educador_dono_id is null`,
     [id]
   );
 

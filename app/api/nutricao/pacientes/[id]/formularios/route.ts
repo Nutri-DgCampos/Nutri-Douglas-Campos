@@ -3,6 +3,7 @@ import { obterPool } from "@/lib/servidor/banco";
 import { UUID } from "@/lib/servidor/dietas";
 import type { LinhaFormulario } from "@/lib/servidor/formularios";
 import { resumoDoFormulario } from "@/lib/servidor/formulariosNutricionista";
+import { pacienteDaClinica } from "@/lib/servidor/clinica";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
 
 export const runtime = "nodejs";
@@ -12,7 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const contexto = await exigirNutricionista(request);
   if (contexto instanceof NextResponse) return contexto;
   const { id } = await params;
-  if (!UUID.test(id)) return recusar("Paciente inválido.", 400);
+  if (!(await pacienteDaClinica(id))) return recusar("Paciente não encontrado.", 404);
 
   const pool = obterPool();
   const consultaData = "(select to_char(c.data, 'YYYY-MM-DD') from public.consultas c where c.id = f.consulta_id) as consulta_data";
