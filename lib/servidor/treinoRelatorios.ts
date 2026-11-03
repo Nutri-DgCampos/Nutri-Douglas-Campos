@@ -1,5 +1,5 @@
 import { hojeNoBrasil, somarDias } from "@/lib/cronograma";
-import { chaveDoExercicio, datasDaSemana, domingoDaSemana, type ChaveDia, type PlanoDeTreino, type SituacaoDaSessao } from "@/lib/treino";
+import { chaveDoExercicio, datasDaSemana, repeticoesDoVolume, domingoDaSemana, type ChaveDia, type PlanoDeTreino, type SituacaoDaSessao } from "@/lib/treino";
 import {
   ADESAO_MINIMA_PADRAO,
   LIMITE_DE_ATRASO,
@@ -61,7 +61,7 @@ export async function consolidarSemana(patientId: string, profissionalId: string
   const [vigente, sessoes, anteriores, desconfortos, metas, pausa] = await Promise.all([
     pool.query<Plano>(
       `select id, origem, versao, plano from public.treino_prescricoes
-        where patient_id = $1 and status = 'publicada' and modalidade = 'musculacao'
+        where patient_id = $1 and status = 'publicada' and modalidade = 'musculacao' and arquivada_em is null
           and publicada_em < (($2::date + 1)::timestamp at time zone '${FUSO}')
         order by publicada_em desc, criada_em desc limit 1`,
       [patientId, semanaFim]
@@ -131,7 +131,7 @@ export async function consolidarSemana(patientId: string, profissionalId: string
       if (!nome) continue;
       lista.push({
         nome,
-        prescrito: valores(prescrito),
+        prescrito: valores(prescrito && { ...prescrito, repeticoes: repeticoesDoVolume(prescrito) }),
         registrado: gravado ? valores(gravado) : null,
         anterior_kg: cargaAnterior.get(chaveDoExercicio(nome)) ?? null,
       });

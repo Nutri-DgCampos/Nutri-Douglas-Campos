@@ -9,6 +9,7 @@ import {
   type SessaoRegistrada,
   type SituacaoDaSessao,
 } from "@/lib/treino";
+import { planoParaAluno } from "@/lib/treinoEditor";
 import { obterPool } from "./banco";
 
 // Módulo de Treino, etapa T1: prescrição vigente e registros do aluno.
@@ -25,7 +26,7 @@ export type Prescricao = { id: string; origem: "externa" | "profissional"; versa
 export async function prescricaoVigente(patientId: string): Promise<Prescricao | null> {
   const linha = await obterPool().query<Prescricao>(
     `select id, origem, versao, plano, publicada_em from public.treino_prescricoes
-      where patient_id = $1 and status = 'publicada' and modalidade = 'musculacao'
+      where patient_id = $1 and status = 'publicada' and modalidade = 'musculacao' and arquivada_em is null
       order by publicada_em desc, criada_em desc limit 1`,
     [patientId]
   );
@@ -139,7 +140,8 @@ export async function treinoDoAluno(patientId: string, hoje = hojeNoBrasil()) {
     anteriores[dia.dia] = doDia;
   }
 
-  return { prescricao, datas, sessoes, ultimos, anteriores };
+  // O aluno não recebe os detalhes do editor nem a Opção oculta (C3, P1).
+  return { prescricao: { ...prescricao, plano: planoParaAluno(prescricao.plano) }, datas, sessoes, ultimos, anteriores };
 }
 
 // ---------------------------------------------------------------------------

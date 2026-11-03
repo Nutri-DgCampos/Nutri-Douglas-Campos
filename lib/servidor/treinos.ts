@@ -5,10 +5,12 @@ import { DIAS, GRUPOS, OUTROS_GRUPOS, planoValido } from "@/lib/treino";
 import { lerArquivo, resolverCaminho, tipoDoArquivo } from "./arquivos";
 import { obterPool } from "./banco";
 import { publicarPrescricaoExterna } from "./treinoRegistros";
-import { registrarUsoDaIa } from "./ia";
+import { clienteDaIa, iaSimulada, registrarUsoDaIa } from "./ia";
 
 // Leitura do treino enviado pelo paciente: a IA lê o arquivo (inclusive foto
 // ou PDF escaneado), organiza por dia da semana e estima o gasto calórico.
+
+const MODELO_DO_TREINO = "gpt-5.4-mini";
 
 const INSTRUCOES = `
 Você organiza o treino de musculação que um paciente de nutrição recebeu do educador físico.
@@ -140,12 +142,15 @@ async function conteudoDoTreino(treino: {
     throw new Error("Arquivo do treino inválido.");
   }
 
-  const conteudo = await lerArquivo(destino);
+  return conteudoDoArquivo(await lerArquivo(destino), tipo, treino.file_name ?? "treino.pdf");
+}
 
+// Arquivo (PDF, imagem, Word, planilha ou texto) em conteúdo para a IA.
+export async function conteudoDoArquivo(conteudo: Buffer, tipo: string, nome: string) {
   if (tipo === "application/pdf") {
     return {
       type: "input_file",
-      filename: treino.file_name ?? "treino.pdf",
+      filename: nome,
       file_data: `data:application/pdf;base64,${conteudo.toString("base64")}`,
     } as const;
   }
@@ -269,5 +274,63 @@ export async function analisarTreino(id: string) {
       status: "falhou",
       erro: (erro instanceof Error ? erro.message : String(erro)).slice(0, 500),
     });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Importação no editor do profissional (T4a). Só organiza o texto ou o
+// arquivo em sessões para revisão: não publica, não estima calorias e guarda
+// a faixa de repetições (Q7).
+
+const INSTRUCOES_DO_EDITOR = `${INSTRUCOES}
+
+Ajustes deste pedido (importação pelo profissional de educação física):
+- Faixa de repetições ("8 a 12", "8-12"): repeticoes = menor valor e repeticoes_max = maior valor. Número único: repeticoes = o número e repeticoes_max = null.
+- kcal_estimadas: sempre null (o sistema não estima calorias).`;
+
+const ESQUEMA_DO_EDITOR = (() => {
+  const esquema = structuredClone(ESQUEMA) as unknown as {
+    properties: { dias: { items: { properties: { exercicios: { items: { required: string[]; properties: Record<string, unknown> } } } } } };
+  };
+  const item = esquema.properties.dias.items.properties.exercicios.items;
+  item.properties.repeticoes_max = { type: ["integer", "null"] };
+  item.required = [...item.required, "repeticoes_max"];
+  return esquema;
+})();
+
+export type ConteudoParaIa = Awaited<ReturnType<typeof conteudoDoArquivo>> | { type: "input_text"; text: string };
+
+export async function lerTreinoNoEditor(conteudo: ConteudoParaIa, registro: { usuarioId: string; pacienteId: string }) {
+  if (iaSimulada()) {
+    await registrarUsoDaIa({ recurso: "importacao_treino", modelo: "simulada", ...registro });
+    return {
+      comentario: "Leitura simulada (testes).",
+      dias: [
+        {
+          dia: "seg",
+          titulo: "Treino A - Importado",
+          kcal_estimadas: null,
+          exercicios: [
+            { nome: "Agachamento livre", grupo: "Quadríceps", series: 4, repeticoes: 8, repeticoes_max: 12, descanso_segundos: 90, carga_kg: null, observacao: null },
+            { nome: "Cadeira extensora", grupo: "Quadríceps", series: 3, repeticoes: 12, repeticoes_max: null, descanso_segundos: 60, carga_kg: 40, observacao: null },
+          ],
+        },
+      ],
+    };
+  }
+  try {
+    const resposta = await clienteDaIa().responses.create(
+      {
+        model: MODELO_DO_TREINO,
+        input: [{ role: "user", content: [{ type: "input_text", text: INSTRUCOES_DO_EDITOR }, conteudo] }],
+        text: { format: { type: "json_schema", name: "treino", strict: true, schema: ESQUEMA_DO_EDITOR as unknown as Record<string, unknown> } },
+      },
+      { timeout: 110_000, maxRetries: 0 }
+    );
+    await registrarUsoDaIa({ recurso: "importacao_treino", modelo: MODELO_DO_TREINO, uso: resposta.usage, ...registro });
+    return JSON.parse(resposta.output_text) as { comentario: string; dias: unknown[] };
+  } catch (erro) {
+    await registrarUsoDaIa({ recurso: "importacao_treino", modelo: MODELO_DO_TREINO, sucesso: false, ...registro });
+    throw erro;
   }
 }

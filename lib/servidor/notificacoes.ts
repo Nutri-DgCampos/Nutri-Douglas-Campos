@@ -16,6 +16,8 @@ const MENSAGENS = {
   documento: { corpo: "Seu nutricionista enviou um documento para você.", destino: "/area-paciente/documentos" },
   // Treino (B10): o push tem o mesmo texto do cartão Relatórios.
   devolutiva_treino: { titulo: "Chegou a devolutiva do seu Personal Trainer", corpo: "Abra para ler a devolutiva do seu treino.", destino: "/area-paciente/relatorios" },
+  // Treino enviado pelo profissional no editor (T4a).
+  treino_novo: { titulo: "Você tem um treino novo", corpo: "Seu profissional enviou um novo treino. Abra para ver.", destino: "/area-paciente/treino" },
 } as const;
 
 export async function enfileirarAtualizacao(

@@ -5,6 +5,7 @@ import { desconfortosDoAluno } from "@/lib/servidor/desconfortos";
 import { UUID } from "@/lib/servidor/dietas";
 import { DadosInvalidos, desvincular, listarEducadores, vincular, vinculosDoAluno } from "@/lib/servidor/educadores";
 import { recusar } from "@/lib/servidor/http";
+import { academiaDoAluno, listarAcademias } from "@/lib/servidor/treinoBiblioteca";
 import { exigirAdminDoTreino, exigirProfissionalDeTreino, podeAcompanharAluno } from "@/lib/servidor/treinoAcesso";
 import { EmailJaCadastrado } from "@/lib/servidor/usuarios";
 
@@ -18,7 +19,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   if (!UUID.test(id) || !(await podeAcompanharAluno(profissional, id))) return recusar("Aluno não encontrado.", 404);
 
-  const [aluno, treino, vinculos, desconfortos, educadores, cadastro] = await Promise.all([
+  const [aluno, treino, vinculos, desconfortos, educadores, cadastro, vigente, academia, academias] = await Promise.all([
     obterPool().query<{ id: string; nome: string }>("select id, name as nome from public.patients where id = $1", [id]),
     obterPool().query(
       `select id, status, erro, file_name, storage_path, texto_enviado, plano, comentario_ia, created_at, atualizado_em
@@ -29,6 +30,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     desconfortosDoAluno(id),
     profissional.admin ? listarEducadores() : Promise.resolve(null),
     cadastroDoAlunoProprio(profissional, id),
+    // Treino que vale hoje para o aluno, de qualquer origem (T4a).
+    obterPool().query(
+      `select p.id, p.origem, p.titulo, p.versao, p.publicada_em, p.plano,
+              coalesce(e.nome, case when pr.role = 'nutricionista' then 'Administrador' end) as autor,
+              p.criada_por = $2 as meu
+         from public.treino_prescricoes p
+         left join public.educadores_fisicos e on e.usuario_id = p.criada_por
+         left join public.profiles pr on pr.id = p.criada_por
+        where p.patient_id = $1 and p.status = 'publicada' and p.modalidade = 'musculacao' and p.arquivada_em is null
+        order by p.publicada_em desc, p.criada_em desc limit 1`,
+      [id, profissional.usuarioId]
+    ),
+    academiaDoAluno(id),
+    listarAcademias(profissional),
   ]);
 
   return NextResponse.json({
@@ -40,6 +55,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     educadores: educadores?.filter((e) => e.ativo).map((e) => ({ usuario_id: e.usuario_id, nome: e.nome })) ?? null,
     // Aluno próprio: o educador dono vê e altera o cadastro e o acesso.
     cadastro: cadastro ? { nome: cadastro.nome, telefone: cadastro.telefone, email: cadastro.email } : null,
+    vigente: vigente.rows[0] ?? null,
+    academia,
+    academias: academias.map(({ id, nome, domestica }) => ({ id, nome, domestica })),
   });
 }
 

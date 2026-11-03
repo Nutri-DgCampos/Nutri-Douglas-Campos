@@ -22,6 +22,7 @@ import {
   formatarNumero,
   kcalSemanais,
   nivelDoTreino,
+  textoDasRepeticoes,
   volumePorGrupo,
 } from "@/lib/treino";
 import RelatoDeDesconforto from "@/components/treino/RelatoDeDesconforto";
@@ -95,6 +96,11 @@ export default function PainelTreino({
 
     const sessao = sessoes?.[chave];
     const copia = structuredClone(dia);
+    // Faixa de repetições (8–12): o aluno informa quantas fez; sem registro,
+    // o campo começa vazio e mostra a faixa.
+    for (const exercicio of copia.exercicios) {
+      if (exercicio.repeticoes_max !== null && exercicio.repeticoes_max !== undefined) exercicio.repeticoes = null;
+    }
     for (const registro of sessao?.exercicios ?? []) {
       const exercicio = copia.exercicios[registro.indice];
       if (!exercicio) continue;
@@ -278,12 +284,17 @@ export default function PainelTreino({
           ) : undefined
         }
       >
+        {rascunho?.observacao ? (
+          <p className="mb-3 rounded-xl bg-primary-50 px-3 py-2 text-sm text-primary-900">{rascunho.observacao}</p>
+        ) : null}
+
         {rascunho && (
           <ul className="space-y-3">
             {rascunho.exercicios.map((exercicio, indice) => (
               <CartaoExercicio
                 key={indice}
                 exercicio={exercicio}
+                prescrito={(prescricao ?? plano).dias.find((d) => d.dia === rascunho.dia)?.exercicios[indice]}
                 editavel={Boolean(onSalvar)}
                 anterior={anteriores?.[rascunho.dia]?.[indice]?.carga_kg ?? null}
                 onAlterar={(campo, valor) => alterar(indice, campo, valor)}
@@ -391,16 +402,20 @@ export default function PainelTreino({
 
 function CartaoExercicio({
   exercicio,
+  prescrito,
   editavel,
   anterior,
   onAlterar,
 }: {
   exercicio: Exercicio;
+  // Exercício como prescrito (faixa de repetições, Opção, vídeo).
+  prescrito?: Exercicio;
   editavel: boolean;
   // Última carga registrada antes desta sessão (só referência, não preenche).
   anterior?: number | null;
   onAlterar: (campo: CampoEditavel, valor: number | null) => void;
 }) {
+  const faixa = prescrito && prescrito.repeticoes_max !== null && prescrito.repeticoes_max !== undefined ? textoDasRepeticoes(prescrito) : null;
   const campos: { campo: CampoEditavel; rotulo: string; sufixo?: string; decimais?: boolean }[] = [
     { campo: "series", rotulo: "Séries" },
     { campo: "repeticoes", rotulo: "Reps" },
@@ -417,6 +432,24 @@ function CartaoExercicio({
 
       {exercicio.observacao && <p className="mt-1 text-sm text-gray-500">{exercicio.observacao}</p>}
 
+      {prescrito?.alternativa ? (
+        <p className="mt-1 text-sm text-gray-700">
+          <span className="font-semibold">Opção:</span> {prescrito.alternativa.nome}
+          {prescrito.alternativa.observacao ? ` (${prescrito.alternativa.observacao})` : ""}
+        </p>
+      ) : null}
+
+      {prescrito?.video_url ? (
+        <a
+          href={prescrito.video_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-primary-700 underline"
+        >
+          <i className="pi pi-play-circle" aria-hidden /> Ver execução
+        </a>
+      ) : null}
+
       <div className="mt-3 grid grid-cols-4 gap-2">
         {campos.map(({ campo, rotulo, sufixo, decimais }) => (
           <label key={campo} className="min-w-0">
@@ -431,15 +464,22 @@ function CartaoExercicio({
                 maxFractionDigits={decimais ? 1 : 0}
                 locale="pt-BR"
                 suffix={sufixo}
-                placeholder="-"
+                placeholder={campo === "repeticoes" && faixa ? faixa : "-"}
                 className="w-full"
                 inputClassName="w-full px-2 text-center"
               />
             ) : (
               <span className="block rounded-lg bg-gray-50 px-2 py-2 text-center font-semibold text-gray-900">
-                {exercicio[campo] === null ? "-" : `${exercicio[campo]!.toLocaleString("pt-BR")}${sufixo ?? ""}`}
+                {campo === "repeticoes" && !editavel
+                  ? textoDasRepeticoes(exercicio)
+                  : exercicio[campo] === null
+                    ? "-"
+                    : `${exercicio[campo]!.toLocaleString("pt-BR")}${sufixo ?? ""}`}
               </span>
             )}
+            {campo === "repeticoes" && faixa && editavel ? (
+              <span className="mt-0.5 block text-center text-xs text-gray-500">Faixa: {faixa}</span>
+            ) : null}
             {campo === "carga_kg" && anterior ? (
               <span className="mt-0.5 block text-center text-xs text-gray-500">Anterior: {anterior.toLocaleString("pt-BR")} kg</span>
             ) : null}

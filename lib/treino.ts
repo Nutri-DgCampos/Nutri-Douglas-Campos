@@ -37,15 +37,37 @@ export const OUTROS_GRUPOS = ["Cardio", "Outro"] as const;
 
 export type Grupo = (typeof GRUPOS)[number] | (typeof OUTROS_GRUPOS)[number];
 
+// Alternativa do exercício (botão "Opção", resposta P1): o profissional
+// decide se o aluno vê; nunca substitui o exercício principal sozinha.
+export type AlternativaDoExercicio = { nome: string; observacao: string | null; visivel: boolean };
+
+// Detalhes do editor (≡, resposta C3): ficam com o profissional, o aluno não vê.
+export type DetalhesAvancados = {
+  cadencia: string | null;
+  rpe: number | null;
+  rir: number | null;
+  aquecimento: string | null;
+  tecnica: string | null;
+  secundarios: Grupo[];
+  notas: string | null;
+};
+
 export type Exercicio = {
   nome: string;
   grupo: Grupo;
   series: number | null;
+  // Com faixa ("8–12", resposta Q7): repeticoes = menor, repeticoes_max = maior.
   repeticoes: number | null;
+  repeticoes_max?: number | null;
   descanso_segundos: number | null;
   carga_kg: number | null;
   // Instruções do treino original (ajustes de banco, cadência, tempo de esteira...).
   observacao: string | null;
+  // Prescrição do editor (T4a): item da biblioteca, vídeo, Opção e detalhes.
+  exercicio_id?: string | null;
+  video_url?: string | null;
+  alternativa?: AlternativaDoExercicio | null;
+  avancado?: DetalhesAvancados | null;
 };
 
 export type DiaDeTreino = {
@@ -53,7 +75,22 @@ export type DiaDeTreino = {
   titulo: string;
   kcal_estimadas: number | null;
   exercicios: Exercicio[];
+  // Orientação do profissional para a sessão (o aluno vê).
+  observacao?: string | null;
 };
+
+// Repetições que entram no volume prescrito: o maior valor da faixa (Q7, C2).
+export function repeticoesDoVolume(exercicio: Pick<Exercicio, "repeticoes" | "repeticoes_max">) {
+  return exercicio.repeticoes_max ?? exercicio.repeticoes;
+}
+
+// "8–12" ou "10".
+export function textoDasRepeticoes(exercicio: Pick<Exercicio, "repeticoes" | "repeticoes_max">) {
+  if (exercicio.repeticoes === null) return exercicio.repeticoes_max === null || exercicio.repeticoes_max === undefined ? "-" : String(exercicio.repeticoes_max);
+  if (exercicio.repeticoes_max !== null && exercicio.repeticoes_max !== undefined && exercicio.repeticoes_max !== exercicio.repeticoes)
+    return `${exercicio.repeticoes}–${exercicio.repeticoes_max}`;
+  return String(exercicio.repeticoes);
+}
 
 export type PlanoDeTreino = { dias: DiaDeTreino[] };
 
@@ -78,7 +115,7 @@ export function volumePorGrupo(plano: PlanoDeTreino): VolumeDoGrupo[] {
       if (!volume) continue;
 
       const series = exercicio.series ?? 0;
-      const repeticoes = series * (exercicio.repeticoes ?? 0);
+      const repeticoes = series * (repeticoesDoVolume(exercicio) ?? 0);
 
       volume.series += series;
       volume.repeticoes += repeticoes;
@@ -234,10 +271,13 @@ export function planoComRegistros(plano: PlanoDeTreino, ultimos: Record<string, 
       exercicios: dia.exercicios.map((exercicio, indice) => {
         const registro = ultimos[dia.dia]?.[indice];
         if (!registro) return exercicio;
+        // Repetições registradas valem como feitas; sem registro, o volume
+        // usa o maior valor da faixa prescrita (C2).
         return {
           ...exercicio,
           series: registro.series ?? exercicio.series,
           repeticoes: registro.repeticoes ?? exercicio.repeticoes,
+          repeticoes_max: registro.repeticoes === null ? exercicio.repeticoes_max : null,
           carga_kg: registro.carga_kg ?? exercicio.carga_kg,
           descanso_segundos: registro.descanso_segundos ?? exercicio.descanso_segundos,
         };

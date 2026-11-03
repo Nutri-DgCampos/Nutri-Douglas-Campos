@@ -11,6 +11,7 @@ node tests/navegacao/treinoT1.mjs --limpar
 node tests/navegacao/treinoT2.mjs --limpar
 node tests/navegacao/treinoT3.mjs --limpar
 node tests/navegacao/treinoT7b.mjs --limpar
+node tests/navegacao/treinoT4a.mjs --limpar
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -23,6 +24,13 @@ Rode os testes do Treino com `--limpar`: cada um cria a própria prescrição de
 - `treinoT2.mjs`: etapas T7a e T2. Cobre o cadastro do educador físico, o vínculo, a troca da senha provisória e o bloqueio da Nutrição para o educador. Também cobre o relato de desconforto e o alerta só para o educador vinculado, além da desativação do educador. Cria o usuário `teste.educador@local.test` e o apaga ao final.
 
 - `treinoT7b.mjs`: etapa T7b (alunos próprios do educador). O educador cadastra o aluno pela tela. O teste confere que o nutricionista não alcança esse aluno em nenhuma rota, que o aluno vê só o Treino na Área do Paciente e que o relato de desconforto avisa só o educador dono. Cria e apaga `teste.educador.t7b@local.test` e `teste.aluno.t7b@local.test`.
+- `treinoT4a.mjs`: etapa T4a. O teste confere:
+  - o editor de musculação: o educador monta o treino pela tela, a faixa de repetições, os detalhes (≡), a Opção e o aviso de equipamento da academia;
+  - o envio cria uma versão imutável e manda o aviso ao aluno;
+  - permissões e revisão, PDF, IA simulada, importação, modelos, duplicação e arquivamento;
+  - o `Meu treino` do aluno mostra a faixa e esconde os detalhes do editor.
+
+  Cria e apaga `teste.educador.t4a@local.test`, `teste.outro.t4a@local.test` e `teste.aluno.t4a@local.test`.
 - `treinoT3.mjs`: etapa T3 (relatório semanal, devolutiva, atraso, lista de atenção e pausa). Cria duas semanas de registros do paciente de teste e apaga tudo com `--limpar`.
 
 As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.

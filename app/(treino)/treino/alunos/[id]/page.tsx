@@ -41,6 +41,10 @@ type Painel = {
   educadores: { usuario_id: string; nome: string }[] | null;
   // Aluno próprio do educador conectado (T7b).
   cadastro: DadosDoAluno | null;
+  // Treino que vale hoje (qualquer origem) e academia (T4a).
+  vigente: { id: string; origem: "externa" | "profissional"; titulo: string | null; versao: number; publicada_em: string; plano: PlanoDeTreino; autor: string | null; meu: boolean } | null;
+  academia: { id: string; nome: string; domestica: boolean; equipamentos: string[] } | null;
+  academias: { id: string; nome: string; domestica: boolean }[];
 };
 
 // Painel geral do aluno no Módulo de Treino: treino vigente, registros,
@@ -54,6 +58,7 @@ export default function AlunoNoTreinoPage() {
   const [lendoDeNovo, setLendoDeNovo] = useState(false);
   const [educadorEscolhido, setEducadorEscolhido] = useState<string | null>(null);
   const [salvandoVinculo, setSalvandoVinculo] = useState(false);
+  const [salvandoAcademia, setSalvandoAcademia] = useState(false);
 
   const buscar = useCallback(
     () => fetch(`/api/treino/alunos/${params.id}`, { cache: "no-store" }).then((r) => (r.ok ? (r.json() as Promise<Painel>) : null)),
@@ -117,6 +122,22 @@ export default function AlunoNoTreinoPage() {
     setEducadorEscolhido(null);
   }
 
+  async function definirAcademia(academiaId: string | null) {
+    setSalvandoAcademia(true);
+    const r = await fetch(`/api/treino/alunos/${params.id}/academia`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ academiaId }),
+    }).catch(() => null);
+    setSalvandoAcademia(false);
+    if (!r?.ok) {
+      avisar((await r?.json().catch(() => null))?.erro ?? "Não foi possível salvar a academia.", "error");
+      return;
+    }
+    const { academia } = await r.json();
+    setPainel((atual) => (atual ? { ...atual, academia } : atual));
+  }
+
   function visto(id: string) {
     setPainel((atual) =>
       atual
@@ -149,6 +170,10 @@ export default function AlunoNoTreinoPage() {
                 <p className="mt-2 text-gray-600">{painel.aluno.nome}</p>
               </div>
 
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" icon="pi pi-pencil" label="Elaborar Musculação" onClick={() => router.push(`/treino/alunos/${params.id}/musculacao`)} />
+              </div>
+
               {treino && (
                 <div className="flex flex-wrap gap-2">
                   {treino.storage_path && (
@@ -178,6 +203,28 @@ export default function AlunoNoTreinoPage() {
               {painel.cadastro ? <CartaoDoAluno alunoId={painel.aluno.id} dados={painel.cadastro} onAlterado={carregar} /> : null}
 
               <AcompanhamentoSemanal alunoId={painel.aluno.id} admin={painel.admin} />
+
+              <section className="cartao flex flex-wrap items-center gap-3 p-5" aria-label="Academia do aluno">
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-bold text-gray-900">Academia</h2>
+                  <p className="text-sm text-gray-500">
+                    {painel.academia
+                      ? `${painel.academia.equipamentos.length} equipamentos cadastrados. O editor avisa quando um exercício usa algo que falta.`
+                      : "Informe a academia para o editor conferir os equipamentos."}
+                  </p>
+                </div>
+                <Dropdown
+                  value={painel.academia?.id ?? null}
+                  options={painel.academias.map((a) => ({ label: `${a.nome}${a.domestica ? " (em casa)" : ""}`, value: a.id }))}
+                  onChange={(e) => definirAcademia(e.value ?? null)}
+                  placeholder={painel.academias.length ? "Escolha a academia" : "Nenhuma academia cadastrada"}
+                  showClear
+                  disabled={salvandoAcademia || !painel.academias.length}
+                  aria-label="Academia do aluno"
+                  className="w-full sm:w-72"
+                />
+                <Button type="button" text size="small" icon="pi pi-cog" label="Academias e exercícios" onClick={() => router.push("/treino/biblioteca")} />
+              </section>
 
               {painel.admin ? (
                 <section className="cartao p-5" aria-label="Educadores físicos do aluno">
@@ -236,11 +283,25 @@ export default function AlunoNoTreinoPage() {
                 </section>
               ) : null}
 
+              {painel.vigente?.origem === "profissional" ? (
+                <section className="space-y-3" aria-label="Treino vigente">
+                  <p className="text-sm text-gray-500">
+                    Treino vigente: <strong className="text-gray-900">{painel.vigente.titulo ?? "sem título"}</strong> · versão {painel.vigente.versao} · enviado
+                    {painel.vigente.meu ? " por você" : painel.vigente.autor ? ` por ${painel.vigente.autor}` : ""} em{" "}
+                    {new Date(painel.vigente.publicada_em).toLocaleDateString("pt-BR")}
+                  </p>
+                  <PainelTreino plano={painel.vigente.plano} />
+                </section>
+              ) : null}
+
               {treino === null ? (
-                <div className="cartao p-6 text-center">
-                  <i className="pi pi-bolt text-3xl text-gray-400" aria-hidden />
-                  <p className="mt-3 font-semibold text-gray-900">O aluno ainda não enviou o treino.</p>
-                </div>
+                painel.vigente ? null : (
+                  <div className="cartao p-6 text-center">
+                    <i className="pi pi-bolt text-3xl text-gray-400" aria-hidden />
+                    <p className="mt-3 font-semibold text-gray-900">Sem treino ainda.</p>
+                    <p className="mt-1 text-sm text-gray-500">O aluno não enviou o treino dele e nenhum foi prescrito no sistema.</p>
+                  </div>
+                )
               ) : (
                 <>
                   <p className="text-sm text-gray-500">
@@ -265,9 +326,18 @@ export default function AlunoNoTreinoPage() {
                     </section>
                   )}
 
-                  {treino.plano && <PainelTreino plano={treino.plano} />}
-
-                  <RegistrosDoTreino pacienteId={params.id} />
+                  {treino.plano ? (
+                    painel.vigente?.origem === "profissional" ? (
+                      <details className="cartao p-5">
+                        <summary className="cursor-pointer font-bold text-gray-900">Treino enviado pelo aluno (não é o vigente)</summary>
+                        <div className="mt-3">
+                          <PainelTreino plano={treino.plano} />
+                        </div>
+                      </details>
+                    ) : (
+                      <PainelTreino plano={treino.plano} />
+                    )
+                  ) : null}
 
                   {treino.texto_enviado && (
                     <details className="cartao p-5">
@@ -277,6 +347,8 @@ export default function AlunoNoTreinoPage() {
                   )}
                 </>
               )}
+
+              {treino || painel.vigente ? <RegistrosDoTreino pacienteId={params.id} /> : null}
             </div>
           </>
         )}

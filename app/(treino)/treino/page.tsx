@@ -64,13 +64,21 @@ export default function TreinoPage() {
           titulo="Módulo de Treino"
           descricao={dados?.admin ? "Alunos, relatos de desconforto e educadores físicos." : "Seus alunos e os relatos de desconforto."}
           acao={
-            dados?.admin ? (
-              <Link href="/treino/educadores" className="p-button p-button-outlined flex gap-2 font-semibold">
-                <i className="pi pi-id-card" aria-hidden />
-                Educadores físicos
-              </Link>
-            ) : dados ? (
-              <Button type="button" icon="pi pi-user-plus" label="Cadastrar aluno" onClick={() => setNovoAluno(true)} />
+            dados ? (
+              <span className="flex flex-wrap gap-2">
+                <Link href="/treino/biblioteca" className="p-button p-button-outlined flex gap-2 font-semibold">
+                  <i className="pi pi-book" aria-hidden />
+                  Biblioteca
+                </Link>
+                {dados.admin ? (
+                  <Link href="/treino/educadores" className="p-button p-button-outlined flex gap-2 font-semibold">
+                    <i className="pi pi-id-card" aria-hidden />
+                    Educadores físicos
+                  </Link>
+                ) : (
+                  <Button type="button" icon="pi pi-user-plus" label="Cadastrar aluno" onClick={() => setNovoAluno(true)} />
+                )}
+              </span>
             ) : undefined
           }
         />

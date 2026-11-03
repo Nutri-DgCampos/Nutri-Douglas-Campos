@@ -11,9 +11,9 @@ import { obterPool } from "./banco";
 //   anamnese. Os recursos anteriores só registram (validação 7.5).
 // - IA_SIMULADA=1 (só para testes locais): nenhuma chamada sai do servidor.
 
-export type RecursoDaIa = "assistente_dieta" | "resumo_anamnese" | "exame" | "treino" | "bioimpedancia" | "devolutiva" | "devolutiva_treino";
+export type RecursoDaIa = "assistente_dieta" | "resumo_anamnese" | "exame" | "treino" | "bioimpedancia" | "devolutiva" | "devolutiva_treino" | "assistente_treino" | "importacao_treino";
 
-const COM_LIMITE: RecursoDaIa[] = ["assistente_dieta", "resumo_anamnese"];
+const COM_LIMITE: RecursoDaIa[] = ["assistente_dieta", "resumo_anamnese", "assistente_treino"];
 
 export const MODELO_PADRAO = "gpt-5.4-mini";
 

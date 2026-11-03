@@ -239,3 +239,62 @@ Aluno próprio, na Área do Paciente:
 - **Bloqueios no servidor:** não envia relatório nutricional, renovação, comprovante, exames nem fotos.
 
 Teste: `tests/navegacao/treinoT7b.mjs`, com 49 verificações. Regressão OK: fumaça, T1, T2, T3, melhorias, avisos, fotos, 64 testes unitários e build.
+
+## 9. T4a entregue: editor de musculação, biblioteca, academias e modelos (03/11/2026)
+
+Migração `027_treino_editor_musculacao.sql` (só acrescenta):
+- **Programas no editor:** `treino_prescricoes` ganha `programa_id`, `titulo`, `objetivo`, `revisao`, `arquivada_em` e `importacao`. Cada programa tem:
+  - um rascunho editável;
+  - as versões enviadas ao aluno (1, 2, 3...), que o gatilho da migração 020 mantém imutáveis.
+- **Biblioteca:** `treino_exercicios`, com a lista inicial de 70 exercícios (C1), para revisão do cliente.
+- **Academias:** `treino_academias` e `treino_academia_do_aluno` (C5).
+- **Modelos:** `treino_modelos`.
+- **Novos tipos:** aviso `treino_novo` ao aluno e uso da IA `assistente_treino` / `importacao_treino`.
+
+Editor (Módulo de Treino › ficha do aluno › **Elaborar Musculação**, VIS-03):
+- **Abas e barra:**
+  - abas por programa ("Novo treino" cria outro, sem mexer nos existentes) e arquivados à parte;
+  - barra com Importar, Importar rotina, Gerar novo treino, Duplicar, Salvar como modelo, Modelos e Auxílio da IA.
+- **Sessões:**
+  - cada sessão tem dia, nome, mover, Opção, orientação ao aluno, copiar, colar (também entre treinos) e salvar como modelo;
+  - totais calculados das linhas: séries e tonelagem só quando todas as linhas têm carga.
+- **Linhas:**
+  - exercício com busca na biblioteca ou texto livre;
+  - séries, repetições em número ou faixa (Q7), carga e descanso;
+  - **↔** troca por uma alternativa do mesmo grupo, primeiro as que a academia comporta;
+  - **▶** vídeo do YouTube;
+  - **≡** detalhes (P2): grupo, secundários, técnica, cadência, RPE, RIR, aquecimento, observação ao aluno, notas privadas, Opção e vídeo.
+- **Opção (P1):** alternativa por exercício; o profissional marca se o aluno vê.
+- **Aviso de equipamento:** quando a academia do aluno não tem o que o exercício exige. O profissional pode prescrever mesmo assim.
+- **Volume semanal por grupo:** secundário = 0,5 série por padrão, ajustável na tela (SPEC, seção 6), rotulado como aproximação.
+- **Rodapé:**
+  - Salvar e o salvamento automático gravam só o rascunho;
+  - PDF e PDF detalhado mostram a versão enviada ou, se houver alteração depois, o rascunho marcado como tal. O PDF leva a identidade de quem prescreveu (H1); o logotipo do educador entra na T6;
+  - Arquivar não apaga nada e tira o treino do aluno; Reativar devolve;
+  - Enviar ao paciente confere título, sessões, exercícios, séries e um dia por sessão, pede confirmação e cria a versão nova, com aviso no celular do aluno.
+- **Importar:** a IA organiza o arquivo ou o texto para revisão, sem publicar. O original fica guardado (arquivo na pasta do aluno, texto no rascunho).
+- **Auxílio da IA:**
+  - usa só dados do Treino (objetivo, idade, sexo, academia, biblioteca e rascunho);
+  - devolve a sugestão com avisos, que só entra no rascunho se o profissional aceitar;
+  - entra no limite diário da IA.
+
+Biblioteca do Treino (Módulo de Treino › **Biblioteca**):
+- **Exercícios:**
+  - busca, cadastro, edição, arquivamento e vídeo;
+  - os da lista inicial só o administrador altera;
+  - nome repetido é recusado.
+- **Academias:** equipamentos marcados numa lista fixa. A academia do aluno é escolhida na ficha.
+
+Aluno ("Meu treino"):
+- **Faixa:** o modal mostra "Faixa: 8–12", e o campo começa vazio. O volume usa o que o aluno registrou ou, sem registro, o maior valor (C2).
+- **O que o aluno vê:** a Opção marcada como visível, "Ver execução" e a orientação da sessão.
+- **O que o aluno não recebe:** detalhes, notas privadas e a Opção oculta, filtrados no servidor (C3).
+
+Ficha do aluno:
+- **Treino vigente:** de qualquer origem, com versão, autor e data. O treino enviado pelo aluno, quando não é o vigente, fica recolhido.
+- **Vazio:** quando não há treino nenhum, a ficha explica que o aluno não enviou e nenhum foi prescrito.
+
+Fora desta etapa:
+- **Estimativa de tempo da sessão:** não entra, porque exige um tempo por série que ninguém aprovou.
+- **Pedido de troca de academia pelo aluno:** fica para a etapa do registro.
+- **Calorias:** o card "Gasto estimado" do aluno continua mostrando só o que a importação antiga trazia. Na T4b passa a mostrar as calorias informadas pelo aluno (C1).
