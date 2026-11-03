@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   const profissional = await exigirProfissionalDeTreino(request);
   if (profissional instanceof NextResponse) return profissional;
-  return NextResponse.json({ modelos: await listarModelos(profissional) });
+  return NextResponse.json({ modelos: await listarModelos(profissional, new URL(request.url).searchParams.get("modalidade") ?? "musculacao") });
 }
 
 // "Salvar como modelo" (sem cargas nem observações do aluno).

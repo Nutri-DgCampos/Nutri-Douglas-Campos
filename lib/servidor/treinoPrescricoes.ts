@@ -1,10 +1,12 @@
+import { hojeNoBrasil } from "@/lib/cronograma";
+import { domingoDaSemana, type PlanoDeTreino } from "@/lib/treino";
 import { ordenarSessoes, planoVazio, problemasParaEnvio, validarPlanoDoEditor } from "@/lib/treinoEditor";
-import type { PlanoDeTreino } from "@/lib/treino";
+import { planoEnduranceVazio, problemasParaEnvioEndurance, validarPlanoEndurance, type PlanoEndurance } from "@/lib/treinoEndurance";
 import { obterPool } from "./banco";
 import { enfileirarAtualizacao } from "./notificacoes";
 import { podeAcompanharAluno, type ProfissionalDeTreino } from "./treinoAcesso";
 
-// Programas de musculação do editor (T4a).
+// Programas dos editores: musculação (T4a), corrida e ciclismo (T4c).
 //
 // - Programa = um rascunho do profissional (linha com status "rascunho",
 //   editável, com controle de revisão) + as versões enviadas ao aluno (uma
@@ -15,6 +17,24 @@ import { podeAcompanharAluno, type ProfissionalDeTreino } from "./treinoAcesso";
 
 export class ProgramaInvalido extends Error {}
 export class RevisaoDesatualizada extends Error {}
+
+export type Modalidade = "musculacao" | "corrida" | "ciclismo";
+export const MODALIDADES: Modalidade[] = ["musculacao", "corrida", "ciclismo"];
+export type Plano = PlanoDeTreino | PlanoEndurance;
+
+function validarPlano(modalidade: Modalidade, valor: unknown) {
+  return modalidade === "musculacao" ? validarPlanoDoEditor(valor) : validarPlanoEndurance(valor, modalidade);
+}
+
+function planoInicial(modalidade: Modalidade): Plano {
+  return modalidade === "musculacao" ? planoVazio() : planoEnduranceVazio(domingoDaSemana(hojeNoBrasil()));
+}
+
+function problemas(modalidade: Modalidade, titulo: string, plano: Plano) {
+  return modalidade === "musculacao"
+    ? problemasParaEnvio({ titulo, objetivo: "", plano: plano as PlanoDeTreino })
+    : problemasParaEnvioEndurance({ titulo, plano: plano as PlanoEndurance });
+}
 
 export type ResumoDoPrograma = {
   programa_id: string;
@@ -31,9 +51,10 @@ export type ResumoDoPrograma = {
 export type ProgramaCompleto = {
   programa_id: string;
   patient_id: string;
+  modalidade: Modalidade;
   titulo: string;
   objetivo: string;
-  plano: PlanoDeTreino;
+  plano: Plano;
   revisao: number;
   atualizada_em: string;
   arquivada_em: string | null;
@@ -43,10 +64,10 @@ export type ProgramaCompleto = {
 
 // Prescrição vigente do aluno (qualquer origem), para marcar o programa.
 const VIGENTE = `(select v.id from public.treino_prescricoes v
-                   where v.patient_id = r.patient_id and v.status = 'publicada' and v.modalidade = 'musculacao' and v.arquivada_em is null
+                   where v.patient_id = r.patient_id and v.status = 'publicada' and v.modalidade = r.modalidade and v.arquivada_em is null
                    order by v.publicada_em desc, v.criada_em desc limit 1)`;
 
-export async function programasDoAluno(profissional: ProfissionalDeTreino, patientId: string): Promise<ResumoDoPrograma[]> {
+export async function programasDoAluno(profissional: ProfissionalDeTreino, patientId: string, modalidade: Modalidade = "musculacao"): Promise<ResumoDoPrograma[]> {
   const r = await obterPool().query<ResumoDoPrograma>(
     `select r.programa_id, r.titulo, r.objetivo, r.atualizada_em, r.arquivada_em,
             u.versao, u.publicada_em,
@@ -56,17 +77,17 @@ export async function programasDoAluno(profissional: ProfissionalDeTreino, patie
        left join lateral (select p.id, p.versao, p.publicada_em, p.plano, p.titulo from public.treino_prescricoes p
                            where p.programa_id = r.programa_id and p.status = 'publicada'
                            order by p.versao desc limit 1) u on true
-      where r.patient_id = $1 and r.status = 'rascunho' and r.criada_por = $2 and r.modalidade = 'musculacao'
+      where r.patient_id = $1 and r.status = 'rascunho' and r.criada_por = $2 and r.modalidade = $3
       order by r.arquivada_em nulls first, r.atualizada_em desc`,
-    [patientId, profissional.usuarioId]
+    [patientId, profissional.usuarioId, modalidade]
   );
   return r.rows;
 }
 
 // Programa do autor, com acesso conferido. null = não encontrado.
 async function rascunhoDoAutor(profissional: ProfissionalDeTreino, programaId: string) {
-  const r = await obterPool().query<{ id: string; patient_id: string }>(
-    `select id, patient_id from public.treino_prescricoes
+  const r = await obterPool().query<{ id: string; patient_id: string; modalidade: Modalidade }>(
+    `select id, patient_id, modalidade from public.treino_prescricoes
       where programa_id = $1 and status = 'rascunho' and criada_por = $2`,
     [programaId, profissional.usuarioId]
   );
@@ -80,7 +101,7 @@ export async function lerPrograma(profissional: ProfissionalDeTreino, programaId
   const pool = obterPool();
   const [rascunho, versoes] = await Promise.all([
     pool.query<ProgramaCompleto>(
-      `select programa_id, patient_id, coalesce(titulo, '') as titulo, coalesce(objetivo, '') as objetivo, plano, revisao,
+      `select programa_id, patient_id, modalidade, coalesce(titulo, '') as titulo, coalesce(objetivo, '') as objetivo, plano, revisao,
               atualizada_em, arquivada_em, importacao
          from public.treino_prescricoes where programa_id = $1 and status = 'rascunho'`,
       [programaId]
@@ -99,27 +120,27 @@ type Origem =
   | { tipo: "duplicar"; programaId: string }
   | { tipo: "modelo"; modeloId: string }
   | { tipo: "rotina"; prescricaoId: string }
-  | { tipo: "ia"; plano: PlanoDeTreino; titulo: string; objetivo: string };
+  | { tipo: "ia"; plano: Plano; titulo: string; objetivo: string };
 
 // Novo programa (Gerar novo treino, Duplicar, Modelo, Importar rotina).
-export async function criarPrograma(profissional: ProfissionalDeTreino, patientId: string, origem: Origem) {
+export async function criarPrograma(profissional: ProfissionalDeTreino, patientId: string, origem: Origem, modalidade: Modalidade = "musculacao") {
   if (!(await podeAcompanharAluno(profissional, patientId))) return null;
   const pool = obterPool();
-  let plano: PlanoDeTreino = planoVazio();
+  let plano: Plano = planoInicial(modalidade);
   let titulo = "";
   let objetivo = "";
 
   if (origem.tipo === "duplicar") {
     const base = await lerPrograma(profissional, origem.programaId);
-    if (!base) throw new ProgramaInvalido("Programa não encontrado.");
+    if (!base || base.modalidade !== modalidade) throw new ProgramaInvalido("Programa não encontrado.");
     plano = base.plano;
     titulo = base.titulo ? `${base.titulo} (cópia)` : "";
     objetivo = base.objetivo;
   } else if (origem.tipo === "modelo") {
-    const modelo = await pool.query<{ nome: string; plano: PlanoDeTreino }>(
+    const modelo = await pool.query<{ nome: string; plano: Plano }>(
       `select nome, plano from public.treino_modelos
-        where id = $1 and arquivado_em is null and modalidade = 'musculacao' and (compartilhado or criado_por = $2)`,
-      [origem.modeloId, profissional.usuarioId]
+        where id = $1 and arquivado_em is null and modalidade = $3 and (compartilhado or criado_por = $2)`,
+      [origem.modeloId, profissional.usuarioId, modalidade]
     );
     if (!modelo.rows[0]) throw new ProgramaInvalido("Modelo não encontrado.");
     plano = modelo.rows[0].plano;
@@ -127,10 +148,10 @@ export async function criarPrograma(profissional: ProfissionalDeTreino, patientI
   } else if (origem.tipo === "rotina") {
     // Treino que o aluno já tem (importado por ele ou enviado por outro
     // profissional que o acompanha): copiado para revisão.
-    const rotina = await pool.query<{ plano: PlanoDeTreino; titulo: string | null }>(
+    const rotina = await pool.query<{ plano: Plano; titulo: string | null }>(
       `select plano, titulo from public.treino_prescricoes
-        where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = 'musculacao'`,
-      [origem.prescricaoId, patientId]
+        where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = $3`,
+      [origem.prescricaoId, patientId, modalidade]
     );
     if (!rotina.rows[0]) throw new ProgramaInvalido("Treino não encontrado.");
     plano = rotina.rows[0].plano;
@@ -141,13 +162,13 @@ export async function criarPrograma(profissional: ProfissionalDeTreino, patientI
     objetivo = origem.objetivo;
   }
 
-  const limpo = validarPlanoDoEditor(plano);
+  const limpo = validarPlano(modalidade, plano);
   if ("erro" in limpo) throw new ProgramaInvalido(limpo.erro);
   const criado = await pool.query<{ programa_id: string }>(
     `insert into public.treino_prescricoes (patient_id, origem, versao, modalidade, plano, status, criada_por, programa_id, titulo, objetivo)
-     values ($1, 'profissional', 0, 'musculacao', $2, 'rascunho', $3, gen_random_uuid(), $4, $5)
+     values ($1, 'profissional', 0, $6, $2, 'rascunho', $3, gen_random_uuid(), $4, $5)
      returning programa_id`,
-    [patientId, JSON.stringify(limpo.plano), profissional.usuarioId, titulo.slice(0, 120) || null, objetivo.slice(0, 120) || null]
+    [patientId, JSON.stringify(limpo.plano), profissional.usuarioId, titulo.slice(0, 120) || null, objetivo.slice(0, 120) || null, modalidade]
   );
   return criado.rows[0].programa_id;
 }
@@ -162,10 +183,11 @@ function textoCurto(valor: unknown, limite: number) {
 
 // Salvar e salvamento automático: só o rascunho.
 export async function salvarRascunho(profissional: ProfissionalDeTreino, programaId: string, dados: Record<string, unknown>) {
-  if (!(await rascunhoDoAutor(profissional, programaId))) return null;
+  const dono = await rascunhoDoAutor(profissional, programaId);
+  if (!dono) return null;
   const titulo = textoCurto(dados.titulo, 120);
   const objetivo = textoCurto(dados.objetivo, 120);
-  const limpo = validarPlanoDoEditor(dados.plano);
+  const limpo = validarPlano(dono.modalidade, dados.plano);
   if ("erro" in limpo) throw new ProgramaInvalido(limpo.erro);
   const gravado = await obterPool().query<{ revisao: number; atualizada_em: string }>(
     `update public.treino_prescricoes
@@ -185,7 +207,7 @@ export async function enviarAoAluno(profissional: ProfissionalDeTreino, programa
   const cliente = await obterPool().connect();
   try {
     await cliente.query("begin");
-    const r = await cliente.query<{ patient_id: string; titulo: string | null; objetivo: string | null; plano: PlanoDeTreino; revisao: number; arquivada_em: string | null }>(
+    const r = await cliente.query<{ patient_id: string; titulo: string | null; objetivo: string | null; plano: Plano; revisao: number; arquivada_em: string | null }>(
       `select patient_id, titulo, objetivo, plano, revisao, arquivada_em from public.treino_prescricoes
         where programa_id = $1 and status = 'rascunho' for update`,
       [programaId]
@@ -193,15 +215,16 @@ export async function enviarAoAluno(profissional: ProfissionalDeTreino, programa
     const rascunho = r.rows[0];
     if (rascunho.revisao !== revisao) throw new RevisaoDesatualizada("Salve o treino antes de enviar (há alterações não gravadas).");
     if (rascunho.arquivada_em) throw new ProgramaInvalido("Treino arquivado: reative antes de enviar.");
-    const problemas = problemasParaEnvio({ titulo: rascunho.titulo ?? "", objetivo: rascunho.objetivo ?? "", plano: rascunho.plano });
-    if (problemas.length) throw new ProgramaInvalido(problemas.join(" "));
+    const lista = problemas(dono.modalidade, rascunho.titulo ?? "", rascunho.plano);
+    if (lista.length) throw new ProgramaInvalido(lista.join(" "));
+    const publicar = dono.modalidade === "musculacao" ? ordenarSessoes(rascunho.plano as PlanoDeTreino) : rascunho.plano;
     const publicada = await cliente.query<{ id: string; versao: number; publicada_em: string }>(
       `insert into public.treino_prescricoes (patient_id, origem, versao, modalidade, plano, status, criada_por, programa_id, titulo, objetivo)
        values ($1, 'profissional',
                (select coalesce(max(versao), 0) + 1 from public.treino_prescricoes where programa_id = $2 and status = 'publicada'),
-               'musculacao', $3, 'publicada', $4, $2, $5, $6)
+               $7, $3, 'publicada', $4, $2, $5, $6)
        returning id, versao, publicada_em`,
-      [rascunho.patient_id, programaId, JSON.stringify(ordenarSessoes(rascunho.plano)), profissional.usuarioId, rascunho.titulo, rascunho.objetivo]
+      [rascunho.patient_id, programaId, JSON.stringify(publicar), profissional.usuarioId, rascunho.titulo, rascunho.objetivo, dono.modalidade]
     );
     await cliente.query("commit");
     const versao = publicada.rows[0];
@@ -238,20 +261,21 @@ export async function registrarImportacao(programaId: string, importacao: NonNul
 
 // Treinos publicados do aluno que podem servir de base ("Importar rotina"):
 // o mais recente de cada origem (envio do aluno ou programa).
-export async function rotinasDoAluno(profissional: ProfissionalDeTreino, patientId: string) {
+export async function rotinasDoAluno(profissional: ProfissionalDeTreino, patientId: string, modalidade: Modalidade = "musculacao") {
   if (!(await podeAcompanharAluno(profissional, patientId))) return [];
-  const r = await obterPool().query<{ id: string; origem: string; titulo: string | null; versao: number; publicada_em: string; autor: string | null; dias: number }>(
+  const r = await obterPool().query<{ id: string; origem: string; titulo: string | null; versao: number; publicada_em: string; autor: string | null; dias: number; semanas: number | null }>(
     `select distinct on (coalesce(p.programa_id, p.treino_id, p.id))
             p.id, p.origem, p.titulo, p.versao, p.publicada_em,
             coalesce(e.nome, case when pr.role = 'nutricionista' then 'Administrador' end) as autor,
-            jsonb_array_length(p.plano->'dias') as dias
+            coalesce(jsonb_array_length(p.plano->'dias'), 0) as dias,
+            jsonb_array_length(p.plano->'semanas') as semanas
        from public.treino_prescricoes p
        left join public.educadores_fisicos e on e.usuario_id = p.criada_por
        left join public.profiles pr on pr.id = p.criada_por
-      where p.patient_id = $1 and p.status = 'publicada' and p.modalidade = 'musculacao'
+      where p.patient_id = $1 and p.status = 'publicada' and p.modalidade = $2
       order by coalesce(p.programa_id, p.treino_id, p.id), p.publicada_em desc
       limit 30`,
-    [patientId]
+    [patientId, modalidade]
   );
   return r.rows.sort((a, b) => b.publicada_em.localeCompare(a.publicada_em));
 }
@@ -259,11 +283,11 @@ export async function rotinasDoAluno(profissional: ProfissionalDeTreino, patient
 // Versão publicada para o PDF (ou o rascunho, marcado como tal).
 export async function versaoParaPdf(profissional: ProfissionalDeTreino, programaId: string, versao: number | null) {
   if (!(await rascunhoDoAutor(profissional, programaId))) return null;
-  const r = await obterPool().query<{ patient_id: string; titulo: string | null; objetivo: string | null; plano: PlanoDeTreino; versao: number; status: string; publicada_em: string; atualizada_em: string }>(
+  const r = await obterPool().query<{ patient_id: string; modalidade: Modalidade; titulo: string | null; objetivo: string | null; plano: Plano; versao: number; status: string; publicada_em: string; atualizada_em: string }>(
     versao === null
-      ? `select patient_id, titulo, objetivo, plano, versao, status, publicada_em, atualizada_em from public.treino_prescricoes
+      ? `select patient_id, modalidade, titulo, objetivo, plano, versao, status, publicada_em, atualizada_em from public.treino_prescricoes
           where programa_id = $1 and status = 'rascunho'`
-      : `select patient_id, titulo, objetivo, plano, versao, status, publicada_em, atualizada_em from public.treino_prescricoes
+      : `select patient_id, modalidade, titulo, objetivo, plano, versao, status, publicada_em, atualizada_em from public.treino_prescricoes
           where programa_id = $1 and status = 'publicada' and versao = $2`,
     versao === null ? [programaId] : [programaId, versao]
   );

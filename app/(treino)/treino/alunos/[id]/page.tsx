@@ -172,6 +172,8 @@ export default function AlunoNoTreinoPage() {
 
               <div className="flex flex-wrap gap-2">
                 <Button type="button" icon="pi pi-pencil" label="Elaborar Musculação" onClick={() => router.push(`/treino/alunos/${params.id}/musculacao`)} />
+                <Button type="button" outlined icon="pi pi-directions-alt" label="Elaborar Corrida" onClick={() => router.push(`/treino/alunos/${params.id}/corrida`)} />
+                <Button type="button" outlined icon="pi pi-sync" label="Elaborar Ciclismo" onClick={() => router.push(`/treino/alunos/${params.id}/ciclismo`)} />
               </div>
 
               {treino && (

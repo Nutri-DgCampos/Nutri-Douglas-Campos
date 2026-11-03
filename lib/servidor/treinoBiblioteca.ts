@@ -1,5 +1,6 @@
 import { GRUPOS, OUTROS_GRUPOS, type PlanoDeTreino } from "@/lib/treino";
 import { EQUIPAMENTOS, VIDEO_YOUTUBE, validarPlanoDoEditor } from "@/lib/treinoEditor";
+import { validarPlanoEndurance, type PlanoEndurance } from "@/lib/treinoEndurance";
 import { obterPool } from "./banco";
 import { podeAcompanharAluno, type ProfissionalDeTreino } from "./treinoAcesso";
 
@@ -222,13 +223,16 @@ export async function definirAcademiaDoAluno(profissional: ProfissionalDeTreino,
 // ---------------------------------------------------------------------------
 // Modelos
 
-export async function listarModelos(profissional: ProfissionalDeTreino) {
+const MODALIDADES_DE_MODELO = ["musculacao", "corrida", "ciclismo"];
+
+export async function listarModelos(profissional: ProfissionalDeTreino, modalidade = "musculacao") {
   const r = await obterPool().query<{ id: string; nome: string; compartilhado: boolean; meu: boolean; sessoes: number; criado_em: string }>(
-    `select id, nome, compartilhado, criado_por = $1 as meu, jsonb_array_length(plano->'dias') as sessoes, criado_em
+    `select id, nome, compartilhado, criado_por = $1 as meu,
+            coalesce(jsonb_array_length(plano->'dias'), jsonb_array_length(plano->'semanas'), 0) as sessoes, criado_em
        from public.treino_modelos
-      where arquivado_em is null and modalidade = 'musculacao' and (compartilhado or criado_por = $1)
+      where arquivado_em is null and modalidade = $2 and (compartilhado or criado_por = $1)
       order by nome`,
-    [profissional.usuarioId]
+    [profissional.usuarioId, modalidade]
   );
   return r.rows;
 }
@@ -245,15 +249,30 @@ export function planoSemDadosDoAluno(plano: PlanoDeTreino): PlanoDeTreino {
   };
 }
 
+// Corrida e ciclismo: o modelo não leva as notas privadas nem a data do ciclo.
+export function planoEnduranceSemDadosDoAluno(plano: PlanoEndurance): PlanoEndurance {
+  return { ciclo: { fase: plano.ciclo.fase, inicio: null }, semanas: plano.semanas.map((w) => ({ sessoes: w.sessoes.map((s) => ({ ...s, notas: null })) })) };
+}
+
 export async function criarModelo(profissional: ProfissionalDeTreino, corpo: unknown) {
   const d = (corpo ?? {}) as Record<string, unknown>;
   const nome = texto(d.nome, 120, true)!;
-  const limpo = validarPlanoDoEditor(d.plano);
-  if ("erro" in limpo) throw new DadoInvalido(limpo.erro);
-  if (!limpo.plano.dias.length) throw new DadoInvalido("O treino não tem sessões.");
+  const modalidade = typeof d.modalidade === "string" && MODALIDADES_DE_MODELO.includes(d.modalidade) ? d.modalidade : "musculacao";
+  let plano: unknown;
+  if (modalidade === "musculacao") {
+    const limpo = validarPlanoDoEditor(d.plano);
+    if ("erro" in limpo) throw new DadoInvalido(limpo.erro);
+    if (!limpo.plano.dias.length) throw new DadoInvalido("O treino não tem sessões.");
+    plano = planoSemDadosDoAluno(limpo.plano);
+  } else {
+    const limpo = validarPlanoEndurance(d.plano, modalidade as "corrida" | "ciclismo");
+    if ("erro" in limpo) throw new DadoInvalido(limpo.erro);
+    if (!limpo.plano.semanas.some((w) => w.sessoes.length)) throw new DadoInvalido("A planilha não tem sessões.");
+    plano = planoEnduranceSemDadosDoAluno(limpo.plano);
+  }
   const r = await obterPool().query<{ id: string }>(
-    "insert into public.treino_modelos (nome, plano, compartilhado, criado_por) values ($1, $2, $3, $4) returning id",
-    [nome, JSON.stringify(planoSemDadosDoAluno(limpo.plano)), d.compartilhado === true, profissional.usuarioId]
+    "insert into public.treino_modelos (nome, modalidade, plano, compartilhado, criado_por) values ($1, $2, $3, $4, $5) returning id",
+    [nome, modalidade, JSON.stringify(plano), d.compartilhado === true, profissional.usuarioId]
   );
   return r.rows[0].id;
 }

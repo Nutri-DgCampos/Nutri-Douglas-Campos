@@ -216,22 +216,24 @@ function ResumoDoPlano({ plano }: { plano: PlanoDeTreino }) {
 }
 
 // Importar: arquivo ou texto, lido pela IA, revisado antes de aplicar.
-export function JanelaImportar({
+export function JanelaImportar<P = PlanoDeTreino>({
   aberta,
   programaId,
   onFechar,
   onAplicar,
+  resumo = (p) => <ResumoDoPlano plano={p as PlanoDeTreino} />,
 }: {
   aberta: boolean;
   programaId: string;
   onFechar: () => void;
-  onAplicar: (plano: PlanoDeTreino, modo: "substituir" | "acrescentar") => void;
+  onAplicar: (plano: P, modo: "substituir" | "acrescentar") => void;
+  resumo?: (plano: P) => React.ReactNode;
 }) {
   const [texto, setTexto] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [lendo, setLendo] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [lido, setLido] = useState<{ plano: PlanoDeTreino; comentario: string | null } | null>(null);
+  const [lido, setLido] = useState<{ plano: P; comentario: string | null } | null>(null);
 
   function fechar() {
     setTexto("");
@@ -283,7 +285,7 @@ export function JanelaImportar({
       ) : (
         <div className="space-y-3">
           {lido.comentario ? <p className="text-sm text-gray-600">{lido.comentario}</p> : null}
-          <ResumoDoPlano plano={lido.plano} />
+          {resumo(lido.plano)}
           <p className="text-xs text-gray-500">Confira tudo antes de enviar ao aluno. Calorias não são estimadas.</p>
           <div className="flex flex-wrap justify-end gap-2">
             <Button type="button" label="Cancelar" text onClick={fechar} />
@@ -296,10 +298,25 @@ export function JanelaImportar({
   );
 }
 
-export type Rotina = { id: string; origem: string; titulo: string | null; versao: number; publicada_em: string; autor: string | null; dias: number };
+export type Rotina = { id: string; origem: string; titulo: string | null; versao: number; publicada_em: string; autor: string | null; dias: number; semanas?: number | null };
+
+const contagem = (n: number, semanas: boolean) => (semanas ? `${n} ${n === 1 ? "semana" : "semanas"}` : `${n} ${n === 1 ? "sessão" : "sessões"}`);
 
 // Importar rotina: um treino que o aluno já tem vira base de um novo programa.
-export function JanelaRotina({ aberta, rotinas, onFechar, onEscolher }: { aberta: boolean; rotinas: Rotina[]; onFechar: () => void; onEscolher: (r: Rotina) => void }) {
+export function JanelaRotina({
+  aberta,
+  rotinas,
+  modalidade = "musculacao",
+  onFechar,
+  onEscolher,
+}: {
+  aberta: boolean;
+  rotinas: Rotina[];
+  modalidade?: string;
+  onFechar: () => void;
+  onEscolher: (r: Rotina) => void;
+}) {
+  const semanas = modalidade !== "musculacao";
   return (
     <Dialog header="Importar rotina do aluno" visible={aberta} onHide={onFechar} className="w-full max-w-lg" modal>
       <p className="text-sm text-gray-600">O treino escolhido é copiado para um novo rascunho. O original não muda.</p>
@@ -312,7 +329,7 @@ export function JanelaRotina({ aberta, rotinas, onFechar, onEscolher }: { aberta
               <button type="button" onClick={() => onEscolher(r)} className="w-full px-2 py-2 text-left hover:bg-primary-50">
                 <span className="block font-semibold text-gray-900">{r.titulo || (r.origem === "externa" ? "Treino enviado pelo aluno" : "Treino sem título")}</span>
                 <span className="block text-xs text-gray-500">
-                  {r.origem === "externa" ? "Enviado pelo aluno" : `Prescrito por ${r.autor ?? "profissional"} · versão ${r.versao}`} · {new Date(r.publicada_em).toLocaleDateString("pt-BR")} · {r.dias} {r.dias === 1 ? "sessão" : "sessões"}
+                  {r.origem === "externa" ? "Enviado pelo aluno" : `Prescrito por ${r.autor ?? "profissional"} · versão ${r.versao}`} · {new Date(r.publicada_em).toLocaleDateString("pt-BR")} · {contagem(semanas ? (r.semanas ?? 0) : r.dias, semanas)}
                 </span>
               </button>
             </li>
@@ -328,12 +345,14 @@ export type ModeloNaLista = { id: string; nome: string; compartilhado: boolean; 
 export function JanelaModelos({
   aberta,
   modelos,
+  modalidade = "musculacao",
   onFechar,
   onEscolher,
   onArquivar,
 }: {
   aberta: boolean;
   modelos: ModeloNaLista[];
+  modalidade?: string;
   onFechar: () => void;
   onEscolher: (m: ModeloNaLista) => void;
   onArquivar: (m: ModeloNaLista) => void;
@@ -350,7 +369,7 @@ export function JanelaModelos({
               <button type="button" onClick={() => onEscolher(m)} className="min-w-0 flex-1 px-2 py-2 text-left hover:bg-primary-50">
                 <span className="block font-semibold text-gray-900">{m.nome}</span>
                 <span className="block text-xs text-gray-500">
-                  {m.sessoes} {m.sessoes === 1 ? "sessão" : "sessões"} · {m.meu ? (m.compartilhado ? "meu, compartilhado" : "meu, privado") : "compartilhado"}
+                  {contagem(m.sessoes, modalidade !== "musculacao")} · {m.meu ? (m.compartilhado ? "meu, compartilhado" : "meu, privado") : "compartilhado"}
                 </span>
               </button>
               {m.meu ? <Button type="button" icon="pi pi-inbox" text severity="danger" size="small" aria-label={`Arquivar o modelo ${m.nome}`} tooltip="Arquivar" onClick={() => onArquivar(m)} /> : null}
@@ -411,27 +430,31 @@ export function JanelaSalvarModelo({
   );
 }
 
-export type Sugestao = { titulo: string; plano: PlanoDeTreino; avisos: string[] };
+export type Sugestao<P = PlanoDeTreino> = { titulo: string; plano: P; avisos: string[] };
 
 // Auxílio da IA: o pedido volta como sugestão; só entra no rascunho se o
 // profissional aceitar. Nunca envia ao aluno.
-export function JanelaIa({
+export function JanelaIa<P = PlanoDeTreino>({
   aberta,
   programaId,
   antesDePedir,
   onFechar,
   onAplicar,
+  resumo = (p) => <ResumoDoPlano plano={p as PlanoDeTreino} />,
+  exemplo = "Ex.: Monte um treino ABC de hipertrofia para 3 dias por semana, com 5 exercícios por sessão.",
 }: {
   aberta: boolean;
   programaId: string;
   antesDePedir: () => Promise<boolean>;
   onFechar: () => void;
-  onAplicar: (s: Sugestao, modo: "substituir" | "acrescentar") => void;
+  onAplicar: (s: Sugestao<P>, modo: "substituir" | "acrescentar") => void;
+  resumo?: (plano: P) => React.ReactNode;
+  exemplo?: string;
 }) {
   const [pedido, setPedido] = useState("");
   const [pedindo, setPedindo] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [sugestao, setSugestao] = useState<Sugestao | null>(null);
+  const [sugestao, setSugestao] = useState<Sugestao<P> | null>(null);
 
   function fechar() {
     setErro(null);
@@ -476,7 +499,7 @@ export function JanelaIa({
             maxLength={2000}
             className="w-full"
             aria-label="Pedido para a IA"
-            placeholder="Ex.: Monte um treino ABC de hipertrofia para 3 dias por semana, com 5 exercícios por sessão."
+            placeholder={exemplo}
           />
           {erro ? <Message severity="error" text={erro} className="w-full justify-start" /> : null}
           <div className="flex justify-end gap-2">
@@ -497,7 +520,7 @@ export function JanelaIa({
               </ul>
             </div>
           ) : null}
-          <ResumoDoPlano plano={sugestao.plano} />
+          {resumo(sugestao.plano)}
           <div className="flex flex-wrap justify-end gap-2">
             <Button type="button" label="Descartar" text onClick={() => setSugestao(null)} />
             <Button type="button" label="Acrescentar às sessões" outlined onClick={() => { onAplicar(sugestao, "acrescentar"); fechar(); }} />

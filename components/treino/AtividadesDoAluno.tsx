@@ -25,13 +25,15 @@ import {
   type Modalidade,
 } from "@/lib/treinoAtividades";
 import RelatoDeDesconforto from "@/components/treino/RelatoDeDesconforto";
+import { textoDosMinutos, type SessaoEndurance } from "@/lib/treinoEndurance";
 
 // "Meu treino" do aluno, corrida e ciclismo (T4b): registrar corrida ou
 // pedal com tênis ou bicicleta, números do relógio, consumo durante o treino
 // e observação. Nada é obrigatório além da data; nada é estimado.
 
 type AtividadeNaTela = Atividade & { id: string; equipamento: string | null };
-type Dados = { atividades: AtividadeNaTela[]; equipamentos: Equipamento[]; hoje: string; primeiroDia: string };
+type Planejada = SessaoEndurance & { modalidade: Modalidade; prescricao_id: string; referencia: number; data: string; titulo: string | null };
+type Dados = { atividades: AtividadeNaTela[]; equipamentos: Equipamento[]; planejadas: Planejada[]; hoje: string; primeiroDia: string };
 
 const ROTULO_DA_SITUACAO = Object.fromEntries(SITUACOES.map((s) => [s.valor, s.rotulo]));
 const dataCurta = (iso: string) => iso.split("-").reverse().slice(0, 2).join("/");
@@ -163,6 +165,58 @@ export default function AtividadesDoAluno({
           <Button type="button" icon="pi pi-plus" label="Registrar pedal" size="small" outlined onClick={() => setEditando(novaAtividade("ciclismo", dados.hoje, dados.equipamentos))} />
         </div>
       </div>
+
+      {dados.planejadas.length ? (
+        <div className="mt-3 rounded-xl border border-primary-100 bg-primary-50/40 p-3">
+          <h3 className="text-sm font-bold text-gray-900">Planejado para esta semana</h3>
+          <ul className="mt-1 divide-y divide-primary-100">
+            {dados.planejadas.map((p) => {
+              const feita = dados.atividades.find((a) => a.prescricao_id === p.prescricao_id && a.sessao_indice === p.referencia);
+              const alvo = [
+                p.distancia_km !== null ? `${p.distancia_km.toLocaleString("pt-BR")} km` : null,
+                p.duracao_min !== null ? textoDosMinutos(p.duracao_min) : null,
+                p.zona,
+                p.ritmo_alvo ? `ritmo ${p.ritmo_alvo}` : null,
+                p.fc_alvo ? `FC ${p.fc_alvo}` : null,
+                p.potencia_alvo,
+              ].filter(Boolean);
+              return (
+                <li key={`${p.prescricao_id}-${p.referencia}`} className="py-2 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-gray-900">
+                      {p.modalidade === "corrida" ? "Corrida" : "Pedal"} · {dataCurta(p.data)} · {p.tipo}
+                    </span>
+                    <span className="ml-auto">
+                      {feita ? (
+                        <Button type="button" size="small" text icon="pi pi-check" label="Registrado" onClick={() => editavel(feita) && setEditando({ ...feita })} />
+                      ) : p.data <= dados.hoje && p.data >= dados.primeiroDia ? (
+                        <Button
+                          type="button"
+                          size="small"
+                          outlined
+                          label="Registrar"
+                          onClick={() => setEditando({ ...novaAtividade(p.modalidade, p.data, dados.equipamentos), prescricao_id: p.prescricao_id, sessao_indice: p.referencia })}
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-500">{p.data > dados.hoje ? "A fazer" : "Sem registro"}</span>
+                      )}
+                    </span>
+                  </div>
+                  <p className="text-gray-700">{p.descricao}</p>
+                  {alvo.length ? <p className="text-xs text-gray-500">{alvo.join(" · ")}</p> : null}
+                  {p.blocos.length ? (
+                    <p className="text-xs text-gray-500">
+                      {p.blocos.map((b) => [b.repeticoes ? `${b.repeticoes}×` : null, b.descricao, b.duracao_min !== null ? `${b.duracao_min} min` : null, b.distancia_km !== null ? `${b.distancia_km} km` : null, b.intensidade].filter(Boolean).join(" ")).join(" → ")}
+                    </p>
+                  ) : null}
+                  {p.observacao ? <p className="text-xs text-primary-800">{p.observacao}</p> : null}
+                  {p.alternativa ? <p className="text-xs text-gray-600">Opção: {p.alternativa.descricao}</p> : null}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
 
       {noLimite.map((e) => (
         <p key={e.id} className="mt-3 rounded-xl bg-atencao-50 px-3 py-2 text-sm text-atencao-700" role="status">

@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { validarPlanoDoEditor } from "@/lib/treinoEditor";
+import type { PlanoEndurance } from "@/lib/treinoEndurance";
+import { lerEnduranceNoEditor } from "@/lib/servidor/assistenteEndurance";
 import { BUCKETS, gravarArquivo, resolverCaminho } from "@/lib/servidor/arquivos";
 import { UUID } from "@/lib/servidor/dietas";
 import { recusar } from "@/lib/servidor/http";
@@ -52,7 +54,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   try {
-    const lido = await lerTreinoNoEditor(conteudo, { usuarioId: profissional.usuarioId, pacienteId: programa.patient_id });
+    const registro = { usuarioId: profissional.usuarioId, pacienteId: programa.patient_id };
+    if (programa.modalidade !== "musculacao") {
+      const lida = await lerEnduranceNoEditor(programa.modalidade, conteudo, (programa.plano as PlanoEndurance).ciclo.inicio, registro);
+      if (!lida || !lida.plano.semanas.some((w) => w.sessoes.length)) return recusar("Não foi possível identificar as sessões. Confira o arquivo ou o texto.", 422);
+      await registrarImportacao(id, { ...importacao, comentario: lida.comentario?.slice(0, 1000) ?? null });
+      return NextResponse.json(lida);
+    }
+    const lido = await lerTreinoNoEditor(conteudo, registro);
     const limpo = validarPlanoDoEditor({ dias: lido.dias });
     if ("erro" in limpo || limpo.plano.dias.length === 0) return recusar("Não foi possível identificar os exercícios. Confira o arquivo ou o texto.", 422);
     const comentario = typeof lido.comentario === "string" ? lido.comentario.trim().slice(0, 1000) : null;

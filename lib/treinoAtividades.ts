@@ -43,6 +43,9 @@ export type Atividade = {
   id?: string;
   chave_cliente: string;
   modalidade: Modalidade;
+  // Sessão prescrita (T4c): prescrição e semana × 100 + índice da sessão.
+  prescricao_id?: string | null;
+  sessao_indice?: number | null;
   data: string; // AAAA-MM-DD
   situacao: SituacaoDaSessao | null;
   data_efetiva: string | null;
@@ -140,6 +143,8 @@ export function validarAtividade(corpo: unknown): { atividade: Atividade } | { e
       atividade: {
         chave_cliente: d.chave_cliente,
         modalidade: d.modalidade,
+        prescricao_id: typeof d.prescricao_id === "string" && UUID.test(d.prescricao_id) ? d.prescricao_id : null,
+        sessao_indice: typeof d.prescricao_id === "string" && UUID.test(d.prescricao_id) ? numero(d.sessao_indice, 0, 10000, "Sessão", true) : null,
         data: d.data,
         situacao,
         data_efetiva: dataEfetiva,

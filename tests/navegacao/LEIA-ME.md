@@ -13,6 +13,7 @@ node tests/navegacao/treinoT3.mjs --limpar
 node tests/navegacao/treinoT7b.mjs --limpar
 node tests/navegacao/treinoT4a.mjs --limpar
 node tests/navegacao/treinoT4b.mjs --limpar
+node tests/navegacao/treinoT4c.mjs --limpar
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -33,6 +34,7 @@ Rode os testes do Treino com `--limpar`: cada um cria a própria prescrição de
 
   Cria e apaga `teste.educador.t4a@local.test`, `teste.outro.t4a@local.test` e `teste.aluno.t4a@local.test`.
 - `treinoT4b.mjs`: etapa T4b (corrida e pedal do aluno, tênis, bicicleta, consumo, calorias informadas, limite do tênis pelo profissional). Cria e apaga `teste.educador.t4b@local.test` e dois alunos `teste.*aluno.t4b@local.test`.
+- `treinoT4c.mjs`: etapa T4c (editores de corrida e ciclismo, zonas e Coggan, ajustar volume, totais dos mockups corrigidos, sessões planejadas no Meu treino e registro ligado à sessão). Cria e apaga `teste.educador.t4c@local.test`, `teste.outro.t4c@local.test` e `teste.aluno.t4c@local.test`.
 - `treinoT3.mjs`: etapa T3 (relatório semanal, devolutiva, atraso, lista de atenção e pausa). Cria duas semanas de registros do paciente de teste e apaga tudo com `--limpar`.
 
 As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.

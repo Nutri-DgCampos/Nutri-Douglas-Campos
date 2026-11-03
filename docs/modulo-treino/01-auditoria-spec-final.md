@@ -335,3 +335,41 @@ Regras conferidas no teste `treinoT4b.mjs`:
 - um aluno não usa equipamento nem chave de outro.
 
 Ligação com sessões prescritas de corrida e ciclismo: entra com os editores (T4c). As colunas `prescricao_id` e `sessao_indice` já existem.
+
+## 11. T4c entregue: editores de corrida (VIS-04) e ciclismo (VIS-05) (03/11/2026)
+
+Migração `029_treino_zonas.sql` (só acrescenta):
+- `treino_zonas`: zonas de FC e de ritmo informadas pelo profissional (E1) e, no ciclismo, o FTP e as zonas de potência.
+- As zonas de potência seguem por padrão as 7 zonas de Coggan aprovadas (R2) e podem ser editadas à mão.
+- Valem para todos os profissionais que acompanham o aluno.
+
+Os planos usam `treino_prescricoes` (modalidade `corrida` ou `ciclismo`), com o mesmo ciclo de vida do editor de musculação: rascunho, versões imutáveis, arquivar, duplicar, modelos, importar e IA.
+
+Editor (ficha do aluno › **Elaborar Corrida** / **Elaborar Ciclismo**):
+- **Abas:** Planilha semanal, Progressão, Zonas e Histórico (versões, cada uma com PDF).
+- **Ciclo:** objetivo, título, periodização e início num domingo, porque a semana oficial vai de domingo a sábado. O ciclo tem de 1 a 16 semanas, com navegação entre elas.
+- **Grade:**
+  - colunas de dia e data, tipo da biblioteca de treinos, descrição, km, tempo e zona;
+  - na corrida, ritmo e FC alvo; no ciclismo, FC e potência alvo, TSS e altimetria informados pelo profissional;
+  - pode haver mais de uma sessão por dia;
+  - ↔ troca o tipo; ≡ abre os detalhes (blocos de aquecimento, intervalos, recuperação e desaquecimento, terreno, percurso, RPE alvo, observação, Opção e notas privadas);
+  - não há ▶, porque não se presume vídeo de corrida ou pedal.
+- **Cartões e rodapé:** somas das linhas. Sem dado, aparece "Não disponível", e o TSS parcial é sinalizado. Os erros dos mockups foram corrigidos e conferidos nos testes:
+  - corrida: 34 km, não 42;
+  - ciclismo: 230 km, TSS 415 (não 460) e 2.150 m.
+- **Fora de propósito:** não há distribuição de intensidade nem intensidade predominante, porque a SPEC proíbe inferir proporção a partir dos rótulos das sessões.
+- **Ajustar volume (P3):** porcentagem na semana ou no ciclo, com prévia antes de aplicar. Muda só distância e tempo, só no rascunho.
+- **Semana:** copiar e colar (também entre planilhas), mover, Opção e exportar em PDF.
+- **Progressão:** compara, por semana do ciclo, o planejado com o que o aluno registrou. Mostra a variação percentual entre semanas sem julgar, porque não há regra universal aprovada.
+- **IA e importação:**
+  - a IA sugere a planilha usando as zonas do aluno;
+  - nem a IA nem a importação calculam TSS;
+  - tudo volta para revisão.
+
+Aluno (Meu treino):
+- **Planejado para esta semana:** as sessões da planilha vigente de corrida e de ciclismo, com alvos, blocos, observação e a Opção visível.
+- **Registro:** "Registrar" liga o registro à sessão prescrita (`prescricao_id` + `sessao_indice` = semana × 100 + índice). O servidor confere a planilha, a modalidade e a sessão.
+- **O que o aluno não recebe:** as notas privadas.
+
+Teste: `tests/navegacao/treinoT4c.mjs` (30 verificações).
+- O teste encontrou e corrigiu um erro real: o texto digitado na descrição se perdia.

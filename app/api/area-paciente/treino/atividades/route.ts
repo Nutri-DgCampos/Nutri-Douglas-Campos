@@ -9,19 +9,21 @@ import {
   equipamentosDoAluno,
   primeiroDiaDeRegistro,
   salvarAtividade,
+  sessoesPlanejadas,
 } from "@/lib/servidor/treinoAtividades";
 
 export const runtime = "nodejs";
 
 async function situacao(pacienteId: string) {
   const hoje = hojeNoBrasil();
-  const [atividades, equipamentos, calorias] = await Promise.all([
+  const [atividades, equipamentos, calorias, planejadas] = await Promise.all([
     // Histórico das últimas 8 semanas; edição só desde primeiroDia.
     atividadesDoAluno(pacienteId, somarDias(hoje, -56)),
     equipamentosDoAluno(pacienteId),
     caloriasInformadasNaSemana(pacienteId, hoje),
+    sessoesPlanejadas(pacienteId, hoje),
   ]);
-  return { atividades, equipamentos, caloriasInformadas: calorias, hoje, primeiroDia: primeiroDiaDeRegistro(hoje) };
+  return { atividades, equipamentos, planejadas, caloriasInformadas: calorias, hoje, primeiroDia: primeiroDiaDeRegistro(hoje) };
 }
 
 // Corridas e pedais do aluno, tênis e bicicletas (T4b).

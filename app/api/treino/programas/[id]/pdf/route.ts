@@ -6,6 +6,9 @@ import { recusar } from "@/lib/servidor/http";
 import { disposicao, nomeDoArquivo } from "@/lib/servidor/pdf/documento";
 import { identidadeDoProfissional } from "@/lib/servidor/pdf/identidade";
 import { gerarPdfDoTreino } from "@/lib/servidor/pdf/treino";
+import { gerarPdfEndurance } from "@/lib/servidor/pdf/treinoEndurance";
+import type { PlanoDeTreino } from "@/lib/treino";
+import type { PlanoEndurance } from "@/lib/treinoEndurance";
 import { exigirProfissionalDeTreino } from "@/lib/servidor/treinoAcesso";
 import { versaoParaPdf } from "@/lib/servidor/treinoPrescricoes";
 
@@ -31,19 +34,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const rascunho = registro.status === "rascunho";
   const data = rascunho ? registro.atualizada_em : registro.publicada_em;
   try {
-    const pdf = await gerarPdfDoTreino(
-      {
-        aluno: { nome: aluno.rows[0].nome, idade: aluno.rows[0].nascimento ? idadeEm(aluno.rows[0].nascimento, new Date().toISOString().slice(0, 10)) : null },
-        titulo: registro.titulo ?? "",
-        objetivo: registro.objetivo ?? "",
-        plano: registro.plano,
-        versao: rascunho ? null : registro.versao,
-        data: new Date(data).toISOString(),
-        detalhado: url.searchParams.get("detalhado") === "1",
-      },
-      await identidadeDoProfissional(profissional)
-    );
-    const nome = nomeDoArquivo("Treino", aluno.rows[0].nome, new Date(data).toISOString().slice(0, 10));
+    const comum = {
+      aluno: { nome: aluno.rows[0].nome, idade: aluno.rows[0].nascimento ? idadeEm(aluno.rows[0].nascimento, new Date().toISOString().slice(0, 10)) : null },
+      titulo: registro.titulo ?? "",
+      objetivo: registro.objetivo ?? "",
+      versao: rascunho ? null : registro.versao,
+      data: new Date(data).toISOString(),
+      detalhado: url.searchParams.get("detalhado") === "1",
+    };
+    const identidade = await identidadeDoProfissional(profissional);
+    const pdf =
+      registro.modalidade === "musculacao"
+        ? await gerarPdfDoTreino({ ...comum, plano: registro.plano as PlanoDeTreino }, identidade)
+        : await gerarPdfEndurance({ ...comum, modalidade: registro.modalidade, plano: registro.plano as PlanoEndurance }, identidade);
+    const rotulo = registro.modalidade === "corrida" ? "Corrida" : registro.modalidade === "ciclismo" ? "Ciclismo" : "Treino";
+    const nome = nomeDoArquivo(rotulo, aluno.rows[0].nome, new Date(data).toISOString().slice(0, 10));
     return new Response(new Uint8Array(pdf), {
       headers: {
         "Content-Type": "application/pdf",

@@ -1,6 +1,16 @@
 import { hojeNoBrasil, somarDias } from "@/lib/cronograma";
 import { domingoDaSemana } from "@/lib/treino";
 import { ALERTA_TENIS_PADRAO_KM, CATEGORIAS_DE_BICICLETA, validarAtividade, type Atividade, type Consumo, type Equipamento } from "@/lib/treinoAtividades";
+import {
+  ordenarSessoesDaSemana,
+  planoEnduranceParaAluno,
+  referenciaDaSessao,
+  semanaDoCiclo,
+  sessaoDaReferencia,
+  type ModalidadeEndurance,
+  type PlanoEndurance,
+  type SessaoEndurance,
+} from "@/lib/treinoEndurance";
 import { obterPool } from "./banco";
 
 // Corrida e ciclismo do aluno (T4b): atividades, tênis, bicicletas e
@@ -131,7 +141,7 @@ function atividadeDe(l: LinhaAtividade): Atividade & { id: string; registrada_em
 // Atividades do aluno desde a data (inclusive), com consumo e equipamento.
 export async function atividadesDoAluno(patientId: string, desde: string) {
   const r = await obterPool().query<LinhaAtividade>(
-    `select a.id, a.chave_cliente, a.modalidade, to_char(a.data, 'YYYY-MM-DD') as data, a.situacao,
+    `select a.id, a.chave_cliente, a.modalidade, a.prescricao_id, a.sessao_indice, to_char(a.data, 'YYYY-MM-DD') as data, a.situacao,
             to_char(a.data_efetiva, 'YYYY-MM-DD') as data_efetiva, a.motivo, a.observacao, a.equipamento_id,
             e.apelido as equipamento, a.distancia_km::text, a.duracao_segundos, a.fc_media, a.fc_max, a.rpe::text, a.kcal,
             a.elevacao_m, a.potencia_media, a.potencia_normalizada, a.cadencia_media, a.tss::text, a.registrada_em,
@@ -164,6 +174,16 @@ export async function salvarAtividade(patientId: string, corpo: unknown, hoje = 
   if (a.data < primeiroDiaDeRegistro(hoje)) throw new AtividadeInvalida("Só dá para registrar atividades desta semana e da semana passada.");
 
   const pool = obterPool();
+  // Sessão prescrita: precisa ser de uma planilha deste aluno, da mesma
+  // modalidade, e a sessão precisa existir na versão.
+  if (a.prescricao_id) {
+    const p = await pool.query<{ plano: PlanoEndurance }>(
+      "select plano from public.treino_prescricoes where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = $3",
+      [a.prescricao_id, patientId, a.modalidade]
+    );
+    const ref = a.sessao_indice === null || a.sessao_indice === undefined ? null : sessaoDaReferencia(a.sessao_indice);
+    if (!p.rows[0] || !ref || !p.rows[0].plano.semanas?.[ref.semana]?.sessoes?.[ref.indice]) throw new AtividadeInvalida("Sessão prescrita não encontrada. Recarregue a página.");
+  }
   if (a.equipamento_id) {
     const e = await pool.query<{ tipo: string }>("select tipo from public.treino_equipamentos where id = $1 and patient_id = $2", [a.equipamento_id, patientId]);
     const esperado = a.modalidade === "corrida" ? "tenis" : "bicicleta";
@@ -179,10 +199,11 @@ export async function salvarAtividade(patientId: string, corpo: unknown, hoje = 
     const gravada = await cliente.query<{ id: string }>(
       `insert into public.treino_atividades
          (patient_id, modalidade, chave_cliente, data, situacao, data_efetiva, motivo, observacao, equipamento_id, distancia_km,
-          duracao_segundos, fc_media, fc_max, rpe, kcal, elevacao_m, potencia_media, potencia_normalizada, cadencia_media, tss)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+          duracao_segundos, fc_media, fc_max, rpe, kcal, elevacao_m, potencia_media, potencia_normalizada, cadencia_media, tss,
+          prescricao_id, sessao_indice)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
        on conflict (chave_cliente) do update
-         set modalidade = excluded.modalidade, data = excluded.data, situacao = excluded.situacao, data_efetiva = excluded.data_efetiva,
+         set modalidade = excluded.modalidade, data = excluded.data, prescricao_id = excluded.prescricao_id, sessao_indice = excluded.sessao_indice, situacao = excluded.situacao, data_efetiva = excluded.data_efetiva,
              motivo = excluded.motivo, observacao = excluded.observacao, equipamento_id = excluded.equipamento_id,
              distancia_km = excluded.distancia_km, duracao_segundos = excluded.duracao_segundos, fc_media = excluded.fc_media,
              fc_max = excluded.fc_max, rpe = excluded.rpe, kcal = excluded.kcal, elevacao_m = excluded.elevacao_m,
@@ -192,6 +213,7 @@ export async function salvarAtividade(patientId: string, corpo: unknown, hoje = 
       [
         patientId, a.modalidade, a.chave_cliente, a.data, a.situacao, a.data_efetiva, a.motivo, a.observacao, a.equipamento_id, a.distancia_km,
         a.duracao_segundos, a.fc_media, a.fc_max, a.rpe, a.kcal, a.elevacao_m, a.potencia_media, a.potencia_normalizada, a.cadencia_media, a.tss,
+        a.prescricao_id ?? null, a.prescricao_id ? (a.sessao_indice ?? null) : null,
       ]
     );
     const id = gravada.rows[0].id;
@@ -253,4 +275,39 @@ export async function caloriasInformadasNaSemana(patientId: string, hoje = hojeN
   );
   const linha = r.rows[0];
   return Number(linha.registros) ? Number(linha.total) : null;
+}
+
+// ---------------------------------------------------------------------------
+// Sessões prescritas de corrida e ciclismo (T4c) na semana do aluno
+
+export type SessaoPlanejada = SessaoEndurance & {
+  modalidade: ModalidadeEndurance;
+  prescricao_id: string;
+  referencia: number;
+  data: string;
+  titulo: string | null;
+};
+
+const DESDE_DOMINGO: Record<string, number> = { dom: 0, seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6 };
+
+// Planilhas vigentes (a versão publicada mais recente de cada modalidade) e
+// as sessões da semana da data. O aluno não recebe notas nem a Opção oculta.
+export async function sessoesPlanejadas(patientId: string, hoje = hojeNoBrasil()): Promise<SessaoPlanejada[]> {
+  const r = await obterPool().query<{ id: string; modalidade: ModalidadeEndurance; titulo: string | null; plano: PlanoEndurance }>(
+    `select distinct on (modalidade) id, modalidade, titulo, plano from public.treino_prescricoes
+      where patient_id = $1 and status = 'publicada' and modalidade in ('corrida', 'ciclismo') and arquivada_em is null
+      order by modalidade, publicada_em desc, criada_em desc`,
+    [patientId]
+  );
+  const lista: SessaoPlanejada[] = [];
+  for (const p of r.rows) {
+    const semana = semanaDoCiclo(p.plano, hoje);
+    if (semana === null) continue;
+    const plano = planoEnduranceParaAluno(p.plano);
+    const domingo = somarDias(p.plano.ciclo.inicio!, semana * 7);
+    for (const { s, i } of ordenarSessoesDaSemana(plano.semanas[semana].sessoes)) {
+      lista.push({ ...s, modalidade: p.modalidade, prescricao_id: p.id, referencia: referenciaDaSessao(semana, i), data: somarDias(domingo, DESDE_DOMINGO[s.dia]), titulo: p.titulo });
+    }
+  }
+  return lista.sort((a, b) => a.data.localeCompare(b.data));
 }
