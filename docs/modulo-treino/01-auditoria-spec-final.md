@@ -168,6 +168,18 @@ Nenhuma constante das imagens será copiada. O sistema vai respeitar estes ponto
 - **Q8, offline:** a maioria treina com bom sinal, mas o sinal pode cair em horário de pico na academia ou em área sem cobertura. O registro do aluno precisa funcionar sem internet e sincronizar depois (T5, na ordem aprovada).
 - **Q9, ordem:** aceita como na seção 5. Começa pela T7b.
 - **Sem resposta ainda:** P1–P5, Q3, Q5, Q6 e Q7. Cada uma bloqueia só a etapa indicada na seção 5. A T7b não depende delas.
+- **Nova rodada (03/11/2026):** as pendentes foram reenviadas com as decisões que faltam até o fim do módulo, em `Downloads/Arquivos/Perguntas para o tecnico - Concluir o Treino 2026-11-03.md`:
+  - R1: km padrão do aviso do tênis;
+  - R2: percentuais de Coggan (E2);
+  - R3: TSS informado pelo aluno;
+  - R4: reagendado;
+  - R5: o que funciona sem internet;
+  - R6: anamnese do educador;
+  - R7: avaliação física do educador;
+  - R8: identidade dos PDFs;
+  - R9: bloqueio por pagamento vencido;
+  - R10: desativar ou excluir o aluno próprio.
+- **Publicação:** o cliente publica o módulo só quando estiver 100% pronto. As migrações 021 em diante ficam acumuladas até lá.
 
 ## 8. T7b entregue: alunos próprios do educador (03/11/2026)
 
