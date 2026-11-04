@@ -382,6 +382,20 @@ async function agendarLembretesPendentes() {
       continue;
     }
 
+    // Correção do plano (SPEC Plano Ativo, S12): o aviso de segunda já saiu
+    // na hora da correção; não repete. O lembrete de terça continua.
+    if (tipo === "segunda") {
+      const { data: avisado } = await banco
+        .from("notification_queue")
+        .select("id")
+        .eq("dedup_key", `relatorio_liberado:${pendente.cicloId}:${pendente.segundaPrevista}`)
+        .limit(1);
+
+      if ((avisado?.length ?? 0) > 0) {
+        continue;
+      }
+    }
+
     await registrarLembrete(
       pendente,
       tipo

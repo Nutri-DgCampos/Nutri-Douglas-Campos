@@ -17,6 +17,7 @@ node tests/navegacao/treinoT4c.mjs --limpar
 node tests/navegacao/treinoT3b.mjs --limpar
 node tests/navegacao/treinoT6.mjs --limpar
 node tests/navegacao/treinoT8.mjs --limpar
+node tests/navegacao/planoAtivo1104.mjs
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -46,3 +47,4 @@ Rode os testes do Treino com `--limpar`: cada um cria a própria prescrição de
 
 As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.
 - `melhorias1101.mjs`, `avisos1101.mjs`, `fotos1101.mjs`: melhorias de 01/11/2026 (cópia de alimento, avisos ao nutricionista, fotos no link e sobreposição). Ver `docs/melhorias-2026-11-01.md`. O de fotos precisa da mesma `ARQUIVOS_DIR` do servidor de desenvolvimento.
+- `planoAtivo1104.mjs`: correção do plano com o ciclo ativo (SPEC Plano Ativo, Opção B, S9–S12). Monta três semanas vencidas no ciclo do paciente de teste, corrige de mensal para semanal pela tela e confere que o paciente responde no mesmo dia. Também confere salvar de novo, semanal para mensal e reaplicar. Restaura o ciclo no fim, mesmo se falhar. Ver `docs/correcao-plano-ativo-2026-11-04.md`.

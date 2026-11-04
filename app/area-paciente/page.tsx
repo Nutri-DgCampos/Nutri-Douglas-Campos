@@ -341,7 +341,9 @@ if (ciclo) {
       previstos,
       hoje,
       semanasRespondidas,
-      ciclo.retroactive_registered_at
+      ciclo.retroactive_registered_at,
+      // Liberação feita na correção do plano (só no dia, S11).
+      ciclo
     ) !== null
   );
 

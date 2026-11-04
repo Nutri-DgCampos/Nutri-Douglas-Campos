@@ -8,7 +8,7 @@ import Selecao from "@/components/Selecao";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { segundasPrevistas } from "@/lib/cronograma";
+import { hojeNoBrasil, segundasPrevistas } from "@/lib/cronograma";
 import { OPCOES_HORMONIOS, PERGUNTA_HORMONIOS, REGRAS_ATUAIS } from "@/lib/relatorios/pontos";
 
 export default function RelatorioPage() {
@@ -263,7 +263,7 @@ const pontosQualidadeSono =
   try {
     const { data: cicloAtivo, error: erroCiclo } = await api
   .from("diet_cycles")
-  .select("id, start_date, followup_frequency, retroactive_registered_at")
+  .select("id, start_date, followup_frequency, retroactive_registered_at, relatorio_liberado_semana, relatorio_liberado_ate")
   .eq("patient_id", patientId)
   .eq("status", "ativo")
   .maybeSingle();
@@ -369,7 +369,18 @@ for (let numero = 1; numero <= quantidadePrevista; numero++) {
   }
 }
 
-if (!dentroDoPrazoRelatorio) {
+// Semana liberada na correção do plano: aberta só no dia da correção, até
+// 23h59 (SPEC Plano Ativo, S11).
+const semanaLiberada: string | null =
+  cicloAtivo.relatorio_liberado_semana &&
+  cicloAtivo.relatorio_liberado_ate &&
+  hojeNoBrasil() <= cicloAtivo.relatorio_liberado_ate &&
+  !semanasJaRespondidas.has(cicloAtivo.relatorio_liberado_semana) &&
+  previstos.some((item) => item.segunda === cicloAtivo.relatorio_liberado_semana)
+    ? cicloAtivo.relatorio_liberado_semana
+    : null;
+
+if (!dentroDoPrazoRelatorio && !semanaLiberada) {
   avisar(
     "O prazo para responder ao relatório nutricional é somente " +
     "às segundas e terças-feiras da semana programada. " +
@@ -380,7 +391,7 @@ if (!dentroDoPrazoRelatorio) {
   return;
 }
 
-if (cicloAtivo.retroactive_registered_at) {
+if (!semanaLiberada && cicloAtivo.retroactive_registered_at) {
   const dataCadastro = new Date(
     `${cicloAtivo.retroactive_registered_at}T12:00:00Z`
   );
@@ -408,10 +419,11 @@ if (cicloAtivo.retroactive_registered_at) {
 }
 
 const semanaParaRegistrar =
-  numeroPrevistoNestaSemana !== null &&
+  semanaLiberada ??
+  (numeroPrevistoNestaSemana !== null &&
   !semanasJaRespondidas.has(semanaAtualBrasil)
     ? semanaAtualBrasil
-    : null;
+    : null);
     let numeroProgramado: number | null = null;
 
 for (let numero = 1; numero <= quantidadePrevista; numero++) {

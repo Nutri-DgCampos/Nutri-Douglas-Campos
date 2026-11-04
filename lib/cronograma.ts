@@ -105,13 +105,28 @@ export function segundasPrevistas(
   return previstos;
 }
 
+// Liberação fora da janela, feita na correção do plano (correção do plano
+// ativo, resposta S11): a semana liberada fica aberta só no dia da correção,
+// até 23h59 de Brasília.
+export type LiberacaoDoRelatorio = {
+  relatorio_liberado_semana?: string | null;
+  relatorio_liberado_ate?: string | null;
+};
+
 // Relatório que pode ser respondido hoje, ou null.
 export function relatorioAbertoHoje(
   previstos: RelatorioPrevisto[],
   hoje: string,
   semanasRespondidas: Set<string>,
-  registroRetroativo?: string | null
+  registroRetroativo?: string | null,
+  liberacao?: LiberacaoDoRelatorio | null
 ): RelatorioPrevisto | null {
+  const liberada = liberacao?.relatorio_liberado_semana;
+  if (liberada && liberacao?.relatorio_liberado_ate && hoje <= liberacao.relatorio_liberado_ate && !semanasRespondidas.has(liberada)) {
+    const previsto = previstos.find((item) => item.segunda === liberada);
+    if (previsto) return previsto;
+  }
+
   const dia = diaDaSemana(hoje);
 
   if (dia !== 1 && dia !== 2) {
@@ -131,6 +146,29 @@ export function relatorioAbertoHoje(
   }
 
   return previsto;
+}
+
+// Correção do plano com o ciclo ativo (SPEC Plano Ativo, Opção B): só o
+// relatório previsto mais recente que já devia estar disponível, se ainda não
+// foi respondido. Semanas anteriores a ele não são regularizadas.
+// - "janela": é a semana atual e hoje é segunda ou terça (janela normal, S12);
+// - "liberacao": fora da janela, abre só hoje (S11).
+// Sem relatório devido (antes do primeiro), null: só o calendário muda.
+export function relatorioParaLiberar(
+  ciclo: CicloParaAgenda & { end_date?: string | null },
+  semanasConcluidas: number,
+  hoje: string,
+  semanasRespondidas: Set<string>
+): (RelatorioPrevisto & { modo: "janela" | "liberacao" }) | null {
+  if (hoje < ciclo.start_date || (ciclo.end_date && hoje > ciclo.end_date)) return null;
+  const retroativo = ciclo.retroactive_registered_at ? segundaDaSemana(ciclo.retroactive_registered_at) : null;
+  const devidos = segundasPrevistas(ciclo, semanasConcluidas).filter(
+    (item) => item.segunda <= hoje && (!retroativo || item.segunda >= retroativo)
+  );
+  const maisRecente = devidos.at(-1);
+  if (!maisRecente || semanasRespondidas.has(maisRecente.segunda)) return null;
+  const naJanela = maisRecente.segunda === segundaDaSemana(hoje) && (diaDaSemana(hoje) === 1 || diaDaSemana(hoje) === 2);
+  return { ...maisRecente, modo: naJanela ? "janela" : "liberacao" };
 }
 
 // Semana do ciclo em que o paciente está (1 na primeira semana).

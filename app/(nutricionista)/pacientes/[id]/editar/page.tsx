@@ -9,6 +9,9 @@ import Selecao from "@/components/Selecao";
 import { InputTextarea } from "primereact/inputtextarea";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import AcessoDoPaciente from "@/components/AcessoDoPaciente";
+import ConfirmarPlano, { type PreviaDoPlano } from "@/components/ConfirmarPlano";
+import { avisar } from "@/lib/avisos";
+import { normalizarFrequencia } from "@/lib/cronograma";
 import CamposComplementares, {
   DADOS_VAZIOS,
   dadosDoBanco,
@@ -23,6 +26,12 @@ export default function EditarPaciente() {
   const [phone, setPhone] = useState("");
   const [objective, setObjective] = useState("");
   const [plan, setPlan] = useState("Semanal");
+  // Plano gravado e frequência do ciclo ativo (SPEC Plano Ativo): a troca
+  // passa pela rota /api/pacientes/[id]/plano, que grava os dois juntos.
+  const [planoSalvo, setPlanoSalvo] = useState<string | null>(null);
+  const [frequenciaDoCiclo, setFrequenciaDoCiclo] = useState<string | null>(null);
+  const [previa, setPrevia] = useState<PreviaDoPlano | null>(null);
+  const [reaplicando, setReaplicando] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState("Ativo");
   const [importantNote, setImportantNote] = useState("");
   const [initialWeight, setInitialWeight] = useState("");
@@ -55,6 +64,15 @@ export default function EditarPaciente() {
       setPhone(data.phone ?? "");
       setObjective(data.objective ?? "");
       setPlan(data.plan ?? "Semanal");
+      setPlanoSalvo(data.plan ?? null);
+
+      const { data: ciclo } = await api
+        .from("diet_cycles")
+        .select("followup_frequency")
+        .eq("patient_id", id)
+        .eq("status", "ativo")
+        .maybeSingle();
+      setFrequenciaDoCiclo(ciclo?.followup_frequency ?? null);
       setPaymentStatus(data.payment_status ?? "Ativo");
       setImportantNote(data.important_note ?? "");
       setInitialWeight(
@@ -81,6 +99,41 @@ setIndividualGoal(
     carregarPaciente();
   }, [id]);
 
+  async function buscarPrevia(plano: string) {
+    const r = await fetch(`/api/pacientes/${id}/plano?plano=${encodeURIComponent(plano)}`, { cache: "no-store" }).catch(() => null);
+    const dados = await r?.json().catch(() => null);
+    if (!r?.ok) {
+      setErro(dados?.erro ?? "Não foi possível conferir o plano. Tente de novo.");
+      return null;
+    }
+    return dados as PreviaDoPlano;
+  }
+
+  // Grava o plano no cadastro e no ciclo ativo e libera o relatório devido.
+  // Sucesso só depois da gravação (RF-11).
+  async function aplicarPlano(plano: string) {
+    const r = await fetch(`/api/pacientes/${id}/plano`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plano }),
+    }).catch(() => null);
+    const dados = await r?.json().catch(() => null);
+    if (!r?.ok) {
+      setErro(dados?.erro ?? "Não foi possível salvar o plano. Nada foi alterado no plano.");
+      return false;
+    }
+    if (dados.liberado && dados.semAparelho) {
+      avisar(`Plano salvo e relatório ${dados.liberado.numero} liberado. O paciente não ativou os avisos no celular: avise-o por outro meio.`, "warn");
+    } else if (dados.liberado) {
+      avisar(`Plano salvo. Relatório ${dados.liberado.numero} liberado e aviso enviado ao paciente.`, "success");
+    } else {
+      avisar("Plano salvo.", "success");
+    }
+    setPlanoSalvo(plano);
+    setFrequenciaDoCiclo((atual) => (atual ? plano : atual));
+    return true;
+  }
+
   async function salvarPaciente(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -93,6 +146,21 @@ setIndividualGoal(
       return;
     }
 
+    // Plano trocado com ciclo ativo: confirmação antes de gravar qualquer coisa.
+    if (plan !== planoSalvo && !previa) {
+      const p = await buscarPrevia(plan);
+      if (!p) return;
+      if (p.ciclo) {
+        setReaplicando(false);
+        setPrevia(p);
+        return;
+      }
+    }
+
+    await gravar(convertidos.valores);
+  }
+
+  async function gravar(valores: Record<string, unknown>) {
     setSalvando(true);
 
     const { error } = await api
@@ -101,7 +169,6 @@ setIndividualGoal(
         name,
         phone,
         objective,
-        plan,
         payment_status: paymentStatus,
         important_note: importantNote,
         initial_weight:
@@ -109,7 +176,7 @@ setIndividualGoal(
   training_weekly_goal: Number(trainingWeeklyGoal),
   cardio_weekly_goal: Number(cardioWeeklyGoal),
   individual_goal: individualGoal.trim() === "" ? null : individualGoal.trim(),
-        ...convertidos.valores,
+        ...valores,
       })
       .eq("id", id);
 
@@ -117,6 +184,13 @@ setIndividualGoal(
       console.error(error);
       setErro("Não foi possível salvar as alterações.");
       setSalvando(false);
+      setPrevia(null);
+      return;
+    }
+
+    if (plan !== planoSalvo && !(await aplicarPlano(plan))) {
+      setSalvando(false);
+      setPrevia(null);
       return;
     }
 
@@ -218,6 +292,31 @@ setIndividualGoal(
                   <option value="Quinzenal">Quinzenal</option>
                   <option value="Mensal">Mensal</option>
                 </Selecao>
+
+                {frequenciaDoCiclo && planoSalvo && plan === planoSalvo &&
+                normalizarFrequencia(frequenciaDoCiclo) !== normalizarFrequencia(planoSalvo) ? (
+                  <div className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+                    <p>
+                      O acompanhamento atual está como {frequenciaDoCiclo}, diferente do cadastro ({planoSalvo}).
+                    </p>
+                    <Button
+                      type="button"
+                      size="small"
+                      outlined
+                      className="mt-2"
+                      icon="pi pi-sync"
+                      label="Reaplicar o plano ao acompanhamento atual"
+                      onClick={async () => {
+                        setErro("");
+                        const p = await buscarPrevia(planoSalvo);
+                        if (p) {
+                          setReaplicando(true);
+                          setPrevia(p);
+                        }
+                      }}
+                    />
+                  </div>
+                ) : null}
               </div>
 
               <div>
@@ -277,6 +376,29 @@ setIndividualGoal(
 
             </div>
           </form>
+
+          <ConfirmarPlano
+            previa={previa}
+            reaplicar={reaplicando}
+            salvando={salvando}
+            onCancelar={() => setPrevia(null)}
+            onConfirmar={async () => {
+              if (reaplicando) {
+                setSalvando(true);
+                await aplicarPlano(planoSalvo ?? plan);
+                setSalvando(false);
+                setPrevia(null);
+                return;
+              }
+              const convertidos = dadosParaBanco(complementares);
+              if ("erro" in convertidos) {
+                setErro(convertidos.erro);
+                setPrevia(null);
+                return;
+              }
+              await gravar(convertidos.valores);
+            }}
+          />
 
         </div>
       </main>
