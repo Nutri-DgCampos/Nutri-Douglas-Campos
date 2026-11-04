@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { idadeEm } from "@/lib/nutricao/paciente";
 import { gravarArquivo, removerArquivo, resolverCaminho } from "@/lib/servidor/arquivos";
 import { registrarAcao } from "@/lib/servidor/auditoria";
-import { buscarAvaliacao, historicoAte, pessoaDoPaciente, resultadosDe } from "@/lib/servidor/avaliacoes";
+import { buscarAvaliacao, feitaPorEducador, historicoAte, pessoaDoPaciente, resultadosDe } from "@/lib/servidor/avaliacoes";
 import { obterPool } from "@/lib/servidor/banco";
 import { UUID } from "@/lib/servidor/dietas";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
@@ -23,6 +23,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const { id } = await params;
   if (!UUID.test(id)) return recusar("Avaliação inválida.", 400);
+  // Avaliação do educador físico (R7b): só ele altera ou envia.
+  const daAvaliacao = await buscarAvaliacao(id);
+  if (daAvaliacao && (await feitaPorEducador(daAvaliacao))) return recusar("Esta avaliação foi feita pelo educador físico: só ele pode alterá-la.", 403);
 
   const cliente = await obterPool().connect();
   let gravado: string | null = null;

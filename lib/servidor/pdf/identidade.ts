@@ -63,20 +63,21 @@ export async function carregarIdentidade(): Promise<Identidade> {
 
 // PDFs do Treino: cada documento sai com a identidade de quem prescreveu
 // (resposta H1). Administrador: a identidade da clínica. Educador físico:
-// nome, CREF e telefone do cadastro (logotipo próprio entra na etapa T6, R8).
+// nome, CREF, telefone, e-mail e logotipo do próprio perfil (R8).
 export async function identidadeDoProfissional(profissional: { usuarioId: string; admin: boolean }): Promise<Identidade> {
   if (profissional.admin) return carregarIdentidade();
-  const r = await obterPool().query<{ nome: string; cref: string | null; telefone: string | null }>(
-    "select nome, cref, telefone from public.educadores_fisicos where usuario_id = $1",
+  const r = await obterPool().query<{ nome: string; cref: string | null; telefone: string | null; email_contato: string | null; logo_path: string | null }>(
+    "select nome, cref, telefone, email_contato, logo_path from public.educadores_fisicos where usuario_id = $1",
     [profissional.usuarioId]
   );
   const e = r.rows[0];
+  const contato = [e?.telefone, e?.email_contato].filter(Boolean).join(" · ");
   return {
     nomeProfissional: e?.nome ?? null,
     registroProfissional: e?.cref ? (/^cref/i.test(e.cref.trim()) ? e.cref.trim() : `CREF ${e.cref.trim()}`) : null,
-    frase: e?.telefone ?? null,
+    frase: contato || null,
     corLinhas: "#15803d",
-    logo: null,
+    logo: await carregarImagem(e?.logo_path ?? null),
     assinatura: null,
     marcaDagua: null,
   };

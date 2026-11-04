@@ -460,3 +460,37 @@ Como funciona (resposta R5):
 - **Continuam precisando de internet:** relatórios, devolutivas, cadastros (tênis, bicicleta) e excluir registro.
 
 Teste: `tests/navegacao/treinoT5.mjs` (12 verificações), com o modo offline do navegador. Roda contra `next build && next start`: o modo de desenvolvimento depende do WebSocket de recarga e não reproduz o uso sem internet, como diz o próprio guia do Next.js.
+
+## 14. T6 entregue: anamnese, avaliação física compartilhada e identidade do educador (04/11/2026)
+
+Migração `032_treino_anamnese_avaliacao_identidade.sql`:
+- `avaliacoes_fisicas.consulta_id` passa a aceitar vazio, porque a avaliação do educador não pertence a uma consulta da Nutrição. Ficou obrigatório ter consulta ou autor.
+- A proteção "avaliação finalizada não se apaga" foi corrigida para valer também sem consulta. Antes, ela deixava passar.
+- `treino_anamneses`: anamnese de cada profissional, privada.
+- `educadores_fisicos.email_contato` e `logo_path`.
+
+**R6, anamnese do educador** (ficha do aluno › Anamnese do treino):
+- perguntas abertas aprovadas: objetivo, histórico de treino, lesões e cirurgias, medicamentos, liberação médica, disponibilidade e observações;
+- sem nota nem classificação;
+- só o profissional que escreveu vê (F2), nem o administrador lê a do educador;
+- gravação com controle de revisão.
+
+**R7/R7b, avaliação física compartilhada** (ficha do aluno › Avaliações físicas):
+- **Mesmos métodos:** o editor e a tela de resultados são os da Nutrição, com a API do Treino. No Treino não há envio ao paciente nem leitura do PDF de bioimpedância pela IA.
+- **Quem vê:**
+  - todos os profissionais que acompanham o aluno veem as finalizadas de todos, com data e autor;
+  - os rascunhos só o autor vê;
+  - o histórico (gráficos e "Anterior") reúne as avaliações dos dois.
+- **Quem altera:**
+  - só o autor corrige, finaliza, reabre ou exclui;
+  - na Nutrição, a avaliação do educador aparece como "feita por (nome)", só para leitura;
+  - as rotas da Nutrição (salvar, finalizar, reabrir, excluir, enviar e bioimpedância) recusam alterá-la.
+- **Peso inicial do educador:** vem da última avaliação finalizada, nunca dos relatórios da Nutrição.
+- **Organização do código:** as operações da avaliação (salvar, finalizar, reabrir, excluir) passaram para `lib/servidor/avaliacoes.ts`, usadas pela Nutrição e pelo Treino, com o mesmo comportamento de antes.
+
+**R8, identidade nos PDFs do educador** (menu › Meu perfil):
+- nome, CREF, telefone, e-mail de contato e logotipo opcional (PNG ou JPG até 5 MB, guardado em `identidade/educadores/<id>`);
+- os PDFs de treino, planilha e avaliação feitos pelo educador saem com nome e CREF no rodapé, contato e logotipo no topo;
+- a avaliação do nutricionista sai com a identidade da clínica (H1).
+
+Teste: `tests/navegacao/treinoT6.mjs` (20 verificações), com um aluno compartilhado entre o nutricionista e o educador.

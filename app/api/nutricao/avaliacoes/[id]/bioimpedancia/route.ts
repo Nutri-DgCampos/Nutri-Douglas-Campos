@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { gravarArquivo, resolverCaminho } from "@/lib/servidor/arquivos";
-import { buscarAvaliacao } from "@/lib/servidor/avaliacoes";
+import { buscarAvaliacao, feitaPorEducador } from "@/lib/servidor/avaliacoes";
 import { lerPdfDeBioimpedancia } from "@/lib/servidor/bioimpedancia";
 import { UUID } from "@/lib/servidor/dietas";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
@@ -19,6 +19,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const { id } = await params;
   if (!UUID.test(id)) return recusar("Avaliação inválida.", 400);
+  // Avaliação do educador físico (R7b): só ele altera ou envia.
+  const daAvaliacao = await buscarAvaliacao(id);
+  if (daAvaliacao && (await feitaPorEducador(daAvaliacao))) return recusar("Esta avaliação foi feita pelo educador físico: só ele pode alterá-la.", 403);
 
   const avaliacao = await buscarAvaliacao(id);
   if (!avaliacao) return recusar("Avaliação não encontrada.", 404);

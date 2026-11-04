@@ -143,15 +143,27 @@ function GraficoColunas({ titulo, unidade, pontos, cor }: { titulo: string; unid
   );
 }
 
-export default function ResultadosDaAvaliacao({ avaliacaoId, voltar }: { avaliacaoId: string; voltar: () => void }) {
-  const [dados, setDados] = useState<Dados | null | undefined>(undefined);
+// Também usada no Módulo de Treino (T6, R7), com a API do Treino; mostra
+// quem fez a avaliação.
+export default function ResultadosDaAvaliacao({
+  avaliacaoId,
+  voltar,
+  api = "/api/nutricao/avaliacoes",
+  rotuloVoltar = "Voltar à avaliação",
+}: {
+  avaliacaoId: string;
+  voltar: () => void;
+  api?: string;
+  rotuloVoltar?: string;
+}) {
+  const [dados, setDados] = useState<(Dados & { autor?: string }) | null | undefined>(undefined);
 
   useEffect(() => {
-    fetch(`/api/nutricao/avaliacoes/${avaliacaoId}`, { cache: "no-store" })
+    fetch(`${api}/${avaliacaoId}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then(setDados)
       .catch(() => setDados(null));
-  }, [avaliacaoId]);
+  }, [avaliacaoId, api]);
 
   if (dados === undefined) return <Skeleton height="20rem" />;
   if (dados === null) return <p>Avaliação não encontrada.</p>;
@@ -170,8 +182,9 @@ export default function ResultadosDaAvaliacao({ avaliacaoId, voltar }: { avaliac
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        <Button type="button" icon="pi pi-arrow-left" label="Voltar à avaliação" text onClick={voltar} />
-        <Button type="button" icon="pi pi-file-pdf" label="PDF" outlined onClick={() => abrirDocumento(`/api/nutricao/avaliacoes/${avaliacaoId}/pdf`)} />
+        <Button type="button" icon="pi pi-arrow-left" label={rotuloVoltar} text onClick={voltar} />
+        <Button type="button" icon="pi pi-file-pdf" label="PDF" outlined onClick={() => abrirDocumento(`${api}/${avaliacaoId}/pdf`)} />
+        {dados.autor ? <span className="self-center text-sm text-gray-500">Avaliação feita por {dados.autor}</span> : null}
       </div>
 
       <div className="cartao grid gap-2 p-4 text-sm sm:grid-cols-5">

@@ -91,7 +91,23 @@ function Resultado({ rotulo, calculo, unidade = "kcal/dia", casas = 0 }: { rotul
 
 const MODALIDADES = [...new Set(ATIVIDADES.map((a) => a.modalidade))];
 
-export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref }: { avaliacaoId: string; voltar: () => void; resultadosHref: string }) {
+// Também usado no Módulo de Treino (T6, R7): outra API, sem envio ao
+// paciente e sem leitura do PDF de bioimpedância pela IA.
+export default function EditorDaAvaliacao({
+  avaliacaoId,
+  voltar,
+  resultadosHref,
+  api: endereco = "/api/nutricao/avaliacoes",
+  comEnvio = true,
+  comLeituraDePdf = true,
+}: {
+  avaliacaoId: string;
+  voltar: () => void;
+  resultadosHref: string;
+  api?: string;
+  comEnvio?: boolean;
+  comLeituraDePdf?: boolean;
+}) {
   const router = useRouter();
   const [dados, setDados] = useState<Dados | null | undefined>(undefined);
   const [doc, setDoc] = useState<AvaliacaoDoc | null>(null);
@@ -114,9 +130,11 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
   const arquivoRef = useRef<HTMLInputElement>(null);
 
   const carregar = useCallback(async () => {
-    const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}`, { cache: "no-store" });
+    const resposta = await fetch(`${endereco}/${avaliacaoId}`, { cache: "no-store" });
     if (!resposta.ok) return setDados(null);
-    const recebidos = (await resposta.json()) as Dados;
+    const recebidos = (await resposta.json()) as Dados & { pode_editar?: boolean };
+    // Avaliação de outro profissional (R7b): só os resultados, para leitura.
+    if (recebidos.pode_editar === false) return router.replace(resultadosHref);
     setDados(recebidos);
     setDoc(recebidos.avaliacao.documento);
     docRef.current = recebidos.avaliacao.documento;
@@ -126,7 +144,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
     pendenteRef.current = false;
     conflitoRef.current = false;
     setEstado("salvo");
-  }, [avaliacaoId]);
+  }, [avaliacaoId, endereco, router, resultadosHref]);
 
   useEffect(() => {
     carregar();
@@ -143,7 +161,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
     setEstado("salvando");
     const promessa = (async () => {
       try {
-        const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}`, {
+        const resposta = await fetch(`${endereco}/${avaliacaoId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ documento: docRef.current, revisao: revisaoRef.current, data: dataRef.current }),
@@ -217,7 +235,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
       { aceitar: "Finalizar", rejeitar: "Cancelar", titulo: "Finalizar avaliação" }
     );
     if (!confirmado) return;
-    const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}`, {
+    const resposta = await fetch(`${endereco}/${avaliacaoId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ acao: "finalizar", revisao: revisaoRef.current }),
@@ -234,7 +252,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
       { aceitar: "Reabrir", rejeitar: "Cancelar", titulo: "Corrigir avaliação" }
     );
     if (!confirmado) return;
-    const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}`, {
+    const resposta = await fetch(`${endereco}/${avaliacaoId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ acao: "reabrir" }),
@@ -246,7 +264,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
   async function enviar() {
     setEnviando(true);
     try {
-      const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}/enviar`, { method: "POST" });
+      const resposta = await fetch(`${endereco}/${avaliacaoId}/enviar`, { method: "POST" });
       const resultado = await resposta.json().catch(() => null);
       if (!resposta.ok) return avisar(resultado?.erro ?? "Não foi possível enviar.", "error");
       setPerguntarEnvio(false);
@@ -265,7 +283,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
     if (!confirmado) return;
     if (timerRef.current) clearTimeout(timerRef.current);
     pendenteRef.current = false;
-    const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}`, { method: "DELETE" });
+    const resposta = await fetch(`${endereco}/${avaliacaoId}`, { method: "DELETE" });
     const resultado = await resposta.json().catch(() => null);
     if (!resposta.ok) return avisar(resultado?.erro ?? "Não foi possível excluir.", "error");
     avisar("Rascunho excluído.", "success");
@@ -278,7 +296,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
     try {
       const formulario = new FormData();
       formulario.append("arquivo", arquivo);
-      const resposta = await fetch(`/api/nutricao/avaliacoes/${avaliacaoId}/bioimpedancia`, { method: "POST", body: formulario });
+      const resposta = await fetch(`${endereco}/${avaliacaoId}/bioimpedancia`, { method: "POST", body: formulario });
       const resultado = await resposta.json().catch(() => null);
       if (!resposta.ok) return avisar(resultado?.erro ?? "Não foi possível anexar o PDF.", "error");
       alterar((d) => void (d.bioimpedancia.pdf = resultado.pdf));
@@ -651,7 +669,9 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
                 if (arquivo) void anexarPdf(arquivo);
               }}
             />
-            <Button type="button" icon="pi pi-paperclip" label="Anexar exame de bioimpedância" outlined loading={lendoPdf} onClick={() => arquivoRef.current?.click()} />
+            {comLeituraDePdf ? (
+              <Button type="button" icon="pi pi-paperclip" label="Anexar exame de bioimpedância" outlined loading={lendoPdf} onClick={() => arquivoRef.current?.click()} />
+            ) : null}
             {doc.bioimpedancia.pdf ? (
               <Button type="button" icon="pi pi-file-pdf" label={doc.bioimpedancia.pdf.nome} text onClick={abrirPdfAnexado} />
             ) : null}
@@ -738,7 +758,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
         ) : (
           <>
             <Button type="button" icon="pi pi-pencil" label="Reabrir para correção" outlined onClick={reabrir} />
-            {enviadaEstaVersao ? (
+            {!comEnvio ? null : enviadaEstaVersao ? (
               // Já enviada: reenviar o mesmo PDF e ver o histórico de envios.
               <EnvioAoPaciente tipo="avaliacao" origemId={ultimoEnvio.id} paciente={paciente.nome} tamanho="large" />
             ) : (
@@ -763,7 +783,7 @@ export default function EditorDaAvaliacao({ avaliacaoId, voltar, resultadosHref 
           outlined
           onClick={async () => {
             if (!finalizada) await gravar();
-            abrirDocumento(`/api/nutricao/avaliacoes/${avaliacaoId}/pdf`);
+            abrirDocumento(`${endereco}/${avaliacaoId}/pdf`);
           }}
         />
         <span className="flex-1" />

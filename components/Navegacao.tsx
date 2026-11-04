@@ -71,9 +71,11 @@ const MENU_MAIS = [NUTRICAO, TREINO, PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
 
 // Educador físico: só o Módulo de Treino.
 const TREINO_EDUCADOR: Item = { rotulo: "Alunos", icone: "pi-bolt", destino: "/treino" };
+// Identidade dos PDFs do educador (T6, R8).
+const PERFIL_EDUCADOR: Item = { rotulo: "Meu perfil", icone: "pi-id-card", destino: "/treino/perfil" };
 const MENUS = {
   admin: { lateral: MENU_LATERAL, abas: ABAS_CELULAR, mais: MENU_MAIS },
-  educador: { lateral: [TREINO_EDUCADOR], abas: [TREINO_EDUCADOR], mais: [] as Item[] },
+  educador: { lateral: [TREINO_EDUCADOR, PERFIL_EDUCADOR], abas: [TREINO_EDUCADOR, PERFIL_EDUCADOR], mais: [] as Item[] },
 };
 
 export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educador" }) {

@@ -10,6 +10,8 @@ import BotaoVoltar from "@/components/BotaoVoltar";
 import PainelTreino from "@/components/PainelTreino";
 import RegistrosDoTreino from "@/components/RegistrosDoTreino";
 import AcompanhamentoSemanal from "@/components/treino/AcompanhamentoSemanal";
+import AnamneseDoTreino from "@/components/treino/AnamneseDoTreino";
+import AvaliacoesDoTreino from "@/components/treino/AvaliacoesDoTreino";
 import { CartaoDoAluno, type DadosDoAluno } from "@/components/treino/CadastroDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import { api } from "@/lib/api";
@@ -205,6 +207,10 @@ export default function AlunoNoTreinoPage() {
               {painel.cadastro ? <CartaoDoAluno alunoId={painel.aluno.id} dados={painel.cadastro} onAlterado={carregar} /> : null}
 
               <AcompanhamentoSemanal alunoId={painel.aluno.id} admin={painel.admin} />
+
+              <AnamneseDoTreino alunoId={painel.aluno.id} />
+
+              <AvaliacoesDoTreino alunoId={painel.aluno.id} />
 
               <section className="cartao flex flex-wrap items-center gap-3 p-5" aria-label="Academia do aluno">
                 <div className="min-w-0 flex-1">
