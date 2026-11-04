@@ -9,6 +9,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { hojeNoBrasil, segundasPrevistas } from "@/lib/cronograma";
+import { conferirMedida } from "@/lib/relatorios/medidas";
 import { OPCOES_HORMONIOS, PERGUNTA_HORMONIOS, REGRAS_ATUAIS } from "@/lib/relatorios/pontos";
 
 export default function RelatorioPage() {
@@ -258,6 +259,18 @@ const pontosQualidadeSono =
   avisar("Não foi possível identificar o paciente. Tente novamente.");
   return;
 }
+
+  // Peso, água e sono: vírgula ou ponto e faixa plausível, antes de enviar
+  // (lib/relatorios/medidas.ts).
+  const peso = conferirMedida("peso", pesoAtual);
+  const agua = conferirMedida("agua", litrosAgua);
+  const sono = conferirMedida("sono", horasSono);
+  const problema = [peso, agua, sono].find((medida) => "erro" in medida);
+  if (problema && "erro" in problema) {
+    avisar(problema.erro);
+    return;
+  }
+  const valorDe = (medida: typeof peso) => ("valor" in medida ? medida.valor : null);
   setSalvando(true);
 
   try {
@@ -517,8 +530,7 @@ if (numeroProgramado === null) {
   water_goal_days:
   diasMetaAgua === "" ? null : Number(diasMetaAgua),
 
-  water_liters:
-  litrosAgua === "" ? null : Number(litrosAgua),
+  water_liters: valorDe(agua),
 
   urine_color:
   corUrina === "" ? null : corUrina,
@@ -559,8 +571,7 @@ sleep_goal_applicable:
 sleep_goal_days:
   diasMetaSono === "" ? null : Number(diasMetaSono),
 
-  sleep_hours:
-  horasSono === "" ? null : Number(horasSono),
+  sleep_hours: valorDe(sono),
   
 sleep_quality:
   qualidadeSono === "" ? null : qualidadeSono,
@@ -616,8 +627,7 @@ individual_goal_completed:
 
 individual_goal_score: pontosMetaIndividual,
 
-weight:
-  pesoAtual === "" ? null : Number(pesoAtual),
+weight: valorDe(peso),
 
   stool_consistency:
   consistenciaFezes === "" ? null : consistenciaFezes,
@@ -651,7 +661,7 @@ weight:
 
 if (error) {
   console.error("Erro ao salvar relatório:", error);
-  avisar("Erro ao salvar relatório.");
+  avisar("Não foi possível salvar o relatório. Confira os números informados e tente de novo.");
   return;
 }
 
@@ -837,12 +847,11 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
 
     <div className="mt-3 flex items-center gap-3">
       <InputText
-        type="number"
-        min="0"
-        step="0.1"
+        type="text"
+        inputMode="decimal"
         value={litrosAgua}
         onChange={(e) => setLitrosAgua(e.target.value)}
-        placeholder="Ex.: 2.5"
+        placeholder="Ex.: 2,5"
         className="w-full"
       />
 
@@ -1131,13 +1140,11 @@ onChange={(e) => setDificuldadeAlimentar(e.target.value)}
   </label>
 
   <InputText
-    type="number"
-    step="0.5"
-    min="0"
-    max="24"
+    type="text"
+    inputMode="decimal"
     value={horasSono}
     onChange={(e) => setHorasSono(e.target.value)}
-    placeholder="Ex.: 7.5"
+    placeholder="Ex.: 7,5"
     className="w-full mt-3"
   />
 </div>
@@ -1605,12 +1612,11 @@ onChange={(e) => setDificuldadeMetaIndividual(e.target.value)}
 
     <div className="mt-3 flex items-center gap-3">
       <InputText
-        type="number"
-        min="0"
-        step="0.1"
+        type="text"
+        inputMode="decimal"
         value={pesoAtual}
         onChange={(e) => setPesoAtual(e.target.value)}
-        placeholder="Ex.: 80.5"
+        placeholder="Ex.: 80,5"
         className="w-full"
       />
 
