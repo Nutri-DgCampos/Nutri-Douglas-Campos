@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "primereact/button";
-import { instalar, useSituacaoDaInstalacao } from "@/lib/instalacao";
+import { instalar, linkParaChrome, useSituacaoDaInstalacao } from "@/lib/instalacao";
 
 const CHAVE = "aviso-instalacao-adiado";
 const ADIAR_DIAS = 7;
@@ -39,6 +39,11 @@ export default function AvisoDeInstalacao() {
         <p className="font-semibold text-gray-900">Instale o aplicativo</p>
         {situacao === "pode-instalar" ? (
           <p className="mt-0.5 text-sm text-gray-600">Acesse seu plano pela tela inicial do celular e receba os avisos do nutricionista.</p>
+        ) : situacao === "samsung" ? (
+          <p className="mt-0.5 text-sm text-gray-600">
+            Pelo navegador da Samsung, o celular bloqueia a instalação. Abra no <strong>Google Chrome</strong> e toque nos três pontinhos{" "}
+            <strong>⋮</strong> e depois em <strong>Instalar app</strong> (ou <strong>Adicionar à tela inicial</strong>).
+          </p>
         ) : (
           <p className="mt-0.5 text-sm text-gray-600">
             No iPhone: toque em <strong>Compartilhar</strong> <i className="pi pi-upload text-xs" aria-hidden /> no Safari e depois em{" "}
@@ -48,6 +53,12 @@ export default function AvisoDeInstalacao() {
         <div className="mt-2 flex flex-wrap gap-2">
           {situacao === "pode-instalar" ? (
             <Button type="button" size="small" icon="pi pi-download" label="Instalar" onClick={() => void instalar()} />
+          ) : null}
+          {situacao === "samsung" ? (
+            <a href={linkParaChrome(window.location.href)} className="p-button p-button-sm flex gap-2 font-semibold">
+              <i className="pi pi-external-link" aria-hidden />
+              Abrir no Chrome
+            </a>
           ) : null}
           <Button type="button" size="small" text label="Agora não" onClick={adiar} />
         </div>
