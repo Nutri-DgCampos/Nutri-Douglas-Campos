@@ -33,6 +33,8 @@ export default function RelatoDeDesconforto({
   dia: ChaveDia | null;
   exercicios: string[];
   onFechar: () => void;
+  // null: gravado no servidor; "na_fila": guardado no aparelho, sem internet
+  // (T5); texto: erro para mostrar.
   onEnviar: (relato: Relato) => Promise<string | null>;
 }) {
   const [chave, setChave] = useState(() => crypto.randomUUID());
@@ -44,7 +46,7 @@ export default function RelatoDeDesconforto({
   const [comentario, setComentario] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
-  const [enviado, setEnviado] = useState(false);
+  const [enviado, setEnviado] = useState<false | "servidor" | "aparelho">(false);
 
   function limpar() {
     setChave(crypto.randomUUID());
@@ -73,6 +75,7 @@ export default function RelatoDeDesconforto({
       intensidade,
       conduta,
       comentario,
+      registradoEm: new Date().toISOString(),
     });
     if ("erro" in resultado) {
       setErro(resultado.erro);
@@ -83,11 +86,15 @@ export default function RelatoDeDesconforto({
     // A mesma chave é reenviada se houver nova tentativa: não duplica.
     const falha = await onEnviar(resultado.relato);
     setEnviando(false);
+    if (falha === "na_fila") {
+      setEnviado("aparelho");
+      return;
+    }
     if (falha) {
       setErro(falha);
       return;
     }
-    setEnviado(true);
+    setEnviado("servidor");
   }
 
   return (
@@ -115,7 +122,13 @@ export default function RelatoDeDesconforto({
         ))}
       </div>
 
-      {enviado ? (
+      {enviado === "aparelho" ? (
+        <p className="mt-4 flex items-start gap-2 font-semibold text-atencao-700" role="status">
+          <i className="pi pi-clock mt-0.5" aria-hidden />
+          Sem internet: o relato ficou guardado no aparelho e ainda NÃO chegou ao seu profissional. Ele é enviado sozinho quando a internet voltar. Se a dor for forte, procure
+          atendimento.
+        </p>
+      ) : enviado ? (
         <p className="mt-4 flex items-start gap-2 font-semibold text-primary-800" role="status">
           <i className="pi pi-check-circle mt-0.5" aria-hidden />
           Relato registrado e enviado ao seu profissional.

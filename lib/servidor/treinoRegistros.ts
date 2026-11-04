@@ -1,8 +1,10 @@
-import { hojeNoBrasil } from "@/lib/cronograma";
+import { hojeNoBrasil, somarDias } from "@/lib/cronograma";
 import {
   DIAS,
   chaveDoExercicio,
   datasDaSemana,
+  domingoDaSemana,
+  momentoDoAparelho,
   type ChaveDia,
   type ExercicioRegistrado,
   type PlanoDeTreino,
@@ -172,8 +174,30 @@ export async function salvarRegistro(patientId: string, corpo: unknown, hoje = h
   const dia = dados.dia as ChaveDia;
   if (!DIAS.some((d) => d.chave === dia)) throw new RegistroInvalido("Dia inválido.");
 
-  const prescricao = await prescricaoVigente(patientId);
+  // Registro feito sem internet (T5): pode chegar depois de uma nova versão
+  // do treino ou na semana seguinte. Vale a prescrição em que foi feito (se
+  // é deste aluno) e a semana informada (esta ou a anterior).
+  const vigente = await prescricaoVigente(patientId);
+  let prescricao = vigente;
+  if (typeof dados.prescricaoId === "string" && dados.prescricaoId !== vigente?.id && /^[0-9a-f-]{36}$/i.test(dados.prescricaoId)) {
+    const anterior = await obterPool().query<Prescricao>(
+      `select id, origem, versao, plano, publicada_em from public.treino_prescricoes
+        where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = 'musculacao'`,
+      [dados.prescricaoId, patientId]
+    );
+    prescricao = anterior.rows[0] ?? null;
+  }
   if (!prescricao || prescricao.id !== dados.prescricaoId) throw new RegistroInvalido("O treino mudou. Recarregue a página.");
+  const registradaEm = momentoDoAparelho(dados.registradaEm);
+  if (registradaEm === undefined) throw new RegistroInvalido("Data do registro inválida.");
+  let dataPlanejada = datasDaSemana(hoje)[dia];
+  if (dados.dataPlanejada !== undefined && dados.dataPlanejada !== null) {
+    const informada = String(dados.dataPlanejada);
+    if (!DATA.test(informada) || datasDaSemana(informada)[dia] !== informada) throw new RegistroInvalido("Data do treino inválida.");
+    if (informada > datasDaSemana(hoje).sab || informada < datasDaSemana(somarDias(domingoDaSemana(hoje), -7)).dom)
+      throw new RegistroInvalido("Este registro é de uma semana já fechada e não pode mais ser enviado.");
+    dataPlanejada = informada;
+  }
   const diaDoPlano = prescricao.plano.dias.find((d) => d.dia === dia);
   if (!diaDoPlano) throw new RegistroInvalido("Dia sem treino.");
 
@@ -204,18 +228,17 @@ export async function salvarRegistro(patientId: string, corpo: unknown, hoje = h
     };
   });
 
-  const dataPlanejada = datasDaSemana(hoje)[dia];
   const cliente = await obterPool().connect();
   try {
     await cliente.query("begin");
     const sessao = await cliente.query<{ id: string }>(
-      `insert into public.treino_sessoes (patient_id, prescricao_id, dia, data_planejada, situacao, data_efetiva, motivo, observacao, kcal)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `insert into public.treino_sessoes (patient_id, prescricao_id, dia, data_planejada, situacao, data_efetiva, motivo, observacao, kcal, registrada_em)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        on conflict (patient_id, prescricao_id, dia, data_planejada) do update
          set situacao = excluded.situacao, data_efetiva = excluded.data_efetiva, motivo = excluded.motivo,
-             observacao = excluded.observacao, kcal = excluded.kcal, atualizado_em = now()
+             observacao = excluded.observacao, kcal = excluded.kcal, registrada_em = excluded.registrada_em, atualizado_em = now()
        returning id`,
-      [patientId, prescricao.id, dia, dataPlanejada, situacao, dataEfetiva, motivo, observacao, kcal === null ? null : Math.round(kcal)]
+      [patientId, prescricao.id, dia, dataPlanejada, situacao, dataEfetiva, motivo, observacao, kcal === null ? null : Math.round(kcal), registradaEm]
     );
     const sessaoId = sessao.rows[0].id;
     await cliente.query("delete from public.treino_exercicios_registro where sessao_id = $1", [sessaoId]);

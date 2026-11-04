@@ -324,6 +324,9 @@ export const ORIENTACAO_DESCONFORTO = [
 
 export type RelatoDeDesconforto = {
   chaveCliente: string;
+  // Momento do relato no aparelho (enviado depois quando estava sem
+  // internet, T5). Sem ele, vale o momento da chegada.
+  registradoEm?: string | null;
   dia: ChaveDia | null;
   exercicio: string | null;
   regiao: string;
@@ -359,5 +362,29 @@ export function validarDesconforto(corpo: unknown): { relato: RelatoDeDesconfort
   if (exercicio === undefined) return { erro: "Exercício inválido." };
   const comentario = textoDoRelato(d.comentario, 1000, false);
   if (comentario === undefined) return { erro: "Comentário com mais de 1000 caracteres." };
-  return { relato: { chaveCliente: d.chaveCliente, dia, exercicio, regiao, intensidade, conduta: d.conduta, comentario } };
+  const registradoEm = momentoDoAparelho(d.registradoEm);
+  if (registradoEm === undefined) return { erro: "Data do relato inválida." };
+  return { relato: { chaveCliente: d.chaveCliente, dia, exercicio, regiao, intensidade, conduta: d.conduta, comentario, registradoEm } };
+}
+
+// ---------------------------------------------------------------------------
+// Uso sem internet (T5)
+
+// Prazo máximo para um registro feito sem internet chegar ao servidor.
+export const PRAZO_DO_REGISTRO_OFFLINE_DIAS = 14;
+
+// Momento informado pelo aparelho: ISO válido, não no futuro (tolerância de
+// 10 min no relógio do celular) e dentro do prazo. null = não informado;
+// undefined = inválido.
+export function momentoDoAparelho(valor: unknown, agora = Date.now()): string | null | undefined {
+  if (valor === null || valor === undefined || valor === "") return null;
+  if (typeof valor !== "string") return undefined;
+  const t = Date.parse(valor);
+  if (!Number.isFinite(t) || t > agora + 10 * 60_000 || t < agora - PRAZO_DO_REGISTRO_OFFLINE_DIAS * 86_400_000) return undefined;
+  return new Date(t).toISOString();
+}
+
+// Data (AAAA-MM-DD) de um momento no horário de Brasília.
+export function dataNoBrasil(momento: string) {
+  return new Date(momento).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 }

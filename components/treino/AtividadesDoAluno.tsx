@@ -26,6 +26,9 @@ import {
 } from "@/lib/treinoAtividades";
 import RelatoDeDesconforto from "@/components/treino/RelatoDeDesconforto";
 import { textoDosMinutos, type SessaoEndurance } from "@/lib/treinoEndurance";
+import { buscarComCopia, enviarOuGuardar, guardarDados } from "@/lib/treinoOffline";
+
+const CHAVE_DA_COPIA = "corridas-e-pedais";
 
 // "Meu treino" do aluno, corrida e ciclismo (T4b): registrar corrida ou
 // pedal com tênis ou bicicleta, números do relógio, consumo durante o treino
@@ -97,10 +100,10 @@ export default function AtividadesDoAluno({
   const [salvando, setSalvando] = useState(false);
   const [relatando, setRelatando] = useState(false);
 
+  // Sem internet (T5): a última cópia guardada no aparelho.
   useEffect(() => {
-    fetch("/api/area-paciente/treino/atividades", { cache: "no-store" })
-      .then((r) => (r.ok ? (r.json() as Promise<Dados>) : null))
-      .then(setDados)
+    buscarComCopia<Dados>("/api/area-paciente/treino/atividades", CHAVE_DA_COPIA)
+      .then((r) => setDados(r?.dados ?? null))
       .catch(() => setDados(null));
   }, []);
 
@@ -110,14 +113,42 @@ export default function AtividadesDoAluno({
   const noLimite = dados.equipamentos.filter((e) => !e.aposentado_em && tenisNoLimite(e));
 
   async function salvarAtividade() {
-    if (!editando) return;
+    if (!editando || !dados) return;
     setSalvando(true);
-    const r = await chamar("/api/area-paciente/treino/atividades", "PUT", editando);
+    const corrida = editando.modalidade === "corrida";
+    const resultado = await enviarOuGuardar<Dados>({
+      tipo: "atividade",
+      url: "/api/area-paciente/treino/atividades",
+      metodo: "PUT",
+      corpo: { ...editando, registrada_em: new Date().toISOString() },
+      descricao: `${corrida ? "corrida" : "pedal"} de ${dataCurta(editando.data)}`,
+    });
     setSalvando(false);
-    if (!r) return;
-    setDados((d) => (d ? { ...d, atividades: r.atividades, equipamentos: r.equipamentos } : d));
+    if (resultado.ok === false) {
+      avisar(resultado.erro, "error");
+      return;
+    }
+    if (resultado.ok === "na_fila") {
+      // Aparece já na lista; o servidor confirma (sem duplicar, mesma chave)
+      // quando a internet voltar.
+      const local: AtividadeNaTela = {
+        ...editando,
+        id: dados.atividades.find((a) => a.chave_cliente === editando.chave_cliente)?.id ?? `local-${editando.chave_cliente}`,
+        equipamento: dados.equipamentos.find((q) => q.id === editando.equipamento_id)?.apelido ?? null,
+      };
+      const novo = { ...dados, atividades: [local, ...dados.atividades.filter((a) => a.chave_cliente !== editando.chave_cliente)] };
+      setDados(novo);
+      void guardarDados(CHAVE_DA_COPIA, novo);
+      setEditando(null);
+      avisar("Sem internet: o registro ficou guardado no aparelho e será enviado sozinho quando a conexão voltar.", "warn");
+      return;
+    }
+    const r = resultado.dados;
+    const novo = { ...dados, atividades: r.atividades, equipamentos: r.equipamentos, planejadas: r.planejadas ?? dados.planejadas };
+    setDados(novo);
+    void guardarDados(CHAVE_DA_COPIA, novo);
     setEditando(null);
-    avisar(editando.modalidade === "corrida" ? "Corrida registrada." : "Pedal registrado.", "success");
+    avisar(corrida ? "Corrida registrada." : "Pedal registrado.", "success");
     onAlterado?.();
   }
 

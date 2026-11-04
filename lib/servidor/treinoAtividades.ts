@@ -200,8 +200,8 @@ export async function salvarAtividade(patientId: string, corpo: unknown, hoje = 
       `insert into public.treino_atividades
          (patient_id, modalidade, chave_cliente, data, situacao, data_efetiva, motivo, observacao, equipamento_id, distancia_km,
           duracao_segundos, fc_media, fc_max, rpe, kcal, elevacao_m, potencia_media, potencia_normalizada, cadencia_media, tss,
-          prescricao_id, sessao_indice)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+          prescricao_id, sessao_indice, registrada_em)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, coalesce($23::timestamptz, now()))
        on conflict (chave_cliente) do update
          set modalidade = excluded.modalidade, data = excluded.data, prescricao_id = excluded.prescricao_id, sessao_indice = excluded.sessao_indice, situacao = excluded.situacao, data_efetiva = excluded.data_efetiva,
              motivo = excluded.motivo, observacao = excluded.observacao, equipamento_id = excluded.equipamento_id,
@@ -213,7 +213,7 @@ export async function salvarAtividade(patientId: string, corpo: unknown, hoje = 
       [
         patientId, a.modalidade, a.chave_cliente, a.data, a.situacao, a.data_efetiva, a.motivo, a.observacao, a.equipamento_id, a.distancia_km,
         a.duracao_segundos, a.fc_media, a.fc_max, a.rpe, a.kcal, a.elevacao_m, a.potencia_media, a.potencia_normalizada, a.cadencia_media, a.tss,
-        a.prescricao_id ?? null, a.prescricao_id ? (a.sessao_indice ?? null) : null,
+        a.prescricao_id ?? null, a.prescricao_id ? (a.sessao_indice ?? null) : null, a.registrada_em ?? null,
       ]
     );
     const id = gravada.rows[0].id;

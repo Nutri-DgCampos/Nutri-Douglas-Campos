@@ -1,4 +1,4 @@
-import type { SituacaoDaSessao } from "./treino.ts";
+import { momentoDoAparelho, type SituacaoDaSessao } from "./treino.ts";
 
 // Corrida e ciclismo registrados pelo aluno (T4b). Usado no navegador e no
 // servidor. Todos os números são informados pelo aluno (do relógio, do
@@ -64,6 +64,8 @@ export type Atividade = {
   cadencia_media: number | null;
   tss: number | null;
   consumos: Consumo[];
+  // Momento do registro no aparelho (T5).
+  registrada_em?: string | null;
 };
 
 export type Equipamento = {
@@ -136,6 +138,8 @@ export function validarAtividade(corpo: unknown): { atividade: Atividade } | { e
     const ciclismo = d.modalidade === "ciclismo";
     const lista = Array.isArray(d.consumos) ? d.consumos : [];
     if (lista.length > 40) throw new Invalido("No máximo 40 itens consumidos por atividade.");
+    const registradaEm = momentoDoAparelho(d.registrada_em);
+    if (registradaEm === undefined) throw new Invalido("Data do registro inválida.");
     const fcMedia = numero(d.fc_media, 20, 250, "FC média", true);
     const fcMax = numero(d.fc_max, 20, 250, "FC máxima", true);
     if (fcMedia !== null && fcMax !== null && fcMax < fcMedia) throw new Invalido("A FC máxima não pode ser menor que a média.");
@@ -164,6 +168,7 @@ export function validarAtividade(corpo: unknown): { atividade: Atividade } | { e
         cadencia_media: ciclismo ? numero(d.cadencia_media, 0, 250, "Cadência", true) : null,
         tss: ciclismo ? numero(d.tss, 0, 2000, "TSS") : null,
         consumos: lista.map(consumo),
+        registrada_em: registradaEm,
       },
     };
   } catch (erro) {

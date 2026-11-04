@@ -1,5 +1,5 @@
 import { hojeNoBrasil } from "@/lib/cronograma";
-import type { RelatoDeDesconforto } from "@/lib/treino";
+import { dataNoBrasil, type RelatoDeDesconforto } from "@/lib/treino";
 import { obterPool } from "./banco";
 import { enfileirarParaProfissionais } from "./pushProfissional";
 import { prescricaoVigente } from "./treinoRegistros";
@@ -33,11 +33,24 @@ export async function registrarDesconforto(patientId: string, relato: RelatoDeDe
   const prescricao = await prescricaoVigente(patientId);
   const inserido = await obterPool().query<{ id: string }>(
     `insert into public.treino_desconfortos
-       (patient_id, prescricao_id, dia, data, exercicio, regiao, intensidade, conduta, comentario, chave_cliente)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       (patient_id, prescricao_id, dia, data, exercicio, regiao, intensidade, conduta, comentario, chave_cliente, registrado_em)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      on conflict (chave_cliente) do nothing
      returning id`,
-    [patientId, prescricao?.id ?? null, relato.dia, hojeNoBrasil(), relato.exercicio, relato.regiao, relato.intensidade, relato.conduta, relato.comentario, relato.chaveCliente]
+    [
+      patientId,
+      prescricao?.id ?? null,
+      relato.dia,
+      // Feito sem internet (T5): a data é a do aparelho, não a da chegada.
+      relato.registradoEm ? dataNoBrasil(relato.registradoEm) : hojeNoBrasil(),
+      relato.exercicio,
+      relato.regiao,
+      relato.intensidade,
+      relato.conduta,
+      relato.comentario,
+      relato.chaveCliente,
+      relato.registradoEm ?? null,
+    ]
   );
 
   if (!inserido.rows[0]) {

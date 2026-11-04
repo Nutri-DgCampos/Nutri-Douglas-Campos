@@ -67,8 +67,17 @@ async function executar(consulta: Consulta): Promise<Resultado> {
 }
 
 async function usuarioAtual(): Promise<Usuario | null> {
-  const { dados } = await chamar("/api/auth/sessao");
+  return (await sessaoAtual()).usuario;
+}
 
+// Sessão e se a consulta falhou por falta de conexão (Treino sem internet, T5).
+async function sessaoAtual(): Promise<{ usuario: Usuario | null; semConexao: boolean }> {
+  const { dados, erro } = await chamar("/api/auth/sessao");
+  return { usuario: usuarioDe(dados), semConexao: erro?.code === "REDE" };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function usuarioDe(dados: any): Usuario | null {
   return dados?.usuario
     ? { ...dados.usuario, deveTrocarSenha: dados.deveTrocarSenha === true, somenteTreino: dados.somenteTreino === true }
     : null;
@@ -171,13 +180,26 @@ export const api = {
     },
 
     async signOut() {
+      // Treino sem internet (T5): registros na fila não podem sumir sem aviso.
+      const { registrosNaoEnviados, apagarDoAparelho } = await import("./treinoOffline");
+      const pendentes = await registrosNaoEnviados();
+      if (
+        pendentes &&
+        !window.confirm(
+          `Há ${pendentes === 1 ? "1 registro de treino" : `${pendentes} registros de treino`} ainda não enviados (sem internet). Se sair agora, eles serão perdidos. Sair mesmo assim?`
+        )
+      )
+        return { error: "Saída cancelada." };
+
       const { erro } = await enviarJson("/api/auth/sair", {});
+      if (!erro) await apagarDoAparelho();
 
       return { error: erro };
     },
 
     async getUser() {
-      return { data: { user: await usuarioAtual() }, error: null };
+      const { usuario, semConexao } = await sessaoAtual();
+      return { data: { user: usuario }, error: semConexao ? { message: "Sem conexão.", code: "REDE" } : null };
     },
 
     async getSession() {

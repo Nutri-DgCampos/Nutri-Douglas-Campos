@@ -41,7 +41,8 @@ function useSair() {
   const router = useRouter();
 
   return async () => {
-    await api.auth.signOut();
+    const { error } = await api.auth.signOut();
+    if (error === "Saída cancelada.") return;
     router.push("/login");
   };
 }

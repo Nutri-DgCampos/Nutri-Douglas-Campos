@@ -37,6 +37,7 @@ Rode os testes do Treino com `--limpar`: cada um cria a própria prescrição de
 - `treinoT4b.mjs`: etapa T4b (corrida e pedal do aluno, tênis, bicicleta, consumo, calorias informadas, limite do tênis pelo profissional). Cria e apaga `teste.educador.t4b@local.test` e dois alunos `teste.*aluno.t4b@local.test`.
 - `treinoT4c.mjs`: etapa T4c (editores de corrida e ciclismo, zonas e Coggan, ajustar volume, totais dos mockups corrigidos, sessões planejadas no Meu treino e registro ligado à sessão). Cria e apaga `teste.educador.t4c@local.test`, `teste.outro.t4c@local.test` e `teste.aluno.t4c@local.test`.
 - `treinoT3b.mjs`: etapa T3b (relatório por modalidade, nota 60/25/15, pontos, reagendado R4/R4b, atenção por modalidade, relatório completo do aluno). Monta duas semanas fechadas no banco; cria e apaga `teste.educador.t3b@local.test` e `teste.aluno.t3b@local.test`.
+- `treinoT5.mjs`: etapa T5 (uso sem internet: página e dados guardados, fila, envio ao voltar, sem duplicar, relato que ainda não chegou, registro recusado). Rode contra o **build de produção** (`npx next build` e `npx next start -p 3100`, com as mesmas variáveis): o modo de desenvolvimento não funciona sem rede. Cria e apaga `teste.educador.t5@local.test` e `teste.aluno.t5@local.test`.
 - `treinoT3.mjs`: etapa T3 (relatório semanal, devolutiva, atraso, lista de atenção e pausa). Cria duas semanas de registros do paciente de teste e apaga tudo com `--limpar`.
 
 As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.

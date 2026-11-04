@@ -108,7 +108,8 @@ const [pagamentoAtrasado, setPagamentoAtrasado] = useState(false);
         .catch(() => {});
     }, []);
     async function sair() {
-  await api.auth.signOut();
+  const { error } = await api.auth.signOut();
+  if (error === "Saída cancelada.") return;
   window.location.href = "/login";
 }
 
