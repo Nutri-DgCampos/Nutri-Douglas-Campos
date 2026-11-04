@@ -425,38 +425,38 @@ Testes:
 - `tests/navegacao/treinoT3b.mjs` (16 verificações).
 - `treinoT3.mjs` atualizado para as regras aprovadas: o reagendado na mesma semana conta como planejado, e o aluno vê o consolidado.
 
-## 13. T5 delivered: use without internet (03/11/2026)
+## 13. T5 entregue: uso sem internet (03/11/2026)
 
-Migration `031_treino_offline.sql` (additive only): adds the real time of the record on the device in `treino_sessoes.registrada_em` and `treino_desconfortos.registrado_em`. `treino_atividades.registrada_em` already existed.
+Migração `031_treino_offline.sql` (só acrescenta): hora real do registro no aparelho em `treino_sessoes.registrada_em` e `treino_desconfortos.registrado_em`. `treino_atividades.registrada_em` já existia.
 
-How it works (answer R5):
+Como funciona (resposta R5):
 - **Service worker (`public/sw.js`):**
-  - the app files and the "Meu treino" page always go to the network first and keep a copy;
-  - with no network, they open the last copy, so the student can open the app with no signal at all;
-  - no API data passes through the service worker;
-  - when online, nothing old is ever served.
-- **The screen's own copy (`lib/treinoOffline.ts`, IndexedDB):**
-  - the last workout and the last list of runs and rides are stored on the device;
-  - with no internet, the screen shows "Sem internet: mostrando o treino salvo no aparelho em…".
-- **Queue on the device:**
-  - what goes into it: the strength session record, runs and rides, and discomfort reports;
-  - sending:
-    - happens on its own when the signal returns, when the app opens, and every 30 seconds while something is pending;
-    - order is kept;
-    - each send is idempotent, so a resend never duplicates.
-  - what the student sees:
-    - a discreet notice "N registros aguardando conexão" with an "Enviar agora" button;
-    - a record the server rejects (for example, from a closed week) shows up as "não foi possível enviar", with the reason, and "Descartar". Nothing disappears silently.
-  - a run registered offline appears in the list right away;
-  - the server accepts the strength record in the week it was done (this week or the previous one), even if a new version of the workout arrived in the meantime.
-- **Discomfort:**
-  - with no internet, the screen says the report was stored on the device and has **not yet** reached the professional, and advises seeking care if the pain is severe;
-  - the alert to the professional (intensity 7 or more, or the student stopped) goes out when the report reaches the server;
-  - the report's date is the device's.
+  - os arquivos do app e a página do "Meu treino" sempre buscam na rede e guardam uma cópia;
+  - sem rede, abrem a última cópia, então o aluno abre o app mesmo sem sinal;
+  - nenhum dado da API passa pelo service worker;
+  - com internet, nunca serve versão velha.
+- **Cópia da própria tela (`lib/treinoOffline.ts`, IndexedDB):**
+  - o último treino e a última lista de corridas e pedais ficam guardados no aparelho;
+  - sem internet, a tela mostra "Sem internet: mostrando o treino salvo no aparelho em…".
+- **Fila no aparelho:**
+  - entram nela o registro da sessão de musculação, corridas e pedais, e relatos de desconforto;
+  - o envio:
+    - acontece sozinho quando o sinal volta, ao abrir o app e a cada 30 segundos enquanto houver pendência;
+    - respeita a ordem;
+    - é idempotente, então reenviar nunca duplica.
+  - o que o aluno vê:
+    - um aviso discreto "N registros aguardando conexão", com o botão "Enviar agora";
+    - um registro que o servidor recusa (por exemplo, de semana já fechada) aparece como "não foi possível enviar", com o motivo e "Descartar". Nada some em silêncio.
+  - uma corrida registrada sem internet já aparece na lista;
+  - o servidor aceita o registro de musculação na semana em que foi feito (esta ou a anterior), mesmo que uma nova versão do treino tenha chegado nesse meio-tempo.
+- **Desconforto:**
+  - sem internet, a tela diz que o relato ficou no aparelho e **ainda não** chegou ao profissional, e orienta procurar atendimento se a dor for forte;
+  - o aviso ao profissional (intensidade 7 ou mais, ou o aluno parou) sai quando o relato chega ao servidor;
+  - a data do relato é a do aparelho.
 - **Login:**
-  - with no connection, the Área do Paciente stays on screen;
-  - before signing out with records still unsent, the app warns that they will be lost;
-  - when signing out, it erases the queue, the copies, and the stored pages from the device.
-- **Still requires internet:** reports, feedback, sign-ups (shoe, bike) and deleting a record.
+  - sem conexão, a Área do Paciente continua na tela;
+  - antes de sair com registros não enviados, o app avisa que eles serão perdidos;
+  - ao sair, apaga do aparelho a fila, as cópias e as páginas guardadas.
+- **Continuam precisando de internet:** relatórios, devolutivas, cadastros (tênis, bicicleta) e excluir registro.
 
-Test: `tests/navegacao/treinoT5.mjs` (12 checks), with the browser's offline mode. It runs against `next build && next start`: dev mode depends on the reload WebSocket and does not reproduce use without internet, as Next.js's own guide says.
+Teste: `tests/navegacao/treinoT5.mjs` (12 verificações), com o modo offline do navegador. Roda contra `next build && next start`: o modo de desenvolvimento depende do WebSocket de recarga e não reproduz o uso sem internet, como diz o próprio guia do Next.js.
