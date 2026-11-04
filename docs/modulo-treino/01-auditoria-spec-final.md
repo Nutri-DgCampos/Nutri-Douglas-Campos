@@ -494,3 +494,68 @@ Migração `032_treino_anamnese_avaliacao_identidade.sql`:
 - a avaliação do nutricionista sai com a identidade da clínica (H1).
 
 Teste: `tests/navegacao/treinoT6.mjs` (20 verificações), com um aluno compartilhado entre o nutricionista e o educador.
+## 15. T8 entregue: planos, pagamentos, bloqueio e encerramento do aluno (04/11/2026)
+
+Migração `033_treino_planos_contratos.sql`:
+- `treino_configuracoes`: tolerância de cada profissional;
+- `treino_planos`: planos e preços;
+- `treino_contratos`: contratos, com cópia do plano;
+- `treino_renovacoes`: pedidos de renovação do aluno;
+- `patients.desativado_em` e `desativado_por`;
+- dois tipos novos de aviso ao profissional: `renovacao_treino` e `pagamento_treino`.
+
+Nada toca nos pagamentos da Nutrição (G5).
+
+**G1, planos e preços** (menu › Planos; para o administrador, botão "Planos" no Módulo de Treino):
+- cada profissional cria os próprios planos: nome, preço, duração em dias, modalidades, relatório semanal incluído e descrição;
+- um plano pode ser arquivado e reativado;
+- o contrato guarda a cópia de nome, preço e duração, então mudar o plano não muda contratos já feitos.
+
+**G2 e G3, contrato e pagamento** (ficha do aluno › Plano e pagamento):
+- o profissional cria o contrato a partir de um plano dele;
+- o início sugerido continua o ciclo anterior quando o último vencimento ainda está dentro da tolerância;
+- o vencimento é o início mais a duração, menos um dia (30 dias: de 04/11 a 03/12);
+- duas formas de pagamento, como na Nutrição:
+  - **comprovante:** o aluno anexa pela Área do Paciente (PDF, JPG ou PNG, guardado na pasta de comprovantes dele), e o profissional recebe um aviso. Comprovante anexado não é pagamento confirmado: o profissional confere e clica em "Confirmar pelo comprovante";
+  - **dinheiro:** "Recebi em dinheiro", ou já na criação do contrato;
+- só o profissional do contrato vê o comprovante e confirma o pagamento. O administrador não alcança os contratos de um educador;
+- a confirmação pode ser desfeita, se foi engano; um contrato sem pagamento pode ser cancelado.
+
+**G4, tolerância:**
+- editável por profissional, de 0 a 60 dias;
+- o contrato guarda a tolerância do dia em que foi feito;
+- **o padrão inicial de 7 dias foi escolhido pela equipe técnica** e está na lista de aprovação do cliente.
+
+**R9, regra de bloqueio** (no servidor):
+- **Quando bloqueia:** o aluno que tem contratos do Treino fica bloqueado quando nenhum deles libera hoje.
+- **O que libera:**
+  - contrato pago, até o vencimento mais a tolerância;
+  - contrato ainda sem confirmação, só do início até o início mais a tolerância. É o mesmo prazo para pagar a primeira vez.
+- **Aluno sem nenhum contrato do Treino:** não é bloqueado, como antes da T8. Isso inclui os pacientes da clínica que o administrador não controla por aqui.
+- **Mais de um profissional:** o bloqueio é do aluno, não de cada profissional. Basta um contrato em dia, de qualquer profissional, para liberar. Esta decisão está na lista de aprovação.
+
+**R9, efeito do bloqueio para o aluno:**
+- o "Meu treino" mostra "Seu plano do Treino venceu… Fale com o seu profissional";
+- sem o treino da semana e sem o planejado de corrida e ciclismo;
+- registrar musculação, corrida ou pedal é recusado (409), e o que estava na fila sem internet vai para "recusados" com a mesma mensagem;
+- continuam disponíveis: relatórios, devolutivas, histórico de atividades e o relato de desconforto (segurança);
+- nada é apagado;
+- o aluno pede a renovação escolhendo o plano, e o profissional recebe um aviso. O pedido não libera nada sozinho; o contrato novo atende o pedido.
+
+**R9, o que o profissional vê:**
+- a lista de alunos marca "Plano vencido", "Comprovante a conferir", "Renovação pedida" e "Desativado".
+
+**R10, encerramento:**
+- **Desativar o aluno próprio** (cadastro do aluno › Desativar aluno):
+  - é reversível;
+  - o acesso cai na hora: a sessão aberta deixa de valer, e o login responde "Seu acesso foi desativado pelo seu profissional";
+  - nada é apagado.
+- **Excluir de vez** (cadastro do aluno › Excluir a pedido do aluno):
+  - só a pedido do aluno: o educador marca que o aluno pediu e digita o nome dele;
+  - apaga o cadastro, o acesso, os treinos, os registros, as avaliações, os contratos e os arquivos;
+  - o administrador não exclui o aluno próprio de um educador.
+- **Encerrar a conta do educador** (o administrador desativa o educador) só é aceito sem alunos próprios ativos.
+
+Teste unitário: `tests/treinoContrato.test.mjs` (regras de situação, tolerância e bloqueio).
+
+Teste de navegação: `tests/navegacao/treinoT8.mjs` (48 verificações).

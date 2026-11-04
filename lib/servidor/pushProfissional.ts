@@ -15,7 +15,7 @@ import { configurarWebPush } from "./filaDeNotificacoes";
 const MAXIMO_DE_TENTATIVAS = 3;
 
 export type AvisoProfissional = {
-  tipo: "desconforto";
+  tipo: "desconforto" | "renovacao_treino" | "pagamento_treino";
   pacienteId: string;
   titulo: string;
   corpo: string;

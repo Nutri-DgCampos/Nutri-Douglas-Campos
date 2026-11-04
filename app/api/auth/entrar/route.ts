@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { obterPool } from "@/lib/servidor/banco";
 import { origemPermitida, recusar } from "@/lib/servidor/http";
 import { iniciarSessao } from "@/lib/servidor/sessao";
 import {
@@ -41,6 +42,18 @@ export async function POST(request: Request) {
     }
 
     await limparFalhasDeLogin(email);
+
+    // Aluno próprio desativado pelo educador (R10): nada foi apagado, mas o
+    // acesso só volta quando o educador reativar.
+    const desativado = await obterPool().query(
+      "select 1 from public.patients where auth_user_id = $1 and desativado_em is not null",
+      [usuarioId]
+    );
+
+    if (desativado.rowCount) {
+      return recusar("Seu acesso foi desativado pelo seu profissional. Fale com ele para reativar.", 403);
+    }
+
     await iniciarSessao(usuarioId);
 
     return NextResponse.json({ sucesso: true });

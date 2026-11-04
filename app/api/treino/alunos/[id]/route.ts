@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { alterarAlunoProprio, cadastroDoAlunoProprio } from "@/lib/servidor/alunosProprios";
+import { alterarAlunoProprio, cadastroDoAlunoProprio, definirAlunoProprioAtivo, excluirAlunoProprio } from "@/lib/servidor/alunosProprios";
+import { removerPasta } from "@/lib/servidor/arquivos";
 import { obterPool } from "@/lib/servidor/banco";
 import { desconfortosDoAluno } from "@/lib/servidor/desconfortos";
 import { UUID } from "@/lib/servidor/dietas";
@@ -54,7 +55,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     desconfortos,
     educadores: educadores?.filter((e) => e.ativo).map((e) => ({ usuario_id: e.usuario_id, nome: e.nome })) ?? null,
     // Aluno próprio: o educador dono vê e altera o cadastro e o acesso.
-    cadastro: cadastro ? { nome: cadastro.nome, telefone: cadastro.telefone, email: cadastro.email } : null,
+    cadastro: cadastro ? { nome: cadastro.nome, telefone: cadastro.telefone, email: cadastro.email, desativado_em: cadastro.desativado_em } : null,
     vigente: vigente.rows[0] ?? null,
     academia,
     academias: academias.map(({ id, nome, domestica }) => ({ id, nome, domestica })),
@@ -68,7 +69,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   if (!UUID.test(id)) return recusar("Aluno não encontrado.", 404);
   try {
-    const ok = await alterarAlunoProprio(profissional, id, (await request.json().catch(() => ({}))) ?? {});
+    const dados = (await request.json().catch(() => ({}))) ?? {};
+    // R10: desativar é reversível; o acesso do aluno cai na hora.
+    if (dados.acao === "desativar" || dados.acao === "reativar") {
+      const ok = await definirAlunoProprioAtivo(profissional, id, dados.acao === "reativar");
+      return ok ? NextResponse.json({ sucesso: true }) : recusar("Aluno não encontrado.", 404);
+    }
+    const ok = await alterarAlunoProprio(profissional, id, dados);
     return ok ? NextResponse.json({ sucesso: true }) : recusar("Aluno não encontrado.", 404);
   } catch (erro) {
     if (erro instanceof DadosInvalidos) return recusar(erro.message, 400);
@@ -96,4 +103,31 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     console.error("Erro no vínculo do aluno:", erro);
     return recusar("Não foi possível salvar o vínculo.", 500);
   }
+}
+
+// Exclusão definitiva do aluno próprio, só a pedido dele (R10): o educador
+// dono confirma o pedido e digita o nome do aluno.
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const profissional = await exigirProfissionalDeTreino(request);
+  if (profissional instanceof NextResponse) return profissional;
+  const { id } = await params;
+  if (!UUID.test(id)) return recusar("Aluno não encontrado.", 404);
+  let excluido: { usuarioId: string | null } | null;
+  try {
+    excluido = await excluirAlunoProprio(profissional, id, (await request.json().catch(() => ({}))) ?? {});
+  } catch (erro) {
+    if (erro instanceof DadosInvalidos) return recusar(erro.message, 400);
+    console.error("Erro ao excluir aluno próprio:", erro);
+    return recusar("Não foi possível excluir o aluno.", 500);
+  }
+  if (!excluido) return recusar("Aluno não encontrado.", 404);
+
+  // Arquivos: só depois que o banco confirmou a exclusão.
+  try {
+    for (const bucket of ["treinos", "fotos", "exames", "dietas"]) await removerPasta(bucket, id);
+    if (excluido.usuarioId) await removerPasta("comprovantes", excluido.usuarioId);
+  } catch (erro) {
+    console.error("Aluno excluído, mas houve erro ao remover arquivos:", erro);
+  }
+  return NextResponse.json({ sucesso: true });
 }

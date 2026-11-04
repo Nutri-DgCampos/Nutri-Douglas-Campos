@@ -73,9 +73,11 @@ const MENU_MAIS = [NUTRICAO, TREINO, PAGAMENTOS, EXAMES, PARCEIROS, ALERTAS];
 const TREINO_EDUCADOR: Item = { rotulo: "Alunos", icone: "pi-bolt", destino: "/treino" };
 // Identidade dos PDFs do educador (T6, R8).
 const PERFIL_EDUCADOR: Item = { rotulo: "Meu perfil", icone: "pi-id-card", destino: "/treino/perfil" };
+// Planos, preços e tolerância do educador (T8, G1–G4).
+const PLANOS_EDUCADOR: Item = { rotulo: "Planos", icone: "pi-wallet", destino: "/treino/planos" };
 const MENUS = {
   admin: { lateral: MENU_LATERAL, abas: ABAS_CELULAR, mais: MENU_MAIS },
-  educador: { lateral: [TREINO_EDUCADOR, PERFIL_EDUCADOR], abas: [TREINO_EDUCADOR, PERFIL_EDUCADOR], mais: [] as Item[] },
+  educador: { lateral: [TREINO_EDUCADOR, PLANOS_EDUCADOR, PERFIL_EDUCADOR], abas: [TREINO_EDUCADOR, PLANOS_EDUCADOR, PERFIL_EDUCADOR], mais: [] as Item[] },
 };
 
 export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educador" }) {

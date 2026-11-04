@@ -14,7 +14,22 @@ import { NovoAluno } from "@/components/treino/CadastroDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import PainelDeRelatorios from "@/components/treino/PainelDeRelatorios";
 
-type Aluno = { id: string; nome: string; situacao: string; tem_treino: boolean; desconfortos_novos: number; educadores: string[]; proprio: boolean };
+type Aluno = {
+  id: string;
+  nome: string;
+  situacao: string;
+  tem_treino: boolean;
+  desconfortos_novos: number;
+  educadores: string[];
+  proprio: boolean;
+  desativado: boolean;
+  pagamento: { bloqueado: boolean; comprovante: boolean; renovacao: boolean } | null;
+};
+
+function Etiqueta({ cor, children }: { cor: "vermelho" | "ambar" | "cinza"; children: React.ReactNode }) {
+  const classes = { vermelho: "bg-red-100 text-red-800", ambar: "bg-amber-100 text-amber-900", cinza: "bg-gray-200 text-gray-700" }[cor];
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${classes}`}>{children}</span>;
+}
 
 function semAcento(texto: string) {
   return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -69,6 +84,10 @@ export default function TreinoPage() {
                 <Link href="/treino/biblioteca" className="p-button p-button-outlined flex gap-2 font-semibold">
                   <i className="pi pi-book" aria-hidden />
                   Biblioteca
+                </Link>
+                <Link href="/treino/planos" className="p-button p-button-outlined flex gap-2 font-semibold">
+                  <i className="pi pi-wallet" aria-hidden />
+                  Planos
                 </Link>
                 {dados.admin ? (
                   <Link href="/treino/educadores" className="p-button p-button-outlined flex gap-2 font-semibold">
@@ -133,6 +152,12 @@ export default function TreinoPage() {
                             {a.proprio ? " · aluno próprio" : ""}
                             {dados.admin && a.educadores.length ? ` · ${a.educadores.join(", ")}` : ""}
                           </span>
+                        </span>
+                        <span className="flex flex-wrap justify-end gap-1">
+                          {a.desativado ? <Etiqueta cor="cinza">Desativado</Etiqueta> : null}
+                          {a.pagamento?.bloqueado ? <Etiqueta cor="vermelho">Plano vencido</Etiqueta> : null}
+                          {a.pagamento?.comprovante ? <Etiqueta cor="ambar">Comprovante a conferir</Etiqueta> : null}
+                          {a.pagamento?.renovacao ? <Etiqueta cor="ambar">Renovação pedida</Etiqueta> : null}
                         </span>
                         {a.desconfortos_novos ? (
                           <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-800">

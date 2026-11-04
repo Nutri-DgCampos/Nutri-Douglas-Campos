@@ -73,8 +73,8 @@ export async function criarAlunoProprio(educador: ProfissionalDeTreino, dados: R
 // Cadastro do aluno, só para o educador dono (null: não é aluno próprio dele).
 export async function cadastroDoAlunoProprio(educador: ProfissionalDeTreino, patientId: string) {
   if (educador.admin) return null;
-  const r = await obterPool().query<{ nome: string; telefone: string | null; auth_user_id: string | null }>(
-    "select name as nome, phone as telefone, auth_user_id from public.patients where id = $1 and educador_dono_id = $2",
+  const r = await obterPool().query<{ nome: string; telefone: string | null; auth_user_id: string | null; desativado_em: string | null }>(
+    "select name as nome, phone as telefone, auth_user_id, desativado_em from public.patients where id = $1 and educador_dono_id = $2",
     [patientId, educador.usuarioId]
   );
   const aluno = r.rows[0];
@@ -84,6 +84,7 @@ export async function cadastroDoAlunoProprio(educador: ProfissionalDeTreino, pat
     telefone: aluno.telefone,
     email: aluno.auth_user_id ? await emailDoUsuario(aluno.auth_user_id) : null,
     usuarioId: aluno.auth_user_id,
+    desativado_em: aluno.desativado_em,
   };
 }
 
@@ -108,3 +109,62 @@ export async function alterarAlunoProprio(educador: ProfissionalDeTreino, patien
   ]);
   return true;
 }
+
+// ---------------------------------------------------------------------------
+// Desativar e excluir (T8, resposta R10)
+
+// Desativa (o acesso cai na hora; nada é apagado) ou reativa o aluno próprio.
+export async function definirAlunoProprioAtivo(educador: ProfissionalDeTreino, patientId: string, ativo: boolean) {
+  if (educador.admin) return false;
+  const r = await obterPool().query(
+    `update public.patients
+        set desativado_em = ${ativo ? "null" : "coalesce(desativado_em, now())"},
+            desativado_por = ${ativo ? "null" : "$2"}
+      where id = $1 and educador_dono_id = $2`,
+    [patientId, educador.usuarioId]
+  );
+  return (r.rowCount ?? 0) > 0;
+}
+
+// Exclusão definitiva, só a pedido do aluno: o educador confirma o pedido e
+// digita o nome do aluno. Sai tudo do aluno (em cascata) e o acesso dele.
+// Devolve o usuário de acesso (para remover os arquivos) ou null.
+export async function excluirAlunoProprio(educador: ProfissionalDeTreino, patientId: string, dados: Record<string, unknown>) {
+  if (educador.admin) return null;
+  const cliente = await obterPool().connect();
+  try {
+    await cliente.query("begin");
+    const r = await cliente.query<{ nome: string; auth_user_id: string | null }>(
+      "select name as nome, auth_user_id from public.patients where id = $1 and educador_dono_id = $2 for update",
+      [patientId, educador.usuarioId]
+    );
+    const aluno = r.rows[0];
+    if (!aluno) {
+      await cliente.query("rollback");
+      return null;
+    }
+    if (dados.pedidoDoAluno !== true) throw new DadosInvalidos("A exclusão definitiva só é feita a pedido do aluno.");
+    const normalizar = (t: unknown) => (typeof t === "string" ? t.trim().replace(/\s+/g, " ").toLowerCase() : "");
+    if (normalizar(dados.confirmacao) !== normalizar(aluno.nome)) throw new DadosInvalidos("Digite o nome do aluno exatamente como está no cadastro.");
+
+    // Mesmas tabelas sem cascata que a exclusão da Nutrição limpa antes.
+    await cliente.query(
+      `delete from public.payments
+        where patient_id = $1 or cycle_id in (select c.id from public.diet_cycles c where c.patient_id = $1)`,
+      [patientId]
+    );
+    for (const tabela of ["renewal_requests", "patient_reports", "diet_deliveries", "diet_cycles"]) {
+      await cliente.query(`delete from public.${tabela} where patient_id = $1`, [patientId]);
+    }
+    await cliente.query("delete from public.patients where id = $1", [patientId]);
+    if (aluno.auth_user_id) await cliente.query("delete from public.users where id = $1", [aluno.auth_user_id]);
+    await cliente.query("commit");
+    return { usuarioId: aluno.auth_user_id };
+  } catch (erro) {
+    await cliente.query("rollback").catch(() => undefined);
+    throw erro;
+  } finally {
+    cliente.release();
+  }
+}
+

@@ -16,6 +16,7 @@ node tests/navegacao/treinoT4b.mjs --limpar
 node tests/navegacao/treinoT4c.mjs --limpar
 node tests/navegacao/treinoT3b.mjs --limpar
 node tests/navegacao/treinoT6.mjs --limpar
+node tests/navegacao/treinoT8.mjs --limpar
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -40,6 +41,7 @@ Rode os testes do Treino com `--limpar`: cada um cria a própria prescrição de
 - `treinoT3b.mjs`: etapa T3b (relatório por modalidade, nota 60/25/15, pontos, reagendado R4/R4b, atenção por modalidade, relatório completo do aluno). Monta duas semanas fechadas no banco; cria e apaga `teste.educador.t3b@local.test` e `teste.aluno.t3b@local.test`.
 - `treinoT5.mjs`: etapa T5 (uso sem internet: página e dados guardados, fila, envio ao voltar, sem duplicar, relato que ainda não chegou, registro recusado). Rode contra o **build de produção** (`npx next build` e `npx next start -p 3100`, com as mesmas variáveis): o modo de desenvolvimento não funciona sem rede. Cria e apaga `teste.educador.t5@local.test` e `teste.aluno.t5@local.test`.
 - `treinoT6.mjs`: etapa T6 (anamnese privada do educador, avaliação física compartilhada com autor e só o autor altera, perfil e logotipo do educador nos PDFs). Usa o paciente de teste da clínica, vinculado a `teste.educador.t6@local.test`; apaga tudo com `--limpar`.
+- `treinoT8.mjs`: etapa T8. Cobre planos e tolerância do educador, contrato pela ficha, comprovante do aluno e confirmação, bloqueio com o plano vencido (R9), pedido de renovação, desativar e reativar e a exclusão a pedido do aluno (R10). Cria e apaga `teste.educador.t8@local.test` e `teste.aluno.t8@local.test`. Com a mesma `ARQUIVOS_DIR` do servidor, confere também a remoção do comprovante.
 - `treinoT3.mjs`: etapa T3 (relatório semanal, devolutiva, atraso, lista de atenção e pausa). Cria duas semanas de registros do paciente de teste e apaga tudo com `--limpar`.
 
 As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.

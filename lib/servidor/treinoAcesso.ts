@@ -77,9 +77,11 @@ export async function alunosDoProfissional(profissional: ProfissionalDeTreino) {
     desconfortos_novos: number;
     educadores: string[];
     proprio: boolean;
+    desativado: boolean;
   }>(
     `select p.id, p.name as nome, p.payment_status as situacao,
             p.educador_dono_id is not null and p.educador_dono_id = $1 as proprio,
+            p.desativado_em is not null as desativado,
             exists (select 1 from public.treino_prescricoes t where t.patient_id = p.id and t.status = 'publicada' and t.arquivada_em is null) as tem_treino,
             (select count(*)::int from public.treino_desconfortos d where d.patient_id = p.id and d.visto_em is null) as desconfortos_novos,
             coalesce((select array_agg(e.nome order by e.nome)

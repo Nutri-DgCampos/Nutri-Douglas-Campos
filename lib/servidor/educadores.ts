@@ -78,6 +78,17 @@ export async function atualizarEducador(usuarioId: string, dados: Record<string,
   }
 
   if (typeof dados.ativo === "boolean" && Object.keys(dados).length === 1) {
+    // R10: a conta só é encerrada sem alunos próprios ativos (desative ou
+    // exclua os alunos antes).
+    if (!dados.ativo) {
+      const ativos = await obterPool().query<{ total: number }>(
+        "select count(*)::int as total from public.patients where educador_dono_id = $1 and desativado_em is null",
+        [usuarioId]
+      );
+      if (ativos.rows[0].total > 0) {
+        throw new DadosInvalidos(`O educador ainda tem ${ativos.rows[0].total} aluno(s) próprio(s) ativo(s). Ele precisa desativar ou excluir esses alunos antes.`);
+      }
+    }
     await obterPool().query("update public.educadores_fisicos set ativo = $2, atualizado_em = now() where usuario_id = $1", [usuarioId, dados.ativo]);
     return true;
   }

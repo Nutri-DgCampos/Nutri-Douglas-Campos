@@ -36,7 +36,7 @@ const CHAVE_DA_COPIA = "corridas-e-pedais";
 
 type AtividadeNaTela = Atividade & { id: string; equipamento: string | null };
 type Planejada = SessaoEndurance & { modalidade: Modalidade; prescricao_id: string; referencia: number; data: string; titulo: string | null };
-type Dados = { atividades: AtividadeNaTela[]; equipamentos: Equipamento[]; planejadas: Planejada[]; hoje: string; primeiroDia: string };
+type Dados = { atividades: AtividadeNaTela[]; equipamentos: Equipamento[]; planejadas: Planejada[]; hoje: string; primeiroDia: string; bloqueado?: boolean };
 
 const ROTULO_DA_SITUACAO = Object.fromEntries(SITUACOES.map((s) => [s.valor, s.rotulo]));
 const dataCurta = (iso: string) => iso.split("-").reverse().slice(0, 2).join("/");
@@ -189,9 +189,13 @@ export default function AtividadesDoAluno({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="font-bold text-gray-900">Corrida e ciclismo</h2>
-          <p className="text-sm text-gray-500">Registre com os números do seu relógio ou app. Tudo é opcional, menos a data.</p>
+          <p className="text-sm text-gray-500">
+            {dados.bloqueado
+              ? "Plano vencido: o histórico fica aqui, e os registros novos voltam depois da renovação."
+              : "Registre com os números do seu relógio ou app. Tudo é opcional, menos a data."}
+          </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className={dados.bloqueado ? "hidden" : "flex flex-wrap gap-2"}>
           <Button type="button" icon="pi pi-plus" label="Registrar corrida" size="small" onClick={() => setEditando(novaAtividade("corrida", dados.hoje, dados.equipamentos))} />
           <Button type="button" icon="pi pi-plus" label="Registrar pedal" size="small" outlined onClick={() => setEditando(novaAtividade("ciclismo", dados.hoje, dados.equipamentos))} />
         </div>

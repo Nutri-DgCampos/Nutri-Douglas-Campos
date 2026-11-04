@@ -14,6 +14,7 @@ import AnamneseDoTreino from "@/components/treino/AnamneseDoTreino";
 import AvaliacoesDoTreino from "@/components/treino/AvaliacoesDoTreino";
 import { CartaoDoAluno, type DadosDoAluno } from "@/components/treino/CadastroDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
+import PlanoEPagamento from "@/components/treino/PlanoEPagamento";
 import { api } from "@/lib/api";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
 import { abrirDocumento } from "@/lib/visualizador";
@@ -204,7 +205,11 @@ export default function AlunoNoTreinoPage() {
                 </section>
               ) : null}
 
-              {painel.cadastro ? <CartaoDoAluno alunoId={painel.aluno.id} dados={painel.cadastro} onAlterado={carregar} /> : null}
+              {painel.cadastro ? (
+                <CartaoDoAluno alunoId={painel.aluno.id} dados={painel.cadastro} onAlterado={carregar} onExcluido={() => router.push("/treino")} />
+              ) : null}
+
+              <PlanoEPagamento alunoId={painel.aluno.id} />
 
               <AcompanhamentoSemanal alunoId={painel.aluno.id} admin={painel.admin} />
 

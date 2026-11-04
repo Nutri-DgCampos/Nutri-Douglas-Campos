@@ -11,6 +11,8 @@ const ICONE: Record<string, string> = {
   relatorio: "pi-chart-bar",
   exames: "pi-heart",
   renovacao: "pi-refresh",
+  renovacao_treino: "pi-refresh",
+  pagamento_treino: "pi-wallet",
   desconforto: "pi-exclamation-triangle",
 };
 

@@ -8,6 +8,7 @@ import CabecalhoPagina from "@/components/CabecalhoPagina";
 import PainelTreino, { type RegistroDoDia } from "@/components/PainelTreino";
 import AtividadesDoAluno from "@/components/treino/AtividadesDoAluno";
 import FilaDoTreino from "@/components/treino/FilaDoTreino";
+import PlanoDoAluno from "@/components/treino/PlanoDoAluno";
 import { avisar } from "@/lib/avisos";
 import { DIAS, planoComRegistros, type ChaveDia, type RelatoDeDesconforto, type ExercicioRegistrado, type PlanoDeTreino, type SessaoRegistrada } from "@/lib/treino";
 import { aoEnviar, buscarComCopia, enviarOuGuardar, guardarDados } from "@/lib/treinoOffline";
@@ -20,7 +21,7 @@ type Treino = {
   anteriores: Partial<Record<ChaveDia, Record<number, { carga_kg: number; data: string }>>>;
 };
 
-type Resposta = { treino: Treino | null; caloriasInformadas: number | null };
+type Resposta = { treino: Treino | null; caloriasInformadas: number | null; bloqueado?: boolean };
 
 const CHAVE = "meu-treino";
 
@@ -122,8 +123,16 @@ export default function TreinoPacientePage() {
         <div className="mt-6 space-y-4">
           <FilaDoTreino copiaDe={copiaDe} />
 
+          <PlanoDoAluno />
+
           {dados === undefined ? (
             <Skeleton height="24rem" borderRadius="16px" />
+          ) : dados?.bloqueado ? (
+            <div className="cartao p-6 text-center">
+              <i className="pi pi-lock text-3xl text-gray-400" aria-hidden />
+              <p className="mt-3 font-semibold text-gray-900">Treino da semana indisponível até a renovação do plano.</p>
+              <p className="mt-1 text-sm text-gray-500">Relatórios e devolutivas continuam disponíveis. Fale com o seu profissional.</p>
+            </div>
           ) : !treino ? (
             <div className="cartao p-6 text-center">
               <i className="pi pi-bolt text-3xl text-gray-400" aria-hidden />

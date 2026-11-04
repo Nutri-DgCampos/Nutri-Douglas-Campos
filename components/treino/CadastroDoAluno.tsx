@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import { Button } from "primereact/button";
+import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import { avisar } from "@/lib/avisos";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
 
 // Alunos próprios do educador físico (T7b): cadastro com e-mail e senha
 // provisória (o aluno troca no primeiro acesso), edição e nova senha.
+// T8 (R10): desativar (reversível) e excluir de vez, só a pedido do aluno.
 
-export type DadosDoAluno = { nome: string; telefone: string | null; email: string | null };
+export type DadosDoAluno = { nome: string; telefone: string | null; email: string | null; desativado_em?: string | null };
 
 type Formulario = { nome: string; telefone: string; email: string; senha: string };
 
@@ -90,8 +92,20 @@ export function NovoAluno({ aberto, onFechar, onCriado }: { aberto: boolean; onF
 }
 
 // Cartão na ficha do aluno próprio: dados de cadastro, acesso e nova senha.
-export function CartaoDoAluno({ alunoId, dados, onAlterado }: { alunoId: string; dados: DadosDoAluno; onAlterado: () => void }) {
+export function CartaoDoAluno({
+  alunoId,
+  dados,
+  onAlterado,
+  onExcluido,
+}: {
+  alunoId: string;
+  dados: DadosDoAluno;
+  onAlterado: () => void;
+  onExcluido: () => void;
+}) {
   const [editando, setEditando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+  const [exclusao, setExclusao] = useState({ pedido: false, nome: "" });
   const [trocandoSenha, setTrocandoSenha] = useState(false);
   const [form, setForm] = useState<Formulario>({ nome: "", telefone: "", email: "", senha: "" });
   const [salvando, setSalvando] = useState(false);
@@ -120,12 +134,38 @@ export function CartaoDoAluno({ alunoId, dados, onAlterado }: { alunoId: string;
     setTrocandoSenha(false);
   }
 
+  async function alterarAtivo(ativo: boolean) {
+    const pergunta = ativo
+      ? `Reativar o acesso de ${dados.nome}?`
+      : `Desativar ${dados.nome}? O acesso dele cai na hora e nada é apagado. Você pode reativar depois.`;
+    if (!(await pedirConfirmacao(pergunta, { aceitar: ativo ? "Reativar" : "Desativar", rejeitar: "Cancelar" }))) return;
+    if (await enviar(`/api/treino/alunos/${alunoId}`, "PATCH", { acao: ativo ? "reativar" : "desativar" })) {
+      avisar(ativo ? "Acesso reativado." : "Aluno desativado.", "success");
+      onAlterado();
+    }
+  }
+
+  async function excluir() {
+    setSalvando(true);
+    const ok = await enviar(`/api/treino/alunos/${alunoId}`, "DELETE", { pedidoDoAluno: exclusao.pedido, confirmacao: exclusao.nome });
+    setSalvando(false);
+    if (!ok) return;
+    avisar("Aluno excluído com todo o histórico.", "success");
+    setExcluindo(false);
+    onExcluido();
+  }
+
   return (
     <section className="cartao p-5" aria-label="Cadastro do aluno">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-bold text-gray-900">Cadastro do aluno</h2>
           <p className="mt-1 text-sm text-gray-500">Aluno próprio: só você vê este cadastro.</p>
+          {dados.desativado_em ? (
+            <p className="mt-2 rounded-lg bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700">
+              Desativado em {new Date(dados.desativado_em).toLocaleDateString("pt-BR")}: o aluno não entra no sistema.
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="small" outlined icon="pi pi-pencil" label="Editar" onClick={abrirEdicao} />
@@ -152,6 +192,52 @@ export function CartaoDoAluno({ alunoId, dados, onAlterado }: { alunoId: string;
           <dd className="font-medium text-gray-900">{dados.telefone ?? "—"}</dd>
         </div>
       </dl>
+
+      <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-3">
+        {dados.desativado_em ? (
+          <Button type="button" size="small" outlined icon="pi pi-replay" label="Reativar acesso" onClick={() => alterarAtivo(true)} />
+        ) : (
+          <Button type="button" size="small" outlined severity="secondary" icon="pi pi-ban" label="Desativar aluno" onClick={() => alterarAtivo(false)} />
+        )}
+        <Button
+          type="button"
+          size="small"
+          text
+          severity="danger"
+          icon="pi pi-trash"
+          label="Excluir a pedido do aluno"
+          onClick={() => {
+            setExclusao({ pedido: false, nome: "" });
+            setExcluindo(true);
+          }}
+        />
+      </div>
+
+      <Dialog header="Excluir aluno de vez" visible={excluindo} onHide={() => setExcluindo(false)} className="w-full max-w-lg" modal>
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700">
+            Apaga o cadastro, o acesso, os treinos, os registros, as avaliações, os contratos e os arquivos do aluno. Não dá para desfazer. Só exclua
+            quando o próprio aluno pedir; para parar o acompanhamento, use “Desativar aluno”.
+          </p>
+          <label className="flex items-start gap-2 text-sm">
+            <Checkbox inputId="pedido-do-aluno" checked={exclusao.pedido} onChange={(e) => setExclusao((x) => ({ ...x, pedido: Boolean(e.checked) }))} />
+            O aluno pediu a exclusão definitiva dos dados dele.
+          </label>
+          <Campo rotulo={`Digite o nome do aluno: ${dados.nome}`} valor={exclusao.nome} onChange={(v) => setExclusao((x) => ({ ...x, nome: v }))} />
+          <div className="flex justify-end gap-2">
+            <Button type="button" label="Cancelar" text onClick={() => setExcluindo(false)} />
+            <Button
+              type="button"
+              label="Excluir de vez"
+              severity="danger"
+              icon="pi pi-trash"
+              loading={salvando}
+              disabled={!exclusao.pedido || exclusao.nome.trim().toLowerCase() !== dados.nome.trim().toLowerCase()}
+              onClick={excluir}
+            />
+          </div>
+        </div>
+      </Dialog>
 
       <Dialog header="Editar cadastro" visible={editando} onHide={() => setEditando(false)} className="w-full max-w-lg" modal>
         <div className="space-y-4">

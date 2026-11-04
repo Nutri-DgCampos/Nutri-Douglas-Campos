@@ -88,6 +88,7 @@ export async function obterContexto(
     papel: string | null;
     paciente_id: string | null;
     somente_treino: boolean;
+    desativado: boolean;
     deve_trocar_senha: boolean;
   }>(
     `select u.email,
@@ -100,7 +101,9 @@ export async function obterContexto(
             coalesce((select pa.educador_dono_id is not null from public.patients pa
               where pa.auth_user_id = u.id
               order by pa.created_at
-              limit 1), false) as somente_treino
+              limit 1), false) as somente_treino,
+            exists (select 1 from public.patients pa
+              where pa.auth_user_id = u.id and pa.desativado_em is not null) as desativado
        from public.users u
        left join public.profiles p on p.id = u.id
       where u.id = $1`,
@@ -110,6 +113,11 @@ export async function obterContexto(
   const usuario = resultado.rows[0];
 
   if (!usuario) {
+    return null;
+  }
+
+  // Aluno próprio desativado pelo educador (R10): o acesso cai na hora.
+  if (usuario.desativado) {
     return null;
   }
 

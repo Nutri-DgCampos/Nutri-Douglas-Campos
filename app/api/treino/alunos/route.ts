@@ -4,6 +4,7 @@ import { desconfortosNaoVistos } from "@/lib/servidor/desconfortos";
 import { DadosInvalidos } from "@/lib/servidor/educadores";
 import { recusar } from "@/lib/servidor/http";
 import { alunosDoProfissional, exigirProfissionalDeTreino } from "@/lib/servidor/treinoAcesso";
+import { resumoDePagamentos } from "@/lib/servidor/treinoContratos";
 import { EmailJaCadastrado } from "@/lib/servidor/usuarios";
 
 export const runtime = "nodejs";
@@ -13,7 +14,10 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   const profissional = await exigirProfissionalDeTreino(request);
   if (profissional instanceof NextResponse) return profissional;
-  const [alunos, desconfortos] = await Promise.all([alunosDoProfissional(profissional), desconfortosNaoVistos(profissional)]);
+  const [lista, desconfortos] = await Promise.all([alunosDoProfissional(profissional), desconfortosNaoVistos(profissional)]);
+  // Plano do Treino (T8): vencido, comprovante a conferir, renovação pedida.
+  const pagamentos = await resumoDePagamentos(profissional.usuarioId, lista.map((a) => a.id));
+  const alunos = lista.map((a) => ({ ...a, pagamento: pagamentos.get(a.id) ?? null }));
   return NextResponse.json({ admin: profissional.admin, alunos, desconfortos });
 }
 
