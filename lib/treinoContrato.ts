@@ -6,8 +6,10 @@
 //   confirmado; sem confirmação, só até "inicio + tolerância" (o aluno tem o
 //   mesmo prazo para pagar a primeira vez). Comprovante anexado não é
 //   pagamento confirmado (SPEC 12).
-// - Bloqueio (R9): o aluno tem contratos de Treino e nenhum está em dia.
-//   Aluno sem contrato de Treino não é bloqueado (como antes da T8).
+// - Bloqueio (R9, S2): por profissional. O profissional que tem contratos
+//   com o aluno e nenhum em dia tem o treino dele escondido do aluno; o
+//   treino de quem está em dia continua. Sem contrato com o profissional,
+//   não há bloqueio (como antes da T8, S3).
 
 export type ContratoParaRegra = {
   inicio: string; // AAAA-MM-DD
@@ -59,6 +61,14 @@ export function acessoAoTreino(contratos: ContratoParaRegra[], hoje: string): { 
   const validos = contratos.filter((c) => !c.cancelado_em);
   if (!validos.length) return { bloqueado: false };
   return { bloqueado: !validos.some((c) => liberaHoje(c, hoje)) };
+}
+
+// Profissionais bloqueados para este aluno hoje (S2): cada um pelos próprios
+// contratos.
+export function profissionaisBloqueados(contratos: (ContratoParaRegra & { profissional_id: string })[], hoje: string) {
+  const porProfissional = new Map<string, ContratoParaRegra[]>();
+  for (const c of contratos) porProfissional.set(c.profissional_id, [...(porProfissional.get(c.profissional_id) ?? []), c]);
+  return [...porProfissional].filter(([, lista]) => acessoAoTreino(lista, hoje).bloqueado).map(([id]) => id);
 }
 
 export const ROTULO_DA_SITUACAO: Record<SituacaoDoContrato, string> = {

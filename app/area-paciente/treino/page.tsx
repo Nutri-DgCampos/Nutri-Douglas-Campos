@@ -130,7 +130,7 @@ export default function TreinoPacientePage() {
           ) : dados?.bloqueado ? (
             <div className="cartao p-6 text-center">
               <i className="pi pi-lock text-3xl text-gray-400" aria-hidden />
-              <p className="mt-3 font-semibold text-gray-900">Treino da semana indisponível até a renovação do plano.</p>
+              <p className="mt-3 font-semibold text-gray-900">Treino de musculação indisponível até a renovação do plano.</p>
               <p className="mt-1 text-sm text-gray-500">Relatórios e devolutivas continuam disponíveis. Fale com o seu profissional.</p>
             </div>
           ) : !treino ? (

@@ -2,6 +2,7 @@ import { hojeNoBrasil } from "@/lib/cronograma";
 import { dataNoBrasil, type RelatoDeDesconforto } from "@/lib/treino";
 import { obterPool } from "./banco";
 import { enfileirarParaProfissionais } from "./pushProfissional";
+import { bloqueiosDoAluno, resumoDePagamentos } from "./treinoContratos";
 import { prescricaoVigente } from "./treinoRegistros";
 import { responsaveisPeloAluno, type ProfissionalDeTreino } from "./treinoAcesso";
 
@@ -30,7 +31,8 @@ export type Desconforto = {
 // Grava o relato. Reenviar o mesmo relato (mesma chaveCliente) devolve o
 // já gravado, sem duplicar o registro nem o aviso.
 export async function registrarDesconforto(patientId: string, relato: RelatoDeDesconforto) {
-  const prescricao = await prescricaoVigente(patientId);
+  const { bloqueados } = await bloqueiosDoAluno(patientId);
+  const prescricao = await prescricaoVigente(patientId, bloqueados);
   const inserido = await obterPool().query<{ id: string }>(
     `insert into public.treino_desconfortos
        (patient_id, prescricao_id, dia, data, exercicio, regiao, intensidade, conduta, comentario, chave_cliente, registrado_em)
@@ -67,8 +69,12 @@ export async function registrarDesconforto(patientId: string, relato: RelatoDeDe
   const nome = await obterPool().query<{ name: string }>("select name from public.patients where id = $1", [patientId]);
   const primeiroNome = nome.rows[0]?.name.trim().split(/\s+/)[0] ?? "Aluno";
 
+  // Profissional com o plano vencido além da tolerância não recebe o alerta
+  // (T8, resposta S7); o relato fica gravado no histórico do aluno.
+  const destinatarios = (await responsaveisPeloAluno(patientId)).filter((id) => !bloqueados.includes(id));
+
   // No aviso (aparece na tela bloqueada), só o mínimo: nome e intensidade.
-  await enfileirarParaProfissionais(await responsaveisPeloAluno(patientId), {
+  await enfileirarParaProfissionais(destinatarios, {
     tipo: "desconforto",
     pacienteId: patientId,
     titulo: "Relato de desconforto no treino",
@@ -117,7 +123,9 @@ export async function desconfortosNaoVistos(profissional: ProfissionalDeTreino) 
       limit 100`,
     profissional.admin ? [] : [profissional.usuarioId]
   );
-  return r.rows;
+  // Plano vencido além da tolerância com este profissional: sem alerta (S7).
+  const pagamentos = await resumoDePagamentos(profissional.usuarioId, [...new Set(r.rows.map((d) => d.patient_id))]);
+  return r.rows.filter((d) => !pagamentos.get(d.patient_id)?.bloqueado);
 }
 
 // Marca como visto, só se o relato é de um aluno do profissional.

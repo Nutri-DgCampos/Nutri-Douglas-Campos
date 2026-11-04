@@ -166,7 +166,18 @@ export function primeiroDiaDeRegistro(hoje = hojeNoBrasil()) {
 }
 
 // Aluno: registra ou corrige (mesma chave_cliente) uma corrida ou pedal.
-export async function salvarAtividade(patientId: string, corpo: unknown, hoje = hojeNoBrasil()) {
+// Sessão de profissional com o plano vencido (T8, S2) ou, sem sessão, aluno
+// sem nenhum profissional liberado: recusa.
+export class AtividadeBloqueada extends Error {}
+
+export async function salvarAtividade(
+  patientId: string,
+  corpo: unknown,
+  hoje = hojeNoBrasil(),
+  bloqueio: { bloqueados: string[]; total: boolean } = { bloqueados: [], total: false }
+) {
+  // Sem nenhum profissional liberado, a orientação vem antes de qualquer erro.
+  if (bloqueio.total && !(corpo as { prescricao_id?: unknown } | null)?.prescricao_id) throw new AtividadeBloqueada("total");
   const v = validarAtividade(corpo);
   if ("erro" in v) throw new AtividadeInvalida(v.erro);
   const a = v.atividade;
@@ -177,10 +188,11 @@ export async function salvarAtividade(patientId: string, corpo: unknown, hoje = 
   // Sessão prescrita: precisa ser de uma planilha deste aluno, da mesma
   // modalidade, e a sessão precisa existir na versão.
   if (a.prescricao_id) {
-    const p = await pool.query<{ plano: PlanoEndurance }>(
-      "select plano from public.treino_prescricoes where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = $3",
+    const p = await pool.query<{ plano: PlanoEndurance; criada_por: string | null }>(
+      "select plano, criada_por from public.treino_prescricoes where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = $3",
       [a.prescricao_id, patientId, a.modalidade]
     );
+    if (p.rows[0]?.criada_por && bloqueio.bloqueados.includes(p.rows[0].criada_por)) throw new AtividadeBloqueada();
     const ref = a.sessao_indice === null || a.sessao_indice === undefined ? null : sessaoDaReferencia(a.sessao_indice);
     if (!p.rows[0] || !ref || !p.rows[0].plano.semanas?.[ref.semana]?.sessoes?.[ref.indice]) throw new AtividadeInvalida("Sessão prescrita não encontrada. Recarregue a página.");
   }
@@ -292,12 +304,14 @@ const DESDE_DOMINGO: Record<string, number> = { dom: 0, seg: 1, ter: 2, qua: 3, 
 
 // Planilhas vigentes (a versão publicada mais recente de cada modalidade) e
 // as sessões da semana da data. O aluno não recebe notas nem a Opção oculta.
-export async function sessoesPlanejadas(patientId: string, hoje = hojeNoBrasil()): Promise<SessaoPlanejada[]> {
+// Sem as planilhas dos profissionais com o plano vencido (T8, S2).
+export async function sessoesPlanejadas(patientId: string, hoje = hojeNoBrasil(), bloqueados: string[] = []): Promise<SessaoPlanejada[]> {
   const r = await obterPool().query<{ id: string; modalidade: ModalidadeEndurance; titulo: string | null; plano: PlanoEndurance }>(
     `select distinct on (modalidade) id, modalidade, titulo, plano from public.treino_prescricoes
       where patient_id = $1 and status = 'publicada' and modalidade in ('corrida', 'ciclismo') and arquivada_em is null
+        and (criada_por is null or criada_por <> all($2::uuid[]))
       order by modalidade, publicada_em desc, criada_em desc`,
-    [patientId]
+    [patientId, bloqueados]
   );
   const lista: SessaoPlanejada[] = [];
   for (const p of r.rows) {

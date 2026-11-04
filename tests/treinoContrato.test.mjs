@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { acessoAoTreino, liberaHoje, situacaoDoContrato, textoDoPreco, vencimentoDe } from "../lib/treinoContrato.ts";
+import { acessoAoTreino, liberaHoje, profissionaisBloqueados, situacaoDoContrato, textoDoPreco, vencimentoDe } from "../lib/treinoContrato.ts";
 
 const c = (campos) => ({ inicio: "2026-11-01", vencimento: "2026-11-30", tolerancia_dias: 7, confirmado_em: null, comprovante_em: null, cancelado_em: null, ...campos });
 
@@ -35,4 +35,13 @@ test("vencimento pela duração e preço em reais", () => {
   assert.equal(vencimentoDe("2026-11-01", 30), "2026-11-30");
   assert.equal(vencimentoDe("2026-11-01", 1), "2026-11-01");
   assert.equal(textoDoPreco(19990).replace(/\s/g, " "), "R$ 199,90");
+});
+
+test("bloqueio por profissional (S2): cada um pelos próprios contratos", () => {
+  const vencidoA = c({ profissional_id: "A", confirmado_em: "2026-11-01T10:00:00Z" });
+  const emDiaB = c({ profissional_id: "B", inicio: "2026-12-01", vencimento: "2026-12-30", confirmado_em: "2026-12-01T10:00:00Z" });
+  assert.deepEqual(profissionaisBloqueados([vencidoA, emDiaB], "2026-12-20"), ["A"]);
+  const renovadoA = c({ profissional_id: "A", inicio: "2026-12-01", vencimento: "2026-12-30", confirmado_em: "2026-12-02T10:00:00Z" });
+  assert.deepEqual(profissionaisBloqueados([vencidoA, renovadoA, emDiaB], "2026-12-20"), []);
+  assert.deepEqual(profissionaisBloqueados([c({ profissional_id: "A", cancelado_em: "2026-11-02T10:00:00Z" })], "2026-12-20"), [], "só cancelado: sem bloqueio");
 });

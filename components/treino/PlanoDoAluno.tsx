@@ -10,6 +10,7 @@ import { ROTULO_DA_SITUACAO, rotuloDaDuracao, textoDoPreco, type SituacaoDoContr
 
 type Contrato = {
   id: string;
+  profissional_id: string;
   profissional: string;
   plano_nome: string;
   preco_centavos: number;
@@ -21,22 +22,24 @@ type Contrato = {
   situacao: SituacaoDoContrato;
 };
 
-type Plano = { id: string; nome: string; preco_centavos: number; duracao_dias: number; descricao: string | null };
+type Plano = { id: string; nome: string; preco_centavos: number; duracao_dias: number; descricao: string | null; profissional_id: string; profissional: string };
 
 export type PlanoNaTela = {
   hoje: string;
   bloqueado: boolean;
+  bloqueados: string[];
   mensagem: string | null;
   contratos: Contrato[];
   planos: Plano[];
-  pedidos: { id: string; plano_nome: string | null; criada_em: string }[];
+  pedidos: { id: string; profissional_id: string; plano_nome: string | null; criada_em: string }[];
 };
 
 const data = (iso: string) => iso.split("-").reverse().join("/");
 
-// Plano do Treino na Área do Paciente (T8): situação do contrato, comprovante
-// e pedido de renovação. Plano vencido além da tolerância (R9): o aviso para
-// falar com o profissional; o histórico continua. Sem contrato, não aparece.
+// Plano do Treino na Área do Paciente (T8): situação de cada profissional,
+// comprovante e pedido de renovação. Plano vencido além da tolerância (R9,
+// S2): o treino daquele profissional fica indisponível, com o aviso para
+// falar com ele; o histórico continua. Sem contrato, não aparece.
 export default function PlanoDoAluno() {
   const [plano, setPlano] = useState<PlanoNaTela | null>(null);
   const [pedido, setPedido] = useState<{ planoId: string | null; observacao: string } | null>(null);
@@ -53,10 +56,16 @@ export default function PlanoDoAluno() {
 
   if (!plano || !plano.contratos.length) return null;
 
-  // Contrato atual: o que vale hoje, senão o mais recente.
-  const atual = plano.contratos.find((c) => c.inicio <= plano.hoje && plano.hoje <= c.vencimento) ?? plano.contratos[0];
+  // Por profissional, o contrato que vale hoje, senão o mais recente.
+  const profissionais = [...new Set(plano.contratos.map((c) => c.profissional_id))];
+  const atuais = profissionais.map((id) => {
+    const deles = plano.contratos.filter((c) => c.profissional_id === id);
+    return deles.find((c) => c.inicio <= plano.hoje && plano.hoje <= c.vencimento) ?? deles[0];
+  });
   const aPagar = plano.contratos.filter((c) => !c.confirmado_em && c.situacao !== "vencido");
-  const pedidoPendente = plano.pedidos[0] ?? null;
+  const comPedido = new Set(plano.pedidos.map((p) => p.profissional_id));
+  const paraRenovar = plano.planos.filter((p) => !comPedido.has(p.profissional_id));
+  const algumBloqueado = plano.bloqueados.length > 0;
 
   async function enviarComprovante(arquivoEscolhido: File) {
     const contratoId = contratoDoComprovante.current;
@@ -96,22 +105,32 @@ export default function PlanoDoAluno() {
   }
 
   return (
-    <section className={`cartao p-4 sm:p-5 ${plano.bloqueado ? "border-2 border-red-300" : ""}`} aria-label="Meu plano do Treino">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h2 className="font-bold text-gray-900">Meu plano do Treino</h2>
-          <p className="text-sm text-gray-600">
-            {atual.plano_nome} · {atual.profissional} · vence em {data(atual.vencimento)}
-          </p>
-        </div>
-        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-700">{ROTULO_DA_SITUACAO[atual.situacao]}</span>
-      </div>
+    <section className={`cartao p-4 sm:p-5 ${algumBloqueado ? "border-2 border-red-300" : ""}`} aria-label="Meu plano do Treino">
+      <h2 className="font-bold text-gray-900">Meu plano do Treino</h2>
+      <ul className="mt-1 space-y-1">
+        {atuais.map((c) => (
+          <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 text-sm text-gray-600">
+            <span>
+              {c.plano_nome} · {c.profissional} · vence em {data(c.vencimento)}
+            </span>
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-700">{ROTULO_DA_SITUACAO[c.situacao]}</span>
+          </li>
+        ))}
+      </ul>
 
       {plano.bloqueado && plano.mensagem ? (
         <p role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-800">
           {plano.mensagem}
         </p>
-      ) : null}
+      ) : (
+        atuais
+          .filter((c) => plano.bloqueados.includes(c.profissional_id))
+          .map((c) => (
+            <p key={c.id} role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-800">
+              O plano com {c.profissional} venceu: o treino passado por esse profissional fica indisponível até a renovação. O histórico continua aqui.
+            </p>
+          ))
+      )}
 
       {aPagar.map((c) => (
         <div key={c.id} className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
@@ -148,21 +167,22 @@ export default function PlanoDoAluno() {
         }}
       />
 
-      {pedidoPendente ? (
-        <p className="mt-3 text-sm text-gray-600">
+      {plano.pedidos.map((p) => (
+        <p key={p.id} className="mt-3 text-sm text-gray-600">
           <i className="pi pi-clock mr-2" aria-hidden />
-          Renovação pedida em {new Date(pedidoPendente.criada_em).toLocaleDateString("pt-BR")}
-          {pedidoPendente.plano_nome ? ` (${pedidoPendente.plano_nome})` : ""}. Aguarde o seu profissional.
+          Renovação pedida em {new Date(p.criada_em).toLocaleDateString("pt-BR")}
+          {p.plano_nome ? ` (${p.plano_nome})` : ""}. Aguarde o seu profissional.
         </p>
-      ) : plano.planos.length ? (
+      ))}
+      {paraRenovar.length ? (
         <Button
           type="button"
           size="small"
           className="mt-3"
           icon="pi pi-refresh"
           label="Pedir renovação"
-          outlined={!plano.bloqueado}
-          onClick={() => setPedido({ planoId: plano.planos[0].id, observacao: "" })}
+          outlined={!algumBloqueado}
+          onClick={() => setPedido({ planoId: paraRenovar[0].id, observacao: "" })}
         />
       ) : null}
 
@@ -173,7 +193,10 @@ export default function PlanoDoAluno() {
               <span className="mb-1 block text-sm font-semibold text-gray-700">Plano</span>
               <Dropdown
                 value={pedido.planoId}
-                options={plano.planos.map((p) => ({ label: `${p.nome} · ${textoDoPreco(p.preco_centavos)} · ${rotuloDaDuracao(p.duracao_dias)}`, value: p.id }))}
+                options={paraRenovar.map((p) => ({
+                  label: `${p.nome} · ${textoDoPreco(p.preco_centavos)} · ${rotuloDaDuracao(p.duracao_dias)}${profissionais.length > 1 ? ` · ${p.profissional}` : ""}`,
+                  value: p.id,
+                }))}
                 onChange={(e) => setPedido({ ...pedido, planoId: e.value })}
                 className="w-full"
                 aria-label="Plano"

@@ -1,7 +1,8 @@
 // Módulo de Treino, etapa T8: planos e preços por profissional (G1), contrato
 // e confirmação do pagamento (G2, G3), tolerância editável (G4), bloqueio do
 // aluno com plano vencido (R9), pedido de renovação e desativar/excluir o
-// aluno próprio (R10).
+// aluno próprio (R10). Respostas S1–S8: bloqueio por profissional (S2) e
+// profissional bloqueado sem alerta de desconforto (S7).
 // Ver LEIA-ME.md para rodar (com --limpar). Com ARQUIVOS_DIR igual à do
 // servidor, confere também a remoção do comprovante na exclusão.
 import { chromium } from "playwright-core";
@@ -24,11 +25,12 @@ const P = "b95d6aa9-ea74-4584-9d7d-f22031b042a0";
 const EMAIL_EDUCADOR = "teste.educador.t8@local.test";
 const EMAIL_ALUNO = "teste.aluno.t8@local.test";
 const NOME_ALUNO = "Aluno Próprio Teste T8";
+const EMAIL_OUTRO = "teste.outro.t8@local.test";
 
 function limpar() {
-  sql(`delete from notificacoes_profissionais where usuario_id in (select id from users where email = '${EMAIL_EDUCADOR}');
+  sql(`delete from notificacoes_profissionais where usuario_id in (select id from users where email in ('${EMAIL_EDUCADOR}', '${EMAIL_OUTRO}'));
        delete from patients where name like 'Aluno Próprio Teste T8%';
-       delete from users where email in ('${EMAIL_ALUNO}', '${EMAIL_EDUCADOR}');`);
+       delete from users where email in ('${EMAIL_ALUNO}', '${EMAIL_EDUCADOR}', '${EMAIL_OUTRO}');`);
 }
 limpar();
 
@@ -141,25 +143,67 @@ conferir("educador confirma pelo comprovante, pela tela", sql(`select forma_paga
 await e.pagina.screenshot({ path: path.join(PASTA, "t8-ficha-pago.png"), fullPage: true });
 conferir("comprovante depois da confirmação é recusado", (await enviarComprovante(C1)).status === 400, null);
 
-// --- Vencido além da tolerância (R9) -------------------------------------------------
+// --- Vencido além da tolerância, com dois profissionais (R9, S2, S7) ------------------
+// Segundo educador vinculado ao aluno, sem contrato; cada um com um treino de
+// musculação publicado (o do educador do contrato é o mais recente).
+await api(n.pagina, "/api/treino/educadores", "POST", { nome: "Outro Educador T8", email: EMAIL_OUTRO, senha: "inicial-123", cref: "000333-G/SP" });
+sql(`update users set must_change_password = false where email = '${EMAIL_OUTRO}';`);
+const OUTRO = sql(`select id from users where email = '${EMAIL_OUTRO}';`);
+sql(`insert into treino_vinculos (patient_id, profissional_id, criado_por) values ('${A}', '${OUTRO}', '${OUTRO}');`);
+const plano1 = `{"dias": []}`;
+const PE1 = sql(`insert into treino_prescricoes (patient_id, programa_id, origem, plano, criada_por, publicada_em) values ('${A}', gen_random_uuid(), 'profissional', '${plano1}', '${EDUCADOR}', now()) returning id;`).split("\n")[0];
+const PE2 = sql(`insert into treino_prescricoes (patient_id, programa_id, origem, plano, criada_por, publicada_em) values ('${A}', gen_random_uuid(), 'profissional', '${plano1}', '${OUTRO}', now() - interval '1 day') returning id;`).split("\n")[0];
+conferir("com os dois em dia, vale o treino mais recente (do educador do contrato)", (await api(a.pagina, "/api/area-paciente/treino")).corpo.treino?.prescricao.id === PE1, null);
+
 sql(`update treino_contratos set inicio = current_date - 40, vencimento = current_date - 6 where id = '${C1}';`);
 const tolerancia = (await api(a.pagina, "/api/area-paciente/treino/plano")).corpo;
-conferir("vencido há 6 dias com tolerância 5: bloqueado", tolerancia.bloqueado === true && tolerancia.contratos[0].situacao === "vencido", tolerancia);
+conferir(
+  "vencido há 6 dias com tolerância 5: só este educador bloqueado; o outro segue liberado (S2)",
+  tolerancia.bloqueados.length === 1 && tolerancia.bloqueados[0] === EDUCADOR && tolerancia.bloqueado === false && tolerancia.contratos[0].situacao === "vencido",
+  tolerancia
+);
 sql(`update treino_contratos set vencimento = current_date - 5 where id = '${C1}';`);
-conferir("vencido há 5 dias: ainda na tolerância", (await api(a.pagina, "/api/area-paciente/treino/plano")).corpo.bloqueado === false, null);
+conferir("vencido há 5 dias: ainda na tolerância", (await api(a.pagina, "/api/area-paciente/treino/plano")).corpo.bloqueados.length === 0, null);
 sql(`update treino_contratos set vencimento = current_date - 6 where id = '${C1}';`);
 
+const parcial = await api(a.pagina, "/api/area-paciente/treino");
+conferir("S2: o treino do educador vencido some e vale o do outro educador", parcial.corpo.treino?.prescricao.id === PE2 && parcial.corpo.bloqueado === false, parcial.corpo?.treino?.prescricao?.id);
+const naSessaoBloqueada = await api(a.pagina, "/api/area-paciente/treino", "PUT", { dia: "seg", prescricaoId: PE1 });
+conferir("S2: registro no treino do educador vencido é recusado", naSessaoBloqueada.status === 409, naSessaoBloqueada);
+const avulsa = await api(a.pagina, "/api/area-paciente/treino/atividades", "PUT", { modalidade: "corrida", data: hoje });
+conferir("S2: corrida avulsa não é bloqueada enquanto há profissional liberado", avulsa.status !== 409, avulsa);
+const forte = await api(a.pagina, "/api/area-paciente/treino/desconforto", "POST", { chaveCliente: crypto.randomUUID(), regiao: "Ombro", intensidade: 8, conduta: "parei", comentario: "Teste T8" });
+conferir(
+  "S7: alerta de desconforto só ao educador liberado, não ao vencido",
+  forte.status === 201 &&
+    sql(`select count(*) from notificacoes_profissionais where usuario_id = '${OUTRO}' and tipo = 'desconforto';`) === "1" &&
+    sql(`select count(*) from notificacoes_profissionais where usuario_id = '${EDUCADOR}' and tipo = 'desconforto';`) === "0",
+  forte
+);
+const painelVencido = (await api(e.pagina, "/api/treino/alunos")).corpo.desconfortos;
+conferir("S7: o relato não aparece nos alertas do educador vencido", !painelVencido.some((d) => d.patient_id === A), painelVencido.length);
+conferir("S7: o relato fica no histórico do aluno", sql(`select count(*) from treino_desconfortos where patient_id = '${A}';`) === "1", null);
+
+// Sem o outro educador: nenhum profissional liberado.
+sql(`update treino_vinculos set fim = now() where patient_id = '${A}' and profissional_id = '${OUTRO}';
+     update treino_prescricoes set arquivada_em = now() where id = '${PE2}';`);
+const total = (await api(a.pagina, "/api/area-paciente/treino/plano")).corpo;
+conferir("sem profissional liberado: bloqueio total, com a mensagem geral", total.bloqueado === true && /Seu plano do Treino venceu/.test(total.mensagem ?? ""), total);
 const treino = await api(a.pagina, "/api/area-paciente/treino");
 conferir("bloqueado: sem o treino da semana", treino.status === 200 && treino.corpo.bloqueado === true && treino.corpo.treino === null, treino.corpo);
-const registro = await api(a.pagina, "/api/area-paciente/treino", "PUT", { dia: "seg" });
+const registro = await api(a.pagina, "/api/area-paciente/treino", "PUT", { dia: "seg", prescricaoId: PE1 });
 conferir("bloqueado: registro de musculação recusado com a orientação", registro.status === 409 && /Fale com o seu profissional/.test(registro.corpo?.erro ?? ""), registro);
 const atividade = await api(a.pagina, "/api/area-paciente/treino/atividades", "PUT", { modalidade: "corrida", data: hoje });
 conferir("bloqueado: corrida nova recusada", atividade.status === 409, atividade);
 const historico = await api(a.pagina, "/api/area-paciente/treino/atividades");
 conferir("bloqueado: histórico de atividades segue, sem planejado", historico.status === 200 && historico.corpo.bloqueado === true && historico.corpo.planejadas.length === 0, historico.corpo?.bloqueado);
 conferir("bloqueado: relatórios continuam disponíveis", (await api(a.pagina, "/api/area-paciente/treino/relatorios")).status === 200, null);
-const desconforto = await api(a.pagina, "/api/area-paciente/treino/desconforto", "POST", { chaveCliente: crypto.randomUUID(), regiao: "Joelho", intensidade: 3, conduta: "continuei", comentario: "Teste T8" });
-conferir("bloqueado: relato de desconforto continua permitido (segurança)", desconforto.status === 201, desconforto);
+const desconforto = await api(a.pagina, "/api/area-paciente/treino/desconforto", "POST", { chaveCliente: crypto.randomUUID(), regiao: "Joelho", intensidade: 9, conduta: "parei", comentario: "Teste T8" });
+conferir(
+  "bloqueado: o relato é gravado, mas o educador vencido não recebe alerta (S7)",
+  desconforto.status === 201 && sql(`select count(*) from notificacoes_profissionais where usuario_id = '${EDUCADOR}' and tipo = 'desconforto';`) === "0",
+  desconforto
+);
 
 await a.pagina.goto(`${B}/area-paciente/treino`, { waitUntil: "networkidle" });
 await a.pagina.getByText("Seu plano do Treino venceu").waitFor({ timeout: 20000 }).catch(() => undefined);

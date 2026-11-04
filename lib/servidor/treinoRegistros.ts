@@ -23,17 +23,30 @@ import { obterPool } from "./banco";
 //   anterior à desta sessão (o aluno vê só isso; o histórico completo é do
 //   profissional).
 
-export type Prescricao = { id: string; origem: "externa" | "profissional"; versao: number; plano: PlanoDeTreino; publicada_em: string };
+export type Prescricao = {
+  id: string;
+  origem: "externa" | "profissional";
+  versao: number;
+  plano: PlanoDeTreino;
+  publicada_em: string;
+  criada_por: string | null;
+};
 
-export async function prescricaoVigente(patientId: string): Promise<Prescricao | null> {
+// Treino que vale hoje. Para o aluno, sem os treinos dos profissionais com o
+// plano vencido além da tolerância (T8, S2): vale o mais recente dos demais.
+export async function prescricaoVigente(patientId: string, bloqueados: string[] = []): Promise<Prescricao | null> {
   const linha = await obterPool().query<Prescricao>(
-    `select id, origem, versao, plano, publicada_em from public.treino_prescricoes
+    `select id, origem, versao, plano, publicada_em, criada_por from public.treino_prescricoes
       where patient_id = $1 and status = 'publicada' and modalidade = 'musculacao' and arquivada_em is null
+        and (criada_por is null or criada_por <> all($2::uuid[]))
       order by publicada_em desc, criada_em desc limit 1`,
-    [patientId]
+    [patientId, bloqueados]
   );
   return linha.rows[0] ?? null;
 }
+
+// O treino é de um profissional com o plano vencido (T8, S2).
+export class RegistroBloqueado extends Error {}
 
 // Treino importado (arquivo ou texto organizado pela IA) vira prescrição
 // externa publicada. Chamado quando a IA conclui. "Ler novamente" com
@@ -98,8 +111,8 @@ function exercicioDe(l: LinhaRegistro): ExercicioRegistrado {
 }
 
 // Tudo o que a tela "Meu treino" precisa.
-export async function treinoDoAluno(patientId: string, hoje = hojeNoBrasil()) {
-  const prescricao = await prescricaoVigente(patientId);
+export async function treinoDoAluno(patientId: string, hoje = hojeNoBrasil(), bloqueados: string[] = []) {
+  const prescricao = await prescricaoVigente(patientId, bloqueados);
   if (!prescricao) return null;
 
   const datas = datasDaSemana(hoje);
@@ -169,7 +182,7 @@ function textoValido(valor: unknown, limite: number) {
   return texto || null;
 }
 
-export async function salvarRegistro(patientId: string, corpo: unknown, hoje = hojeNoBrasil()) {
+export async function salvarRegistro(patientId: string, corpo: unknown, hoje = hojeNoBrasil(), bloqueados: string[] = []) {
   const dados = (corpo ?? {}) as Record<string, unknown>;
   const dia = dados.dia as ChaveDia;
   if (!DIAS.some((d) => d.chave === dia)) throw new RegistroInvalido("Dia inválido.");
@@ -177,16 +190,17 @@ export async function salvarRegistro(patientId: string, corpo: unknown, hoje = h
   // Registro feito sem internet (T5): pode chegar depois de uma nova versão
   // do treino ou na semana seguinte. Vale a prescrição em que foi feito (se
   // é deste aluno) e a semana informada (esta ou a anterior).
-  const vigente = await prescricaoVigente(patientId);
+  const vigente = await prescricaoVigente(patientId, bloqueados);
   let prescricao = vigente;
   if (typeof dados.prescricaoId === "string" && dados.prescricaoId !== vigente?.id && /^[0-9a-f-]{36}$/i.test(dados.prescricaoId)) {
     const anterior = await obterPool().query<Prescricao>(
-      `select id, origem, versao, plano, publicada_em from public.treino_prescricoes
+      `select id, origem, versao, plano, publicada_em, criada_por from public.treino_prescricoes
         where id = $1 and patient_id = $2 and status = 'publicada' and modalidade = 'musculacao'`,
       [dados.prescricaoId, patientId]
     );
     prescricao = anterior.rows[0] ?? null;
   }
+  if (prescricao?.criada_por && bloqueados.includes(prescricao.criada_por)) throw new RegistroBloqueado();
   if (!prescricao || prescricao.id !== dados.prescricaoId) throw new RegistroInvalido("O treino mudou. Recarregue a página.");
   const registradaEm = momentoDoAparelho(dados.registradaEm);
   if (registradaEm === undefined) throw new RegistroInvalido("Data do registro inválida.");

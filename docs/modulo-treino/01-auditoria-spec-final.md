@@ -524,26 +524,47 @@ Nada toca nos pagamentos da Nutrição (G5).
 **G4, tolerância:**
 - editável por profissional, de 0 a 60 dias;
 - o contrato guarda a tolerância do dia em que foi feito;
-- **o padrão inicial de 7 dias foi escolhido pela equipe técnica** e está na lista de aprovação do cliente.
+- o padrão inicial é de 7 dias (aprovado na resposta S1).
 
-**R9, regra de bloqueio** (no servidor):
-- **Quando bloqueia:** o aluno que tem contratos do Treino fica bloqueado quando nenhum deles libera hoje.
+**R9, regra de bloqueio** (no servidor; respostas S2 a S4):
+- **Por profissional (S2):** cada profissional bloqueia só o próprio treino. Um profissional fica bloqueado para o aluno quando tem contratos com ele e nenhum libera hoje.
 - **O que libera:**
   - contrato pago, até o vencimento mais a tolerância;
-  - contrato ainda sem confirmação, só do início até o início mais a tolerância. É o mesmo prazo para pagar a primeira vez.
-- **Aluno sem nenhum contrato do Treino:** não é bloqueado, como antes da T8. Isso inclui os pacientes da clínica que o administrador não controla por aqui.
-- **Mais de um profissional:** o bloqueio é do aluno, não de cada profissional. Basta um contrato em dia, de qualquer profissional, para liberar. Esta decisão está na lista de aprovação.
+  - contrato ainda sem confirmação, do início até o início mais a tolerância (S4). É o mesmo prazo para pagar a primeira vez.
+- **Profissional sem contrato com o aluno:** não bloqueia, como antes da T8 (S3). Isso inclui os pacientes da clínica que o administrador não controla por aqui.
+- **Bloqueio total:** quando nenhum profissional que acompanha o aluno está liberado. Contam os educadores vinculados e ativos e, para paciente da clínica, o administrador sem contrato ou com contrato em dia.
 
 **R9, efeito do bloqueio para o aluno:**
-- o "Meu treino" mostra "Seu plano do Treino venceu… Fale com o seu profissional";
-- sem o treino da semana e sem o planejado de corrida e ciclismo;
-- registrar musculação, corrida ou pedal é recusado (409), e o que estava na fila sem internet vai para "recusados" com a mesma mensagem;
-- continuam disponíveis: relatórios, devolutivas, histórico de atividades e o relato de desconforto (segurança);
-- nada é apagado;
-- o aluno pede a renovação escolhendo o plano, e o profissional recebe um aviso. O pedido não libera nada sozinho; o contrato novo atende o pedido.
+- **Treino do profissional bloqueado:**
+  - a musculação, a corrida e o ciclismo que ele prescreveu somem do "Meu treino";
+  - vale o treino mais recente dos profissionais liberados;
+  - registrar numa sessão dele é recusado (409), e o que estava na fila sem internet vai para "recusados" com a orientação.
+- **Cartão "Meu plano do Treino":** mostra a situação de cada profissional e avisa qual plano venceu.
+- **Bloqueio total:**
+  - o "Meu treino" mostra "Seu plano do Treino venceu… Fale com o seu profissional";
+  - corrida ou pedal avulso também é recusado.
+- **Continuam disponíveis:** relatórios, devolutivas, histórico de atividades e o relato de desconforto.
+- **Nada é apagado.**
+- **Renovação:** o aluno pede escolhendo o plano, e o profissional recebe um aviso. O pedido não libera nada sozinho; o contrato novo atende o pedido. Há um pedido pendente por profissional.
+
+**S7, alertas:** o profissional com o plano vencido além da tolerância não recebe mais os alertas de desconforto daquele aluno. Fica sem o push e sem o relato na lista de não vistos. O relato fica gravado no histórico do aluno, e os profissionais liberados recebem normalmente.
 
 **R9, o que o profissional vê:**
-- a lista de alunos marca "Plano vencido", "Comprovante a conferir", "Renovação pedida" e "Desativado".
+- a lista de alunos marca "Plano vencido" (o plano dele com o aluno), "Comprovante a conferir", "Renovação pedida" e "Desativado";
+- a ficha explica que, até a renovação, o aluno não vê o treino dele e ele não recebe os alertas.
+
+**Respostas S1 a S8 (técnico, 04/11/2026):**
+
+| Resposta | Decisão |
+|---|---|
+| S1 | Tolerância padrão de 7 dias |
+| S2 | Bloqueio por profissional |
+| S3 | Sem contrato, sem bloqueio |
+| S4 | Primeiro pagamento no prazo da tolerância |
+| S5 | Modalidades e "relatório incluído" só informativos |
+| S6 | Sem aviso de vencimento por enquanto |
+| S7 | Profissional bloqueado sem alertas |
+| S8 | Pedido de exclusão feito fora do aplicativo, como está |
 
 **R10, encerramento:**
 - **Desativar o aluno próprio** (cadastro do aluno › Desativar aluno):
@@ -558,4 +579,4 @@ Nada toca nos pagamentos da Nutrição (G5).
 
 Teste unitário: `tests/treinoContrato.test.mjs` (regras de situação, tolerância e bloqueio).
 
-Teste de navegação: `tests/navegacao/treinoT8.mjs` (48 verificações).
+Teste de navegação: `tests/navegacao/treinoT8.mjs` (55 verificações, com um segundo educador para o S2 e o S7).

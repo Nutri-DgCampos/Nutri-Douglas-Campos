@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { hojeNoBrasil, somarDias } from "@/lib/cronograma";
-import { acessoAoTreino, situacaoDoContrato, vencimentoDe, type SituacaoDoContrato } from "@/lib/treinoContrato";
+import { profissionaisBloqueados, situacaoDoContrato, vencimentoDe, type SituacaoDoContrato } from "@/lib/treinoContrato";
 import { BUCKETS, gravarArquivo, removerArquivo, resolverCaminho } from "./arquivos";
 import { obterPool } from "./banco";
 import { enfileirarParaProfissionais } from "./pushProfissional";
@@ -176,18 +176,38 @@ async function contratos(patientId: string, profissionalId: string | null, hoje 
   return r.rows.map((c) => ({ ...c, situacao: situacaoDoContrato(c, hoje) }));
 }
 
-// Situação do aluno no Treino hoje (R9): bloqueado quando tem contratos e
-// nenhum libera. Sem contrato, como antes da T8.
-export async function acessoDoAluno(patientId: string, hoje = hojeNoBrasil()) {
+// Bloqueios do aluno hoje (R9, S2): os profissionais com plano vencido além
+// da tolerância, e se ele ficou sem nenhum profissional liberado ("total").
+// Profissional sem contrato com o aluno não bloqueia (S3).
+export async function bloqueiosDoAluno(patientId: string, hoje = hojeNoBrasil()) {
   const lista = await contratos(patientId, null, hoje);
-  return { ...acessoAoTreino(lista, hoje), contratos: lista };
+  const bloqueados = profissionaisBloqueados(lista, hoje);
+  return { bloqueados, contratos: lista, total: await semProfissionalLiberado(patientId, bloqueados) };
 }
 
-export async function alunoBloqueado(patientId: string, hoje = hojeNoBrasil()) {
-  return (await acessoDoAluno(patientId, hoje)).bloqueado;
+// Total: algum profissional bloqueado e nenhum outro acompanhando liberado
+// (educador vinculado e ativo fora da lista ou, para paciente da clínica, o
+// administrador sem contrato ou com contrato em dia).
+async function semProfissionalLiberado(patientId: string, bloqueados: string[]) {
+  if (!bloqueados.length) return false;
+  const r = await obterPool().query<{ livre: boolean }>(
+    `select exists (select 1 from public.treino_vinculos v
+                      join public.educadores_fisicos e on e.usuario_id = v.profissional_id and e.ativo
+                     where v.patient_id = $1 and v.fim is null and v.profissional_id <> all($2))
+            or (exists (select 1 from public.patients where id = $1 and educador_dono_id is null)
+                and (not exists (select 1 from public.treino_contratos c join public.profiles pr on pr.id = c.profissional_id and pr.role = 'nutricionista'
+                                  where c.patient_id = $1 and c.cancelado_em is null)
+                     or exists (select 1 from public.treino_contratos c join public.profiles pr on pr.id = c.profissional_id and pr.role = 'nutricionista'
+                                 where c.patient_id = $1 and c.cancelado_em is null and c.profissional_id <> all($2)))) as livre`,
+    [patientId, bloqueados]
+  );
+  return !r.rows[0].livre;
 }
 
 export const MENSAGEM_DE_BLOQUEIO =
+  "O plano do Treino com este profissional venceu. O histórico continua disponível; o treino e os registros dele voltam depois da renovação. Fale com o seu profissional.";
+
+export const MENSAGEM_DE_BLOQUEIO_TOTAL =
   "Seu plano do Treino venceu. O histórico continua disponível, mas treino novo e registros voltam depois da renovação. Fale com o seu profissional.";
 
 // Resumo para a lista de alunos: bloqueado (R9), comprovante a conferir e
@@ -211,7 +231,7 @@ export async function resumoDePagamentos(profissionalId: string, alunos: string[
   for (const id of alunos) {
     const deles = lista.rows.filter((c) => c.patient_id === id);
     resumo.set(id, {
-      bloqueado: acessoAoTreino(deles, hoje).bloqueado,
+      bloqueado: profissionaisBloqueados(deles, hoje).includes(profissionalId),
       comprovante: deles.some((c) => c.profissional_id === profissionalId && c.comprovante_em && !c.confirmado_em),
       renovacao: renovacoes.has(id),
     });
@@ -224,7 +244,7 @@ export async function resumoDePagamentos(profissionalId: string, alunos: string[
 export async function contratosParaProfissional(profissional: ProfissionalDeTreino, patientId: string) {
   const hoje = hojeNoBrasil();
   const [acesso, meus, planos, tolerancia, renovacoes] = await Promise.all([
-    acessoDoAluno(patientId, hoje),
+    bloqueiosDoAluno(patientId, hoje),
     contratos(patientId, profissional.usuarioId, hoje),
     planosDoProfissional(profissional.usuarioId),
     toleranciaDoProfissional(profissional.usuarioId),
@@ -239,7 +259,8 @@ export async function contratosParaProfissional(profissional: ProfissionalDeTrei
   ]);
   return {
     hoje,
-    bloqueado: acesso.bloqueado,
+    // S2: o bloqueio é do profissional conectado (o treino dele some para o aluno).
+    bloqueado: acesso.bloqueados.includes(profissional.usuarioId),
     outrosProfissionais: acesso.contratos.some((c) => c.profissional_id !== profissional.usuarioId && !c.cancelado_em),
     contratos: meus,
     planos,
@@ -344,18 +365,22 @@ export async function comprovanteParaProfissional(profissional: ProfissionalDeTr
 // renovação) e pedidos pendentes. Os preços são os de hoje do plano.
 export async function planoDoAluno(patientId: string) {
   const hoje = hojeNoBrasil();
-  const acesso = await acessoDoAluno(patientId, hoje);
+  const acesso = await bloqueiosDoAluno(patientId, hoje);
   const profissionais = [...new Set(acesso.contratos.filter((c) => !c.cancelado_em).map((c) => c.profissional_id))];
   const [planos, pedidos] = await Promise.all([
     profissionais.length
-      ? obterPool().query<PlanoDoTreino & { profissional_id: string }>(
-          `select ${COLUNAS_DO_PLANO}, profissional_id from public.treino_planos
-            where profissional_id = any($1) and arquivado_em is null order by preco_centavos, nome`,
+      ? obterPool().query<PlanoDoTreino & { profissional_id: string; profissional: string }>(
+          `select ${COLUNAS_DO_PLANO.split(", ").map((c) => `p.${c}`).join(", ")}, p.profissional_id,
+                  coalesce(e.nome, case when pr.role = 'nutricionista' then 'Administrador' end, 'Profissional') as profissional
+             from public.treino_planos p
+             left join public.educadores_fisicos e on e.usuario_id = p.profissional_id
+             left join public.profiles pr on pr.id = p.profissional_id
+            where p.profissional_id = any($1) and p.arquivado_em is null order by p.preco_centavos, p.nome`,
           [profissionais]
         )
       : Promise.resolve({ rows: [] }),
-    obterPool().query<{ id: string; plano_nome: string | null; criada_em: string }>(
-      `select r.id, p.nome as plano_nome, r.criada_em from public.treino_renovacoes r
+    obterPool().query<{ id: string; profissional_id: string; plano_nome: string | null; criada_em: string }>(
+      `select r.id, r.profissional_id, p.nome as plano_nome, r.criada_em from public.treino_renovacoes r
          left join public.treino_planos p on p.id = r.plano_id
         where r.patient_id = $1 and r.atendida_em is null order by r.criada_em desc`,
       [patientId]
@@ -363,8 +388,9 @@ export async function planoDoAluno(patientId: string) {
   ]);
   return {
     hoje,
-    bloqueado: acesso.bloqueado,
-    mensagem: acesso.bloqueado ? MENSAGEM_DE_BLOQUEIO : null,
+    bloqueado: acesso.total,
+    bloqueados: acesso.bloqueados,
+    mensagem: acesso.total ? MENSAGEM_DE_BLOQUEIO_TOTAL : null,
     contratos: acesso.contratos.filter((c) => !c.cancelado_em).map((c) => ({ ...c, observacao: null })),
     planos: planos.rows,
     pedidos: pedidos.rows,

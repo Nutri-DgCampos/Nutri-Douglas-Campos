@@ -120,7 +120,7 @@ export default function PlanoEPagamento({ alunoId }: { alunoId: string }) {
           <h2 className="font-bold text-gray-900">Plano e pagamento</h2>
           <p className="mt-1 text-sm text-gray-500">
             {dados.bloqueado
-              ? "Plano vencido além da tolerância: o aluno vê só o histórico até a renovação."
+              ? "Plano vencido além da tolerância: até a renovação, o aluno não vê o seu treino nem registra nas suas sessões, e você não recebe os alertas de desconforto dele."
               : dados.contratos.length || dados.outrosProfissionais
                 ? "O aluno usa o Treino normalmente."
                 : "Sem contrato do Treino: o aluno usa o Treino sem controle de pagamento."}
