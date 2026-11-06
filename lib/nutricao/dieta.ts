@@ -144,6 +144,14 @@ export function novaRefeicao(nome = ""): Refeicao {
   return { id: novoId(), nome, horario: null, observacao: null, opcaoReferencia: opcao.id, opcoes: [opcao] };
 }
 
+// Orientação de hidratação que já vem escrita em dieta nova (SPEC
+// complementar 06/11, item 4: texto exato aprovado pelo cliente). É só o
+// valor inicial do campo: o nutricionista edita, troca ou apaga, e o que for
+// salvo (inclusive vazio) não é reposto. Dietas existentes e cópias não
+// mudam. O ml/kg continua vazio: não há valor padrão de ml/kg.
+export const ORIENTACAO_HIDRATACAO_PADRAO =
+  "A hidratação deve ser mantida de forma constante durante o dia. Evite permanecer muitas horas sem ingerir líquidos e, posteriormente, consumir grandes quantidades de água de uma só vez. Isso favorece uma melhor absorção e utilização dos líquidos pelo organismo.";
+
 export function documentoVazio(titulo = "Nova dieta", objetivo = ""): DocumentoDieta {
   return {
     esquema: VERSAO_DO_ESQUEMA,
@@ -151,7 +159,7 @@ export function documentoVazio(titulo = "Nova dieta", objetivo = ""): DocumentoD
     objetivo,
     refeicoes: [],
     observacoes: [],
-    hidratacao: { mlPorKg: null, observacoes: "" },
+    hidratacao: { mlPorKg: null, observacoes: ORIENTACAO_HIDRATACAO_PADRAO },
     pesoReferencia: { valor: null, origem: null, data: null },
     nutrientesAcompanhados: [],
   };
@@ -662,7 +670,9 @@ export function copiarDocumento(origem: DocumentoDieta, modo: "copia" | "rotina"
       return copia;
     }),
     observacoes: rotina ? [] : origem.observacoes.map((o) => ({ ...o, id: novoId() })),
-    hidratacao: rotina ? { mlPorKg: null, observacoes: "" } : { ...origem.hidratacao },
+    // Cópia: a orientação da origem (mesmo vazia). Rotina: dieta nova, sem a
+    // hidratação anterior, então com a orientação padrão.
+    hidratacao: rotina ? { mlPorKg: null, observacoes: ORIENTACAO_HIDRATACAO_PADRAO } : { ...origem.hidratacao },
     nutrientesAcompanhados: [...origem.nutrientesAcompanhados],
   };
 }
@@ -677,7 +687,8 @@ export function documentoTemConteudo(documento: DocumentoDieta) {
     documento.refeicoes.length > 0 ||
     documento.observacoes.length > 0 ||
     documento.hidratacao.mlPorKg !== null ||
-    documento.hidratacao.observacoes.trim() !== ""
+    // A orientação padrão sozinha não é conteúdo do nutricionista.
+    (documento.hidratacao.observacoes.trim() !== "" && documento.hidratacao.observacoes.trim() !== ORIENTACAO_HIDRATACAO_PADRAO)
   );
 }
 

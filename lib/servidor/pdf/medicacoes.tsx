@@ -6,15 +6,17 @@ import {
   formatar,
   textoDaConcentracao,
   textoDaSemana,
+  textoDoPeriodo,
   type DadosDaMedicacao,
 } from "@/lib/nutricao/medicacao";
 import { formatarData } from "@/lib/nutricao/paciente";
 import { gerarPdf } from "./documento";
-import type { Identidade } from "./identidade";
 
 // PDF do resumo de medicações. Por decisão do cliente (ND-193/194), só este
-// PDF não leva logotipo, marca-d'água nem assinatura: identificação em texto
-// e o aviso informativo obrigatório.
+// PDF não leva logotipo, marca-d'água nem assinatura. SPEC complementar
+// 06/11, item 5: também sem nome, título e CRN do nutricionista (cabeçalho,
+// rodapé e metadados); o rodapé fica só com a paginação. Cada medicamento
+// mostra o próprio período de uso (Início e Término do registro).
 
 const estilos = StyleSheet.create({
   pagina: { paddingTop: 36, paddingBottom: 56, paddingHorizontal: 40, fontFamily: "Helvetica", fontSize: 9.5, color: "#1f2937" },
@@ -28,18 +30,21 @@ const estilos = StyleSheet.create({
   c3: { width: "20%", paddingHorizontal: 3, textAlign: "right" },
   c4: { width: "20%", paddingHorizontal: 3, textAlign: "right" },
   pequeno: { fontSize: 8, color: "#6b7280" },
+  periodo: { fontSize: 8, color: "#374151", marginTop: 2 },
   secao: { fontFamily: "Helvetica-Bold", fontSize: 10.5, marginTop: 14, marginBottom: 4 },
   aviso: { marginTop: 16, padding: 6, borderWidth: 0.75, borderColor: "#9ca3af", fontSize: 8.5, lineHeight: 1.35 },
   rodape: { position: "absolute", bottom: 22, left: 40, right: 40, textAlign: "center", fontSize: 8, color: "#6b7280" },
 });
 
-export async function gerarPdfDeMedicacoes(
-  dados: { paciente: string; dataConsulta: string; emissao: string; medicacoes: DadosDaMedicacao[]; anotacoes: string },
-  identidade: Identidade
-) {
-  const profissional = [identidade.nomeProfissional, identidade.registroProfissional].filter(Boolean).join(" — ");
+export async function gerarPdfDeMedicacoes(dados: {
+  paciente: string;
+  dataConsulta: string;
+  emissao: string;
+  medicacoes: DadosDaMedicacao[];
+  anotacoes: string;
+}) {
   return gerarPdf(
-    <Document title={`Medicações — ${dados.paciente}`} author={identidade.nomeProfissional ?? undefined} language="pt-BR">
+    <Document title={`Medicações — ${dados.paciente}`} language="pt-BR">
       <Page size="A4" style={estilos.pagina}>
         <Text style={estilos.titulo}>Resumo semanal de medicações</Text>
         <View style={estilos.id}>
@@ -58,7 +63,6 @@ export async function gerarPdfDeMedicacoes(
               <Text style={estilos.negrito}>Emitido em: </Text>
               {formatarData(dados.emissao)}
             </Text>
-            {profissional ? <Text>{profissional}</Text> : null}
           </View>
         </View>
 
@@ -78,6 +82,7 @@ export async function gerarPdfDeMedicacoes(
                 {m.principioAtivo ? <Text style={estilos.pequeno}>{m.principioAtivo}</Text> : null}
                 {textoDaConcentracao(m) ? <Text style={estilos.pequeno}>{textoDaConcentracao(m)}</Text> : null}
                 {m.apresentacao ? <Text style={estilos.pequeno}>{m.apresentacao}</Text> : null}
+                {textoDoPeriodo(m.inicio, m.termino) ? <Text style={estilos.periodo}>{textoDoPeriodo(m.inicio, m.termino)}</Text> : null}
               </View>
               <View style={estilos.c2}>
                 <Text>{textoDaSemana(m) || "—"}</Text>
@@ -100,7 +105,7 @@ export async function gerarPdfDeMedicacoes(
         <Text style={estilos.aviso} wrap={false}>
           {AVISO_DO_DOCUMENTO}
         </Text>
-        <Text style={estilos.rodape} fixed render={({ pageNumber, totalPages }) => `${profissional}${profissional ? " · " : ""}${pageNumber} / ${totalPages}`} />
+        <Text style={estilos.rodape} fixed render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
       </Page>
     </Document>
   );

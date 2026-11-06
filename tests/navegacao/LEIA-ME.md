@@ -20,6 +20,7 @@ node tests/navegacao/treinoT8.mjs --limpar
 node tests/navegacao/planoAtivo1104.mjs
 node tests/navegacao/instalacaoSamsung.mjs
 node tests/navegacao/medidas1104.mjs
+node tests/navegacao/complementar1106.mjs --limpar
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -52,3 +53,4 @@ As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.
 - `planoAtivo1104.mjs`: correção do plano com o ciclo ativo (SPEC Plano Ativo, Opção B, S9–S12). Monta três semanas vencidas no ciclo do paciente de teste, corrige de mensal para semanal pela tela e confere que o paciente responde no mesmo dia. Também confere salvar de novo, semanal para mensal e reaplicar. Restaura o ciclo no fim, mesmo se falhar. Ver `docs/correcao-plano-ativo-2026-11-04.md`.
 - `instalacaoSamsung.mjs`: aviso "Instale o aplicativo" no Samsung Internet. O Play Protect do Android 14 em diante bloqueia o app gerado por esse navegador, então o aviso orienta a instalar pelo Chrome. Simula o navegador com o paciente de teste.
 - `medidas1104.mjs`: peso do relatório semanal digitado com vírgula e conferido antes do envio (o peso "76500" dava só "Erro ao salvar relatório"). A faixa de peso, água e sono está em `tests/medidas.test.mjs`.
+- `complementar1106.mjs`: SPEC complementar de 06/11 (treino enviado acessível e "Ver versão enviada", observações do treino, cronômetro de descanso com relógio controlado, hidratação pré-preenchida, PDF de medicações com período e sem identificação do nutricionista). Precisa do `pypdf` no Python, para extrair o texto dos PDFs. Cria e apaga `teste.educador.c1106@local.test` e `teste.aluno.c1106@local.test`. Ver `docs/spec-complementar-2026-11-06.md`.

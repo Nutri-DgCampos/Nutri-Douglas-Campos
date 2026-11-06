@@ -92,7 +92,13 @@ export function textoDasRepeticoes(exercicio: Pick<Exercicio, "repeticoes" | "re
   return String(exercicio.repeticoes);
 }
 
-export type PlanoDeTreino = { dias: DiaDeTreino[] };
+// Observações gerais do treino (SPEC complementar 06/11, item 2): ficam no
+// plano, então cada versão enviada guarda as suas. Podem vir do catálogo do
+// profissional (cópia editável: o modelo não muda) ou ser escritas na hora.
+export type ObservacaoDoTreino = { id: string; titulo: string; texto: string; modeloId?: string | null };
+
+// "observacoes" só existe quando há alguma (treinos antigos não têm a chave).
+export type PlanoDeTreino = { dias: DiaDeTreino[]; observacoes?: ObservacaoDoTreino[] };
 
 export type Nivel = "Iniciante" | "Intermediário" | "Avançado" | "Expert";
 
@@ -268,6 +274,7 @@ export type SessaoRegistrada = {
 // recentes que o aluno registrou em cada exercício (a prescrição não muda).
 export function planoComRegistros(plano: PlanoDeTreino, ultimos: Record<string, Record<number, ExercicioRegistrado>>): PlanoDeTreino {
   return {
+    ...(plano.observacoes?.length ? { observacoes: plano.observacoes } : {}),
     dias: plano.dias.map((dia) => ({
       ...dia,
       exercicios: dia.exercicios.map((exercicio, indice) => {

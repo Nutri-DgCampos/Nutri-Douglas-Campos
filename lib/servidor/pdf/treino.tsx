@@ -128,6 +128,21 @@ export function DocumentoDoTreino({ dados, identidade }: { dados: DadosDoPdfDoTr
         </View>
       ))}
 
+      {/* Observações gerais do treino (SPEC complementar 06/11, item 2). */}
+      {dados.plano.observacoes?.length ? (
+        <View>
+          <Text style={estilos.sessao}>Observações do treino</Text>
+          {dados.plano.observacoes.map((o, i) => (
+            <View key={o.id} wrap={false} style={{ marginBottom: 4 }}>
+              <Text>
+                <Text style={estilos.negrito}>{`${i + 1}. ${o.titulo}`}</Text>
+              </Text>
+              {o.texto ? <Text style={{ color: "#374151", lineHeight: 1.35 }}>{o.texto}</Text> : null}
+            </View>
+          ))}
+        </View>
+      ) : null}
+
       <Text style={estilos.aviso}>
         Em caso de dor forte ou repentina, dor no peito, falta de ar, tontura ou desmaio, interrompa o treino e procure atendimento médico.
       </Text>

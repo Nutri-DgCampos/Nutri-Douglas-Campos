@@ -7,6 +7,7 @@ import {
   type DiaDeTreino,
   type Exercicio,
   type Grupo,
+  type ObservacaoDoTreino,
   type PlanoDeTreino,
 } from "./treino.ts";
 
@@ -142,6 +143,25 @@ function exercicio(valor: unknown): Exercicio {
   };
 }
 
+export const MAX_OBSERVACOES = 20;
+
+// Observações gerais: sem título e sem texto são descartadas.
+function observacoesDoPlano(valor: unknown): ObservacaoDoTreino[] {
+  if (valor === undefined || valor === null) return [];
+  if (!Array.isArray(valor) || valor.length > MAX_OBSERVACOES) throw new PlanoInvalido(`No máximo ${MAX_OBSERVACOES} observações no treino.`);
+  return valor
+    .map((item) => {
+      const o = (item ?? {}) as Record<string, unknown>;
+      return {
+        id: typeof o.id === "string" && o.id.length <= 64 ? o.id : globalThis.crypto.randomUUID(),
+        titulo: texto(o.titulo, 120) ?? "",
+        texto: texto(o.texto, 2000, false) ?? "",
+        modeloId: typeof o.modeloId === "string" && UUID.test(o.modeloId) ? o.modeloId : null,
+      };
+    })
+    .filter((o) => o.titulo || o.texto);
+}
+
 // Limpa o plano vindo do editor. Devolve o plano ou a mensagem do problema.
 export function validarPlanoDoEditor(valor: unknown): { plano: PlanoDeTreino } | { erro: string } {
   try {
@@ -160,7 +180,8 @@ export function validarPlanoDoEditor(valor: unknown): { plano: PlanoDeTreino } |
         exercicios: d.exercicios.map(exercicio),
       };
     });
-    return { plano: { dias } };
+    const observacoes = observacoesDoPlano(p.observacoes);
+    return { plano: observacoes.length ? { dias, observacoes } : { dias } };
   } catch (erro) {
     if (erro instanceof PlanoInvalido) return { erro: erro.message };
     throw erro;
@@ -219,6 +240,7 @@ export function tonelagemDaSessao(dia: DiaDeTreino) {
 // O que vai para a tela do aluno: sem detalhes avançados, sem a Opção oculta.
 export function planoParaAluno(plano: PlanoDeTreino): PlanoDeTreino {
   return {
+    ...(plano.observacoes?.length ? { observacoes: plano.observacoes.map(({ id, titulo, texto }) => ({ id, titulo, texto })) } : {}),
     dias: plano.dias.map((dia) => ({
       ...dia,
       exercicios: dia.exercicios.map((e) => {
@@ -268,5 +290,6 @@ export function proximoDiaLivre(plano: PlanoDeTreino): DiaDeTreino["dia"] {
 }
 
 export function ordenarSessoes(plano: PlanoDeTreino): PlanoDeTreino {
-  return { dias: [...plano.dias].sort((a, b) => CHAVES.indexOf(a.dia) - CHAVES.indexOf(b.dia)) };
+  // Mantém o resto do plano (observações do treino).
+  return { ...plano, dias: [...plano.dias].sort((a, b) => CHAVES.indexOf(a.dia) - CHAVES.indexOf(b.dia)) };
 }

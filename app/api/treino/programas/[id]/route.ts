@@ -9,6 +9,7 @@ import {
   enviarAoAluno,
   lerPrograma,
   salvarRascunho,
+  versaoParaPdf,
 } from "@/lib/servidor/treinoPrescricoes";
 
 export const runtime = "nodejs";
@@ -16,10 +17,20 @@ export const runtime = "nodejs";
 type Parametros = { params: Promise<{ id: string }> };
 
 // Programa do editor (só o autor): rascunho, versões e importação.
+// ?versao=N: a versão enviada ao aluno, como foi publicada (só leitura;
+// SPEC complementar 06/11, item 1).
 export async function GET(request: Request, { params }: Parametros) {
   const profissional = await exigirProfissionalDeTreino(request);
   if (profissional instanceof NextResponse) return profissional;
   const { id } = await params;
+  const versao = new URL(request.url).searchParams.get("versao");
+  if (versao !== null) {
+    if (!UUID.test(id) || !/^\d{1,4}$/.test(versao)) return recusar("Versão inválida.", 400);
+    const publicada = await versaoParaPdf(profissional, id, Number(versao));
+    if (!publicada || publicada.status !== "publicada") return recusar("Versão não encontrada.", 404);
+    const { titulo, objetivo, plano, publicada_em } = publicada;
+    return NextResponse.json({ versao: { versao: publicada.versao, titulo, objetivo, plano, publicada_em } });
+  }
   const programa = UUID.test(id) ? await lerPrograma(profissional, id) : null;
   if (!programa) return recusar("Treino não encontrado.", 404);
   return NextResponse.json({ programa });

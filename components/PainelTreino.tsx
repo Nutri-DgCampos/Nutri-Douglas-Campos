@@ -7,6 +7,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Tag } from "primereact/tag";
+import CronometroDeDescanso from "@/components/treino/CronometroDeDescanso";
 import {
   DIAS,
   SITUACOES,
@@ -217,6 +218,21 @@ export default function PainelTreino({
             );
           })}
         </ul>
+
+        {/* Observações gerais do treino (SPEC complementar 06/11, item 2). */}
+        {plano.observacoes?.length ? (
+          <div className="border-t border-gray-200 px-4 py-3" aria-label="Observações do treino">
+            <h3 className="font-bold text-gray-900">Observações do treino</h3>
+            <ol className="mt-2 space-y-2 text-sm text-gray-700">
+              {plano.observacoes.map((o) => (
+                <li key={o.id}>
+                  {o.titulo ? <p className="font-semibold text-gray-900">{o.titulo}</p> : null}
+                  {o.texto ? <p className="whitespace-pre-wrap">{o.texto}</p> : null}
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
       </section>
 
       {/* Resumo */}
@@ -311,6 +327,7 @@ export default function PainelTreino({
                 key={indice}
                 exercicio={exercicio}
                 prescrito={(prescricao ?? plano).dias.find((d) => d.dia === rascunho.dia)?.exercicios[indice]}
+                chave={`${rascunho.dia}-${indice}`}
                 editavel={Boolean(onSalvar)}
                 anterior={anteriores?.[rascunho.dia]?.[indice]?.carga_kg ?? null}
                 onAlterar={(campo, valor) => alterar(indice, campo, valor)}
@@ -448,6 +465,7 @@ export default function PainelTreino({
 function CartaoExercicio({
   exercicio,
   prescrito,
+  chave,
   editavel,
   anterior,
   onAlterar,
@@ -455,6 +473,7 @@ function CartaoExercicio({
   exercicio: Exercicio;
   // Exercício como prescrito (faixa de repetições, Opção, vídeo).
   prescrito?: Exercicio;
+  chave: string;
   editavel: boolean;
   // Última carga registrada antes desta sessão (só referência, não preenche).
   anterior?: number | null;
@@ -531,6 +550,10 @@ function CartaoExercicio({
           </label>
         ))}
       </div>
+
+      {/* Cronômetro de descanso (SPEC complementar 06/11, item 3): usa o
+          descanso prescrito; não muda os campos nem o registro. */}
+      {editavel ? <CronometroDeDescanso chave={chave} descansoSegundos={(prescrito ?? exercicio).descanso_segundos} /> : null}
     </li>
   );
 }

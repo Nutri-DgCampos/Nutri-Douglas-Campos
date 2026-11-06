@@ -18,6 +18,9 @@ import {
   proximoDiaLivre,
   volumeSemanalPorGrupo,
 } from "@/lib/treinoEditor";
+import PainelTreino from "@/components/PainelTreino";
+import { Dropdown } from "primereact/dropdown";
+import ObservacoesDoTreino from "./ObservacoesDoTreino";
 import SessaoDoEditor, { type ItemDaBiblioteca } from "./SessaoDoEditor";
 import { JanelaDetalhes, JanelaIa, JanelaImportar, JanelaSalvarModelo, JanelaTroca, type Sugestao } from "./JanelasDoEditor";
 
@@ -102,6 +105,8 @@ export default function EditorMusculacao({
   const [biblioteca, setBiblioteca] = useState<ItemDaBiblioteca[]>([]);
   const [opcoesAbertas, setOpcoesAbertas] = useState<Record<number, boolean>>({});
   const [detalhe, setDetalhe] = useState<{ sessao: number; exercicio: number } | null>(null);
+  // Versão enviada ao aluno, só leitura (SPEC complementar 06/11, item 1).
+  const [enviada, setEnviada] = useState<{ versao: number; titulo: string | null; plano: PlanoDeTreino; publicada_em: string } | null | "carregando">(null);
   const [troca, setTroca] = useState<{ sessao: number; exercicio: number } | null>(null);
   const [importando, setImportando] = useState(false);
   const [ia, setIa] = useState(false);
@@ -319,6 +324,18 @@ export default function EditorMusculacao({
     onAlterado();
   }
 
+  async function verVersao(versao: number) {
+    setEnviada("carregando");
+    const r = await fetch(`/api/treino/programas/${programaId}?versao=${versao}`, { cache: "no-store" }).catch(() => null);
+    const dados = await r?.json().catch(() => null);
+    if (!r?.ok) {
+      setEnviada(null);
+      avisar(dados?.erro ?? "Não foi possível abrir a versão enviada.", "error");
+      return;
+    }
+    setEnviada(dados.versao);
+  }
+
   async function abrirPdf(detalhado: boolean) {
     await gravar();
     const versao = programa?.versoes[0]?.versao;
@@ -332,7 +349,12 @@ export default function EditorMusculacao({
 
   function aplicarPlano(plano: PlanoDeTreino, modo: "substituir" | "acrescentar", titulo?: string) {
     alterar((d) => {
-      if (modo === "substituir") d.plano = structuredClone(plano);
+      if (modo === "substituir") {
+        // Troca as sessões; as observações do treino ficam, salvo se o plano
+        // novo trouxer as suas.
+        const observacoes = plano.observacoes?.length ? plano.observacoes : d.plano.observacoes;
+        d.plano = { ...structuredClone(plano), ...(observacoes?.length ? { observacoes: structuredClone(observacoes) } : {}) };
+      }
       else {
         for (const sessao of plano.dias) {
           if (d.plano.dias.length >= MAX_SESSOES) break;
@@ -453,7 +475,10 @@ export default function EditorMusculacao({
             {estado === "salvo" && gravadoEm ? ` às ${horaCurta(gravadoEm)}` : ""}
           </span>
           {ultima ? (
-            <Tag value={`Enviado: versão ${ultima.versao} em ${horaCurta(ultima.publicada_em)}${alteradoDesdeOEnvio ? " · alterado depois" : ""}`} severity="success" className="selo-status" />
+            <>
+              <Tag value={`Enviado: versão ${ultima.versao} em ${horaCurta(ultima.publicada_em)}${alteradoDesdeOEnvio ? " · alterado depois" : ""}`} severity="success" className="selo-status" />
+              <Button type="button" size="small" text icon="pi pi-eye" label="Ver versão enviada" onClick={() => verVersao(ultima.versao)} />
+            </>
           ) : (
             <Tag value="Rascunho, ainda não enviado" severity="info" className="selo-status" />
           )}
@@ -530,6 +555,8 @@ export default function EditorMusculacao({
           onClick={() => alterar((d) => void d.plano.dias.push(novaSessao(proximoDiaLivre(d.plano))))}
         />
 
+        <ObservacoesDoTreino plano={documento.plano} somenteLeitura={somenteLeitura} onAlterar={(mudanca) => alterar((d) => mudanca(d.plano))} />
+
         {volume.some((v) => v.series > 0) ? (
           <section className="cartao p-4" aria-label="Volume semanal por grupo muscular">
             <div className="flex flex-wrap items-end justify-between gap-3">
@@ -577,6 +604,36 @@ export default function EditorMusculacao({
         <span className="flex-1" />
         <Button type="button" icon="pi pi-send" label="Enviar ao paciente" severity="success" loading={enviando} onClick={enviar} disabled={somenteLeitura} />
       </div>
+
+      <Dialog
+        header="Versão enviada ao aluno"
+        visible={enviada !== null}
+        onHide={() => setEnviada(null)}
+        className="w-[56rem] max-w-[calc(100vw-1rem)]"
+        modal
+      >
+        {enviada === "carregando" ? (
+          <Skeleton height="16rem" borderRadius="16px" />
+        ) : enviada ? (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+              <Tag value={`Publicada · versão ${enviada.versao}`} severity="success" />
+              <span>
+                {enviada.titulo || "Treino sem título"} · enviada em {horaCurta(enviada.publicada_em)}. É o que o aluno recebeu; o rascunho do editor não muda esta versão.
+              </span>
+              {programa.versoes.length > 1 ? (
+                <Dropdown
+                  value={enviada.versao}
+                  options={programa.versoes.map((v) => ({ label: `Versão ${v.versao} (${horaCurta(v.publicada_em)})`, value: v.versao }))}
+                  onChange={(e) => verVersao(e.value)}
+                  aria-label="Escolher a versão"
+                />
+              ) : null}
+            </div>
+            <PainelTreino plano={enviada.plano} />
+          </div>
+        ) : null}
+      </Dialog>
 
       <JanelaDetalhes
         key={detalhe ? `detalhe-${detalhe.sessao}-${detalhe.exercicio}` : "detalhe-fechada"}

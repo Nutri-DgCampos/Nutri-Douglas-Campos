@@ -80,3 +80,14 @@ test("resumo copiado traz o aviso obrigatório", () => {
   const texto = resumoEmTexto({ paciente: "Fulana", data: "21/10/2026", profissional: "", medicacoes: [], anotacoes: "" });
   assert.match(texto, /não constitui receita médica/);
 });
+
+// PDF de medicações: período de uso por registro (SPEC complementar 06/11, item 5).
+test("período de uso: as duas datas, só uma, nenhuma e data inválida", async () => {
+  const { textoDoPeriodo } = await import("../lib/nutricao/medicacao.ts");
+  assert.equal(textoDoPeriodo("2026-11-06", "2026-12-06"), "Período de uso: 06/11/2026 a 06/12/2026");
+  assert.equal(textoDoPeriodo("2026-11-06", null), "Início: 06/11/2026");
+  assert.equal(textoDoPeriodo(null, "2027-02-01"), "Término: 01/02/2027");
+  assert.equal(textoDoPeriodo(null, null), null);
+  assert.equal(textoDoPeriodo("2026-02-30", ""), null, "data inexistente não vira data");
+  assert.equal(textoDoPeriodo("2026-01-01T00:00:00Z", null), "Início: 01/01/2026", "sem deslocar um dia por fuso");
+});

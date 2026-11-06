@@ -46,7 +46,9 @@ export default function PaginaDoEditor({ modalidade }: { modalidade: ModalidadeD
   const busca = useSearchParams();
   const programaNaUrl = busca.get("programa");
 
-  const [dados, setDados] = useState<Dados | null | undefined>(undefined);
+  // null: aluno não encontrado ou sem acesso; "falha": erro ao carregar
+  // (antes as duas coisas apareciam como "Aluno não encontrado").
+  const [dados, setDados] = useState<Dados | null | "falha" | undefined>(undefined);
   const [verArquivados, setVerArquivados] = useState(false);
   const [rotinas, setRotinas] = useState(false);
   const [modelos, setModelos] = useState(false);
@@ -55,8 +57,10 @@ export default function PaginaDoEditor({ modalidade }: { modalidade: ModalidadeD
   const buscar = useCallback(
     () =>
       fetch(`/api/treino/alunos/${params.id}/programas?modalidade=${modalidade}`, { cache: "no-store" })
-        .then((r) => (r.ok ? (r.json() as Promise<Dados>) : null))
-        .catch(() => null),
+        .then((r): Promise<Dados | null | "falha"> =>
+          r.ok ? (r.json() as Promise<Dados>) : Promise.resolve(r.status === 404 || r.status === 403 ? null : "falha")
+        )
+        .catch(() => "falha" as const),
     [params.id, modalidade]
   );
   const carregar = useCallback(async () => setDados(await buscar()), [buscar]);
@@ -67,14 +71,15 @@ export default function PaginaDoEditor({ modalidade }: { modalidade: ModalidadeD
 
   const abrir = useCallback((programaId: string) => router.replace(`/treino/alunos/${params.id}/${modalidade}?programa=${programaId}`), [router, params.id, modalidade]);
 
-  const ativos = dados?.programas.filter((p) => !p.arquivada_em) ?? [];
-  const arquivados = dados?.programas.filter((p) => p.arquivada_em) ?? [];
-  const selecionado = dados?.programas.find((p) => p.programa_id === programaNaUrl) ? programaNaUrl : ativos[0]?.programa_id ?? null;
+  const carregados = dados && dados !== "falha" ? dados : null;
+  const ativos = carregados?.programas.filter((p) => !p.arquivada_em) ?? [];
+  const arquivados = carregados?.programas.filter((p) => p.arquivada_em) ?? [];
+  const selecionado = carregados?.programas.find((p) => p.programa_id === programaNaUrl) ? programaNaUrl : ativos[0]?.programa_id ?? null;
 
   // Sem programa na URL: abre o primeiro ativo.
   useEffect(() => {
-    if (dados && !programaNaUrl && selecionado) abrir(selecionado);
-  }, [dados, programaNaUrl, selecionado, abrir]);
+    if (carregados && !programaNaUrl && selecionado) abrir(selecionado);
+  }, [carregados, programaNaUrl, selecionado, abrir]);
 
   async function criar(corpo: Record<string, unknown>) {
     setCriando(true);
@@ -111,7 +116,15 @@ export default function PaginaDoEditor({ modalidade }: { modalidade: ModalidadeD
           <Skeleton height="24rem" borderRadius="16px" />
         ) : dados === null ? (
           <div className="cartao p-6 text-center">
-            <p className="font-semibold text-gray-900">Aluno não encontrado.</p>
+            <p className="font-semibold text-gray-900">Aluno não encontrado ou sem acesso a este aluno.</p>
+            <p className="mt-1 text-sm text-gray-500">Confira o aluno na lista do Módulo de Treino.</p>
+            <Button type="button" className="mt-3" outlined label="Ir para o Módulo de Treino" onClick={() => router.push("/treino")} />
+          </div>
+        ) : dados === "falha" ? (
+          <div className="cartao p-6 text-center">
+            <p className="font-semibold text-gray-900">Não foi possível carregar os treinos deste aluno.</p>
+            <p className="mt-1 text-sm text-gray-500">Verifique a conexão e tente de novo. Nada foi alterado.</p>
+            <Button type="button" className="mt-3" icon="pi pi-refresh" label="Tentar de novo" onClick={() => void carregar()} />
           </div>
         ) : (
           <>

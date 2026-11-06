@@ -11,6 +11,7 @@ import { MultiSelect } from "primereact/multiselect";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
+import CatalogoDeObservacoes from "@/components/treino/CatalogoDeObservacoes";
 import { avisar } from "@/lib/avisos";
 import { GRUPOS, OUTROS_GRUPOS } from "@/lib/treino";
 import { EQUIPAMENTOS } from "@/lib/treinoEditor";
@@ -49,16 +50,16 @@ async function enviar(url: string, metodo: string, corpo: unknown) {
 
 export default function BibliotecaDoTreinoPage() {
   const router = useRouter();
-  const [aba, setAba] = useState<"exercicios" | "academias">("exercicios");
+  const [aba, setAba] = useState<"exercicios" | "academias" | "observacoes">("exercicios");
 
   return (
     <main className="min-w-0 flex-1 p-4 lg:p-8">
       <div className="mx-auto max-w-5xl space-y-6">
         <BotaoVoltar rotulo="Voltar para o Módulo de Treino" onClick={() => router.push("/treino")} />
-        <CabecalhoPagina titulo="Biblioteca do Treino" descricao="Exercícios usados no editor e academias com os equipamentos disponíveis." />
+        <CabecalhoPagina titulo="Biblioteca do Treino" descricao="Exercícios usados no editor, academias com os equipamentos disponíveis e as suas observações de treino." />
 
         <div className="flex gap-1 border-b border-gray-200" role="tablist">
-          {(["exercicios", "academias"] as const).map((a) => (
+          {(["exercicios", "academias", "observacoes"] as const).map((a) => (
             <button
               key={a}
               type="button"
@@ -67,12 +68,12 @@ export default function BibliotecaDoTreinoPage() {
               onClick={() => setAba(a)}
               className={`-mb-px rounded-t-xl border px-4 py-2 text-sm font-semibold ${aba === a ? "border-gray-200 border-b-white bg-white text-primary-800" : "border-transparent text-gray-600"}`}
             >
-              {a === "exercicios" ? "Exercícios" : "Academias"}
+              {a === "exercicios" ? "Exercícios" : a === "academias" ? "Academias" : "Observações"}
             </button>
           ))}
         </div>
 
-        {aba === "exercicios" ? <Exercicios /> : <Academias />}
+        {aba === "exercicios" ? <Exercicios /> : aba === "academias" ? <Academias /> : <CatalogoDeObservacoes />}
       </div>
     </main>
   );

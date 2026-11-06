@@ -264,20 +264,28 @@ export async function registrarImportacao(programaId: string, importacao: NonNul
 export async function rotinasDoAluno(profissional: ProfissionalDeTreino, patientId: string, modalidade: Modalidade = "musculacao") {
   if (!(await podeAcompanharAluno(profissional, patientId))) return [];
   const r = await obterPool().query<{ id: string; origem: string; titulo: string | null; versao: number; publicada_em: string; autor: string | null; dias: number; semanas: number | null }>(
-    `select distinct on (coalesce(p.programa_id, p.treino_id, p.id))
-            p.id, p.origem, p.titulo, p.versao, p.publicada_em,
-            coalesce(e.nome, case when pr.role = 'nutricionista' then 'Administrador' end) as autor,
-            coalesce(jsonb_array_length(p.plano->'dias'), 0) as dias,
-            jsonb_array_length(p.plano->'semanas') as semanas
-       from public.treino_prescricoes p
-       left join public.educadores_fisicos e on e.usuario_id = p.criada_por
-       left join public.profiles pr on pr.id = p.criada_por
-      where p.patient_id = $1 and p.status = 'publicada' and p.modalidade = $2
-      order by coalesce(p.programa_id, p.treino_id, p.id), p.publicada_em desc
-      limit 30`,
+    // Ordem pelo banco: publicada_em chega como Date, não como texto (o
+    // localeCompare quebrava a rota com 2+ treinos publicados e o editor
+    // mostrava "Aluno não encontrado"; SPEC complementar 06/11, item 1).
+    // jsonb_typeof: plano importado com "dias"/"semanas" fora do formato
+    // esperado não derruba a lista.
+    `select * from (
+       select distinct on (coalesce(p.programa_id, p.treino_id, p.id))
+              p.id, p.origem, p.titulo, p.versao, p.publicada_em,
+              coalesce(e.nome, case when pr.role = 'nutricionista' then 'Administrador' end) as autor,
+              case when jsonb_typeof(p.plano->'dias') = 'array' then jsonb_array_length(p.plano->'dias') else 0 end as dias,
+              case when jsonb_typeof(p.plano->'semanas') = 'array' then jsonb_array_length(p.plano->'semanas') end as semanas
+         from public.treino_prescricoes p
+         left join public.educadores_fisicos e on e.usuario_id = p.criada_por
+         left join public.profiles pr on pr.id = p.criada_por
+        where p.patient_id = $1 and p.status = 'publicada' and p.modalidade = $2
+        order by coalesce(p.programa_id, p.treino_id, p.id), p.publicada_em desc
+     ) rotinas
+     order by publicada_em desc
+     limit 30`,
     [patientId, modalidade]
   );
-  return r.rows.sort((a, b) => b.publicada_em.localeCompare(a.publicada_em));
+  return r.rows;
 }
 
 // Versão publicada para o PDF (ou o rascunho, marcado como tal).

@@ -159,3 +159,21 @@ test("equipamentos que faltam na academia do aluno", () => {
   assert.deepEqual(equipamentosQueFaltam([], ["Banco"]), [], "peso corporal sempre serve");
   assert.deepEqual(equipamentosQueFaltam(["Smith"], null), [], "academia não informada: sem aviso");
 });
+
+// Observações do treino (SPEC complementar 06/11, item 2).
+test("observações do treino: limpas, só quando há, e preservadas ao ordenar e para o aluno", async () => {
+  const { validarPlanoDoEditor, ordenarSessoes, planoParaAluno, volumeSemanalPorGrupo } = await import("../lib/treinoEditor.ts");
+  const dia = (d) => ({ dia: d, titulo: "A", exercicios: [{ nome: "Supino", grupo: "Peito", series: 3, repeticoes: 10 }] });
+  const semObs = validarPlanoDoEditor({ dias: [dia("seg")] });
+  assert.equal("observacoes" in semObs.plano, false, "treino sem observação não ganha a chave (não vira \"alterado\")");
+  const vazias = validarPlanoDoEditor({ dias: [dia("seg")], observacoes: [{ titulo: "  ", texto: "" }] });
+  assert.equal("observacoes" in vazias.plano, false, "observação vazia é descartada");
+  const comObs = validarPlanoDoEditor({ dias: [dia("qua"), dia("seg")], observacoes: [{ id: "x", titulo: "Hidratar", texto: "Beba água", modeloId: "nao-uuid" }] });
+  assert.deepEqual(comObs.plano.observacoes, [{ id: "x", titulo: "Hidratar", texto: "Beba água", modeloId: null }]);
+  const ordenado = ordenarSessoes(comObs.plano);
+  assert.deepEqual(ordenado.dias.map((d) => d.dia), ["seg", "qua"]);
+  assert.equal(ordenado.observacoes.length, 1, "enviar ao aluno não perde as observações");
+  assert.deepEqual(planoParaAluno(comObs.plano).observacoes, [{ id: "x", titulo: "Hidratar", texto: "Beba água" }]);
+  assert.deepEqual(volumeSemanalPorGrupo(comObs.plano), volumeSemanalPorGrupo({ dias: comObs.plano.dias }), "volume não muda");
+  assert.match(validarPlanoDoEditor({ dias: [], observacoes: Array.from({ length: 21 }, () => ({ titulo: "a" })) }).erro, /No máximo 20/);
+});

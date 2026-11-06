@@ -7,7 +7,6 @@ import { registrarDocumentoEmitido } from "@/lib/servidor/documentos";
 import { exigirNutricionista, recusar } from "@/lib/servidor/http";
 import { medicacoesDaConsulta } from "@/lib/servidor/medicacoes";
 import { disposicao, nomeDoArquivo } from "@/lib/servidor/pdf/documento";
-import { carregarIdentidade } from "@/lib/servidor/pdf/identidade";
 import { gerarPdfDeMedicacoes } from "@/lib/servidor/pdf/medicacoes";
 
 export const runtime = "nodejs";
@@ -25,10 +24,8 @@ async function montar(consultaId: string) {
   if (!c.rows[0]) return null;
   const medicacoes = (await medicacoesDaConsulta(consultaId)).filter((m) => !m.excluida_em && m.status === "em_uso").map((m) => m.dados);
   const emissao = hojeNoBrasil();
-  const pdf = await gerarPdfDeMedicacoes(
-    { paciente: c.rows[0].paciente, dataConsulta: c.rows[0].data, emissao, medicacoes, anotacoes: c.rows[0].anotacoes ?? "" },
-    await carregarIdentidade()
-  );
+  // Sem a identidade do nutricionista (SPEC complementar 06/11, item 5).
+  const pdf = await gerarPdfDeMedicacoes({ paciente: c.rows[0].paciente, dataConsulta: c.rows[0].data, emissao, medicacoes, anotacoes: c.rows[0].anotacoes ?? "" });
   return { pdf, nome: nomeDoArquivo("Medicações", c.rows[0].paciente, emissao), pacienteId: c.rows[0].patient_id };
 }
 

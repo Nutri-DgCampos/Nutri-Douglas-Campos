@@ -248,3 +248,26 @@ export function resumoEmTexto(dados: {
   linhas.push("", AVISO_DO_DOCUMENTO);
   return linhas.join("\n");
 }
+
+// Período de uso de um registro no PDF (SPEC complementar 06/11, item 5):
+// só as datas "Início" e "Término" do próprio registro, como data civil
+// (sem fuso). Só uma das duas: só ela, com o rótulo. Nenhuma: null.
+const DATA_CIVIL = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+function dataCivil(valor: string | null | undefined) {
+  const m = typeof valor === "string" ? DATA_CIVIL.exec(valor.slice(0, 10)) : null;
+  if (!m) return null;
+  const [, ano, mes, dia] = m;
+  const d = new Date(Date.UTC(Number(ano), Number(mes) - 1, Number(dia)));
+  if (d.getUTCFullYear() !== Number(ano) || d.getUTCMonth() !== Number(mes) - 1 || d.getUTCDate() !== Number(dia)) return null;
+  return `${dia}/${mes}/${ano}`;
+}
+
+export function textoDoPeriodo(inicio: string | null | undefined, termino: string | null | undefined) {
+  const de = dataCivil(inicio);
+  const ate = dataCivil(termino);
+  if (de && ate) return `Período de uso: ${de} a ${ate}`;
+  if (de) return `Início: ${de}`;
+  if (ate) return `Término: ${ate}`;
+  return null;
+}
