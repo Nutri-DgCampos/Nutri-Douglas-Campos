@@ -6,26 +6,36 @@ import {
   ATIVIDADES,
   CAMPOS_BIOIMPEDANCIA,
   CATEGORIAS_DRI,
+  CONJUNTOS_FATOR,
   DOBRAS,
+  ESTILOS_DE_VIDA,
+  METODOS_GET,
   PERIMETRIA,
   PROTOCOLOS_TMB,
   avatarMaisProximo,
   calcularDobras,
   calcularGetDri,
+  calcularGetFator,
   calcularGetNaf,
+  calcularRotina,
   calcularTmb,
   classificarGordura,
   composicao,
   gastoDaAtividade,
+  nivelDoFator,
   referenciaDeGordura,
+  valorDoFator,
   type AtividadeRegistrada,
   type Calculo,
   type CampoBio,
   type CategoriaDri,
   type ClasseGordura,
+  type ConjuntoFator,
   type DadosDobras,
   type Dobra,
+  type EstiloDeVida,
   type Etnia,
+  type FatorEscolhido,
   type Maturacao,
   type MetodoGet,
   type Pessoa,
@@ -33,11 +43,15 @@ import {
   type ProtocoloTmb,
   type Regiao,
   type ResultadoDobras,
+  type ResultadoRotina,
   type Sexo,
   type VersaoSlaughter,
 } from "./avaliacao.ts";
 
-export const VERSAO_AVALIACAO = 1;
+// Esquema 2 (SPEC TMB/GET, 10/11/2026): modos "Fator de atividade" e "Rotina
+// semanal". Os métodos do esquema 1 (DRIs 2023 e TMB × NAF) continuam valendo
+// nos rascunhos antigos, com os mesmos valores (decisão D9).
+export const VERSAO_AVALIACAO = 2;
 
 export type ManualTmb = { valor: number | null; metodo: string; observacao: string };
 
@@ -46,7 +60,14 @@ export type AvaliacaoDoc = {
   peso: number | null;
   alturaCm: number | null;
   tmb: { protocolo: ProtocoloTmb | "manual" | null; manual: ManualTmb };
-  gasto: { metodo: MetodoGet | null; categoria: CategoriaDri | null; naf: number | null };
+  gasto: {
+    metodo: MetodoGet | null;
+    categoria: CategoriaDri | null;
+    naf: number | null;
+    // Cada modo guarda o próprio rascunho; só o método escolhido calcula.
+    fator: FatorEscolhido;
+    rotina: { estilo: EstiloDeVida | null };
+  };
   atividades: AtividadeRegistrada[];
   dobras: DadosDobras;
   perimetria: Partial<Record<Regiao, number | null>>;
@@ -64,13 +85,34 @@ export type AvaliacaoDoc = {
   observacoes: string;
 };
 
+function gastoVazio(): AvaliacaoDoc["gasto"] {
+  return { metodo: null, categoria: null, naf: null, fator: { conjunto: null, nivel: null, valor: null }, rotina: { estilo: null } };
+}
+
+// Documento gravado antes do esquema 2: completa os campos novos, vazios.
+// Nenhum valor existente muda.
+export function completarDocumento(doc: AvaliacaoDoc): AvaliacaoDoc {
+  const gasto = (doc.gasto ?? {}) as Partial<AvaliacaoDoc["gasto"]>;
+  const vazio = gastoVazio();
+  return {
+    ...doc,
+    gasto: {
+      ...vazio,
+      ...gasto,
+      fator: { ...vazio.fator, ...(gasto.fator ?? {}) },
+      rotina: { ...vazio.rotina, ...(gasto.rotina ?? {}) },
+    },
+    atividades: doc.atividades ?? [],
+  };
+}
+
 export function avaliacaoVazia(peso: number | null, alturaCm: number | null): AvaliacaoDoc {
   return {
     esquema: VERSAO_AVALIACAO,
     peso,
     alturaCm,
     tmb: { protocolo: null, manual: { valor: null, metodo: "", observacao: "" } },
-    gasto: { metodo: null, categoria: null, naf: null },
+    gasto: gastoVazio(),
     atividades: [],
     dobras: { protocolo: null, versaoSlaughter: "ts", maturacao: null, etnia: null, valores: {} },
     perimetria: {},
@@ -153,11 +195,25 @@ export function validarAvaliacao(valor: unknown): { documento: AvaliacaoDoc } | 
           observacao: texto(manual.observacao, 2000, "Observação da TMB manual"),
         },
       },
-      gasto: {
-        metodo: umDe(gasto.metodo, ["dri_2023", "tmb_naf"] as const, "Método do GET"),
-        categoria: umDe(gasto.categoria, Object.keys(CATEGORIAS_DRI) as CategoriaDri[], "Categoria de atividade"),
-        naf: numero(gasto.naf, 5, "NAF"),
-      },
+      gasto: (() => {
+        const fator = objeto(gasto.fator);
+        const conjunto = umDe(fator.conjunto, Object.keys(CONJUNTOS_FATOR) as ConjuntoFator[], "Conjunto de fatores");
+        const nivel = umDe(
+          fator.nivel,
+          Object.values(CONJUNTOS_FATOR).flatMap((c) => c.niveis.map((x) => x.id)),
+          "Nível de atividade"
+        );
+        if (conjunto && nivel && !nivelDoFator(conjunto, nivel)) falhar("Nível de atividade: não pertence ao conjunto escolhido.");
+        return {
+          metodo: umDe(gasto.metodo, Object.keys(METODOS_GET) as MetodoGet[], "Método do GET"),
+          categoria: umDe(gasto.categoria, Object.keys(CATEGORIAS_DRI) as CategoriaDri[], "Categoria de atividade"),
+          naf: numero(gasto.naf, 5, "NAF"),
+          fator: { conjunto, nivel, valor: numero(fator.valor, 5, "Fator de atividade") },
+          rotina: {
+            estilo: umDe(objeto(gasto.rotina).estilo, ESTILOS_DE_VIDA.map((e) => e.id), "Estilo de vida") as EstiloDeVida | null,
+          },
+        };
+      })(),
       atividades: atividades.map((x, n) => {
         const r = objeto(x);
         if (typeof r.id !== "string" || !UUID.test(r.id)) falhar(`Atividade ${n + 1}: identificador inválido.`);
@@ -216,6 +272,11 @@ export type ResultadoAvaliacao = {
   avatar: { indice: number; valor: number; foraDaEscala: boolean } | null;
   tmb: Calculo & { protocolo: string | null; manual: boolean };
   get: Calculo & { metodo: MetodoGet | null };
+  // Premissas do GET para auditoria (esquema 2; ausente nos congelados antes).
+  gastoDetalhe?: {
+    fator: { conjunto: ConjuntoFator; conjuntoNome: string; nivel: string; nivelNome: string; valor: number } | null;
+    rotina: ResultadoRotina | null;
+  };
   mets: {
     atividades: (ReturnType<typeof gastoDaAtividade> & { id: string })[];
     semanal: number;
@@ -239,7 +300,8 @@ function bioComposicao(doc: AvaliacaoDoc) {
   };
 }
 
-export function calcularAvaliacao(doc: AvaliacaoDoc, paciente: { sexo: Sexo | null; idade: number | null }): ResultadoAvaliacao {
+export function calcularAvaliacao(original: AvaliacaoDoc, paciente: { sexo: Sexo | null; idade: number | null }): ResultadoAvaliacao {
+  const doc = completarDocumento(original);
   const pessoa: Pessoa = { sexo: paciente.sexo, idade: paciente.idade, peso: doc.peso, alturaCm: doc.alturaCm };
   const dobras = calcularDobras(doc.dobras, pessoa);
   const bio = bioComposicao(doc);
@@ -263,8 +325,14 @@ export function calcularAvaliacao(doc: AvaliacaoDoc, paciente: { sexo: Sexo | nu
         ? calcularTmb(doc.tmb.protocolo, pessoa, escolhido.massaLivre)
         : { valor: null, falta: ["protocolo da TMB"], avisos: [] };
 
+  const rotina = doc.gasto.metodo === "rotina" ? calcularRotina(tmbBase.valor, doc.gasto.rotina.estilo, doc.atividades, paciente.idade) : null;
+  const nivel = nivelDoFator(doc.gasto.fator.conjunto, doc.gasto.fator.nivel);
   const get: Calculo =
-    doc.gasto.metodo === "dri_2023"
+    doc.gasto.metodo === "fator"
+      ? calcularGetFator(tmbBase.valor, doc.gasto.fator)
+      : rotina
+        ? { valor: rotina.valor, falta: rotina.falta, avisos: rotina.avisos }
+        : doc.gasto.metodo === "dri_2023"
       ? doc.gasto.categoria
         ? calcularGetDri(doc.gasto.categoria, pessoa)
         : { valor: null, falta: ["categoria de atividade"], avisos: [] }
@@ -272,7 +340,11 @@ export function calcularAvaliacao(doc: AvaliacaoDoc, paciente: { sexo: Sexo | nu
         ? calcularGetNaf(tmbBase.valor, doc.gasto.naf)
         : { valor: null, falta: ["método do gasto energético total"], avisos: [] };
 
-  const atividades = doc.atividades
+  // Atividades pelo cálculo do M-03 (bruto e líquido com 3,5 mL/kg/min): só
+  // nos métodos das DRIs e no TMB × NAF antigo. Na rotina semanal, o gasto
+  // vem de calcularRotina; no fator de atividade, os exercícios já estão no fator.
+  const usaMets = doc.gasto.metodo !== "rotina" && doc.gasto.metodo !== "fator";
+  const atividades = (usaMets ? doc.atividades : [])
     .map((r) => {
       const g = gastoDaAtividade(r, doc.peso, paciente.idade);
       return g ? { ...g, id: r.id } : null;
@@ -300,6 +372,19 @@ export function calcularAvaliacao(doc: AvaliacaoDoc, paciente: { sexo: Sexo | nu
     avatar: avatarMaisProximo(escolhido.percentual, paciente.sexo),
     tmb: { ...tmbBase, protocolo: doc.tmb.protocolo, manual: doc.tmb.protocolo === "manual" },
     get: { ...get, metodo: doc.gasto.metodo },
+    gastoDetalhe: {
+      fator:
+        doc.gasto.metodo === "fator" && nivel && get.valor !== null
+          ? {
+              conjunto: doc.gasto.fator.conjunto as ConjuntoFator,
+              conjuntoNome: CONJUNTOS_FATOR[doc.gasto.fator.conjunto as ConjuntoFator].nome,
+              nivel: nivel.id,
+              nivelNome: nivel.nome,
+              valor: valorDoFator(doc.gasto.fator) as number,
+            }
+          : null,
+      rotina: rotina?.rotina ?? null,
+    },
     mets: { atividades, semanal, semanalLiquido, mediaDiaria: semanal / 7, mediaDiariaLiquida: semanalLiquido / 7 },
     getMaisMets: somaMets ? (get.valor as number) + semanalLiquido / 7 : null,
   };

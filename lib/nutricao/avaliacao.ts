@@ -69,9 +69,60 @@ export const PROTOCOLOS_TMB = {
     populacao: "Reanálise de 223 indivíduos dos dados de Harris e Benedict.",
     fonte: "Cunningham JJ. Am J Clin Nutr 1980;33(11):2372-2374.",
   },
+  // SPEC TMB/GET de 10/11/2026, decisão D6: só a versão com MLG.
+  tinsley_2019: {
+    nome: "Tinsley (2019) — massa livre de gordura",
+    equacao: "284 + 25,9 × MLG (massa livre de gordura em kg, da mesma avaliação).",
+    populacao: "27 atletas de fisiculturismo (17 homens e 10 mulheres), com MLG medida por DXA.",
+    fonte: "Tinsley GM, Graybeal AJ, Moore ML. Appl Physiol Nutr Metab 2019;44(4):397-406.",
+  },
 } as const satisfies Record<string, Descricao>;
 
 export type ProtocoloTmb = keyof typeof PROTOCOLOS_TMB;
+
+// Lembrete exibido ao escolher a fórmula (decisão D7): público, dados
+// necessários, limitações e referência resumida. A equação completa continua
+// no "?" (PROTOCOLOS_TMB).
+export type Lembrete = { publico: string; dados: string; limitacoes: string; referencia: string };
+
+export const LEMBRETES_TMB: Record<ProtocoloTmb, Lembrete> = {
+  mifflin_1990: {
+    publico: "Adultos de 19 a 78 anos, com peso normal ou obesidade. Em revisão de 2005, foi a equação mais precisa nesse público.",
+    dados: "Peso, altura, idade e sexo.",
+    limitacoes: "Não é padrão-ouro: o padrão é a calorimetria indireta. Fora de 19 a 78 anos, calcula com aviso.",
+    referencia: "Mifflin et al., 1990; Frankenfield et al., J Am Diet Assoc 2005.",
+  },
+  harris_benedict_1984: {
+    publico: "Versão revisada (1984) dos dados de 1919, em adultos saudáveis.",
+    dados: "Peso, altura, idade e sexo.",
+    limitacoes: "Tende a superestimar a TMB em parte dos adultos.",
+    referencia: "Roza & Shizgal, 1984; Frankenfield et al., 2005.",
+  },
+  fao_1985_peso: {
+    publico: "Equações de Schofield (1985), mantidas pela FAO/OMS em 2004. Versão com peso: todas as idades.",
+    dados: "Peso, idade e sexo.",
+    limitacoes: "Tende a superestimar em várias populações.",
+    referencia: "FAO/OMS/UNU, 1985 e 2004.",
+  },
+  fao_1985_peso_altura: {
+    publico: "Equações de Schofield (1985), mantidas pela FAO/OMS em 2004. Versão com peso e altura: a partir de 10 anos.",
+    dados: "Peso, altura, idade e sexo.",
+    limitacoes: "Tende a superestimar em várias populações.",
+    referencia: "FAO/OMS/UNU, 1985 e 2004.",
+  },
+  cunningham_1980: {
+    publico: "Costuma ser preferida em pessoas treinadas, com muita massa magra.",
+    dados: "Massa livre de gordura (kg) desta avaliação, por dobras ou bioimpedância.",
+    limitacoes: "O erro da medida de gordura passa para a TMB.",
+    referencia: "Cunningham, 1980; Thompson & Manore, 1996.",
+  },
+  tinsley_2019: {
+    publico: "Desenvolvida em 27 atletas de fisiculturismo.",
+    dados: "Massa livre de gordura (kg) desta avaliação, por dobras ou bioimpedância (no estudo, por DXA).",
+    limitacoes: "Fora desse público, a precisão não foi estabelecida.",
+    referencia: "Tinsley et al., 2019.",
+  },
+};
 
 // Faixa da FAO: fechada no início, aberta no fim (decisão M-01).
 function faixaFao<T>(idade: number, faixas: [number, number, T][]) {
@@ -79,9 +130,9 @@ function faixaFao<T>(idade: number, faixas: [number, number, T][]) {
 }
 
 export function calcularTmb(protocolo: ProtocoloTmb, p: Pessoa, mlg: number | null): Calculo {
-  if (protocolo === "cunningham_1980") {
+  if (protocolo === "cunningham_1980" || protocolo === "tinsley_2019") {
     if (!(mlg && mlg > 0)) return faltando("massa livre de gordura (dobras ou bioimpedância desta avaliação)");
-    return calculado(500 + 22 * mlg);
+    return calculado(protocolo === "cunningham_1980" ? 500 + 22 * mlg : 284 + 25.9 * mlg);
   }
 
   if (protocolo === "harris_benedict_1984" || protocolo === "mifflin_1990") {
@@ -189,6 +240,19 @@ export const METODOS_GET = {
     populacao: "Adultos a partir de 19 anos, peso estável; banco internacional de água duplamente marcada. Erro médio de 339 (H) e 246 (M) kcal/dia.",
     fonte: "National Academies. Dietary Reference Intakes for Energy, 2023 — Tabela S-1 e Tabela 5-4.",
   },
+  fator: {
+    nome: "Fator de atividade",
+    equacao: "GET = TMB da avaliação × fator. Um conjunto por cálculo: faixas da FAO 2004 (sugeridos 1,53 / 1,76 / 2,25, ajustáveis dentro da faixa) ou fatores tradicionais (1,2 / 1,375 / 1,55 / 1,725 / 1,9).",
+    populacao: "Adultos. O fator descreve o estilo de vida habitual, incluindo os exercícios.",
+    fonte: "FAO/WHO/UNU. Human energy requirements, 2004 — Tabelas 5.1 e 5.3. Fatores tradicionais: uso comum, sem fonte primária localizada.",
+  },
+  rotina: {
+    nome: "Rotina semanal",
+    equacao:
+      "Dia sem treino = TMB × E. Dia com treino = TMB × E × (1440 − min) ÷ 1440 + MET × TMB ÷ 1440 × min, ou seja, TMB × E + (MET − E) × TMB ÷ 1440 × min. Média diária = soma da semana ÷ 7. E = estilo de vida fora dos treinos; MET do Compendium 2024 (60+: Older Adult Compendium) multiplicado pelo repouso da própria pessoa (TMB ÷ 1440 kcal/min).",
+    populacao: "Adultos. Estilo de vida em categorias operacionais do sistema, com valores dentro das faixas FAO 2004.",
+    fonte: "Herrmann SD et al. J Sport Health Sci 2024 (Compendium). Byrne NM et al. J Appl Physiol 2005;99:1112-1119 (MET corrigido pelo repouso individual). FAO/WHO/UNU 2004 (faixas de NAF).",
+  },
   tmb_naf: {
     nome: "TMB × NAF (FAO/OMS/UNU 2004)",
     equacao: "GET = TMB da avaliação × NAF. Faixas: sedentário ou leve 1,40–1,69; ativo ou moderado 1,70–1,99; vigoroso 2,00–2,40.",
@@ -222,6 +286,67 @@ export function calcularGetNaf(tmb: number | null, naf: number | null): Calculo 
   if (naf === null) return faltando("NAF");
   if (!faixaDoNaf(naf)) return faltando("NAF entre 1,40 e 2,40");
   return calculado(tmb * naf);
+}
+
+// ---------------------------------------------------------------------------
+// Fator de atividade (decisão D1, opção C): dois conjuntos, nunca combinados.
+
+export type ConjuntoFator = "fao" | "tradicional";
+
+export type NivelFator = { id: string; nome: string; valor: number; faixa: [number, number] | null };
+
+export const CONJUNTOS_FATOR: Record<ConjuntoFator, { nome: string; aviso: string; niveis: NivelFator[] }> = {
+  fao: {
+    nome: "FAO 2004",
+    aviso: "Faixas de NAF da FAO/OMS/UNU (2004), com o valor sugerido de cada faixa (exemplos da Tabela 5.1). Ajustável dentro da faixa.",
+    niveis: [
+      { id: "fao_sedentario", nome: "Sedentário ou atividade leve", valor: 1.53, faixa: [1.4, 1.69] },
+      { id: "fao_ativo", nome: "Ativo ou moderadamente ativo", valor: 1.76, faixa: [1.7, 1.99] },
+      { id: "fao_vigoroso", nome: "Vigoroso ou vigorosamente ativo", valor: 2.25, faixa: [2.0, 2.4] },
+    ],
+  },
+  tradicional: {
+    nome: "Fatores tradicionais",
+    aviso:
+      "Fatores de uso comum em calculadoras, sem fonte primária ou validação localizada. Não são valores da FAO. 1,2 e 1,375 ficam abaixo de 1,40, o menor NAF que a FAO 2004 considera compatível com a vida livre.",
+    niveis: [
+      { id: "trad_sedentario", nome: "Sedentário (pouco ou nenhum exercício)", valor: 1.2, faixa: null },
+      { id: "trad_leve", nome: "Levemente ativo (1–3x/semana)", valor: 1.375, faixa: null },
+      { id: "trad_moderado", nome: "Moderadamente ativo (3–5x/semana)", valor: 1.55, faixa: null },
+      { id: "trad_muito", nome: "Muito ativo (6–7x/semana)", valor: 1.725, faixa: null },
+      { id: "trad_extremo", nome: "Extremamente ativo (2x/dia ou trabalho braçal)", valor: 1.9, faixa: null },
+    ],
+  },
+};
+
+export type FatorEscolhido = { conjunto: ConjuntoFator | null; nivel: string | null; valor: number | null };
+
+export function nivelDoFator(conjunto: ConjuntoFator | null, nivel: string | null) {
+  if (!conjunto || !nivel) return null;
+  return CONJUNTOS_FATOR[conjunto].niveis.find((x) => x.id === nivel) ?? null;
+}
+
+// Valor usado: o fixo (tradicional) ou o digitado dentro da faixa (FAO);
+// sem valor digitado na FAO, o sugerido.
+export function valorDoFator(f: FatorEscolhido): number | null {
+  const nivel = nivelDoFator(f.conjunto, f.nivel);
+  if (!nivel) return null;
+  if (!nivel.faixa) return nivel.valor;
+  return f.valor ?? nivel.valor;
+}
+
+const virgula = (v: number) => v.toFixed(2).replace(".", ",");
+
+export function calcularGetFator(tmb: number | null, f: FatorEscolhido): Calculo {
+  if (tmb === null) return faltando("TMB");
+  if (!f.conjunto) return faltando("conjunto de fatores");
+  const nivel = nivelDoFator(f.conjunto, f.nivel);
+  if (!nivel) return faltando("nível de atividade");
+  const valor = valorDoFator(f) as number;
+  if (nivel.faixa && (valor < nivel.faixa[0] - 1e-9 || valor > nivel.faixa[1] + 1e-9)) {
+    return faltando(`fator entre ${virgula(nivel.faixa[0])} e ${virgula(nivel.faixa[1])}`);
+  }
+  return calculado(tmb * valor);
 }
 
 // ===========================================================================
@@ -328,6 +453,123 @@ export function gastoDaAtividade(registro: AtividadeRegistrada, pesoKg: number |
     semanal: porSessao * registro.vezesPorSemana,
     semanalLiquido: porSessaoLiquido * registro.vezesPorSemana,
     aviso: idoso && !usaIdoso ? "Sem valor específico para 60+ no Compendium: usado o valor de adultos." : null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Rotina semanal (decisões D3, D4, D5 e D12)
+//
+// Estilo de vida fora dos treinos: categorias operacionais do sistema, com
+// valores dentro das faixas FAO 2004 (a FAO não define estas quatro).
+// Gasto do exercício: MET corrigido pelo repouso da própria pessoa
+// (TMB ÷ 1440), no lugar do 1 MET padrão de 3,5 mL/kg/min (Byrne, 2005).
+// Os minutos de exercício saem do estilo de vida: no dia com treino,
+// TMB × E × (1440 − min) ÷ 1440 + MET × TMB ÷ 1440 × min.
+
+export const ESTILOS_DE_VIDA = [
+  { id: "sentado", nome: "Sentado a maior parte do dia (escritório, home office)", valor: 1.4 },
+  { id: "sentado_deslocamentos", nome: "Sentado, com deslocamentos a pé ou períodos em pé", valor: 1.55 },
+  { id: "em_pe", nome: "Em pé ou andando a maior parte do dia", valor: 1.7 },
+  { id: "bracal", nome: "Trabalho braçal (construção, agricultura, carga)", valor: 1.9 },
+] as const;
+
+export type EstiloDeVida = (typeof ESTILOS_DE_VIDA)[number]["id"];
+
+export const AVISO_ESTILOS = "Categorias operacionais do sistema, com valores dentro das faixas FAO 2004 (a FAO não define estas quatro categorias).";
+
+export type AtividadeDaRotina = {
+  id: string;
+  atividade: Atividade;
+  valor: ValorMet;
+  minutos: number;
+  vezesPorSemana: number;
+  // Por sessão, com o repouso da própria pessoa (TMB ÷ 1440 kcal/min).
+  bruto: number; // MET × TMB ÷ 1440 × min
+  liquido: number; // (MET − 1) × TMB ÷ 1440 × min
+  desconto: number; // (E − 1) × TMB ÷ 1440 × min: os minutos saem do estilo de vida
+  acrescimo: number; // liquido − desconto = (MET − E) × TMB ÷ 1440 × min
+  diaComTreino: number; // TMB × E + acrescimo
+  aviso: string | null;
+};
+
+export type ResultadoRotina = {
+  estilo: { id: EstiloDeVida; nome: string; valor: number };
+  repousoPorMinuto: number;
+  semTreino: number;
+  atividades: AtividadeDaRotina[];
+  semanal: number;
+  mediaDiaria: number;
+  nafEquivalente: number;
+};
+
+export function calcularRotina(
+  tmb: number | null,
+  estiloId: EstiloDeVida | null,
+  registros: AtividadeRegistrada[],
+  idade: number | null
+): Calculo & { rotina: ResultadoRotina | null } {
+  const sem = (c: Calculo) => ({ ...c, rotina: null });
+  if (tmb === null) return sem(faltando("TMB"));
+  const estilo = ESTILOS_DE_VIDA.find((e) => e.id === estiloId);
+  if (!estilo) return sem(faltando("estilo de vida fora dos treinos"));
+
+  const r = tmb / 1440;
+  const semTreino = tmb * estilo.valor;
+  const avisos: string[] = [];
+  const idoso = idade !== null && idade >= 60;
+  const vistos = new Set<string>();
+  const atividades: AtividadeDaRotina[] = [];
+  let incompletas = 0;
+  let minutosSemana = 0;
+
+  for (const reg of registros) {
+    const atividade = ATIVIDADES.find((x) => x.id === reg.atividadeId);
+    if (!atividade || !reg.minutos || !reg.vezesPorSemana) {
+      incompletas++;
+      continue;
+    }
+    if (vistos.has(atividade.id)) avisos.push(`"${atividade.nome}" aparece mais de uma vez: confira se não é a mesma atividade contada duas vezes.`);
+    vistos.add(atividade.id);
+    // Decisão 1.3 (M-03): 60+ usa o MET60 do Older Adult Compendium.
+    const usaIdoso = idoso && Boolean(atividade.idoso);
+    const valor = usaIdoso ? (atividade.idoso as ValorMet) : atividade.adulto;
+    const bruto = valor.met * r * reg.minutos;
+    const liquido = (valor.met - 1) * r * reg.minutos;
+    const desconto = (estilo.valor - 1) * r * reg.minutos;
+    const acrescimo = liquido - desconto;
+    minutosSemana += reg.minutos * reg.vezesPorSemana;
+    atividades.push({
+      id: reg.id,
+      atividade,
+      valor,
+      minutos: reg.minutos,
+      vezesPorSemana: reg.vezesPorSemana,
+      bruto,
+      liquido,
+      desconto,
+      acrescimo,
+      diaComTreino: semTreino + acrescimo,
+      aviso: idoso && !usaIdoso ? "Sem valor específico para 60+ no Compendium: usado o valor de adultos." : null,
+    });
+  }
+  if (incompletas) avisos.push(`${incompletas} atividade(s) sem minutos ou vezes por semana ficaram fora do cálculo.`);
+  if (minutosSemana > 7 * 1440) return sem(faltando("tempo de atividades menor que a semana (mais de 168 horas informadas)"));
+
+  const semanal = 7 * semTreino + atividades.reduce((t, a) => t + a.acrescimo * a.vezesPorSemana, 0);
+  const mediaDiaria = semanal / 7;
+  return {
+    valor: mediaDiaria,
+    falta: [],
+    avisos,
+    rotina: {
+      estilo: { id: estilo.id, nome: estilo.nome, valor: estilo.valor },
+      repousoPorMinuto: r,
+      semTreino,
+      atividades,
+      semanal,
+      mediaDiaria,
+      nafEquivalente: mediaDiaria / tmb,
+    },
   };
 }
 

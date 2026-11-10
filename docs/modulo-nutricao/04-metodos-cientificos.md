@@ -12,6 +12,7 @@ Regra da SPEC 01 (decisão 177): cada método de cálculo clínico é pesquisado
 | M-06 | kcal não proteica / g de nitrogênio (fator 6,25) | **Aprovado em 20/10/2026** |
 | M-07 | Calculadora de medicações (mL × mg/mL; totais semanais) | **Aprovado em 20/10/2026** |
 | M-08 | Cálculos de fórmulas (dispensação); suplementos e exames sem cálculo | **Aprovado em 20/10/2026** |
+| M-09 | Revisão de TMB e gasto (Tinsley 2019; modos "Fator de atividade" e "Rotina semanal"; lembretes por fórmula) | **Aprovado em 10/11/2026** (D1 a D12); ver `06-proposta-tmb-gasto-2026-11-10.md` |
 | F-01 | Fonte complementar de nutrientes ausentes na TACO | **Aprovado em 20/10/2026**: opção B (USDA FoodData Central) |
 
 Convenções em todos os métodos: peso em kg, altura em cm (salvo indicação), idade em anos completos na data da avaliação, resultado em kcal/dia arredondado só na exibição. O método, a versão e os dados de entrada ficam gravados na avaliação.

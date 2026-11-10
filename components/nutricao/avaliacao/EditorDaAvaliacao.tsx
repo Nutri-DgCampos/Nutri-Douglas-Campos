@@ -8,6 +8,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { RadioButton } from "primereact/radiobutton";
+import { SelectButton } from "primereact/selectbutton";
 import { Skeleton } from "primereact/skeleton";
 import { Tag } from "primereact/tag";
 import InfoMetodo from "@/components/nutricao/InfoMetodo";
@@ -18,8 +19,12 @@ import { avisar, pedirConfirmacao } from "@/lib/avisos";
 import { abrirDocumento } from "@/lib/visualizador";
 import {
   ATIVIDADES,
+  AVISO_ESTILOS,
   CAMPOS_BIOIMPEDANCIA,
   CATEGORIAS_DRI,
+  CONJUNTOS_FATOR,
+  ESTILOS_DE_VIDA,
+  LEMBRETES_TMB,
   DESCRICAO_METS,
   DESCRICAO_SIRI,
   DOBRAS,
@@ -29,13 +34,17 @@ import {
   PROTOCOLOS_DOBRAS,
   PROTOCOLOS_TMB,
   dobrasDoProtocolo,
+  nivelDoFator,
   type CampoBio,
+  type ConjuntoFator,
+  type EstiloDeVida,
+  type MetodoGet,
   type Calculo,
   type ProtocoloDobras,
   type ProtocoloTmb,
   type Regiao,
 } from "@/lib/nutricao/avaliacao";
-import { calcularAvaliacao, type AvaliacaoDoc } from "@/lib/nutricao/avaliacaoDocumento";
+import { calcularAvaliacao, completarDocumento, type AvaliacaoDoc } from "@/lib/nutricao/avaliacaoDocumento";
 import { formatarData, idadeEm, rotuloDoSexo } from "@/lib/nutricao/paciente";
 import EnvioAoPaciente from "@/components/nutricao/EnvioAoPaciente";
 
@@ -91,6 +100,33 @@ function Resultado({ rotulo, calculo, unidade = "kcal/dia", casas = 0 }: { rotul
 
 const MODALIDADES = [...new Set(ATIVIDADES.map((a) => a.modalidade))];
 
+// Grupo de botões (SelectButton): não pode ficar dentro de <label>, que
+// repassaria o clique ao primeiro botão de dentro (o "?").
+function Grupo({ rotulo, children }: { rotulo: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <span className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-gray-700">{rotulo}</span>
+      {children}
+    </div>
+  );
+}
+
+// Caixa de lembrete (fórmula escolhida, conjunto de fatores, premissas).
+function Aviso({ children, rotulo }: { children: React.ReactNode; rotulo: string }) {
+  return (
+    <div role="note" aria-label={rotulo} className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+      <i className="pi pi-info-circle mt-0.5 shrink-0 text-amber-600" aria-hidden />
+      <div className="min-w-0 space-y-1">{children}</div>
+    </div>
+  );
+}
+
+const METODOS_NOVOS: { label: string; value: MetodoGet }[] = [
+  { label: "Fator de atividade", value: "fator" },
+  { label: "Rotina semanal", value: "rotina" },
+  { label: "DRIs 2023", value: "dri_2023" },
+];
+
 // Também usado no Módulo de Treino (T6, R7): outra API, sem envio ao
 // paciente e sem leitura do PDF de bioimpedância pela IA.
 export default function EditorDaAvaliacao({
@@ -136,8 +172,10 @@ export default function EditorDaAvaliacao({
     // Avaliação de outro profissional (R7b): só os resultados, para leitura.
     if (recebidos.pode_editar === false) return router.replace(resultadosHref);
     setDados(recebidos);
-    setDoc(recebidos.avaliacao.documento);
-    docRef.current = recebidos.avaliacao.documento;
+    // Rascunho anterior ao esquema 2: completa os campos novos, sem mudar valores.
+    const documento = completarDocumento(recebidos.avaliacao.documento);
+    setDoc(documento);
+    docRef.current = documento;
     setData(recebidos.avaliacao.data);
     dataRef.current = recebidos.avaliacao.data;
     revisaoRef.current = recebidos.avaliacao.revisao;
@@ -407,11 +445,11 @@ export default function EditorDaAvaliacao({
 
         <Secao titulo="Gasto energético">
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-2">
+            <div className="min-w-0 space-y-2">
               <Campo
                 rotulo={
                   <>
-                    TMB — protocolo
+                    TMB — fórmula
                     {doc.tmb.protocolo && doc.tmb.protocolo !== "manual" ? <InfoMetodo descricao={PROTOCOLOS_TMB[doc.tmb.protocolo]} /> : null}
                   </>
                 }
@@ -424,10 +462,22 @@ export default function EditorDaAvaliacao({
                     { label: "Valor informado (manual)", value: "manual" },
                   ]}
                   onChange={(e) => alterar((d) => void (d.tmb.protocolo = e.value as ProtocoloTmb | "manual"))}
-                  placeholder="Escolha o protocolo"
+                  placeholder="Escolha a fórmula"
                   className="w-full"
                 />
               </Campo>
+              {doc.tmb.protocolo && doc.tmb.protocolo !== "manual" ? (
+                <Aviso rotulo="Sobre a fórmula escolhida">
+                  <p>{LEMBRETES_TMB[doc.tmb.protocolo].publico}</p>
+                  <p>
+                    <span className="font-semibold">Dados:</span> {LEMBRETES_TMB[doc.tmb.protocolo].dados}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Limitações:</span> {LEMBRETES_TMB[doc.tmb.protocolo].limitacoes}
+                  </p>
+                  <p className="text-xs text-amber-700">{LEMBRETES_TMB[doc.tmb.protocolo].referencia}</p>
+                </Aviso>
+              ) : null}
               {doc.tmb.protocolo === "manual" ? (
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Campo rotulo="Valor (kcal/dia)">
@@ -444,8 +494,8 @@ export default function EditorDaAvaliacao({
               <Resultado rotulo={doc.tmb.protocolo === "manual" ? "TMB (informada pelo profissional)" : "TMB / gasto de repouso"} calculo={r.tmb} />
             </div>
 
-            <div className="space-y-2">
-              <Campo
+            <div className="min-w-0 space-y-2">
+              <Grupo
                 rotulo={
                   <>
                     Gasto energético total — método
@@ -453,33 +503,143 @@ export default function EditorDaAvaliacao({
                   </>
                 }
               >
-                <Dropdown
+                <SelectButton
                   aria-label="Método do gasto energético total"
                   value={doc.gasto.metodo}
-                  options={Object.entries(METODOS_GET).map(([valor, d]) => ({ label: d.nome, value: valor }))}
-                  onChange={(e) => alterar((d) => void (d.gasto.metodo = e.value))}
-                  placeholder="Escolha o método"
-                  className="w-full"
+                  options={[
+                    ...METODOS_NOVOS,
+                    ...(doc.gasto.metodo === "tmb_naf" ? [{ label: "TMB × NAF (método anterior)", value: "tmb_naf" as MetodoGet }] : []),
+                  ]}
+                  allowEmpty={false}
+                  onChange={(e) => e.value && alterar((d) => void (d.gasto.metodo = e.value as MetodoGet))}
+                  className="flex flex-wrap"
                 />
-              </Campo>
+              </Grupo>
+              {!doc.gasto.metodo ? <p className="text-xs text-gray-500">Os métodos são alternativos: só o escolhido calcula o GET. O que for preenchido em cada um fica guardado.</p> : null}
+
+              {doc.gasto.metodo === "fator" ? (
+                <>
+                  <Grupo rotulo="Conjunto de fatores">
+                    <SelectButton
+                      aria-label="Conjunto de fatores"
+                      value={doc.gasto.fator.conjunto}
+                      options={(Object.keys(CONJUNTOS_FATOR) as ConjuntoFator[]).map((c) => ({ label: CONJUNTOS_FATOR[c].nome, value: c }))}
+                      allowEmpty={false}
+                      onChange={(e) =>
+                        e.value &&
+                        alterar((d) => {
+                          // Um conjunto por cálculo: trocar de conjunto limpa o nível.
+                          if (d.gasto.fator.conjunto !== e.value) d.gasto.fator = { conjunto: e.value as ConjuntoFator, nivel: null, valor: null };
+                        })
+                      }
+                    />
+                  </Grupo>
+                  {doc.gasto.fator.conjunto ? (
+                    <>
+                      <Aviso rotulo="Sobre o conjunto de fatores">
+                        <p>{CONJUNTOS_FATOR[doc.gasto.fator.conjunto].aviso}</p>
+                      </Aviso>
+                      <Campo rotulo="Nível de atividade">
+                        <Dropdown
+                          aria-label="Nível de atividade"
+                          value={doc.gasto.fator.nivel}
+                          options={CONJUNTOS_FATOR[doc.gasto.fator.conjunto].niveis.map((x) => ({
+                            label: `${x.nome} ×${n(x.valor, 3)}${x.faixa ? ` (faixa ${n(x.faixa[0], 2)}–${n(x.faixa[1], 2)})` : ""}`,
+                            value: x.id,
+                          }))}
+                          onChange={(e) => alterar((d) => void (d.gasto.fator = { ...d.gasto.fator, nivel: e.value, valor: null }))}
+                          placeholder="Escolha o nível"
+                          className="w-full"
+                        />
+                      </Campo>
+                    </>
+                  ) : null}
+                  {(() => {
+                    const nivel = nivelDoFator(doc.gasto.fator.conjunto, doc.gasto.fator.nivel);
+                    if (!nivel?.faixa) return null;
+                    return (
+                      <Campo rotulo="Fator usado" ajuda={`Faixa ${n(nivel.faixa[0], 2)}–${n(nivel.faixa[1], 2)}; vazio usa o sugerido (${n(nivel.valor, 2)}).`}>
+                        <CampoNumero valor={doc.gasto.fator.valor} maximo={5} ariaLabel="Fator usado" onChange={(v) => alterar((d) => void (d.gasto.fator.valor = v))} />
+                      </Campo>
+                    );
+                  })()}
+                  <Resultado rotulo="GET (TMB × fator)" calculo={r.get} />
+                  {r.gastoDetalhe?.fator && r.tmb.valor !== null ? (
+                    <p className="text-xs text-gray-600">
+                      {n(r.tmb.valor, 0)} × {n(r.gastoDetalhe.fator.valor, 3)} = {n(r.get.valor, 0)} kcal/dia. Estimativa: o fator inclui o estilo de vida e os exercícios, por isso
+                      a lista de atividades não entra neste método.
+                    </p>
+                  ) : null}
+                </>
+              ) : null}
+
+              {doc.gasto.metodo === "rotina" ? (
+                <>
+                  <Aviso rotulo="Premissas da rotina semanal">
+                    <p>
+                      Dia sem treino = TMB × estilo de vida. Dia com treino = TMB × estilo × (1440 − minutos) ÷ 1440 + MET × TMB ÷ 1440 × minutos. Média = soma da
+                      semana ÷ 7 (é a que vai para a dieta).
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      MET: Herrmann SD et al., 2024 Adult Compendium (60+: Older Adult Compendium), corrigido pelo repouso da própria pessoa (TMB ÷ 1440), como
+                      recomenda Byrne NM et al., J Appl Physiol 2005. Os minutos de exercício saem do estilo de vida, para não contar duas vezes. {AVISO_ESTILOS}
+                    </p>
+                  </Aviso>
+                  <Campo rotulo="Estilo de vida fora dos treinos">
+                    <Dropdown
+                      aria-label="Estilo de vida fora dos treinos"
+                      value={doc.gasto.rotina.estilo}
+                      options={ESTILOS_DE_VIDA.map((e) => ({ label: `${e.nome} ×${n(e.valor, 2)}`, value: e.id }))}
+                      onChange={(e) => alterar((d) => void (d.gasto.rotina.estilo = e.value as EstiloDeVida))}
+                      placeholder="Selecione"
+                      className="w-full"
+                    />
+                  </Campo>
+                  <Resultado rotulo="GET — média diária da semana (vai para a dieta)" calculo={r.get} />
+                  {r.gastoDetalhe?.rotina ? (
+                    <div className="rounded-lg border border-gray-200 p-2 text-sm text-gray-700">
+                      <p>
+                        Dia sem treino: <strong className="tabular-nums">{n(r.gastoDetalhe.rotina.semTreino, 0)} kcal</strong> ({n(r.tmb.valor, 0)} × {n(r.gastoDetalhe.rotina.estilo.valor, 2)})
+                      </p>
+                      {r.gastoDetalhe.rotina.atividades.map((a) => (
+                        <p key={a.id}>
+                          Dia com {a.atividade.nome.toLowerCase()} ({a.minutos} min): <strong className="tabular-nums">{n(a.diaComTreino, 0)} kcal</strong>
+                        </p>
+                      ))}
+                      <p className="mt-1 text-xs text-gray-500">
+                        Soma da semana: {n(r.gastoDetalhe.rotina.semanal, 0)} kcal · NAF equivalente: {n(r.gastoDetalhe.rotina.nafEquivalente, 2)} (faixas FAO 2004: 1,40–2,40).
+                      </p>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+
               {doc.gasto.metodo === "dri_2023" ? (
-                <Campo rotulo="Categoria de atividade">
-                  <Dropdown
-                    aria-label="Categoria de atividade"
-                    value={doc.gasto.categoria}
-                    options={Object.entries(CATEGORIAS_DRI).map(([valor, c]) => ({ label: `${c.nome} (${c.naf})`, value: valor }))}
-                    onChange={(e) => alterar((d) => void (d.gasto.categoria = e.value))}
-                    placeholder="Escolha a categoria"
-                    className="w-full"
-                  />
-                </Campo>
+                <>
+                  <Campo rotulo="Categoria de atividade">
+                    <Dropdown
+                      aria-label="Categoria de atividade"
+                      value={doc.gasto.categoria}
+                      options={Object.entries(CATEGORIAS_DRI).map(([valor, c]) => ({ label: `${c.nome} (${c.naf})`, value: valor }))}
+                      onChange={(e) => alterar((d) => void (d.gasto.categoria = e.value))}
+                      placeholder="Escolha a categoria"
+                      className="w-full"
+                    />
+                  </Campo>
+                  <Resultado rotulo="GET" calculo={r.get} />
+                </>
               ) : null}
+
               {doc.gasto.metodo === "tmb_naf" ? (
-                <Campo rotulo="NAF" ajuda={FAIXAS_NAF_FAO.map((f) => `${f.nome}: ${n(f.de, 2)}–${n(f.ate, 2)}`).join(" · ")}>
-                  <CampoNumero valor={doc.gasto.naf} maximo={5} ariaLabel="NAF" onChange={(v) => alterar((d) => void (d.gasto.naf = v))} />
-                </Campo>
+                <>
+                  <Campo rotulo="NAF" ajuda={FAIXAS_NAF_FAO.map((f) => `${f.nome}: ${n(f.de, 2)}–${n(f.ate, 2)}`).join(" · ")}>
+                    <CampoNumero valor={doc.gasto.naf} maximo={5} ariaLabel="NAF" onChange={(v) => alterar((d) => void (d.gasto.naf = v))} />
+                  </Campo>
+                  <Resultado rotulo="GET" calculo={r.get} />
+                  <p className="text-xs text-gray-500">Método usado antes da revisão de 10/11/2026: mantido nesta avaliação com o NAF registrado.</p>
+                </>
               ) : null}
-              <Resultado rotulo="GET" calculo={r.get} />
+
               {doc.gasto.metodo === "dri_2023" && doc.gasto.categoria === "inativo" ? (
                 <Resultado
                   rotulo="GET + METs (média diária, gasto líquido das atividades)"
@@ -493,61 +653,70 @@ export default function EditorDaAvaliacao({
             </div>
           </div>
 
-          <div className="mt-4">
-            <h3 className="mb-2 flex items-center gap-2 font-semibold text-gray-900">
-              Atividades por METs <InfoMetodo descricao={DESCRICAO_METS} />
-            </h3>
-            <div className="space-y-2">
-              {doc.atividades.map((at, i) => {
-                const calc = r.mets.atividades.find((x) => x.id === at.id);
-                return (
-                  <div key={at.id} className="grid items-end gap-2 rounded-lg border border-gray-200 p-2 sm:grid-cols-[minmax(0,1fr)_6rem_6rem_auto]">
-                    <Campo rotulo="Atividade">
-                      <Dropdown
-                        aria-label="Atividade"
-                        value={at.atividadeId}
-                        options={MODALIDADES.map((m) => ({
-                          label: m,
-                          itens: ATIVIDADES.filter((x) => x.modalidade === m).map((x) => ({ label: `${x.nome} — MET ${n(x.adulto.met)}`, value: x.id })),
-                        }))}
-                        optionGroupLabel="label"
-                        optionGroupChildren="itens"
-                        onChange={(e) => alterar((d) => void (d.atividades[i].atividadeId = e.value))}
-                        className="w-full"
-                        filter
-                      />
-                    </Campo>
-                    <Campo rotulo="Minutos">
-                      <CampoNumero valor={at.minutos} maximo={1440} ariaLabel="Minutos por sessão" onChange={(v) => alterar((d) => void (d.atividades[i].minutos = v))} />
-                    </Campo>
-                    <Campo rotulo="Vezes/semana">
-                      <CampoNumero valor={at.vezesPorSemana} maximo={21} ariaLabel="Vezes por semana" onChange={(v) => alterar((d) => void (d.atividades[i].vezesPorSemana = v))} />
-                    </Campo>
-                    <Button type="button" icon="pi pi-trash" text severity="danger" aria-label="Remover atividade" onClick={() => alterar((d) => void d.atividades.splice(i, 1))} />
-                    {calc ? (
-                      <p className="text-xs text-gray-600 sm:col-span-4">
-                        MET {n(calc.valor.met)} ({calc.valor.codigo}): {n(calc.porSessao, 0)} kcal por sessão · {n(calc.semanal, 0)} kcal por semana ·{" "}
-                        {n(calc.semanal / 7, 0)} kcal/dia em média. Líquido (acima do repouso): {n(calc.porSessaoLiquido, 0)} kcal por sessão.
-                        {calc.aviso ? <span className="block text-amber-700">{calc.aviso}</span> : null}
-                      </p>
-                    ) : null}
-                  </div>
-                );
-              })}
+          {doc.gasto.metodo !== "fator" ? (
+            <div className="mt-4">
+              <h3 className="mb-2 flex items-center gap-2 font-semibold text-gray-900">
+                {doc.gasto.metodo === "rotina" ? "Atividades da rotina" : "Atividades por METs"} <InfoMetodo descricao={doc.gasto.metodo === "rotina" ? METODOS_GET.rotina : DESCRICAO_METS} />
+              </h3>
+              <div className="space-y-2">
+                {doc.atividades.map((at, i) => {
+                  const calc = r.mets.atividades.find((x) => x.id === at.id);
+                  const daRotina = r.gastoDetalhe?.rotina?.atividades.find((x) => x.id === at.id);
+                  return (
+                    <div key={at.id} className="grid items-end gap-2 rounded-lg border border-gray-200 p-2 sm:grid-cols-[minmax(0,1fr)_6rem_6rem_auto]">
+                      <Campo rotulo="Atividade">
+                        <Dropdown
+                          aria-label="Atividade"
+                          value={at.atividadeId}
+                          options={MODALIDADES.map((m) => ({
+                            label: m,
+                            itens: ATIVIDADES.filter((x) => x.modalidade === m).map((x) => ({ label: `${x.nome} — MET ${n(x.adulto.met)}`, value: x.id })),
+                          }))}
+                          optionGroupLabel="label"
+                          optionGroupChildren="itens"
+                          onChange={(e) => alterar((d) => void (d.atividades[i].atividadeId = e.value))}
+                          className="w-full"
+                          filter
+                        />
+                      </Campo>
+                      <Campo rotulo="Minutos">
+                        <CampoNumero valor={at.minutos} maximo={1440} ariaLabel="Minutos por sessão" onChange={(v) => alterar((d) => void (d.atividades[i].minutos = v))} />
+                      </Campo>
+                      <Campo rotulo="Vezes/semana">
+                        <CampoNumero valor={at.vezesPorSemana} maximo={21} ariaLabel="Vezes por semana" onChange={(v) => alterar((d) => void (d.atividades[i].vezesPorSemana = v))} />
+                      </Campo>
+                      <Button type="button" icon="pi pi-trash" text severity="danger" aria-label="Remover atividade" onClick={() => alterar((d) => void d.atividades.splice(i, 1))} />
+                      {daRotina ? (
+                        <p className="text-xs text-gray-600 sm:col-span-4">
+                          MET {n(daRotina.valor.met)} ({daRotina.valor.codigo}) × {n(r.gastoDetalhe?.rotina?.repousoPorMinuto, 3)} kcal/min de repouso: {n(daRotina.bruto, 0)} kcal na
+                          sessão; menos {n(daRotina.desconto, 0)} kcal do estilo de vida nesses minutos = +{n(daRotina.acrescimo, 0)} kcal no dia com treino.
+                          {daRotina.aviso ? <span className="block text-amber-700">{daRotina.aviso}</span> : null}
+                        </p>
+                      ) : calc ? (
+                        <p className="text-xs text-gray-600 sm:col-span-4">
+                          MET {n(calc.valor.met)} ({calc.valor.codigo}): {n(calc.porSessao, 0)} kcal por sessão · {n(calc.semanal, 0)} kcal por semana ·{" "}
+                          {n(calc.semanal / 7, 0)} kcal/dia em média. Líquido (acima do repouso): {n(calc.porSessaoLiquido, 0)} kcal por sessão.
+                          {calc.aviso ? <span className="block text-amber-700">{calc.aviso}</span> : null}
+                        </p>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+              <Button
+                type="button"
+                icon="pi pi-plus"
+                label="Adicionar atividade"
+                text
+                onClick={() => alterar((d) => void d.atividades.push({ id: globalThis.crypto.randomUUID(), atividadeId: ATIVIDADES[0].id, minutos: null, vezesPorSemana: null }))}
+              />
+              {doc.gasto.metodo !== "rotina" && r.mets.atividades.length ? (
+                <p className="text-sm text-gray-700">
+                  Total estimado: {n(r.mets.semanal, 0)} kcal por semana · {n(r.mets.mediaDiaria, 0)} kcal/dia em média (líquido: {n(r.mets.mediaDiariaLiquida, 0)} kcal/dia).
+                </p>
+              ) : null}
             </div>
-            <Button
-              type="button"
-              icon="pi pi-plus"
-              label="Atividade"
-              text
-              onClick={() => alterar((d) => void d.atividades.push({ id: globalThis.crypto.randomUUID(), atividadeId: ATIVIDADES[0].id, minutos: null, vezesPorSemana: null }))}
-            />
-            {r.mets.atividades.length ? (
-              <p className="text-sm text-gray-700">
-                Total estimado: {n(r.mets.semanal, 0)} kcal por semana · {n(r.mets.mediaDiaria, 0)} kcal/dia em média (líquido: {n(r.mets.mediaDiariaLiquida, 0)} kcal/dia).
-              </p>
-            ) : null}
-          </div>
+          ) : null}
         </Secao>
 
         <Secao

@@ -472,14 +472,30 @@ export function DocumentoDaAvaliacao({ dados, identidade }: { dados: DadosDoPdfA
             {r.get.valor !== null && r.get.metodo ? (
               <Linha
                 rotulo={`GET — ${METODOS_GET[r.get.metodo].nome}${
-                  r.get.metodo === "dri_2023" && doc.gasto.categoria
-                    ? `, ${CATEGORIAS_DRI[doc.gasto.categoria].nome.toLowerCase()}`
-                    : doc.gasto.naf
-                      ? `, NAF ${n(doc.gasto.naf, 2)} (${faixaDoNaf(doc.gasto.naf)?.nome.toLowerCase() ?? ""})`
-                      : ""
+                  r.get.metodo === "fator" && r.gastoDetalhe?.fator
+                    ? ` (${r.gastoDetalhe.fator.conjuntoNome}): ${r.gastoDetalhe.fator.nivelNome.toLowerCase()}, ×${n(r.gastoDetalhe.fator.valor, 3)}`
+                    : r.get.metodo === "rotina" && r.gastoDetalhe?.rotina
+                      ? `, média diária (estilo de vida ×${n(r.gastoDetalhe.rotina.estilo.valor, 2)})`
+                      : r.get.metodo === "dri_2023" && doc.gasto.categoria
+                        ? `, ${CATEGORIAS_DRI[doc.gasto.categoria].nome.toLowerCase()}`
+                        : r.get.metodo === "tmb_naf" && doc.gasto.naf
+                          ? `, NAF ${n(doc.gasto.naf, 2)} (${faixaDoNaf(doc.gasto.naf)?.nome.toLowerCase() ?? ""})`
+                          : ""
                 }`}
                 valor={`${n(r.get.valor, 0)} kcal/dia`}
               />
+            ) : null}
+            {r.get.metodo === "rotina" && r.gastoDetalhe?.rotina ? (
+              <>
+                <Linha rotulo={`Dia sem treino (${r.gastoDetalhe.rotina.estilo.nome})`} valor={`${n(r.gastoDetalhe.rotina.semTreino, 0)} kcal/dia`} />
+                {r.gastoDetalhe.rotina.atividades.map((x) => (
+                  <Linha
+                    key={x.id}
+                    rotulo={`Dia com ${x.atividade.nome.toLowerCase()} (MET ${n(x.valor.met)}, ${x.minutos} min, ${x.vezesPorSemana}x/semana)`}
+                    valor={`${n(x.diaComTreino, 0)} kcal/dia`}
+                  />
+                ))}
+              </>
             ) : null}
             {r.mets.atividades.map((x) => (
               <Linha
