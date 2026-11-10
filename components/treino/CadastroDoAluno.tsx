@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Password } from "primereact/password";
 import CamposComplementares from "@/components/CamposComplementares";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
@@ -65,11 +66,25 @@ async function enviar(url: string, metodo: string, corpo: unknown) {
   return dados ?? {};
 }
 
-function Campo({ rotulo, valor, tipo = "text", onChange }: { rotulo: string; valor: string; tipo?: string; onChange: (v: string) => void }) {
+// autoComplete: nos dados do aluno, o navegador não deve sugerir o login
+// salvo do próprio profissional (SPEC de correções 10/11, item 002).
+function Campo({
+  rotulo,
+  valor,
+  tipo = "text",
+  autoComplete = "off",
+  onChange,
+}: {
+  rotulo: string;
+  valor: string;
+  tipo?: string;
+  autoComplete?: string;
+  onChange: (v: string) => void;
+}) {
   return (
     <label className="block">
       <span className="mb-1 block text-sm font-semibold text-gray-700">{rotulo}</span>
-      <InputText type={tipo} value={valor} onChange={(e) => onChange(e.target.value)} className="w-full" aria-label={rotulo} />
+      <InputText type={tipo} value={valor} autoComplete={autoComplete} onChange={(e) => onChange(e.target.value)} className="w-full" aria-label={rotulo} />
     </label>
   );
 }
@@ -83,6 +98,8 @@ function CampoSenha({ valor, onChange }: { valor: string; onChange: (v: string) 
         onChange={(e) => onChange(e.target.value)}
         feedback={false}
         toggleMask
+        // "new-password": o navegador não preenche a senha salva de quem está conectado.
+        autoComplete="new-password"
         className="w-full"
         inputClassName="w-full"
         aria-label="Senha provisória"
@@ -96,21 +113,86 @@ function CampoSenha({ valor, onChange }: { valor: string; onChange: (v: string) 
 export function NovoAluno({ aberto, onFechar, onCriado }: { aberto: boolean; onFechar: () => void; onCriado: (id: string) => void }) {
   const [form, setForm] = useState<Formulario>(FORM_VAZIO);
   const [salvando, setSalvando] = useState(false);
+  // E-mail que já tem cadastro: pedido de vínculo a quem cadastrou o aluno.
+  const [pedido, setPedido] = useState<{ email: string; mensagem: string } | null>(null);
 
   async function salvar() {
     const corpo = corpoDoFormulario(form);
     if (!corpo) return;
     setSalvando(true);
-    const dados = await enviar("/api/treino/alunos", "POST", { ...corpo, senha: form.senha });
+    const r = await fetch("/api/treino/alunos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...corpo, senha: form.senha }),
+    }).catch(() => null);
     setSalvando(false);
+    const dados = await r?.json().catch(() => null);
+    if (r?.status === 409 && dados?.codigo === "email_existente") {
+      setPedido({ email: form.email.trim().toLowerCase(), mensagem: "" });
+      return;
+    }
+    if (!r?.ok) {
+      avisar(dados?.erro ?? "Sem conexão. Tente de novo.", "error");
+      return;
+    }
     if (!dados?.id) return;
     avisar("Aluno cadastrado. Envie a ele o e-mail e a senha provisória.", "success");
     setForm(FORM_VAZIO);
     onCriado(dados.id);
   }
 
+  // Fechar sem cadastrar descarta o que foi digitado: cada abertura começa vazia.
+  function fechar() {
+    setForm(FORM_VAZIO);
+    setPedido(null);
+    onFechar();
+  }
+
+  async function pedirVinculo() {
+    if (!pedido) return;
+    setSalvando(true);
+    const r = await fetch("/api/treino/pedidos-vinculo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedido),
+    }).catch(() => null);
+    setSalvando(false);
+    const dados = await r?.json().catch(() => null);
+    if (!r?.ok) {
+      avisar(dados?.erro ?? "Sem conexão. Tente de novo.", "error");
+      return;
+    }
+    avisar("Pedido enviado. Quando o profissional responsável aprovar, o aluno aparece na sua lista.", "success");
+    fechar();
+  }
+
   return (
-    <Dialog header="Cadastrar aluno" visible={aberto} onHide={onFechar} className="w-full max-w-lg" modal>
+    <Dialog header={pedido ? "Solicitar vínculo" : "Cadastrar aluno"} visible={aberto} onHide={fechar} className="w-full max-w-lg" modal>
+      {pedido ? (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700">
+            O e-mail <strong className="break-all">{pedido.email}</strong> já tem cadastro de aluno. Você pode pedir ao profissional responsável por
+            esse cadastro que vincule o aluno a você. Nenhum dado do aluno aparece antes da aprovação.
+          </p>
+          <label className="block">
+            <span className="mb-1 block text-sm font-semibold text-gray-700">Mensagem para o profissional responsável</span>
+            <InputTextarea
+              value={pedido.mensagem}
+              maxLength={1000}
+              rows={3}
+              autoResize
+              placeholder="Ex.: Sou o personal do aluno e vou acompanhar o treino dele."
+              onChange={(e) => setPedido({ ...pedido, mensagem: e.target.value })}
+              className="w-full"
+              aria-label="Mensagem para o profissional responsável"
+            />
+          </label>
+          <div className="flex justify-end gap-2">
+            <Button type="button" label="Voltar" text onClick={() => setPedido(null)} />
+            <Button type="button" label="Solicitar vínculo" icon="pi pi-send" loading={salvando} onClick={pedirVinculo} />
+          </div>
+        </div>
+      ) : (
       <div className="space-y-4">
         <p className="text-sm text-gray-600">
           O aluno fica só com você: o nutricionista não vê este cadastro. Na Área do Paciente, ele usa só o Treino.
@@ -121,10 +203,11 @@ export function NovoAluno({ aberto, onFechar, onCriado }: { aberto: boolean; onF
         <CampoSenha valor={form.senha} onChange={(v) => setForm((f) => ({ ...f, senha: v }))} />
         <CamposPessoais valor={form.pessoais} onChange={(v) => setForm((f) => ({ ...f, pessoais: v }))} />
         <div className="flex justify-end gap-2">
-          <Button type="button" label="Cancelar" text onClick={onFechar} />
+          <Button type="button" label="Cancelar" text onClick={fechar} />
           <Button type="button" label="Cadastrar" icon="pi pi-check" loading={salvando} onClick={salvar} />
         </div>
       </div>
+      )}
     </Dialog>
   );
 }

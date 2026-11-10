@@ -13,6 +13,7 @@ import AtivarAlertas from "@/components/treino/AtivarAlertas";
 import { NovoAluno } from "@/components/treino/CadastroDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import PainelDeRelatorios from "@/components/treino/PainelDeRelatorios";
+import PedidosDeVinculo from "@/components/treino/PedidosDeVinculo";
 
 type Aluno = {
   id: string;
@@ -105,6 +106,8 @@ export default function TreinoPage() {
         <NovoAluno aberto={novoAluno} onFechar={() => setNovoAluno(false)} onCriado={(id) => router.push(`/treino/alunos/${id}`)} />
 
         <AtivarAlertas />
+
+        <PedidosDeVinculo onAprovado={() => router.refresh()} />
 
         <PainelDeRelatorios />
 

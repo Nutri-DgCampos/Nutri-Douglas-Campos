@@ -13,6 +13,7 @@ const ICONE: Record<string, string> = {
   renovacao: "pi-refresh",
   renovacao_treino: "pi-refresh",
   pagamento_treino: "pi-wallet",
+  vinculo: "pi-user-plus",
   desconforto: "pi-exclamation-triangle",
 };
 

@@ -38,6 +38,10 @@ function extensaoDoArquivo(arquivo: File) {
 export default function EnvioTreino({ pacienteId }: { pacienteId: string }) {
   const entrada = useRef<HTMLInputElement>(null);
   const [treino, setTreino] = useState<TreinoEnviado | null | undefined>(undefined);
+  // Treino enviado pelo profissional (prescrição vigente) ou planilha de
+  // corrida/ciclismo: o paciente vê em "Meu treino" sem precisar anexar nada
+  // (SPEC de correções 10/11, item 001).
+  const [doProfissional, setDoProfissional] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [colando, setColando] = useState(false);
   const [texto, setTexto] = useState("");
@@ -52,6 +56,11 @@ export default function EnvioTreino({ pacienteId }: { pacienteId: string }) {
       .maybeSingle();
 
     setTreino((data as TreinoEnviado | null) ?? null);
+
+    const resumo = await fetch("/api/area-paciente/treino/resumo", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+    setDoProfissional(Boolean(resumo?.planilhas || (resumo?.musculacao && resumo.musculacao.origem === "profissional")));
   }, [pacienteId]);
 
   useEffect(() => {
@@ -157,7 +166,9 @@ export default function EnvioTreino({ pacienteId }: { pacienteId: string }) {
           <p className="text-sm text-gray-500">
             {lendo
               ? "Organizando seu treino por dia da semana..."
-              : treino?.status === "concluido"
+              : doProfissional
+                ? "Seu treino enviado pelo profissional está disponível."
+                : treino?.status === "concluido"
                 ? "Seu treino organizado, com volume e gasto estimado."
                 : treino?.status === "falhou"
                   ? "Não conseguimos ler o treino enviado."
@@ -184,7 +195,7 @@ export default function EnvioTreino({ pacienteId }: { pacienteId: string }) {
         </div>
       ) : (
         <>
-          {treino?.status === "concluido" && (
+          {(treino?.status === "concluido" || doProfissional) && (
             <Link href="/area-paciente/treino" className="p-button mt-4 flex w-full justify-center gap-2 font-bold">
               <i className="pi pi-list" aria-hidden />
               Ver meu treino

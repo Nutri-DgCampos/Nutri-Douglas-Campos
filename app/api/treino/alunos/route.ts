@@ -32,7 +32,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ id }, { status: 201 });
   } catch (erro) {
     if (erro instanceof DadosInvalidos) return recusar(erro.message, 400);
-    if (erro instanceof EmailJaCadastrado) return recusar("Este e-mail já é usado por outro acesso.", 409);
+    // E-mail já cadastrado: a tela oferece "Solicitar vínculo" (SPEC de
+    // correções 10/11, item 003), sem criar outro usuário.
+    if (erro instanceof EmailJaCadastrado) {
+      return NextResponse.json(
+        { erro: "Este e-mail já tem cadastro. Você pode pedir o vínculo ao profissional responsável.", codigo: "email_existente" },
+        { status: 409 }
+      );
+    }
     console.error("Erro ao cadastrar aluno próprio:", erro);
     return recusar("Não foi possível cadastrar o aluno.", 500);
   }

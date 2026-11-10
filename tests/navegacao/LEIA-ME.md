@@ -22,6 +22,7 @@ node tests/navegacao/instalacaoSamsung.mjs
 node tests/navegacao/medidas1104.mjs
 node tests/navegacao/complementar1106.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/cadastroAnamnese1110.mjs
+node tests/navegacao/correcoes1110.mjs --limpar
 node tests/navegacao/melhorias1101.mjs --limpar
 node tests/navegacao/avisos1101.mjs --limpar
 ARQUIVOS_DIR=<pasta do servidor> node tests/navegacao/fotos1101.mjs --limpar
@@ -56,3 +57,4 @@ As capturas de tela ficam em `tests/navegacao/visual/`, fora do git.
 - `medidas1104.mjs`: peso do relatório semanal digitado com vírgula e conferido antes do envio (o peso "76500" dava só "Erro ao salvar relatório"). A faixa de peso, água e sono está em `tests/medidas.test.mjs`.
 - `complementar1106.mjs`: SPEC complementar de 06/11 (treino enviado acessível e "Ver versão enviada", observações do treino, cronômetro de descanso com relógio controlado, hidratação pré-preenchida, PDF de medicações com período e sem identificação do nutricionista). Precisa do `pypdf` no Python, para extrair o texto dos PDFs. Cria e apaga `teste.educador.c1106@local.test` e `teste.aluno.c1106@local.test`. Ver `docs/spec-complementar-2026-11-06.md`.
 - `cadastroAnamnese1110.mjs`: SPEC de cadastro, anamnese, fotos e identidade do Treino (10/11). Cobre "Solução Fit DLC", nascimento/sexo/altura e avaliação física, dados físicos do paciente da clínica pelo vínculo, modelos de anamnese privados e compartilhados, envio pelo link e leitura cruzada sem as notas do autor, fotos do cadastro na tela Treino e planos intactos. Usa e restaura o paciente de teste. Precisa da mesma `ARQUIVOS_DIR` do servidor (fotos). Ver `docs/spec-cadastro-anamnese-fotos-2026-11-10.md`.
+- `correcoes1110.mjs`: correções do Módulo de Treino (10/11). Cobre o título "Olá, [nome]" só para o educador, o "Cadastrar aluno" sempre vazio e sem autopreenchimento, o pedido de vínculo para e-mail já cadastrado (quem decide, duplicado, paciente da clínica para o nutricionista, dono inativo, e-mail de profissional ou inexistente) e o treino publicado pelo profissional aparecendo na Área do Paciente. Cria e apaga três educadores e um aluno próprio `C1110b`. Ver `docs/correcoes-treino-2026-11-10.md`.
