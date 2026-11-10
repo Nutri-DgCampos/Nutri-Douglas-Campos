@@ -86,19 +86,18 @@ conferir("nutricionista finaliza a própria avaliação", finalizadaPeloNutri.st
 const RASCUNHO_NUTRI = sql(`insert into avaliacoes_fisicas (patient_id, consulta_id, data, status, documento, criada_por)
   values ('${P}', null, current_date, 'rascunho', '${documento}'::jsonb || '{"observacoes": "Teste T6"}', '${NUTRI}') returning id;`).split("\n")[0];
 
-// --- Educador: anamnese privada ---------------------------------------------------
+// --- Anamnese simples antiga (R6): privada e só leitura desde 10/11 -----------------
+// (a anamnese com modelos e link está em cadastroAnamnese1110.mjs)
+sql(`insert into treino_anamneses (patient_id, profissional_id, respostas, revisao)
+     values ('${P}', '${EDUCADOR}', '{"objetivo": "Ganhar força para correr melhor", "lesoes": "Entorse no tornozelo direito em 2024"}', 1);`);
 await e.pagina.goto(`${B}/treino/alunos/${P}`, { waitUntil: "networkidle" });
-await e.pagina.getByRole("region", { name: "Anamnese do treino" }).waitFor({ timeout: 20000 });
-await e.pagina.locator('section[aria-label="Anamnese do treino"]').getByRole("button", { name: "Abrir" }).click();
-await e.pagina.getByLabel("Qual é o objetivo com o treino?").fill("Ganhar força para correr melhor");
-await e.pagina.getByLabel("Lesões e cirurgias").fill("Entorse no tornozelo direito em 2024");
-await e.pagina.getByRole("button", { name: "Salvar anamnese" }).click();
-await e.pagina.waitForTimeout(1500);
-conferir("anamnese do educador gravada", sql(`select respostas->>'objetivo' from treino_anamneses where patient_id = '${P}' and profissional_id = '${EDUCADOR}';`) === "Ganhar força para correr melhor", null);
-const doAdmin = await api(n.pagina, `/api/treino/alunos/${P}/anamnese`);
-conferir("anamnese é privada: o administrador não vê a do educador (F2)", doAdmin.status === 200 && !JSON.stringify(doAdmin.corpo).includes("tornozelo"), doAdmin.corpo);
-const velha = await api(e.pagina, `/api/treino/alunos/${P}/anamnese`, "PUT", { respostas: { objetivo: "x" }, revisao: 0 });
-conferir("gravação com revisão antiga é recusada", velha.status === 409, velha);
+await e.pagina.getByRole("region", { name: "Anamneses" }).waitFor({ timeout: 20000 });
+await e.pagina.getByRole("button", { name: /Anamnese anterior \(só você vê\)/ }).click();
+await e.pagina.getByText("Ganhar força para correr melhor").waitFor({ timeout: 10000 }).catch(() => undefined);
+conferir("anamnese antiga do educador continua legível para ele", (await e.pagina.getByText("Ganhar força para correr melhor").count()) === 1, null);
+const doAdmin = await api(n.pagina, `/api/treino/alunos/${P}/anamneses`);
+conferir("anamnese antiga continua privada: o administrador não vê a do educador (F2)", doAdmin.status === 200 && !JSON.stringify(doAdmin.corpo).includes("tornozelo"), doAdmin.corpo?.antiga);
+conferir("anamnese antiga não aceita mais gravação", (await api(e.pagina, `/api/treino/alunos/${P}/anamnese`, "PUT", { respostas: { objetivo: "x" }, revisao: 1 })).status === 410, null);
 
 // --- Educador: avaliação física pela tela ---------------------------------------
 const listaAntes = (await api(e.pagina, `/api/treino/alunos/${P}/avaliacoes`)).corpo.avaliacoes;

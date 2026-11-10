@@ -3,21 +3,23 @@ import { SITUACOES_DO_FORMULARIO, situacaoDoFormulario, type Pergunta, type Reco
 import { obterPool } from "./banco";
 import { UUID } from "./dietas";
 import { buscarFormulario, type TipoDeFormulario } from "./formularios";
-import { exigirNutricionista, recusar } from "./http";
+import { ACESSO_NUTRICAO, type AcessoAoFormulario } from "./formulariosNutricionista";
+import { recusar } from "./http";
 import { disposicao, nomeDoArquivo } from "./pdf/documento";
 import { gerarPdfDaAnamnese, gerarPdfDoRecordatorio } from "./pdf/formulario";
-import { carregarIdentidade } from "./pdf/identidade";
+import { carregarIdentidade, identidadeDoProfissional } from "./pdf/identidade";
 
-// GET .../pdf da anamnese ou do recordatório (nutricionista).
-export function rotaPdf(tipo: TipoDeFormulario) {
+// GET .../pdf da anamnese ou do recordatório, com a regra de acesso de cada
+// módulo (só perguntas e respostas; as notas do profissional não saem).
+export function rotaPdf(tipo: TipoDeFormulario, acesso: AcessoAoFormulario = ACESSO_NUTRICAO) {
   return async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    const contexto = await exigirNutricionista(request);
+    const contexto = await acesso.exigir(request);
     if (contexto instanceof NextResponse) return contexto;
     const { id } = await params;
     if (!UUID.test(id)) return recusar("Formulário inválido.", 400);
 
     const f = await buscarFormulario(tipo, id);
-    if (!f) return recusar("Formulário não encontrado.", 404);
+    if (!f || !(await acesso.permitir(contexto, f))) return recusar("Formulário não encontrado.", 404);
     const extra = await obterPool().query<{ name: string; data: string | null }>(
       `select p.name, (select to_char(c.data, 'YYYY-MM-DD') from public.consultas c where c.id = $2) as data
          from public.patients p where p.id = $1`,
@@ -32,7 +34,11 @@ export function rotaPdf(tipo: TipoDeFormulario) {
     };
 
     try {
-      const identidade = await carregarIdentidade();
+      // Anamnese do Treino: identidade de quem a criou (R8); Nutrição: a da clínica.
+      const identidade =
+        f.modulo === "treino" && f.criado_por
+          ? await identidadeDoProfissional({ usuarioId: f.criado_por, admin: !(await ehEducador(f.criado_por)) })
+          : await carregarIdentidade();
       const pdf =
         tipo === "anamnese"
           ? await gerarPdfDaAnamnese({ ...cabecalho, perguntas: (f.perguntas ?? []) as Pergunta[], respostas: (f.respostas ?? {}) as Respostas }, identidade)
@@ -50,4 +56,9 @@ export function rotaPdf(tipo: TipoDeFormulario) {
       return recusar("Não foi possível gerar o PDF.", 500);
     }
   };
+}
+
+async function ehEducador(usuarioId: string) {
+  const r = await obterPool().query("select 1 from public.educadores_fisicos where usuario_id = $1", [usuarioId]);
+  return (r.rowCount ?? 0) > 0;
 }

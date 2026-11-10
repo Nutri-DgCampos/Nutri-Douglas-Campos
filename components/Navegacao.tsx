@@ -26,11 +26,13 @@ function atual(caminho: string, item: Item) {
   return caminho.startsWith(item.destino);
 }
 
-function Marca({ subtitulo = "Acompanhamento nutricional" }: { subtitulo?: string }) {
+// Ambiente do educador físico: "Solução Fit DLC" (SPEC 06/11, item 6). Só a
+// apresentação; nome, perfil e autoria do profissional não mudam.
+function Marca({ subtitulo = "Acompanhamento nutricional", titulo = "Douglas Campos" }: { subtitulo?: string; titulo?: string }) {
   return (
     <div className="leading-tight">
       <p className="font-[family-name:var(--fonte-titulo)] text-lg font-bold tracking-tight">
-        Douglas Campos
+        {titulo}
       </p>
       <p className="text-xs text-white/60">{subtitulo}</p>
     </div>
@@ -87,12 +89,13 @@ export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educa
   const { lateral: menuLateral, abas: abasCelular, mais: menuMais } = MENUS[perfil];
   const educador = perfil === "educador";
   const subtitulo = educador ? "Módulo de Treino" : undefined;
+  const titulo = educador ? "Solução Fit DLC" : undefined;
   const algumDoMaisAtual = menuMais.some((item) => atual(caminho, item));
 
   return (
     <>
       <header className="barra-superior">
-        <Marca subtitulo={subtitulo} />
+        <Marca subtitulo={subtitulo} titulo={titulo} />
 
         <div className="flex items-center gap-1">
           {/* Sino de notificações (o atalho de Alertas segue no menu "Mais"). */}
@@ -111,7 +114,7 @@ export function NavegacaoNutri({ perfil = "admin" }: { perfil?: "admin" | "educa
 
       <aside className="menu-lateral">
         <div className="mb-8 px-2">
-          <Marca subtitulo={subtitulo} />
+          <Marca subtitulo={subtitulo} titulo={titulo} />
         </div>
 
         {educador ? null : (

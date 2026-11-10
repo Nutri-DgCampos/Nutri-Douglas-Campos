@@ -16,6 +16,9 @@ type Item = {
   situacao: SituacaoDoFormulario;
   arquivado_em: string | null;
   tipo: "anamnese" | "recordatorio";
+  // Anamnese do Treino (SPEC 06/11): preenchida, só para leitura.
+  modulo?: "nutricao" | "treino";
+  autor?: string | null;
 };
 
 // Histórico de anamneses e recordatórios no painel do paciente.
@@ -31,7 +34,7 @@ export default function FormulariosDaFicha({ pacienteId }: { pacienteId: string 
           [
             ...(d.anamneses ?? []).map((f: Item) => ({ ...f, tipo: "anamnese" as const })),
             ...(d.recordatorios ?? []).map((f: Item) => ({ ...f, tipo: "recordatorio" as const })),
-          ].sort((a, b) => b.consulta_data.localeCompare(a.consulta_data))
+          ].sort((a, b) => (b.consulta_data ?? "").localeCompare(a.consulta_data ?? ""))
         )
       )
       .catch(() => setItens([]));
@@ -51,12 +54,24 @@ export default function FormulariosDaFicha({ pacienteId }: { pacienteId: string 
         <ul className="divide-y divide-gray-200">
           {itens.map((f) => (
             <li key={f.id}>
-              <Link href={`/nutricao/${pacienteId}/consultas/${f.consulta_id}/${f.tipo}/${f.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-primary-50">
+              <Link
+                href={
+                  f.modulo === "treino"
+                    ? `/nutricao/${pacienteId}/anamnese-treino/${f.id}`
+                    : `/nutricao/${pacienteId}/consultas/${f.consulta_id}/${f.tipo}/${f.id}`
+                }
+                className="flex items-center gap-3 px-5 py-3 hover:bg-primary-50"
+              >
                 <i className={`pi ${f.tipo === "anamnese" ? "pi-file-edit" : "pi-list"} text-lg text-primary-700`} aria-hidden />
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold text-gray-900">{f.tipo === "anamnese" ? f.titulo : "Recordatório alimentar"}</span>
-                  <span className="block text-sm text-gray-500">Consulta de {formatarData(f.consulta_data)}</span>
+                  <span className="block text-sm text-gray-500">
+                    {f.modulo === "treino"
+                      ? `Treino · ${f.autor ?? "Profissional do Treino"} · ${formatarData(f.consulta_data)}`
+                      : `Consulta de ${formatarData(f.consulta_data)}`}
+                  </span>
                 </span>
+                {f.modulo === "treino" ? <Tag value="Só leitura" severity="info" /> : null}
                 {f.arquivado_em ? <Tag value="Arquivado" severity="secondary" /> : null}
                 <Tag value={SITUACOES_DO_FORMULARIO[f.situacao].rotulo.split(" — ")[0]} severity={SITUACOES_DO_FORMULARIO[f.situacao].cor} />
               </Link>

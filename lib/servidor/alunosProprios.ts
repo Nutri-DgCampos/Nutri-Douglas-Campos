@@ -1,3 +1,4 @@
+import { dadosParaBanco, type LinhaDadosPessoais } from "@/lib/nutricao/dadosPessoais";
 import { obterPool } from "./banco";
 import { DadosInvalidos } from "./educadores";
 import type { ProfissionalDeTreino } from "./treinoAcesso";
@@ -24,6 +25,16 @@ function texto(valor: unknown, limite: number, obrigatorio = false) {
   return limpo || null;
 }
 
+// Dados pessoais comuns (nascimento, sexo, altura, e-mail de contato), com
+// as mesmas regras do cadastro da Nutrição (SPEC 06/11, cadastro). Sem plano
+// nem pagamento da Nutrição.
+function dadosPessoais(dados: Record<string, unknown>): Required<LinhaDadosPessoais> {
+  const t = (v: unknown) => (typeof v === "string" ? v : v === null || v === undefined ? "" : String(v));
+  const r = dadosParaBanco({ nascimento: t(dados.nascimento), sexo: t(dados.sexo), altura: t(dados.altura), emailContato: t(dados.emailContato) });
+  if ("erro" in r) throw new DadosInvalidos(r.erro);
+  return r.valores;
+}
+
 function email(valor: unknown) {
   const limpo = texto(valor, 200, true)!.toLowerCase();
   if (!EMAIL.test(limpo)) throw new DadosInvalidos("Informe um e-mail válido.");
@@ -41,6 +52,7 @@ export async function criarAlunoProprio(educador: ProfissionalDeTreino, dados: R
   const telefone = texto(dados.telefone, 40);
   const login = email(dados.email);
   const senhaInicial = senha(dados.senha);
+  const pessoais = dadosPessoais(dados);
 
   // criarUsuario recusa e-mail repetido (EmailJaCadastrado).
   const usuarioId = await criarUsuario(login, senhaInicial, true);
@@ -49,10 +61,10 @@ export async function criarAlunoProprio(educador: ProfissionalDeTreino, dados: R
     await cliente.query("begin");
     await cliente.query("insert into public.profiles (id, role) values ($1, 'paciente')", [usuarioId]);
     const aluno = await cliente.query<{ id: string }>(
-      `insert into public.patients (name, phone, plan, payment_status, auth_user_id, educador_dono_id)
-       values ($1, $2, null, 'Ativo', $3, $4)
+      `insert into public.patients (name, phone, plan, payment_status, auth_user_id, educador_dono_id, birth_date, sex, height_cm, contact_email)
+       values ($1, $2, null, 'Ativo', $3, $4, $5, $6, $7, $8)
        returning id`,
-      [nome, telefone, usuarioId, educador.usuarioId]
+      [nome, telefone, usuarioId, educador.usuarioId, pessoais.birth_date, pessoais.sex, pessoais.height_cm, pessoais.contact_email]
     );
     const id = aluno.rows[0].id;
     await cliente.query(
@@ -73,8 +85,12 @@ export async function criarAlunoProprio(educador: ProfissionalDeTreino, dados: R
 // Cadastro do aluno, só para o educador dono (null: não é aluno próprio dele).
 export async function cadastroDoAlunoProprio(educador: ProfissionalDeTreino, patientId: string) {
   if (educador.admin) return null;
-  const r = await obterPool().query<{ nome: string; telefone: string | null; auth_user_id: string | null; desativado_em: string | null }>(
-    "select name as nome, phone as telefone, auth_user_id, desativado_em from public.patients where id = $1 and educador_dono_id = $2",
+  const r = await obterPool().query<
+    { nome: string; telefone: string | null; auth_user_id: string | null; desativado_em: string | null } & LinhaDadosPessoais
+  >(
+    `select name as nome, phone as telefone, auth_user_id, desativado_em,
+            to_char(birth_date, 'YYYY-MM-DD') as birth_date, sex, height_cm::text as height_cm, contact_email
+       from public.patients where id = $1 and educador_dono_id = $2`,
     [patientId, educador.usuarioId]
   );
   const aluno = r.rows[0];
@@ -85,6 +101,10 @@ export async function cadastroDoAlunoProprio(educador: ProfissionalDeTreino, pat
     email: aluno.auth_user_id ? await emailDoUsuario(aluno.auth_user_id) : null,
     usuarioId: aluno.auth_user_id,
     desativado_em: aluno.desativado_em,
+    birth_date: aluno.birth_date ?? null,
+    sex: aluno.sex ?? null,
+    height_cm: aluno.height_cm ?? null,
+    contact_email: aluno.contact_email ?? null,
   };
 }
 
@@ -100,13 +120,13 @@ export async function alterarAlunoProprio(educador: ProfissionalDeTreino, patien
   const nome = texto(dados.nome, 120, true)!;
   const telefone = texto(dados.telefone, 40);
   const login = email(dados.email);
+  const pessoais = dadosPessoais(dados);
   if (login !== atual.email) await definirEmail(atual.usuarioId, login);
-  await obterPool().query("update public.patients set name = $2, phone = $3 where id = $1 and educador_dono_id = $4", [
-    patientId,
-    nome,
-    telefone,
-    educador.usuarioId,
-  ]);
+  await obterPool().query(
+    `update public.patients set name = $2, phone = $3, birth_date = $5, sex = $6, height_cm = $7, contact_email = $8
+      where id = $1 and educador_dono_id = $4`,
+    [patientId, nome, telefone, educador.usuarioId, pessoais.birth_date, pessoais.sex, pessoais.height_cm, pessoais.contact_email]
+  );
   return true;
 }
 

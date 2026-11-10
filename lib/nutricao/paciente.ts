@@ -1,4 +1,4 @@
-import { hojeNoBrasil } from "@/lib/cronograma";
+import { hojeNoBrasil } from "../cronograma.ts";
 
 // Dados do paciente usados pelo Módulo de Nutrição.
 

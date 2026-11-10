@@ -55,7 +55,18 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     desconfortos,
     educadores: educadores?.filter((e) => e.ativo).map((e) => ({ usuario_id: e.usuario_id, nome: e.nome })) ?? null,
     // Aluno próprio: o educador dono vê e altera o cadastro e o acesso.
-    cadastro: cadastro ? { nome: cadastro.nome, telefone: cadastro.telefone, email: cadastro.email, desativado_em: cadastro.desativado_em } : null,
+    cadastro: cadastro
+      ? {
+          nome: cadastro.nome,
+          telefone: cadastro.telefone,
+          email: cadastro.email,
+          desativado_em: cadastro.desativado_em,
+          birth_date: cadastro.birth_date,
+          sex: cadastro.sex,
+          height_cm: cadastro.height_cm,
+          contact_email: cadastro.contact_email,
+        }
+      : null,
     vigente: vigente.rows[0] ?? null,
     academia,
     academias: academias.map(({ id, nome, domestica }) => ({ id, nome, domestica })),

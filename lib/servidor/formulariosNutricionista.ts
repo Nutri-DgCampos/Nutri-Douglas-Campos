@@ -9,12 +9,49 @@ import { registrarAcao, registrarAlteracoes } from "./auditoria";
 import { obterPool } from "./banco";
 import { UUID } from "./dietas";
 import { TABELA, buscarFormulario, comOPaciente, type LinhaFormulario, type TipoDeFormulario } from "./formularios";
+import { pacienteDaClinica } from "./clinica";
 import { exigirNutricionista, recusar } from "./http";
 import { enfileirarAtualizacao } from "./notificacoes";
 
-// Rotas do nutricionista para uma ficha de anamnese ou um recordatório.
+// Rotas do profissional para uma ficha de anamnese ou um recordatório.
+// Padrão: as do nutricionista. O Módulo de Treino usa as mesmas rotas com
+// outras regras de acesso (SPEC 06/11, anamnese): só o autor altera; quem
+// acompanha o paciente lê as preenchidas, sem as notas do autor.
 
 type Parametros = { params: Promise<{ id: string }> };
+
+export type Permissao = "escrita" | "leitura" | null;
+
+export type AcessoAoFormulario = {
+  exigir: (request: Request) => Promise<{ usuarioId: string } | NextResponse>;
+  permitir: (contexto: { usuarioId: string }, f: LinhaFormulario) => Promise<Permissao>;
+  // Aviso ao paciente quando o formulário é enviado.
+  aviso: "formulario" | "formulario_treino";
+};
+
+export const preenchida = (f: LinhaFormulario) => Boolean(f.respondido_em) || f.status === "concluido";
+
+// Nutrição: tudo do nutricionista; a anamnese do Treino só para ler, se
+// preenchida e de paciente da clínica.
+export const ACESSO_NUTRICAO: AcessoAoFormulario = {
+  exigir: exigirNutricionista,
+  permitir: async (_contexto, f) => {
+    if (f.modulo !== "treino") return "escrita";
+    return preenchida(f) && (await pacienteDaClinica(f.patient_id)) ? "leitura" : null;
+  },
+  aviso: "formulario",
+};
+
+async function autorDoFormulario(f: LinhaFormulario) {
+  if (!f.criado_por) return null;
+  const r = await obterPool().query<{ nome: string | null }>(
+    `select coalesce(e.nome, case when p.role = 'nutricionista' then 'Nutricionista' end) as nome
+       from public.users u left join public.educadores_fisicos e on e.usuario_id = u.id left join public.profiles p on p.id = u.id
+      where u.id = $1`,
+    [f.criado_por]
+  );
+  return r.rows[0]?.nome ?? null;
+}
 
 const NOME: Record<TipoDeFormulario, string> = { anamnese: "Anamnese", recordatorio: "Recordatório" };
 
@@ -37,9 +74,9 @@ export function resumoDoFormulario(f: LinhaFormulario) {
 
 // Abrir a ficha. O primeiro acesso depois da resposta do paciente encerra a
 // edição pelo paciente (ele continua podendo ler).
-export function rotaGet(tipo: TipoDeFormulario) {
+export function rotaGet(tipo: TipoDeFormulario, acesso: AcessoAoFormulario = ACESSO_NUTRICAO) {
   return async function GET(request: Request, { params }: Parametros) {
-    const contexto = await exigirNutricionista(request);
+    const contexto = await acesso.exigir(request);
     if (contexto instanceof NextResponse) return contexto;
     const { id } = await params;
     if (!UUID.test(id)) return recusar("Formulário inválido.", 400);
@@ -47,6 +84,20 @@ export function rotaGet(tipo: TipoDeFormulario) {
     const pool = obterPool();
     let f = await buscarFormulario(tipo, id);
     if (!f) return recusar(`${NOME[tipo]} não encontrado(a).`, 404);
+    const permissao = await acesso.permitir(contexto, f);
+    if (!permissao) return recusar(`${NOME[tipo]} não encontrado(a).`, 404);
+
+    // Quem só lê não encerra a edição pelo paciente nem vê as notas do autor.
+    if (permissao === "leitura") {
+      const paciente = await pool.query<{ id: string; name: string }>("select id, name from public.patients where id = $1", [f.patient_id]);
+      return NextResponse.json({
+        formulario: { ...f, observacoes: "", lembrete: "", situacao: situacaoDoFormulario(f), comPaciente: comOPaciente(f) },
+        paciente: paciente.rows[0] ?? null,
+        consulta: null,
+        somenteLeitura: true,
+        autor: await autorDoFormulario(f),
+      });
+    }
 
     if (f.respondido_em && !f.lido_em && f.status === "rascunho") {
       await pool.query(`update public.${TABELA[tipo]} set lido_em = now() where id = $1 and lido_em is null`, [id]);
@@ -68,15 +119,16 @@ export function rotaGet(tipo: TipoDeFormulario) {
       formulario: { ...f, situacao: situacaoDoFormulario(f), comPaciente: comOPaciente(f) },
       paciente: paciente.rows[0] ?? null,
       consulta: consulta.rows[0] ?? null,
+      somenteLeitura: false,
     });
   };
 }
 
 // Salvamento automático do nutricionista. Enquanto o formulário está com o
 // paciente, as respostas não mudam aqui (só observações e lembrete).
-export function rotaPut(tipo: TipoDeFormulario) {
+export function rotaPut(tipo: TipoDeFormulario, acesso: AcessoAoFormulario = ACESSO_NUTRICAO) {
   return async function PUT(request: Request, { params }: Parametros) {
-    const contexto = await exigirNutricionista(request);
+    const contexto = await acesso.exigir(request);
     if (contexto instanceof NextResponse) return contexto;
     const { id } = await params;
     if (!UUID.test(id)) return recusar("Formulário inválido.", 400);
@@ -90,6 +142,9 @@ export function rotaPut(tipo: TipoDeFormulario) {
       await cliente.query("begin");
       const f = await buscarFormulario(tipo, id, cliente, true);
       if (!f) throw Object.assign(new Error(), { recusa: recusar("Formulário não encontrado.", 404) });
+      const permissao = await acesso.permitir(contexto, f);
+      if (!permissao) throw Object.assign(new Error(), { recusa: recusar("Formulário não encontrado.", 404) });
+      if (permissao !== "escrita") throw Object.assign(new Error(), { recusa: recusar("Só quem criou este formulário pode alterá-lo.", 403) });
       if (f.status === "concluido" || f.arquivado_em) {
         throw Object.assign(new Error(), { recusa: recusar("Formulário concluído ou arquivado: reabra para alterar.", 409) });
       }
@@ -158,9 +213,9 @@ export function rotaPut(tipo: TipoDeFormulario) {
 
 // Mudanças de situação: enviar ao paciente, cancelar o envio, concluir,
 // reabrir, arquivar e desarquivar. Tudo fica na auditoria.
-export function rotaPatch(tipo: TipoDeFormulario) {
+export function rotaPatch(tipo: TipoDeFormulario, acesso: AcessoAoFormulario = ACESSO_NUTRICAO) {
   return async function PATCH(request: Request, { params }: Parametros) {
-    const contexto = await exigirNutricionista(request);
+    const contexto = await acesso.exigir(request);
     if (contexto instanceof NextResponse) return contexto;
     const { id } = await params;
     if (!UUID.test(id)) return recusar("Formulário inválido.", 400);
@@ -170,9 +225,14 @@ export function rotaPatch(tipo: TipoDeFormulario) {
     try {
       await cliente.query("begin");
       const f = await buscarFormulario(tipo, id, cliente, true);
-      if (!f) {
+      const permissao = f ? await acesso.permitir(contexto, f) : null;
+      if (!f || !permissao) {
         await cliente.query("rollback");
         return recusar("Formulário não encontrado.", 404);
+      }
+      if (permissao !== "escrita") {
+        await cliente.query("rollback");
+        return recusar("Só quem criou este formulário pode alterá-lo.", 403);
       }
 
       let sql: string | null = null;
@@ -237,7 +297,7 @@ export function rotaPatch(tipo: TipoDeFormulario) {
       await cliente.query("commit");
 
       if (acao === "enviar") {
-        enfileirarAtualizacao("formulario", f.patient_id, id, `${id}:${Date.now()}`).catch((e) =>
+        enfileirarAtualizacao(acesso.aviso, f.patient_id, id, `${id}:${Date.now()}`).catch((e) =>
           console.error("Erro ao registrar aviso do formulário:", e)
         );
       }
@@ -253,9 +313,9 @@ export function rotaPatch(tipo: TipoDeFormulario) {
 }
 
 // Só rascunhos que nunca foram ao paciente.
-export function rotaDelete(tipo: TipoDeFormulario) {
+export function rotaDelete(tipo: TipoDeFormulario, acesso: AcessoAoFormulario = ACESSO_NUTRICAO) {
   return async function DELETE(request: Request, { params }: Parametros) {
-    const contexto = await exigirNutricionista(request);
+    const contexto = await acesso.exigir(request);
     if (contexto instanceof NextResponse) return contexto;
     const { id } = await params;
     if (!UUID.test(id)) return recusar("Formulário inválido.", 400);
@@ -264,9 +324,14 @@ export function rotaDelete(tipo: TipoDeFormulario) {
     try {
       await cliente.query("begin");
       const f = await buscarFormulario(tipo, id, cliente, true);
-      if (!f) {
+      const permissao = f ? await acesso.permitir(contexto, f) : null;
+      if (!f || !permissao) {
         await cliente.query("rollback");
         return recusar("Formulário não encontrado.", 404);
+      }
+      if (permissao !== "escrita") {
+        await cliente.query("rollback");
+        return recusar("Só quem criou este formulário pode alterá-lo.", 403);
       }
       if (f.status !== "rascunho" || f.enviado_em || f.respondido_em) {
         await cliente.query("rollback");

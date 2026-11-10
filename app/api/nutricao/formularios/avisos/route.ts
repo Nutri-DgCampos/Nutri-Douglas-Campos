@@ -15,12 +15,12 @@ export async function GET(request: Request) {
   const resultado = await obterPool().query<{ patient_id: string; name: string; anamnese: boolean; recordatorio: boolean }>(
     `select p.id as patient_id, p.name,
             exists (select 1 from public.anamneses a where a.patient_id = p.id and a.respondido_em is not null
-                     and a.aviso_visto_em is null and a.arquivado_em is null) as anamnese,
+                     and a.aviso_visto_em is null and a.arquivado_em is null and a.modulo = 'nutricao') as anamnese,
             exists (select 1 from public.recordatorios r where r.patient_id = p.id and r.respondido_em is not null
                      and r.aviso_visto_em is null and r.arquivado_em is null) as recordatorio
        from public.patients p
       where exists (select 1 from public.anamneses a where a.patient_id = p.id and a.respondido_em is not null
-                     and a.aviso_visto_em is null and a.arquivado_em is null)
+                     and a.aviso_visto_em is null and a.arquivado_em is null and a.modulo = 'nutricao')
          or exists (select 1 from public.recordatorios r where r.patient_id = p.id and r.respondido_em is not null
                      and r.aviso_visto_em is null and r.arquivado_em is null)
       order by p.name`
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
   const pool = obterPool();
   await pool.query(
-    "update public.anamneses set aviso_visto_em = now() where patient_id = $1 and respondido_em is not null and aviso_visto_em is null",
+    "update public.anamneses set aviso_visto_em = now() where patient_id = $1 and respondido_em is not null and aviso_visto_em is null and modulo = 'nutricao'",
     [dados.pacienteId]
   );
   await pool.query(

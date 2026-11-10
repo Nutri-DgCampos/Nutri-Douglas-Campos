@@ -7,12 +7,14 @@ import { Dropdown } from "primereact/dropdown";
 import { Message } from "primereact/message";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
+import ComparativoFotos from "@/components/ComparativoFotos";
 import PainelTreino from "@/components/PainelTreino";
 import RegistrosDoTreino from "@/components/RegistrosDoTreino";
 import AcompanhamentoSemanal from "@/components/treino/AcompanhamentoSemanal";
-import AnamneseDoTreino from "@/components/treino/AnamneseDoTreino";
+import AnamnesesDoAluno from "@/components/treino/AnamnesesDoAluno";
 import AvaliacoesDoTreino from "@/components/treino/AvaliacoesDoTreino";
 import { CartaoDoAluno, type DadosDoAluno } from "@/components/treino/CadastroDoAluno";
+import DadosFisicosDoAluno from "@/components/treino/DadosFisicosDoAluno";
 import ListaDeDesconfortos, { type DesconfortoNaTela } from "@/components/treino/ListaDeDesconfortos";
 import PlanoEPagamento from "@/components/treino/PlanoEPagamento";
 import { api } from "@/lib/api";
@@ -207,15 +209,20 @@ export default function AlunoNoTreinoPage() {
 
               {painel.cadastro ? (
                 <CartaoDoAluno alunoId={painel.aluno.id} dados={painel.cadastro} onAlterado={carregar} onExcluido={() => router.push("/treino")} />
-              ) : null}
+              ) : (
+                <DadosFisicosDoAluno alunoId={painel.aluno.id} />
+              )}
 
               <PlanoEPagamento alunoId={painel.aluno.id} />
 
               <AcompanhamentoSemanal alunoId={painel.aluno.id} admin={painel.admin} />
 
-              <AnamneseDoTreino alunoId={painel.aluno.id} />
+              <AnamnesesDoAluno alunoId={painel.aluno.id} />
 
               <AvaliacoesDoTreino alunoId={painel.aluno.id} />
+
+              {/* Fotos do cadastro do aluno (SPEC 06/11, fotos): as mesmas da Nutrição. */}
+              <ComparativoFotos pacienteId={painel.aluno.id} treino />
 
               <section className="cartao flex flex-wrap items-center gap-3 p-5" aria-label="Academia do aluno">
                 <div className="min-w-0 flex-1">

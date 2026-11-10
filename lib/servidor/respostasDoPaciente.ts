@@ -12,7 +12,7 @@ export async function pacienteDaRequisicao(request: Request, token?: string): Pr
   if (!origemPermitida(request)) return recusar("Origem não permitida.", 403);
   if (token !== undefined) {
     const pacienteId = await pacienteDoToken(token);
-    return pacienteId ?? recusar("Link inválido ou substituído por um novo. Peça o link atualizado ao nutricionista.", 404);
+    return pacienteId ?? recusar("Link inválido ou substituído por um novo. Peça o link atualizado ao seu profissional.", 404);
   }
   const contexto = await obterContexto();
   if (!contexto) return recusar("Usuário não autenticado.", 401);

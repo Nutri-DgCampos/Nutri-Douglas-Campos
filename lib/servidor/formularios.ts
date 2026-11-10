@@ -40,6 +40,10 @@ export type LinhaFormulario = {
   criado_em: string;
   atualizado_em: string;
   // anamnese
+  // "treino": anamnese do Módulo de Treino (sem consulta; autor em criado_por).
+  modulo?: "nutricao" | "treino";
+  criado_por?: string | null;
+  treino_modelo_id?: string | null;
   titulo?: string;
   modelo_id?: string | null;
   modelo_versao?: number | null;
@@ -150,7 +154,10 @@ export async function linkDoPaciente(pacienteId: string, usuarioId: string | nul
 export async function formulariosDoPaciente(pacienteId: string) {
   const pool = obterPool();
   const [paciente, anamneses, recordatorios] = await Promise.all([
-    pool.query<{ name: string }>("select name from public.patients where id = $1", [pacienteId]),
+    pool.query<{ name: string; somente_treino: boolean }>(
+      "select name, educador_dono_id is not null as somente_treino from public.patients where id = $1",
+      [pacienteId]
+    ),
     pool.query<LinhaFormulario>(
       `select * from public.anamneses
         where patient_id = $1 and enviado_em is not null and arquivado_em is null
@@ -175,7 +182,15 @@ export async function formulariosDoPaciente(pacienteId: string) {
 
   return {
     primeiroNome: paciente.rows[0]?.name.trim().split(/\s+/)[0] ?? "",
-    anamneses: anamneses.rows.map((f) => ({ ...comum(f), titulo: f.titulo, perguntas: f.perguntas, respostas: f.respostas })),
+    // Aluno só do Treino (SPEC 06/11): o link mostra a marca do Treino.
+    somenteTreino: paciente.rows[0]?.somente_treino ?? false,
+    anamneses: anamneses.rows.map((f) => ({
+      ...comum(f),
+      titulo: f.titulo,
+      perguntas: f.perguntas,
+      respostas: f.respostas,
+      modulo: f.modulo ?? "nutricao",
+    })),
     recordatorios: recordatorios.rows.map((f) => ({ ...comum(f), conteudo: f.conteudo })),
   };
 }
@@ -199,7 +214,7 @@ export async function gravarDoPaciente(tipo: TipoDeFormulario, pacienteId: strin
     const f = await buscarFormulario(tipo, id, cliente, true);
     if (!f || f.patient_id !== pacienteId || !f.enviado_em || f.arquivado_em) throw new Recusa("Formulário não encontrado.", 404);
     if (!pacientePodeEditar(f)) {
-      throw new Recusa("O nutricionista já recebeu suas respostas. Para mudar algo, fale com ele.", 423);
+      throw new Recusa("Seu profissional já recebeu suas respostas. Para mudar algo, fale com ele.", 423);
     }
     if (dados.revisao !== f.revisao) throw new Recusa("O formulário foi alterado em outra janela. Recarregue a página.", 409);
 

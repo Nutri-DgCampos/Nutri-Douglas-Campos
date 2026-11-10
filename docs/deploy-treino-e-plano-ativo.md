@@ -47,6 +47,7 @@ O script aplica só as migrações que faltam, em ordem, cada uma numa transaç�
 | 033 | Planos, contratos, pagamentos, renovação e desativação do aluno do Treino |
 | 034 | Correção do plano ativo: liberação do relatório e histórico das alterações |
 | 035 | Catálogo de observações do treino (SPEC complementar de 06/11; ver `docs/spec-complementar-2026-11-06.md`) |
+| 036 | Anamnese do Treino pelo link, modelos de anamnese do Treino (SPEC de 10/11; ver `docs/spec-cadastro-anamnese-fotos-2026-11-10.md`) |
 
 Para conferir no fim:
 
@@ -54,7 +55,7 @@ Para conferir no fim:
 ssh nutri "docker exec nutri-postgres psql -U nutri -d nutri -c 'select migration_name, executed_at from public.schema_migrations order by migration_name desc limit 16'"
 ```
 
-A última da lista tem de ser a mais nova (hoje, a 035).
+A última da lista tem de ser a mais nova (hoje, a 036).
 
 ## 4. Conferir depois do deploy
 

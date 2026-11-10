@@ -13,6 +13,8 @@ const MENSAGENS = {
   avaliacao: { corpo: "O resultado da sua avaliação física já está disponível.", destino: "/area-paciente/dietas" },
   formula: { corpo: "Seu nutricionista enviou as suas fórmulas.", destino: "/area-paciente/dietas" },
   formulario: { corpo: "Seu nutricionista enviou um formulário para você preencher.", destino: "/area-paciente/formularios" },
+  // Anamnese enviada pelo profissional do Treino (SPEC 06/11, anamnese).
+  formulario_treino: { titulo: "Você tem um formulário do Treino", corpo: "Seu profissional do Treino enviou um formulário para você preencher.", destino: "/area-paciente/formularios" },
   documento: { corpo: "Seu nutricionista enviou um documento para você.", destino: "/area-paciente/documentos" },
   // Treino (B10): o push tem o mesmo texto do cartão Relatórios.
   devolutiva_treino: { titulo: "Chegou a devolutiva do seu Personal Trainer", corpo: "Abra para ler a devolutiva do seu treino.", destino: "/area-paciente/relatorios" },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import AvisoDeInstalacao from "@/components/AvisoDeInstalacao";
@@ -28,6 +29,18 @@ export default function InicioDoAlunoDoTreino({
   onSair,
 }: Props) {
   const router = useRouter();
+  // Anamnese enviada pelo profissional do Treino (SPEC 06/11): atalho quando houver.
+  const [formularios, setFormularios] = useState({ total: 0, pendentes: 0 });
+
+  useEffect(() => {
+    fetch("/api/area-paciente/formularios", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { anamneses?: { editavel: boolean; respondido_em: string | null }[] } | null) => {
+        const todos = d?.anamneses ?? [];
+        setFormularios({ total: todos.length, pendentes: todos.filter((f) => f.editavel && !f.respondido_em).length });
+      })
+      .catch(() => {});
+  }, []);
 
   const atalhos = [
     {
@@ -44,6 +57,17 @@ export default function InicioDoAlunoDoTreino({
       destino: "/area-paciente/relatorios",
       novidade: devolutivaNova,
     },
+    ...(formularios.total
+      ? [
+          {
+            rotulo: "Formulários",
+            descricao: formularios.pendentes ? "Você tem formulário para preencher" : "Anamnese do seu treino",
+            icone: "pi-file-edit",
+            destino: "/area-paciente/formularios",
+            novidade: formularios.pendentes > 0,
+          },
+        ]
+      : []),
   ];
 
   return (

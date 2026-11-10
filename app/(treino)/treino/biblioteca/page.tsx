@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
@@ -11,6 +11,7 @@ import { MultiSelect } from "primereact/multiselect";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import CabecalhoPagina from "@/components/CabecalhoPagina";
+import CatalogoDeAnamneses from "@/components/treino/CatalogoDeAnamneses";
 import CatalogoDeObservacoes from "@/components/treino/CatalogoDeObservacoes";
 import { avisar } from "@/lib/avisos";
 import { GRUPOS, OUTROS_GRUPOS } from "@/lib/treino";
@@ -48,18 +49,30 @@ async function enviar(url: string, metodo: string, corpo: unknown) {
   return true;
 }
 
+type Aba = "exercicios" | "academias" | "observacoes" | "anamneses";
+const ABAS: Record<Aba, string> = { exercicios: "Exercícios", academias: "Academias", observacoes: "Observações", anamneses: "Anamneses" };
+
 export default function BibliotecaDoTreinoPage() {
+  return (
+    <Suspense>
+      <Biblioteca />
+    </Suspense>
+  );
+}
+
+function Biblioteca() {
   const router = useRouter();
-  const [aba, setAba] = useState<"exercicios" | "academias" | "observacoes">("exercicios");
+  const pedida = useSearchParams().get("aba");
+  const [aba, setAba] = useState<Aba>(pedida && pedida in ABAS ? (pedida as Aba) : "exercicios");
 
   return (
     <main className="min-w-0 flex-1 p-4 lg:p-8">
       <div className="mx-auto max-w-5xl space-y-6">
         <BotaoVoltar rotulo="Voltar para o Módulo de Treino" onClick={() => router.push("/treino")} />
-        <CabecalhoPagina titulo="Biblioteca do Treino" descricao="Exercícios usados no editor, academias com os equipamentos disponíveis e as suas observações de treino." />
+        <CabecalhoPagina titulo="Biblioteca do Treino" descricao="Exercícios usados no editor, academias com os equipamentos disponíveis, as suas observações de treino e os modelos de anamnese." />
 
         <div className="flex gap-1 border-b border-gray-200" role="tablist">
-          {(["exercicios", "academias", "observacoes"] as const).map((a) => (
+          {(Object.keys(ABAS) as Aba[]).map((a) => (
             <button
               key={a}
               type="button"
@@ -68,12 +81,12 @@ export default function BibliotecaDoTreinoPage() {
               onClick={() => setAba(a)}
               className={`-mb-px rounded-t-xl border px-4 py-2 text-sm font-semibold ${aba === a ? "border-gray-200 border-b-white bg-white text-primary-800" : "border-transparent text-gray-600"}`}
             >
-              {a === "exercicios" ? "Exercícios" : a === "academias" ? "Academias" : "Observações"}
+              {ABAS[a]}
             </button>
           ))}
         </div>
 
-        {aba === "exercicios" ? <Exercicios /> : aba === "academias" ? <Academias /> : <CatalogoDeObservacoes />}
+        {aba === "exercicios" ? <Exercicios /> : aba === "academias" ? <Academias /> : aba === "observacoes" ? <CatalogoDeObservacoes /> : <CatalogoDeAnamneses />}
       </div>
     </main>
   );

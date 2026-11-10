@@ -6,15 +6,50 @@ import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
+import CamposComplementares from "@/components/CamposComplementares";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
+import { DADOS_VAZIOS, dadosDoBanco, dadosParaBanco, type DadosComplementares } from "@/lib/nutricao/dadosPessoais";
+import { idadeEm, rotuloDoSexo } from "@/lib/nutricao/paciente";
 
 // Alunos próprios do educador físico (T7b): cadastro com e-mail e senha
 // provisória (o aluno troca no primeiro acesso), edição e nova senha.
 // T8 (R10): desativar (reversível) e excluir de vez, só a pedido do aluno.
 
-export type DadosDoAluno = { nome: string; telefone: string | null; email: string | null; desativado_em?: string | null };
+export type DadosDoAluno = {
+  nome: string;
+  telefone: string | null;
+  email: string | null;
+  desativado_em?: string | null;
+  birth_date?: string | null;
+  sex?: string | null;
+  height_cm?: string | number | null;
+  contact_email?: string | null;
+};
 
-type Formulario = { nome: string; telefone: string; email: string; senha: string };
+// Nascimento, sexo, altura e e-mail de contato (SPEC 06/11, cadastro): os
+// mesmos campos e regras do cadastro da Nutrição, sem plano nem pagamento.
+type Formulario = { nome: string; telefone: string; email: string; senha: string; pessoais: DadosComplementares };
+
+const FORM_VAZIO: Formulario = { nome: "", telefone: "", email: "", senha: "", pessoais: DADOS_VAZIOS };
+
+// Corpo para a API (os dados pessoais já conferidos na tela).
+function corpoDoFormulario(form: Formulario) {
+  const conferido = dadosParaBanco(form.pessoais);
+  if ("erro" in conferido) {
+    avisar(conferido.erro, "error");
+    return null;
+  }
+  const { nascimento, sexo, altura, emailContato } = form.pessoais;
+  return { nome: form.nome, telefone: form.telefone, email: form.email, nascimento, sexo, altura, emailContato };
+}
+
+function CamposPessoais({ valor, onChange }: { valor: DadosComplementares; onChange: (v: DadosComplementares) => void }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <CamposComplementares valor={valor} onChange={onChange} />
+    </div>
+  );
+}
 
 async function enviar(url: string, metodo: string, corpo: unknown) {
   const r = await fetch(url, { method: metodo, headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) }).catch(() => null);
@@ -59,16 +94,18 @@ function CampoSenha({ valor, onChange }: { valor: string; onChange: (v: string) 
 
 // Novo aluno: devolve o id criado.
 export function NovoAluno({ aberto, onFechar, onCriado }: { aberto: boolean; onFechar: () => void; onCriado: (id: string) => void }) {
-  const [form, setForm] = useState<Formulario>({ nome: "", telefone: "", email: "", senha: "" });
+  const [form, setForm] = useState<Formulario>(FORM_VAZIO);
   const [salvando, setSalvando] = useState(false);
 
   async function salvar() {
+    const corpo = corpoDoFormulario(form);
+    if (!corpo) return;
     setSalvando(true);
-    const dados = await enviar("/api/treino/alunos", "POST", form);
+    const dados = await enviar("/api/treino/alunos", "POST", { ...corpo, senha: form.senha });
     setSalvando(false);
     if (!dados?.id) return;
     avisar("Aluno cadastrado. Envie a ele o e-mail e a senha provisória.", "success");
-    setForm({ nome: "", telefone: "", email: "", senha: "" });
+    setForm(FORM_VAZIO);
     onCriado(dados.id);
   }
 
@@ -82,6 +119,7 @@ export function NovoAluno({ aberto, onFechar, onCriado }: { aberto: boolean; onF
         <Campo rotulo="Telefone (opcional)" valor={form.telefone} tipo="tel" onChange={(v) => setForm((f) => ({ ...f, telefone: v }))} />
         <Campo rotulo="E-mail de acesso" valor={form.email} tipo="email" onChange={(v) => setForm((f) => ({ ...f, email: v }))} />
         <CampoSenha valor={form.senha} onChange={(v) => setForm((f) => ({ ...f, senha: v }))} />
+        <CamposPessoais valor={form.pessoais} onChange={(v) => setForm((f) => ({ ...f, pessoais: v }))} />
         <div className="flex justify-end gap-2">
           <Button type="button" label="Cancelar" text onClick={onFechar} />
           <Button type="button" label="Cadastrar" icon="pi pi-check" loading={salvando} onClick={salvar} />
@@ -107,17 +145,19 @@ export function CartaoDoAluno({
   const [excluindo, setExcluindo] = useState(false);
   const [exclusao, setExclusao] = useState({ pedido: false, nome: "" });
   const [trocandoSenha, setTrocandoSenha] = useState(false);
-  const [form, setForm] = useState<Formulario>({ nome: "", telefone: "", email: "", senha: "" });
+  const [form, setForm] = useState<Formulario>(FORM_VAZIO);
   const [salvando, setSalvando] = useState(false);
 
   function abrirEdicao() {
-    setForm({ nome: dados.nome, telefone: dados.telefone ?? "", email: dados.email ?? "", senha: "" });
+    setForm({ nome: dados.nome, telefone: dados.telefone ?? "", email: dados.email ?? "", senha: "", pessoais: dadosDoBanco(dados) });
     setEditando(true);
   }
 
   async function salvarDados() {
     setSalvando(true);
-    const ok = await enviar(`/api/treino/alunos/${alunoId}`, "PATCH", { nome: form.nome, telefone: form.telefone, email: form.email });
+    const corpo = corpoDoFormulario(form);
+    if (!corpo) return;
+    const ok = await enviar(`/api/treino/alunos/${alunoId}`, "PATCH", corpo);
     setSalvando(false);
     if (!ok) return;
     avisar("Cadastro salvo.", "success");
@@ -191,6 +231,24 @@ export function CartaoDoAluno({
           <dt className="text-gray-500">Telefone</dt>
           <dd className="font-medium text-gray-900">{dados.telefone ?? "—"}</dd>
         </div>
+        <div>
+          <dt className="text-gray-500">Nascimento</dt>
+          <dd className={`font-medium ${dados.birth_date ? "text-gray-900" : "text-amber-700"}`}>
+            {dados.birth_date ? `${dados.birth_date.split("-").reverse().join("/")} (${idadeEm(dados.birth_date)} anos)` : "Não informado (a avaliação física precisa)"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-gray-500">Sexo</dt>
+          <dd className={`font-medium ${dados.sex ? "text-gray-900" : "text-amber-700"}`}>{rotuloDoSexo(dados.sex) ?? "Não informado (a avaliação física precisa)"}</dd>
+        </div>
+        <div>
+          <dt className="text-gray-500">Altura</dt>
+          <dd className="font-medium text-gray-900">{dados.height_cm ? `${String(dados.height_cm).replace(".", ",")} cm` : "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-gray-500">E-mail de contato</dt>
+          <dd className="font-medium text-gray-900 break-all">{dados.contact_email ?? "—"}</dd>
+        </div>
       </dl>
 
       <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-3">
@@ -244,6 +302,7 @@ export function CartaoDoAluno({
           <Campo rotulo="Nome completo" valor={form.nome} onChange={(v) => setForm((f) => ({ ...f, nome: v }))} />
           <Campo rotulo="Telefone (opcional)" valor={form.telefone} tipo="tel" onChange={(v) => setForm((f) => ({ ...f, telefone: v }))} />
           <Campo rotulo="E-mail de acesso" valor={form.email} tipo="email" onChange={(v) => setForm((f) => ({ ...f, email: v }))} />
+          <CamposPessoais valor={form.pessoais} onChange={(v) => setForm((f) => ({ ...f, pessoais: v }))} />
           <div className="flex justify-end gap-2">
             <Button type="button" label="Cancelar" text onClick={() => setEditando(false)} />
             <Button type="button" label="Salvar" icon="pi pi-check" loading={salvando} onClick={salvarDados} />

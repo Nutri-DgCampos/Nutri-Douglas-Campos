@@ -36,20 +36,31 @@ function mover<T>(lista: T[], indice: number, direcao: -1 | 1) {
 
 // Modelo de anamnese: nome e sequência de perguntas (sem seções). Salva
 // sozinho; fichas já criadas guardam a versão que usaram.
-export default function EditorDeModeloAnamnese({ id }: { id: string }) {
+// treino: modelos do Módulo de Treino (SPEC 06/11, anamnese), de cada
+// profissional; o autor pode compartilhar com os profissionais do Treino, e o
+// compartilhado por outro aparece só para leitura.
+export default function EditorDeModeloAnamnese({ id, treino = false }: { id: string; treino?: boolean }) {
   const router = useRouter();
-  const lista = "/nutricao/configuracoes/anamnese";
+  const lista = treino ? "/treino/biblioteca?aba=anamneses" : "/nutricao/configuracoes/anamnese";
+  const base = treino ? "/api/treino/modelos-anamnese" : "/api/nutricao/modelos-anamnese";
   const [carregado, setCarregado] = useState(false);
   const [nome, setNome] = useState("");
   const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
-  const [info, setInfo] = useState<{ versao: number; fichas: number; arquivado: boolean }>({ versao: 1, fichas: 0, arquivado: false });
+  const [info, setInfo] = useState<{ versao: number; fichas: number; arquivado: boolean; meu: boolean; compartilhado: boolean; autor: string | null }>({
+    versao: 1,
+    fichas: 0,
+    arquivado: false,
+    meu: true,
+    compartilhado: false,
+    autor: null,
+  });
   const [estado, setEstado] = useState<Estado>("salvo");
   const dados = useRef({ nome: "", perguntas: [] as Pergunta[] });
   const revisao = useRef(0);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    fetch(`/api/nutricao/modelos-anamnese/${id}`, { cache: "no-store" })
+    fetch(`${base}/${id}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((resultado) => {
         if (!resultado) {
@@ -62,16 +73,23 @@ export default function EditorDeModeloAnamnese({ id }: { id: string }) {
         revisao.current = m.revisao;
         setNome(m.nome);
         setPerguntas(m.perguntas);
-        setInfo({ versao: m.versao, fichas: m.fichas, arquivado: Boolean(m.arquivado_em) });
+        setInfo({
+          versao: m.versao,
+          fichas: m.fichas,
+          arquivado: Boolean(m.arquivado_em),
+          meu: m.meu !== false,
+          compartilhado: Boolean(m.compartilhado),
+          autor: m.autor ?? null,
+        });
         setCarregado(true);
       });
-  }, [id, router]);
+  }, [id, router, base, lista]);
 
   const gravar = useCallback(async () => {
     if (temporizador.current) clearTimeout(temporizador.current);
     temporizador.current = null;
     setEstado("salvando");
-    const resposta = await fetch(`/api/nutricao/modelos-anamnese/${id}`, {
+    const resposta = await fetch(`${base}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...dados.current, revisao: revisao.current }),
@@ -87,7 +105,7 @@ export default function EditorDeModeloAnamnese({ id }: { id: string }) {
     setInfo((i) => ({ ...i, versao: resultado.versao }));
     setEstado("salvo");
     return true;
-  }, [id]);
+  }, [id, base]);
 
   useEffect(() => {
     if (estado === "salvo") return;
@@ -132,7 +150,47 @@ export default function EditorDeModeloAnamnese({ id }: { id: string }) {
     router.push(lista);
   }
 
+  async function alternarCompartilhado() {
+    const acao = info.compartilhado ? "privar" : "compartilhar";
+    const r = await fetch(`${base}/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ acao }) }).catch(() => null);
+    if (!r?.ok) return avisar("Não foi possível alterar o compartilhamento.", "error");
+    setInfo((i) => ({ ...i, compartilhado: !i.compartilhado }));
+    avisar(
+      acao === "compartilhar"
+        ? "Modelo compartilhado com os profissionais do Treino (só as perguntas; nunca respostas de pacientes)."
+        : "Modelo privado de novo. Anamneses já feitas com ele não mudam.",
+      "success"
+    );
+  }
+
   if (!carregado) return <Skeleton height="20rem" />;
+
+  // Modelo compartilhado por outro profissional: só leitura.
+  if (treino && !info.meu) {
+    return (
+      <div>
+        <BotaoVoltar rotulo="Voltar aos modelos de anamnese" onClick={() => router.push(lista)} />
+        <h1 className="text-2xl font-bold text-gray-900">{nome}</h1>
+        <p className="mt-1 text-sm text-gray-600">
+          Compartilhado por {info.autor ?? "outro profissional"}. Só leitura: para usar, escolha este modelo ao criar a anamnese na ficha do aluno.
+        </p>
+        <ol className="mt-4 space-y-2">
+          {perguntas.map((p, indice) => (
+            <li key={p.id} className="cartao p-3 text-sm">
+              <span className="font-semibold text-gray-900">
+                {indice + 1}. {p.texto || "(sem título)"}
+              </span>
+              <span className="ml-2 text-xs text-gray-500">
+                {TIPOS_DE_PERGUNTA[p.tipo]}
+                {p.obrigatoria ? " · obrigatória" : ""}
+              </span>
+              {p.tipo === "multipla" ? <p className="mt-1 text-gray-600">{p.opcoes.map((o) => o.texto).join(" · ")}</p> : null}
+            </li>
+          ))}
+        </ol>
+      </div>
+    );
+  }
 
   const pendencias = pendenciasDoModelo(nome, perguntas);
 
@@ -151,6 +209,14 @@ export default function EditorDeModeloAnamnese({ id }: { id: string }) {
         fichas já criadas guardam as perguntas da versão que usaram.
         {info.arquivado ? " Modelo arquivado: não aparece para novas anamneses." : ""}
       </p>
+      {treino ? (
+        <div className="mt-2 flex items-center gap-2">
+          <Checkbox inputId="modelo-compartilhado" checked={info.compartilhado} onChange={alternarCompartilhado} />
+          <label htmlFor="modelo-compartilhado" className="text-sm text-gray-700">
+            Compartilhar com os profissionais do Treino (só as perguntas; nunca as respostas dos alunos)
+          </label>
+        </div>
+      ) : null}
 
       <label className="mt-4 block">
         <span className="mb-1 block font-semibold text-gray-900">Tipo de anamnese</span>

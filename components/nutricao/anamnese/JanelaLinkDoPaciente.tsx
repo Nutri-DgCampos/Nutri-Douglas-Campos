@@ -17,21 +17,27 @@ function numeroWhatsApp(telefone: string | null) {
 
 // Link individual do paciente para anamnese e recordatório (sem login):
 // copiar, abrir o WhatsApp com a mensagem pronta ou gerar um novo link.
-export default function JanelaLinkDoPaciente({ pacienteId, onFechar }: { pacienteId: string; onFechar: () => void }) {
+// treino: o mesmo link, pela API do Treino e com a mensagem do Treino (SPEC
+// 06/11, anamnese).
+export default function JanelaLinkDoPaciente({ pacienteId, onFechar, treino = false }: { pacienteId: string; onFechar: () => void; treino?: boolean }) {
   const [link, setLink] = useState<Link | null>(null);
   const [erro, setErro] = useState(false);
+  const base = treino ? `/api/treino/alunos/${pacienteId}/link-formularios` : `/api/nutricao/pacientes/${pacienteId}/link-formularios`;
 
   useEffect(() => {
-    fetch(`/api/nutricao/pacientes/${pacienteId}/link-formularios`, { cache: "no-store" })
+    fetch(base, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setLink)
       .catch(() => setErro(true));
-  }, [pacienteId]);
+  }, [base]);
 
   const primeiroNome = link?.nome.trim().split(/\s+/)[0] ?? "";
   const mensagem = link
-    ? `Olá, ${primeiroNome}! Aqui é o nutricionista Douglas Campos. Preparei um formulário para conhecer melhor sua rotina antes da consulta. ` +
-      `Responda pelo link abaixo (não precisa de senha; as respostas ficam salvas enquanto você preenche):\n${link.url}`
+    ? treino
+      ? `Olá, ${primeiroNome}! Preparei um formulário para conhecer melhor sua rotina de treino. ` +
+        `Responda pelo link abaixo (não precisa de senha; as respostas ficam salvas enquanto você preenche):\n${link.url}`
+      : `Olá, ${primeiroNome}! Aqui é o nutricionista Douglas Campos. Preparei um formulário para conhecer melhor sua rotina antes da consulta. ` +
+        `Responda pelo link abaixo (não precisa de senha; as respostas ficam salvas enquanto você preenche):\n${link.url}`
     : "";
 
   async function copiar() {
@@ -52,11 +58,11 @@ export default function JanelaLinkDoPaciente({ pacienteId, onFechar }: { pacient
 
   async function novoLink() {
     const confirmado = await pedirConfirmacao(
-      "Gerar um novo link? O link atual deixa de funcionar (use se ele foi enviado à pessoa errada). As respostas já dadas não mudam.",
+      "Gerar um novo link? O link atual deixa de funcionar para todos os profissionais do paciente (use se ele foi enviado à pessoa errada). As respostas já dadas não mudam.",
       { aceitar: "Gerar novo link", rejeitar: "Cancelar", titulo: "Novo link" }
     );
     if (!confirmado) return;
-    const resposta = await fetch(`/api/nutricao/pacientes/${pacienteId}/link-formularios`, { method: "POST" });
+    const resposta = await fetch(base, { method: "POST" });
     if (!resposta.ok) return avisar("Não foi possível gerar o novo link.", "error");
     setLink(await resposta.json());
     avisar("Novo link gerado. O anterior não funciona mais.", "success");

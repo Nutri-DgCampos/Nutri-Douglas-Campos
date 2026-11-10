@@ -70,7 +70,7 @@ export async function GET(request: Request, { params }: Contexto) {
     // Lembrete da anamnese: o último atualizado (só leitura no editor).
     pool.query<{ lembrete: string }>(
       `select lembrete from public.anamneses
-        where patient_id = $1 and btrim(lembrete) <> ''
+        where patient_id = $1 and btrim(lembrete) <> '' and modulo = 'nutricao'
         order by lembrete_em desc nulls last, atualizado_em desc limit 1`,
       [dieta.patient_id]
     ),

@@ -10,13 +10,19 @@ import CamposDaAnamnese from "./CamposDaAnamnese";
 import FormularioRecordatorio from "./FormularioRecordatorio";
 
 type Comum = { id: string; enviado_em: string; respondido_em: string | null; editavel: boolean; revisao: number };
-type AnamneseDoPaciente = Comum & { titulo: string; perguntas: Pergunta[]; respostas: Respostas };
+// modulo "treino": enviada pelo profissional do Treino (SPEC 06/11).
+type AnamneseDoPaciente = Comum & { titulo: string; perguntas: Pergunta[]; respostas: Respostas; modulo?: "nutricao" | "treino" };
 type RecordatorioDoPaciente = Comum & { conteudo: Recordatorio };
-type Dados = { primeiroNome: string; anamneses: AnamneseDoPaciente[]; recordatorios: RecordatorioDoPaciente[] };
+type Dados = { primeiroNome: string; somenteTreino?: boolean; anamneses: AnamneseDoPaciente[]; recordatorios: RecordatorioDoPaciente[] };
+
+// Quem recebe as respostas, conforme o módulo do formulário.
+const quemRecebe = (aberto: Aberto) => (aberto.tipo === "anamnese" && aberto.f.modulo === "treino" ? "seu profissional do Treino" : "o nutricionista");
 type Aberto = { tipo: "anamnese"; f: AnamneseDoPaciente } | { tipo: "recordatorio"; f: RecordatorioDoPaciente };
 type Estado = "salvo" | "pendente" | "salvando" | "erro";
 
 const ESTADOS: Record<Estado, string> = { salvo: "Salvo", pendente: "Alterações não salvas", salvando: "Salvando…", erro: "Erro ao salvar" };
+
+const maiuscula = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
 function dataCurta(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
@@ -49,12 +55,12 @@ function Preenchimento({ base, aberto, onVoltar }: { base: string; aberto: Abert
     const resultado = await resposta.json().catch(() => null);
     if (resposta.status === 423) {
       setEditavel(false);
-      avisar(resultado?.erro ?? "O nutricionista já recebeu suas respostas.", "warn");
+      avisar(resultado?.erro ?? `${maiuscula(quemRecebe(aberto))} já recebeu suas respostas.`, "warn");
     } else {
       avisar(resultado?.erro ?? "Não foi possível salvar. Verifique a internet e tente novamente.", "error");
     }
     return resultado;
-  }, []);
+  }, [aberto]);
 
   const gravar = useCallback(async () => {
     if (temporizador.current) clearTimeout(temporizador.current);
@@ -118,7 +124,7 @@ function Preenchimento({ base, aberto, onVoltar }: { base: string; aberto: Abert
     }
     revisao.current = (await resposta.json()).revisao;
     setEstado("salvo");
-    avisar("Respostas enviadas ao nutricionista. Obrigado!", "success");
+    avisar(`Respostas enviadas ao ${quemRecebe(aberto).replace(/^(o|seu) /, (p) => (p === "o " ? "" : "seu "))}. Obrigado!`, "success");
     onVoltar(true);
   }
 
@@ -147,11 +153,11 @@ function Preenchimento({ base, aberto, onVoltar }: { base: string; aberto: Abert
 
       {!editavel ? (
         <p className="mt-3 rounded-lg bg-primary-50 p-3 text-sm text-primary-900">
-          O nutricionista já recebeu suas respostas. Para mudar algo, fale com ele.
+          {maiuscula(quemRecebe(aberto))} já recebeu suas respostas. Para mudar algo, fale com ele.
         </p>
       ) : aberto.f.respondido_em ? (
         <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-          Você já enviou este formulário. Ainda pode corrigir até o nutricionista abrir; depois de corrigir, toque em
+          Você já enviou este formulário. Ainda pode corrigir até {quemRecebe(aberto)} abrir; depois de corrigir, toque em
           &quot;Enviar respostas&quot; de novo.
         </p>
       ) : null}
@@ -203,9 +209,10 @@ function Preenchimento({ base, aberto, onVoltar }: { base: string; aberto: Abert
   );
 }
 
-// Lista dos formulários enviados pelo nutricionista. "base": API do link
-// individual (/api/formulario/<token>) ou da área do paciente.
-export default function FormulariosDoPaciente({ base, saudacao = false }: { base: string; saudacao?: boolean }) {
+// Lista dos formulários enviados pelos profissionais. "base": API do link
+// individual (/api/formulario/<token>) ou da área do paciente. "marca": mostra
+// de quem é o link (Nutrição ou Solução Fit DLC, para o aluno só do Treino).
+export default function FormulariosDoPaciente({ base, saudacao = false, marca = false }: { base: string; saudacao?: boolean; marca?: boolean }) {
   const [dados, setDados] = useState<Dados | null | undefined>(undefined);
   const [erro, setErro] = useState<string | null>(null);
   const [aberto, setAberto] = useState<Aberto | null>(null);
@@ -263,12 +270,15 @@ export default function FormulariosDoPaciente({ base, saudacao = false }: { base
 
   return (
     <div>
+      {marca ? (
+        <p className="text-sm font-semibold text-primary-700">{dados.somenteTreino ? "Solução Fit DLC · Treino" : "Douglas Campos · Acompanhamento nutricional"}</p>
+      ) : null}
       {saudacao && dados.primeiroNome ? <h1 className="text-2xl font-bold text-gray-900">Olá, {dados.primeiroNome}!</h1> : null}
       {itens.length === 0 ? (
         <div className="cartao mt-4 p-6 text-center">
           <i className="pi pi-file-edit text-3xl text-gray-400" aria-hidden />
           <p className="mt-3 font-semibold text-gray-900">Nenhum formulário para preencher no momento.</p>
-          <p className="mt-1 text-sm text-gray-500">Quando o nutricionista enviar um formulário, ele aparece aqui.</p>
+          <p className="mt-1 text-sm text-gray-500">Quando seu profissional enviar um formulário, ele aparece aqui.</p>
         </div>
       ) : (
         <ul className="mt-4 space-y-3">
@@ -284,7 +294,9 @@ export default function FormulariosDoPaciente({ base, saudacao = false }: { base
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold text-gray-900">{titulo}</span>
-                    <span className="block text-xs text-gray-500">Enviado em {dataCurta(item.f.enviado_em)}</span>
+                    <span className="block text-xs text-gray-500">
+                      {item.tipo === "anamnese" && item.f.modulo === "treino" ? "Treino · " : ""}Enviado em {dataCurta(item.f.enviado_em)}
+                    </span>
                   </span>
                   {pendente ? (
                     <Tag value="Preencher" severity="danger" />

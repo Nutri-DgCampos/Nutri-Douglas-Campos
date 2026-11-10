@@ -153,7 +153,7 @@ async function anamneseMaisRecente(pacienteId: string): Promise<LinhaAnamnese | 
     `select a.id, a.titulo, to_char(coalesce(a.respondido_em, a.atualizado_em) at time zone 'America/Sao_Paulo', 'YYYY-MM-DD') as data,
             a.perguntas, a.respostas, a.resumo_ia, a.resumo_ia_em
        from public.anamneses a
-      where a.patient_id = $1 and a.arquivado_em is null and a.respostas <> '{}'::jsonb
+      where a.patient_id = $1 and a.arquivado_em is null and a.respostas <> '{}'::jsonb and a.modulo = 'nutricao'
       order by coalesce(a.respondido_em, a.atualizado_em) desc
       limit 1`,
     [pacienteId]
@@ -191,7 +191,7 @@ export async function resumirAnamnese(anamneseId: string, usuarioId: string | nu
   const pool = obterPool();
   const linha = await pool.query<LinhaAnamnese & { patient_id: string }>(
     `select id, patient_id, titulo, '' as data, perguntas, respostas, resumo_ia, resumo_ia_em
-       from public.anamneses where id = $1`,
+       from public.anamneses where id = $1 and modulo = 'nutricao'`,
     [anamneseId]
   );
   const anamnese = linha.rows[0];

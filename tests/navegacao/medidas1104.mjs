@@ -43,7 +43,8 @@ const texto = await enviar();
 // Fora de segunda e terça, o aviso seguinte é o do prazo: prova que o peso passou.
 const janela = ["1", "2"].includes(sql("select extract(isodow from (now() at time zone 'America/Sao_Paulo')::date);"));
 conferir("com 76,5 kg, a conferência passa (segue a regra normal do prazo)", janela || /segundas e terças/.test(texto), null);
-conferir("nenhum relatório gravado pelos valores errados", sql(`select count(*) from patient_reports where patient_id = '${P}';`) === antes || /segunda|terça/i.test(texto), null);
+// Na segunda e na terça o envio com 76,5 kg vale de verdade (é apagado no fim).
+conferir("nenhum relatório gravado pelos valores errados", janela || sql(`select count(*) from patient_reports where patient_id = '${P}';`) === antes, null);
 conferir("sem erros de página", erros.length === 0, erros);
 
 // Se gravou (teste rodado na segunda ou na terça), apaga o relatório de teste.

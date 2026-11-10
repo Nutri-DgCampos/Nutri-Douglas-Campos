@@ -46,6 +46,9 @@ type Dados = {
   formulario: Formulario;
   paciente: { id: string; name: string } | null;
   consulta: { data: string } | null;
+  // Ficha de outro profissional (preenchida): só leitura, sem as notas dele.
+  somenteLeitura?: boolean;
+  autor?: string | null;
 };
 
 type Estado = "salvo" | "pendente" | "salvando" | "erro" | "conflito";
@@ -60,9 +63,22 @@ const ESTADOS: Record<Estado, string> = {
 const quando = (iso: string | null) =>
   iso ? new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" }) : "";
 
-// Ficha de anamnese ou recordatório na consulta (nutricionista).
-export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnese" | "recordatorio"; id: string; voltar: () => void }) {
-  const api = `/api/nutricao/${tipo === "anamnese" ? "anamneses" : "recordatorios"}/${id}`;
+// Ficha de anamnese ou recordatório na consulta (nutricionista). treino: a
+// mesma ficha no Módulo de Treino, pela API do Treino (SPEC 06/11).
+export default function FichaDoFormulario({
+  tipo,
+  id,
+  voltar,
+  treino = false,
+  rotuloVoltar = "Voltar à consulta",
+}: {
+  tipo: "anamnese" | "recordatorio";
+  id: string;
+  voltar: () => void;
+  treino?: boolean;
+  rotuloVoltar?: string;
+}) {
+  const api = treino ? `/api/treino/anamneses/${id}` : `/api/nutricao/${tipo === "anamnese" ? "anamneses" : "recordatorios"}/${id}`;
   const [dados, setDados] = useState<Dados | null | undefined>(undefined);
   const [respostas, setRespostas] = useState<Respostas>({});
   const [conteudo, setConteudo] = useState<Recordatorio>({ refeicoes: [], observacoes: "" });
@@ -175,7 +191,8 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
   if (dados === null) return <p>Formulário não encontrado.</p>;
 
   const f = dados.formulario;
-  const fechado = f.status === "concluido" || Boolean(f.arquivado_em);
+  const leitura = Boolean(dados.somenteLeitura);
+  const fechado = leitura || f.status === "concluido" || Boolean(f.arquivado_em);
   const respostasTravadas = fechado || f.comPaciente;
   const situacao = SITUACOES_DO_FORMULARIO[f.situacao];
   const podeExcluir = f.status === "rascunho" && !f.enviado_em && !f.respondido_em;
@@ -196,7 +213,7 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
           <p className="mt-1 text-xs text-gray-500">
             {f.enviado_em ? `Enviado ao paciente em ${quando(f.enviado_em)}. ` : ""}
             {f.respondido_em ? `Respondido em ${quando(f.respondido_em)}. ` : ""}
-            {f.lido_em ? `Aberto pelo nutricionista em ${quando(f.lido_em)} (edição pelo paciente encerrada). ` : ""}
+            {f.lido_em ? `Aberto pelo profissional em ${quando(f.lido_em)} (edição pelo paciente encerrada). ` : ""}
             {f.concluido_em ? `Concluído em ${quando(f.concluido_em)}.` : ""}
           </p>
         </div>
@@ -205,7 +222,12 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
         </span>
       </div>
 
-      {f.comPaciente ? (
+      {leitura ? (
+        <div className="rounded-lg bg-primary-50 p-3 text-sm text-primary-900">
+          Anamnese preenchida{dados.autor ? `, enviada por ${dados.autor}` : ""}. Só leitura: quem criou a anamnese é quem pode alterá-la.
+        </div>
+      ) : null}
+      {f.comPaciente && !leitura ? (
         <div className="flex flex-wrap items-center gap-3 rounded-lg bg-primary-50 p-3 text-sm text-primary-900">
           <span className="min-w-0 flex-1">
             Com o paciente: as respostas aparecem aqui conforme ele preenche. Para editar no consultório, cancele o envio.
@@ -268,9 +290,9 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
         )}
       </section>
 
-      {tipo === "anamnese" ? (
+      {tipo === "anamnese" && !leitura ? (
         <section className="cartao space-y-4 p-4">
-          <h2 className="text-lg font-bold text-gray-900">Do nutricionista</h2>
+          <h2 className="text-lg font-bold text-gray-900">{treino ? "Do profissional" : "Do nutricionista"}</h2>
           <label className="block">
             <span className="mb-1 block font-semibold text-gray-900">Observações profissionais</span>
             <span className="mb-1 block text-xs text-gray-500">Separadas das respostas; o paciente não vê.</span>
@@ -288,6 +310,7 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
               className="w-full"
             />
           </label>
+          {treino ? null : (
           <label className="block">
             <span className="mb-1 flex items-center gap-2 font-semibold text-gray-900">
               <i className="pi pi-star-fill text-amber-500" aria-hidden /> Lembrete importante da anamnese
@@ -311,11 +334,12 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
               maxLength={2000}
             />
           </label>
+          )}
         </section>
       ) : null}
 
       <div className="flex flex-wrap gap-2">
-        <Button type="button" icon="pi pi-arrow-left" label="Voltar à consulta" text onClick={sair} />
+        <Button type="button" icon="pi pi-arrow-left" label={rotuloVoltar} text onClick={sair} />
         {!fechado && !f.comPaciente ? (
           <Button
             type="button"
@@ -325,16 +349,16 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
             onClick={() => acao("enviar", "Disponível para o paciente preencher.")}
           />
         ) : null}
-        <Button type="button" icon="pi pi-link" label="Link do paciente" text onClick={() => setLink(true)} />
+        {leitura ? null : <Button type="button" icon="pi pi-link" label="Link do paciente" text onClick={() => setLink(true)} />}
         {!fechado && !f.comPaciente ? (
           <Button type="button" icon="pi pi-check" label="Concluir" onClick={() => acao("concluir", "Formulário concluído.")} />
         ) : null}
-        {f.status === "concluido" && !f.arquivado_em ? (
+        {f.status === "concluido" && !f.arquivado_em && !leitura ? (
           <Button type="button" icon="pi pi-pencil" label="Reabrir para correção" outlined onClick={() => acao("reabrir", "Formulário reaberto.")} />
         ) : null}
         <Button type="button" icon="pi pi-file-pdf" label="PDF" outlined onClick={() => abrirDocumento(`${api}/pdf`)} />
         <span className="flex-1" />
-        {podeExcluir ? (
+        {leitura ? null : podeExcluir ? (
           <Button type="button" icon="pi pi-trash" label="Excluir rascunho" text severity="danger" onClick={excluir} />
         ) : f.arquivado_em ? (
           <Button type="button" icon="pi pi-replay" label="Desarquivar" text onClick={() => acao("desarquivar", "Formulário desarquivado.")} />
@@ -343,7 +367,7 @@ export default function FichaDoFormulario({ tipo, id, voltar }: { tipo: "anamnes
         )}
       </div>
 
-      {link ? <JanelaLinkDoPaciente pacienteId={f.patient_id} onFechar={() => setLink(false)} /> : null}
+      {link ? <JanelaLinkDoPaciente pacienteId={f.patient_id} treino={treino} onFechar={() => setLink(false)} /> : null}
     </div>
   );
 }

@@ -13,7 +13,10 @@ const MAXIMO_DATAS = 3;
 // Comparativo das fotos de evolução: um perfil, até três datas lado a lado.
 // Datas favoritas ficam marcadas e entram na seleção inicial. Arrastar uma
 // foto sobre outra (ou "Sobrepor", no celular) abre a sobreposição.
-export default function ComparativoFotos({ pacienteId }: { pacienteId: string }) {
+// treino: na tela Treino do aluno (SPEC 06/11, fotos), as mesmas fotos do
+// cadastro vêm pela API do Treino (vínculo conferido no servidor) e as
+// estrelas de referência são só para ver (decisão do cliente em 10/11).
+export default function ComparativoFotos({ pacienteId, treino = false }: { pacienteId: string; treino?: boolean }) {
   const [fotos, setFotos] = useState<FotoEvolucao[] | null>(null);
   const [enderecos, setEnderecos] = useState<Record<string, string>>({});
   const [favoritas, setFavoritas] = useState<Set<string>>(new Set());
@@ -26,6 +29,19 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
   const arrastada = useRef<FotoEvolucao | null>(null);
 
   useEffect(() => {
+    if (treino) {
+      fetch(`/api/treino/alunos/${pacienteId}/fotos`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : { fotos: [], favoritas: [], ciclos: [] }))
+        .then((d: { fotos: FotoEvolucao[]; favoritas: string[]; ciclos: { id: string; cycle_number: number }[] }) => {
+          const numeros = Object.fromEntries(d.ciclos.map((c) => [c.id, c.cycle_number]));
+          setCiclos(Object.fromEntries(d.fotos.filter((f) => f.ciclo_id && numeros[f.ciclo_id]).map((f) => [f.id, numeros[f.ciclo_id as string]])));
+          setFavoritas(new Set(d.favoritas));
+          setFotos(d.fotos);
+          setEnderecos(Object.fromEntries(d.fotos.map((f) => [f.storage_path, `/api/treino/alunos/${pacienteId}/fotos/${f.id}`])));
+        })
+        .catch(() => setFotos([]));
+      return;
+    }
     Promise.all([
       api
         .from("fotos_evolucao")
@@ -43,7 +59,7 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
       setFotos(lista);
       setEnderecos(await enderecosParaExibir(lista));
     });
-  }, [pacienteId]);
+  }, [pacienteId, treino]);
 
   const doPerfil = useMemo(
     () => (fotos ?? []).filter((foto) => foto.perfil === perfil),
@@ -109,7 +125,9 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
     <section className="mt-6 cartao p-5 lg:p-6">
       <h2 className="text-xl font-bold text-gray-900">Comparativo de fotos</h2>
       <p className="mt-1 text-sm text-gray-500">
-        Escolha o perfil e até {MAXIMO_DATAS} datas. Marque com a estrela as datas de referência.
+        {treino
+          ? `Escolha o perfil e até ${MAXIMO_DATAS} datas. A estrela indica as datas de referência marcadas pelo nutricionista.`
+          : `Escolha o perfil e até ${MAXIMO_DATAS} datas. Marque com a estrela as datas de referência.`}
       </p>
 
       {fotos === null ? (
@@ -165,6 +183,11 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
                               return foto && ciclos[foto.id] ? <span className="ml-1 text-xs font-normal opacity-80">· ciclo {ciclos[foto.id]}</span> : null;
                             })()}
                           </button>
+                          {treino ? (
+                            <span className="flex h-8 w-8 items-center justify-center" aria-label={favorita ? `${formatarData(data)}: data de referência` : undefined}>
+                              {favorita ? <i className="pi pi-star-fill text-amber-500" aria-hidden /> : null}
+                            </span>
+                          ) : (
                           <button
                             type="button"
                             onClick={() => alternarFavorita(data)}
@@ -174,6 +197,7 @@ export default function ComparativoFotos({ pacienteId }: { pacienteId: string })
                           >
                             <i className={`pi ${favorita ? "pi-star-fill text-amber-500" : "pi-star text-gray-400"}`} aria-hidden />
                           </button>
+                          )}
                         </li>
                       );
                     })}
