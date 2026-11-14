@@ -1,0 +1,29 @@
+{
+ "familia": "ALI — Restrições e preferências alimentares",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "O plano respeita a sua restrição ou preferência alimentar. Pese os alimentos na forma indicada e troque apenas pelas opções combinadas com o nutricionista."},
+  {"titulo": "Rótulos", "texto": "Leia sempre a lista de ingredientes e os avisos do rótulo (\"contém\", \"pode conter\"). As fórmulas dos produtos mudam: confira mesmo nas marcas que você já conhece."},
+  {"titulo": "Fora de casa", "texto": "Em restaurantes e eventos, pergunte como o prato é preparado e se há risco de contato com o ingrediente que você evita. Na dúvida, prefira preparações simples."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia, mesmo sem sede. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista se tiver reação depois de comer (coceira, inchaço, diarreia, falta de ar), cansaço fora do normal ou dificuldade de encontrar os alimentos do plano. Falta de ar ou inchaço de lábios e garganta é emergência."}
+ ],
+ "profissional": "Objetivo: alimentação adequada dentro da restrição ou preferência indicada no título.\nPerfil de aplicação: adultos com a restrição ou escolha alimentar do título; confirmar se é alergia (risco de reação grave), intolerância, doença celíaca ou preferência, pois a conduta muda.\nIndividualização: energia conforme gasto estimado e objetivo; substituições que mantenham proteína, cálcio, ferro, zinco, B12 e fibras; verificar alergias, contaminação cruzada e adequação de nutrientes antes do uso.\nMonitoramento: adequação da ingestão, sintomas, exames pertinentes (hemograma, ferritina, B12, vitamina D conforme o caso).\nEncaminhamento: suspeita de alergia não diagnosticada, sintomas persistentes ou deficiências laboratoriais.",
+ "hidratacao": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "por_codigo": {
+  "ALI-001": {
+   "paciente": [{"titulo": "Vitamina B12", "texto": "Uma alimentação sem produtos de origem animal não fornece vitamina B12. Converse com o nutricionista sobre exames e a forma de garantir esse nutriente."}],
+   "profissional": "ALI-001 montado como vegetariano estrito, sem nenhum alimento de origem animal (ALI-002 cobre o ovolactovegetariano): confirmar o padrão do paciente. Proteína de leguminosas, tofu e extrato de soja; avaliar B12 (suplementação necessária no vegetarianismo estrito), ferro, zinco, cálcio, iodo e ômega-3."
+  },
+  "ALI-002": {"profissional": "Ovolactovegetariano: proteína de ovos, laticínios e leguminosas; avaliar ferro, zinco e B12."},
+  "ALI-003": {"profissional": "Sem lactose: diferenciar intolerância (ajustar à tolerância; produtos sem lactose e queijos maturados podem ser aceitos) de alergia à proteína do leite (exclusão total). Garantir cálcio e vitamina D por outras fontes; o extrato de soja do modelo não é enriquecido na TACO."},
+  "ALI-004": {"profissional": "Sem glúten: na doença celíaca a exclusão é total e inclui contaminação cruzada; aveia só se certificada e tolerada. Sem diagnóstico, investigar antes de excluir (a exclusão prévia atrapalha o diagnóstico). Garantir fibras com arroz integral, leguminosas, frutas e cuscuz de milho."},
+  "ALI-005": {"profissional": "Sem carne vermelha: proteína de aves, peixes, ovos e laticínios; atenção ao ferro (incluir leguminosas e fontes de vitamina C nas refeições)."},
+  "ALI-006": {"profissional": "Preferência por peixe: variar entre peixes magros e gordurosos (salmão, sardinha) para ômega-3; orientar sobre procedência e conservação."}
+ },
+ "referencias": [
+  "Melina V, Craig W, Levin S. Position of the Academy of Nutrition and Dietetics: Vegetarian Diets. J Acad Nutr Diet. 2016;116(12):1970-80.",
+  "Sociedade Vegetariana Brasileira. Guia alimentar de dietas vegetarianas para adultos. São Paulo, 2012.",
+  "Rubio-Tapia A et al. American College of Gastroenterology Guidelines Update: Diagnosis and Management of Celiac Disease. Am J Gastroenterol. 2023;118(1):59-76.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ]
+}

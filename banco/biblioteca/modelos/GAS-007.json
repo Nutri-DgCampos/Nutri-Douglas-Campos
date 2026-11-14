@@ -1,0 +1,221 @@
+{
+ "codigo": "GAS-007",
+ "tipo": "dieta",
+ "nome": "GAS-007 — Conforto gastrointestinal — Baixo volume por refeição — 2.100 kcal",
+ "categoria": "Gastrointestinal",
+ "objetivo": "Conforto gastrointestinal",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 2100,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a perdas (diarreia, vômitos), clima e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 70
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 95
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 95
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 65
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 65
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 195
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 65
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 95
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 10
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 70
+    },
+    {
+     "alimento": {
+      "id": "42a7e870-3f74-46a6-a60a-631f376e714a"
+     },
+     "nome": "Geleia de frutas tradicional",
+     "gramas": 25
+    },
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 160
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "91"
+     },
+     "nome": "Batata, inglesa, cozida",
+     "gramas": 240
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 75
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 10
+    }
+   ]
+  },
+  {
+   "nome": "Ceia",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 190
+    },
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 19
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça refeições em horários regulares, coma devagar e mastigue bem. Porções menores e mais vezes ao dia costumam ser mais bem toleradas."
+  },
+  {
+   "titulo": "Preparo",
+   "texto": "Prefira alimentos cozidos, assados ou grelhados, com pouca gordura e temperos suaves. Frituras, molhos gordurosos, excesso de café, álcool e refrigerantes costumam piorar os sintomas."
+  },
+  {
+   "titulo": "Observe o que sente",
+   "texto": "Anote os alimentos que parecem causar desconforto, gases ou mudança no intestino e mostre ao nutricionista. Não corte grupos de alimentos por conta própria."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia, em pequenos goles, principalmente se houver diarreia ou intestino preso. A quantidade indicada pode mudar com a orientação médica."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Procure atendimento médico em caso de sangue nas fezes, fezes pretas, vômitos persistentes, dor forte, febre, perda de peso sem explicação ou dificuldade para engolir."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: conforto digestivo e regularidade intestinal com adequação nutricional.\nPerfil de aplicação: queixas gastrointestinais funcionais ou em acompanhamento médico; o modelo não substitui o diagnóstico (doença inflamatória intestinal, doença celíaca, refluxo complicado e outras causas orgânicas precisam de investigação).\nIndividualização: ajustar textura, fibras (tipo e quantidade), gordura e volume por refeição conforme sintomas e diagnóstico; protocolos de exclusão (ex.: baixo FODMAP) só com indicação, por tempo limitado e com reintrodução. Avaliar diagnóstico, gatilhos e tolerância; não impor restrições prolongadas sem indicação.\nMonitoramento: sintomas, hábito intestinal (escala de Bristol), peso e adequação da ingestão.\nMedicamentos: observar uso de inibidores de bomba de prótons, laxativos, antidiarreicos e medicamentos que causam sintomas gastrointestinais (ex.: agonistas de GLP-1, metformina).\nEncaminhamento: sinais de alarme (sangramento, anemia, perda de peso, disfagia, vômitos persistentes, início após 50 anos).\nBaixo volume por refeição: considerar fracionar em mais refeições do que o modelo traz.",
+ "referencias": [
+  "Lacy BE et al. ACG Clinical Guideline: Management of Irritable Bowel Syndrome. Am J Gastroenterol. 2021;116(1):17-44.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "GAS"
+ },
+ "ajuste": {
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.962,
+  "fatores": {
+   "legumes": 0.962,
+   "proteina": 0.962,
+   "energia": 0.962
+  },
+  "kcal_base": 2182,
+  "kcal_calculada": 2089,
+  "em": "2026-11-14"
+ }
+}

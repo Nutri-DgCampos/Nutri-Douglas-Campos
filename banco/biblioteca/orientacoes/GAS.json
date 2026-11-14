@@ -1,0 +1,22 @@
+{
+ "familia": "GAS — Gastrointestinal",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Faça refeições em horários regulares, coma devagar e mastigue bem. Porções menores e mais vezes ao dia costumam ser mais bem toleradas."},
+  {"titulo": "Preparo", "texto": "Prefira alimentos cozidos, assados ou grelhados, com pouca gordura e temperos suaves. Frituras, molhos gordurosos, excesso de café, álcool e refrigerantes costumam piorar os sintomas."},
+  {"titulo": "Observe o que sente", "texto": "Anote os alimentos que parecem causar desconforto, gases ou mudança no intestino e mostre ao nutricionista. Não corte grupos de alimentos por conta própria."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia, em pequenos goles, principalmente se houver diarreia ou intestino preso. A quantidade indicada pode mudar com a orientação médica."},
+  {"titulo": "Quando procurar a equipe", "texto": "Procure atendimento médico em caso de sangue nas fezes, fezes pretas, vômitos persistentes, dor forte, febre, perda de peso sem explicação ou dificuldade para engolir."}
+ ],
+ "profissional": "Objetivo: conforto digestivo e regularidade intestinal com adequação nutricional.\nPerfil de aplicação: queixas gastrointestinais funcionais ou em acompanhamento médico; o modelo não substitui o diagnóstico (doença inflamatória intestinal, doença celíaca, refluxo complicado e outras causas orgânicas precisam de investigação).\nIndividualização: ajustar textura, fibras (tipo e quantidade), gordura e volume por refeição conforme sintomas e diagnóstico; protocolos de exclusão (ex.: baixo FODMAP) só com indicação, por tempo limitado e com reintrodução. Avaliar diagnóstico, gatilhos e tolerância; não impor restrições prolongadas sem indicação.\nMonitoramento: sintomas, hábito intestinal (escala de Bristol), peso e adequação da ingestão.\nMedicamentos: observar uso de inibidores de bomba de prótons, laxativos, antidiarreicos e medicamentos que causam sintomas gastrointestinais (ex.: agonistas de GLP-1, metformina).\nEncaminhamento: sinais de alarme (sangramento, anemia, perda de peso, disfagia, vômitos persistentes, início após 50 anos).",
+ "hidratacao": "Referência inicial; ajustar a perdas (diarreia, vômitos), clima e prescrição médica.",
+ "por_codigo": {
+  "GAS-002": {"profissional": "Baixo volume por refeição: considerar fracionar em mais refeições do que o modelo traz."},
+  "GAS-007": {"profissional": "Baixo volume por refeição: considerar fracionar em mais refeições do que o modelo traz."},
+  "GAS-004": {"profissional": "Texturas macias: frango cozido no lugar do grelhado e pão macio; adaptar consistência (desfiado, amassado) conforme mastigação e tolerância."},
+  "GAS-005": {"profissional": "Rotina intestinal: ajustar fibras gradualmente, com água suficiente; fibras solúveis costumam ser mais bem toleradas."}
+ },
+ "referencias": [
+  "Lacy BE et al. ACG Clinical Guideline: Management of Irritable Bowel Syndrome. Am J Gastroenterol. 2021;116(1):17-44.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ]
+}

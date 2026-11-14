@@ -1,0 +1,37 @@
+{
+ "familia": "FIS — Fisiculturismo (BB, MP, CP, WEL, BIK, FIG)",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Pese os alimentos na forma indicada e siga as refeições do plano da fase atual. Os horários são combinados com o nutricionista conforme treino e rotina."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo de todo o dia em todas as fases. Este plano não usa restrição de água, de sal ou remédios para \"secar\": essas práticas são perigosas e não melhoram o resultado."},
+  {"titulo": "Registro", "texto": "Registre peso em jejum, fotos quando combinado, sono, fome, desempenho no treino e funcionamento do intestino. Esses dados guiam os ajustes."},
+  {"titulo": "Suplementos e substâncias", "texto": "Use somente suplementos combinados com o nutricionista. Não use remédios, diuréticos, laxantes ou hormônios por conta própria."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise imediatamente em caso de tontura, desmaio, palpitações, cãibras fortes, urina muito escura ou em pouca quantidade, fraqueza intensa ou alterações de humor importantes."}
+ ],
+ "profissional": "Objetivo: suporte nutricional por fase da temporada competitiva, preservando massa magra, desempenho e saúde.\nPerfil de aplicação: atletas da divisão do título; peso de referência do catálogo é apenas ponto de partida — recalcular por peso atual, composição corporal e taxa de perda semanal.\nIndividualização: proteína por kg de peso; carboidratos conforme treino e fase; gorduras sem cortes extremos (manter função hormonal); refeições conforme rotina.\nSegurança (diretriz do catálogo): aparência muscular plana não confirma depleção de glicogênio — revisar carboidratos, treino, recuperação e hidratação; urina concentrada: avaliar ingestão, perdas e sintomas, nunca restringir líquidos; distensão: revisar fibras, lactose, volume e tolerância, evitando intervenções extremas. A estratégia não inclui saturação hídrica obrigatória, restrição de água ou sódio, diuréticos ou depleção automática de carboidratos.\nMonitoramento: peso e taxa de perda semanal, composição corporal, desempenho, sono, fome, humor, ciclo menstrual nas atletas e exames periódicos.\nEncaminhamento: sinais de baixa disponibilidade energética, transtorno alimentar ou dismórfico, uso de substâncias, alterações laboratoriais.",
+ "hidratacao": "Referência inicial para todas as fases; ajustar a transpiração, clima e prescrição médica. Não reduzir a ingestão de líquidos na semana da competição.",
+ "por_prefixo": {
+  "FIS-BB": {"profissional": "Bodybuilder: maior massa muscular de referência; fases de preparação mais longas costumam exigir ajustes graduais de energia."},
+  "FIS-MP": {"profissional": "Men's Physique: ênfase em definição de tronco e proporção; evitar déficits agressivos na reta final."},
+  "FIS-CP": {"profissional": "Classic Physique: limites de peso por altura na categoria; planejar a chegada ao peso com antecedência, sem manobras agudas."},
+  "FIS-WEL": {"profissional": "Wellness: maior massa de membros inferiores; atenção a ferro, cálcio e ciclo menstrual."},
+  "FIS-BIK": {"profissional": "Bikini: menor massa muscular de referência; atenção a ferro, cálcio, ciclo menstrual e sinais de baixa disponibilidade energética."},
+  "FIS-FIG": {"profissional": "Figure: densidade muscular moderada; atenção a ferro, cálcio e ciclo menstrual."}
+ },
+ "por_fase": {
+  "Off-season": {"profissional": "Off-season: leve superávit ou manutenção, foco em ganho de massa magra e recuperação; evitar ganho de gordura excessivo."},
+  "D-112 a D-85": {"profissional": "Início da preparação (D-112 a D-85): déficit moderado, preservar desempenho; perda semanal gradual."},
+  "D-84 a D-57": {"profissional": "Preparação (D-84 a D-57): ajustar o déficit conforme a taxa de perda; considerar refeições ou dias de maior carboidrato se o desempenho cair."},
+  "D-56 a D-29": {"profissional": "Preparação (D-56 a D-29): monitorar sinais de fadiga, fome e queda de desempenho; ajustes pequenos."},
+  "D-28 a D-15": {"profissional": "Reta final (D-28 a D-15): sem cortes bruscos; definir com o atleta a estratégia da semana de pico com alimentos já testados."},
+  "D-14 a D-8": {"profissional": "D-14 a D-8: manter rotina e alimentos conhecidos; ensaiar a estratégia de carboidratos da semana de pico, se usada."},
+  "D-7 a D-3": {"profissional": "Semana de pico (D-7 a D-3): manter hidratação e sódio habituais; eventual ajuste de carboidratos individualizado e testado antes. Não usar restrição hídrica nem diuréticos."},
+  "D-2 a D-1": {"profissional": "D-2 a D-1: alimentos de fácil digestão e já testados, fibras e volume moderados para evitar distensão; hidratação mantida."},
+  "D0 — Dia da competição": {"profissional": "D0: refeições pequenas, conhecidas e de fácil digestão, ajustadas ao horário de apresentação (o horário do catálogo é só contexto); hidratação mantida.", "paciente": [{"titulo": "Dia da competição", "texto": "Coma apenas alimentos que você já testou, em porções pequenas, e continue bebendo água ao longo do dia."}]},
+  "Pós-competição": {"profissional": "Pós-competição: retorno gradual à manutenção, atenção ao reganho rápido e à relação com a comida; reavaliar exames.", "paciente": [{"titulo": "Depois da competição", "texto": "Volte aos poucos às quantidades normais, seguindo o plano. Exageros nos primeiros dias costumam causar desconforto e ganho rápido de peso."}]}
+ },
+ "referencias": [
+  "Helms ER, Aragon AA, Fitschen PJ. Evidence-based recommendations for natural bodybuilding contest preparation: nutrition and supplementation. J Int Soc Sports Nutr. 2014;11:20.",
+  "Escalante G et al. Peak week recommendations for bodybuilders: an evidence based approach. BMC Sports Sci Med Rehabil. 2021;13(1):68.",
+  "Mountjoy M et al. 2023 International Olympic Committee's consensus statement on Relative Energy Deficiency in Sport (REDs). Br J Sports Med. 2023;57(17):1073-97."
+ ]
+}

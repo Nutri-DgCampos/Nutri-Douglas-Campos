@@ -1,0 +1,51 @@
+{
+ "_sobre": "Divisões próprias para os modelos de musculação que no material antigo eram cópia de outro (V3: detectar duplicatas e criar conteúdo específico). Formato do exercício: 'Nome da base|séries|rep mín|rep máx|descanso s'. Prancha: repetições = segundos. Os demais códigos usam o conteúdo antigo com as trocas de decisoes.json.",
+ "observacoes_exercicio": {"Prancha": "Repetições = segundos de sustentação.", "Barra fixa": "Pode ser assistida (elástico ou máquina)."},
+ "MUS-010": {"origem": "antes igual a MUS-006 (masculino); feminino com mais membros inferiores", "dias": [
+  {"dia": "seg", "titulo": "A — Quadríceps e glúteos", "exercicios": ["Agachamento livre|3|8|12|120", "Leg press 45°|3|10|12|90", "Afundo com halteres|3|10|12|90", "Cadeira extensora|3|12|15|60", "Cadeira abdutora|3|12|20|60"]},
+  {"dia": "ter", "titulo": "B — Peito, ombros e tríceps", "exercicios": ["Supino inclinado com halteres|3|10|12|90", "Desenvolvimento com halteres|3|10|12|90", "Elevação lateral com halteres|3|12|15|60", "Tríceps corda|3|10|12|60"]},
+  {"dia": "qui", "titulo": "C — Posteriores e glúteos", "exercicios": ["Stiff com barra|3|8|12|120", "Elevação pélvica|4|8|12|120", "Mesa flexora|3|10|12|90", "Glúteo na polia (coice)|3|12|15|60", "Panturrilha em pé|3|12|15|60"]},
+  {"dia": "sex", "titulo": "D — Costas e bíceps", "exercicios": ["Puxada frontal|3|8|12|90", "Remada baixa|3|10|12|90", "Remada unilateral com halter|3|10|12|90", "Face pull|2|12|15|60", "Rosca alternada com halteres|3|10|12|60"]}]},
+ "MUS-011": {"origem": "antes igual a MUS-007; feminino avançado com dia próprio de glúteos", "dias": [
+  {"dia": "seg", "titulo": "A — Quadríceps", "exercicios": ["Agachamento livre|4|6|10|150", "Hack|3|8|12|120", "Agachamento búlgaro|3|8|12|90", "Cadeira extensora|3|12|15|60"]},
+  {"dia": "ter", "titulo": "B — Costas e bíceps", "exercicios": ["Barra fixa|3|6|10|120", "Remada curvada com barra|3|8|12|120", "Pulldown na polia|3|10|12|90", "Rosca martelo|3|10|12|60"]},
+  {"dia": "qua", "titulo": "C — Glúteos", "exercicios": ["Elevação pélvica|4|8|12|120", "Glúteo na máquina|3|10|15|75", "Cadeira abdutora|4|12|20|60", "Glúteo na polia (coice)|3|12|15|60"]},
+  {"dia": "qui", "titulo": "D — Peito, ombros e tríceps", "exercicios": ["Supino inclinado com halteres|3|8|12|90", "Desenvolvimento com halteres|3|8|12|90", "Elevação lateral na polia|3|12|15|60", "Tríceps francês com halter|3|10|12|60"]},
+  {"dia": "sex", "titulo": "E — Posteriores, panturrilha e core", "exercicios": ["Stiff com halteres|4|8|12|120", "Mesa flexora|3|10|12|90", "Cadeira flexora|3|12|15|75", "Panturrilha sentado|3|12|15|60", "Prancha|3|30|45|60"]}]},
+ "MUS-012": {"origem": "antes igual a MUS-008 (masculino força); feminino com inferiores voltados a glúteos", "dias": [
+  {"dia": "seg", "titulo": "Superiores A", "exercicios": ["Supino inclinado com halteres|3|8|12|90", "Puxada frontal|3|8|12|90", "Desenvolvimento com halteres|3|10|12|90", "Remada baixa|3|10|12|90", "Tríceps corda|2|10|12|60"]},
+  {"dia": "ter", "titulo": "Inferiores A", "exercicios": ["Agachamento livre|3|8|12|120", "Elevação pélvica|3|8|12|120", "Cadeira extensora|3|12|15|60", "Cadeira abdutora|3|12|20|60", "Panturrilha em pé|3|12|15|60"]},
+  {"dia": "qui", "titulo": "Superiores B", "exercicios": ["Remada unilateral com halter|3|10|12|90", "Supino máquina|3|10|12|90", "Elevação lateral com halteres|3|12|15|60", "Face pull|2|12|15|60", "Rosca alternada com halteres|2|10|12|60"]},
+  {"dia": "sex", "titulo": "Inferiores B", "exercicios": ["Stiff com halteres|3|8|12|120", "Leg press 45°|3|10|12|90", "Mesa flexora|3|10|12|90", "Glúteo na polia (coice)|3|12|15|60", "Prancha|3|20|40|60"]}]},
+ "MUS-013": {"origem": "antes igual a MUS-006; glúteos e quadríceps", "dias": [
+  {"dia": "seg", "titulo": "A — Quadríceps e glúteos", "exercicios": ["Agachamento livre|3|8|12|120", "Leg press 45°|3|10|12|90", "Agachamento búlgaro|3|8|12|90", "Cadeira extensora|3|12|15|60"]},
+  {"dia": "ter", "titulo": "B — Superiores", "exercicios": ["Puxada frontal|3|10|12|90", "Supino reto com halteres|3|10|12|90", "Remada baixa|3|10|12|90", "Elevação lateral com halteres|3|12|15|60"]},
+  {"dia": "qui", "titulo": "C — Glúteos e quadríceps", "exercicios": ["Elevação pélvica|4|8|12|120", "Hack|3|10|12|120", "Afundo com halteres|3|10|12|90", "Cadeira abdutora|3|12|20|60", "Panturrilha em pé|3|12|15|60"]},
+  {"dia": "sex", "titulo": "D — Superiores e core", "exercicios": ["Remada unilateral com halter|3|10|12|90", "Desenvolvimento com halteres|3|10|12|90", "Tríceps na polia|2|10|12|60", "Rosca direta com barra|2|10|12|60", "Prancha|3|20|40|60"]}]},
+ "MUS-014": {"origem": "antes igual a MUS-007; glúteos e posteriores avançado", "dias": [
+  {"dia": "seg", "titulo": "A — Glúteos", "exercicios": ["Elevação pélvica|4|6|10|150", "Agachamento búlgaro|3|8|12|90", "Glúteo na máquina|3|10|15|75", "Cadeira abdutora|3|15|20|60"]},
+  {"dia": "ter", "titulo": "B — Costas e ombros", "exercicios": ["Puxada frontal|3|8|12|90", "Remada curvada com barra|3|8|12|120", "Desenvolvimento com halteres|3|8|12|90", "Elevação lateral com halteres|3|12|15|60"]},
+  {"dia": "qua", "titulo": "C — Posteriores", "exercicios": ["Stiff com barra|4|6|10|150", "Mesa flexora|3|8|12|90", "Cadeira flexora|3|12|15|75", "Ponte de glúteo|3|12|15|60"]},
+  {"dia": "qui", "titulo": "D — Peito, braços e core", "exercicios": ["Supino inclinado com halteres|3|8|12|90", "Crucifixo com halteres|2|12|15|75", "Tríceps corda|3|10|12|60", "Rosca alternada com halteres|3|10|12|60", "Prancha|3|30|45|60"]},
+  {"dia": "sex", "titulo": "E — Glúteos e quadríceps", "exercicios": ["Agachamento livre|4|6|10|150", "Leg press 45°|3|10|12|90", "Glúteo na polia (coice)|3|12|15|60", "Panturrilha em pé|3|12|15|60"]}]},
+ "MUS-015": {"origem": "antes igual a MUS-006; glúteos com ênfase global, intensidade moderada", "dias": [
+  {"dia": "seg", "titulo": "A — Glúteos e quadríceps", "exercicios": ["Agachamento goblet|3|10|12|90", "Leg press 45°|3|10|12|90", "Elevação pélvica|3|10|12|120", "Cadeira abdutora|3|15|20|60"]},
+  {"dia": "ter", "titulo": "B — Superiores", "exercicios": ["Puxada frontal|3|10|12|90", "Supino máquina|3|10|12|90", "Remada máquina|3|10|12|90", "Desenvolvimento máquina|3|10|12|75"]},
+  {"dia": "qui", "titulo": "C — Glúteos e posteriores", "exercicios": ["Stiff com halteres|3|10|12|120", "Glúteo na máquina|3|12|15|75", "Mesa flexora|3|10|12|90", "Ponte de glúteo|3|12|15|60", "Cadeira adutora|2|12|15|60"]},
+  {"dia": "sex", "titulo": "D — Glúteos e core", "exercicios": ["Afundo com halteres|3|10|12|90", "Glúteo na polia (coice)|3|12|15|60", "Cadeira extensora|2|12|15|60", "Abdominal infra|3|12|15|60", "Prancha|3|20|40|60"]}]},
+ "MUS-016": {"origem": "antes igual a MUS-001; emagrecimento iniciante: descansos curtos e cardio leve opcional", "observacao_dias": "Ao final, 15 a 20 minutos de caminhada ou bicicleta em intensidade leve a moderada, se liberado.", "dias": [
+  {"dia": "seg", "titulo": "Full Body A", "exercicios": ["Leg press 45°|2|12|15|60", "Supino máquina|2|12|15|60", "Puxada frontal|2|12|15|60", "Elevação pélvica|2|12|15|60", "Prancha|2|20|30|45"]},
+  {"dia": "qua", "titulo": "Full Body B", "exercicios": ["Agachamento goblet|2|12|15|60", "Remada máquina|2|12|15|60", "Supino reto com halteres|2|12|15|60", "Mesa flexora|2|12|15|60", "Abdominal supra|2|12|15|45"]},
+  {"dia": "sex", "titulo": "Full Body C", "exercicios": ["Afundo com halteres|2|10|12|60", "Pulldown na polia|2|12|15|60", "Desenvolvimento máquina|2|12|15|60", "Cadeira abdutora|2|15|20|45", "Panturrilha em pé|2|15|20|45"]}]},
+ "MUS-018": {"origem": "antes igual a MUS-009; condicionamento geral com volume moderado e cardio leve", "observacao_dias": "Ao final, 10 a 15 minutos de cardio leve (bicicleta, elíptico ou esteira), se liberado.", "dias": [
+  {"dia": "seg", "titulo": "A — Inferiores", "exercicios": ["Agachamento goblet|3|12|15|75", "Leg press 45°|3|12|15|75", "Mesa flexora|3|12|15|60", "Elevação pélvica|3|12|15|60", "Panturrilha em pé|2|15|20|45"]},
+  {"dia": "qua", "titulo": "B — Superiores", "exercicios": ["Supino máquina|3|12|15|75", "Remada baixa|3|12|15|75", "Desenvolvimento máquina|2|12|15|60", "Pulldown na polia|3|12|15|60", "Prancha|3|20|40|45"]},
+  {"dia": "sex", "titulo": "C — Corpo todo", "exercicios": ["Afundo com halteres|3|10|12|75", "Flexão de braços|3|8|12|75", "Remada unilateral com halter|3|10|12|75", "Cadeira abdutora|2|15|20|45", "Abdominal infra|2|12|15|45"]}]},
+ "MUS-019": {"origem": "antes igual a MUS-004; manutenção com volume mínimo efetivo", "dias": [
+  {"dia": "seg", "titulo": "Full Body A", "exercicios": ["Agachamento no Smith|2|8|12|120", "Supino reto com halteres|2|8|12|90", "Puxada frontal|2|8|12|90", "Stiff com halteres|2|10|12|90", "Elevação lateral com halteres|2|12|15|60"]},
+  {"dia": "qui", "titulo": "Full Body B", "exercicios": ["Leg press 45°|2|10|12|90", "Remada unilateral com halter|2|8|12|90", "Desenvolvimento com halteres|2|8|12|90", "Elevação pélvica|2|10|12|90", "Rosca alternada com halteres|2|10|12|60", "Tríceps corda|2|10|12|60"]}]},
+ "MUS-020": {"origem": "antes igual a MUS-009; manutenção com duas séries por exercício", "dias": [
+  {"dia": "seg", "titulo": "A — Inferiores", "exercicios": ["Agachamento no Smith|2|8|12|120", "Leg press 45°|2|10|12|90", "Mesa flexora|2|10|12|75", "Panturrilha em pé|2|12|15|60"]},
+  {"dia": "qua", "titulo": "B — Empurrar", "exercicios": ["Supino reto com halteres|2|8|12|90", "Desenvolvimento com halteres|2|8|12|90", "Elevação lateral com halteres|2|12|15|60", "Tríceps na polia|2|10|12|60"]},
+  {"dia": "sex", "titulo": "C — Puxar e core", "exercicios": ["Puxada frontal|2|8|12|90", "Remada baixa|2|8|12|90", "Rosca direta com barra|2|10|12|60", "Prancha|2|20|40|60"]}]}
+}

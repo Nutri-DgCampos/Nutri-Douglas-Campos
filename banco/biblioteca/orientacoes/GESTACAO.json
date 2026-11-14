@@ -1,0 +1,25 @@
+{
+ "familia": "MUL — Gestação e lactação (MUL-005 a MUL-009)",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Faça refeições menores e mais frequentes ao longo do dia. Pese os alimentos na forma indicada até se acostumar com as porções; o plano é ajustado nas consultas conforme o seu ganho de peso e os exames."},
+  {"titulo": "Segurança dos alimentos", "texto": "Coma carnes, ovos e peixes bem cozidos; prefira leite e queijos pasteurizados; lave bem frutas e verduras. Evite carnes e peixes crus (incluindo sushi), patês e embutidos crus. Não consuma bebidas alcoólicas e limite o café conforme a orientação da equipe."},
+  {"titulo": "Nutrientes importantes", "texto": "Inclua todos os dias feijão e folhas verde-escuras (folato e ferro), carnes e ovos (ferro e colina), leite, iogurte ou queijo (cálcio) e peixes cozidos duas vezes por semana. Use sal iodado. Os suplementos são prescritos pela equipe: o plano não substitui essa prescrição."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia, mesmo sem sede. Durante a amamentação, tenha sempre água por perto."},
+  {"titulo": "Quando procurar a equipe", "texto": "Procure atendimento em caso de vômitos que impedem de comer ou beber, sangramento, inchaço súbito no rosto ou nas mãos, dor de cabeça forte, alteração da visão, febre ou perda de peso. Avise o nutricionista se tiver enjoo, azia ou intestino preso frequentes."}
+ ],
+ "profissional": "MODELO BLOQUEADO até revisão (V3 §4.1). Cardápio de referência com alimentos da base; a energia calculada não é meta obrigatória. Ajustar energia e nutrientes à avaliação, ao estado nutricional pré-gestacional, à evolução ponderal, à fase gestacional ou pós-parto e ao quadro clínico.\nEnergia de referência (IOM, 2005): sem acréscimo no 1º trimestre; cerca de +340 kcal/dia no 2º e +452 kcal/dia no 3º; lactação nos primeiros 6 meses cerca de +330 kcal/dia (500 − 170 da mobilização de reservas) e de 7 a 12 meses cerca de +400 kcal/dia — referências populacionais, não metas automáticas.\nNutrientes de atenção: folato, ferro, iodo, cálcio, vitamina D, B12, colina e DHA. Suplementos, restrições e metas de ganho de peso dependem de avaliação (não prescrever automaticamente).\nSegurança alimentar: listeriose e toxoplasmose (carnes, ovos e peixes bem cozidos, laticínios pasteurizados, higiene de vegetais); peixes com mais mercúrio devem ser evitados; álcool contraindicado; cafeína limitada.\nMonitoramento: ganho de peso por trimestre, glicemia (diabetes gestacional), pressão, hemograma e ferritina, sintomas (náuseas, pirose, constipação).\nEncaminhamento: hiperêmese, sinais de pré-eclâmpsia, diabetes gestacional, ganho de peso inadequado.",
+ "hidratacao": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "por_codigo": {
+  "MUL-006": {"profissional": "1º trimestre: sem acréscimo energético de referência; náuseas e vômitos — fracionar, alimentos secos e frios podem ajudar; folato desde o início."},
+  "MUL-007": {"profissional": "2º trimestre: acréscimo de referência de cerca de 340 kcal/dia (ceia e porções um pouco maiores neste modelo); ferro e cálcio."},
+  "MUL-008": {"profissional": "3º trimestre: acréscimo de referência de cerca de 452 kcal/dia; mais refeições menores (pirose, saciedade precoce); atenção a edema, pressão e glicemia."},
+  "MUL-005": {"profissional": "Lactação — fase inicial (0 a 6 meses): acréscimo de referência de cerca de 330 kcal/dia; considerar amamentação exclusiva ou parcial, recuperação pós-parto, perda de peso gradual sem dietas restritivas; hidratação; continuar cálcio, iodo e DHA."},
+  "MUL-009": {"profissional": "Lactação — fase posterior (7 a 12 meses ou amamentação parcial): acréscimo de referência de cerca de 400 kcal/dia na amamentação exclusiva, menor na parcial; ajustar à frequência das mamadas e ao peso."}
+ },
+ "referencias": [
+  "Institute of Medicine. Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids. Washington, DC: National Academies Press; 2005.",
+  "Institute of Medicine. Weight Gain During Pregnancy: Reexamining the Guidelines. Washington, DC: National Academies Press; 2009.",
+  "World Health Organization. WHO recommendations on antenatal care for a positive pregnancy experience. Geneva: WHO; 2016.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ]
+}

@@ -1,0 +1,194 @@
+{
+ "codigo": "MAN-002",
+ "tipo": "dieta",
+ "nome": "MAN-002 — Manutenção — Manutenção masculina — 1.600 kcal",
+ "categoria": "Manutenção",
+ "objetivo": "Manutenção",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1600,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "id": "90f43614-a701-4d94-a87e-4f9079bf545d"
+     },
+     "nome": "Goma de mandioca, assada",
+     "gramas": 65
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "236"
+     },
+     "nome": "Melão, cru",
+     "gramas": 110
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 145
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 80
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 110
+    },
+    {
+     "alimento": {
+      "taco": "567"
+     },
+     "nome": "Feijão, preto, cozido",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "64"
+     },
+     "nome": "Abóbora, cabotian, cozida",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 45
+    },
+    {
+     "alimento": {
+      "taco": "469"
+     },
+     "nome": "Queijo, ricota",
+     "gramas": 55
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "129"
+     },
+     "nome": "Mandioca, cozida",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 110
+    },
+    {
+     "alimento": {
+      "taco": "112"
+     },
+     "nome": "Chuchu, cozido",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "O objetivo agora é manter os resultados. Use as porções do plano como referência e mantenha a regularidade das refeições ao longo da semana."
+  },
+  {
+   "titulo": "Equilíbrio no dia a dia",
+   "texto": "Prefira alimentos in natura e minimamente processados, com legumes, verduras e frutas todos os dias. Eventos e refeições fora de casa fazem parte: volte ao plano na refeição seguinte, sem compensações."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia, mesmo sem sede. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."
+  },
+  {
+   "titulo": "Acompanhamento",
+   "texto": "Continue registrando peso, sono e atividade física nos relatórios. Pequenas variações de peso são normais; tendências de alta ou de baixa por várias semanas devem ser conversadas."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista se a rotina, o treino ou a medicação mudarem, ou se perceber ganho ou perda de peso que não esperava."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: estabilidade de peso e composição corporal com alimentação adequada e sustentável.\nPerfil de aplicação: pacientes que atingiram a meta ou que buscam manutenção sem condição clínica que exija modelo específico.\nIndividualização: energia próxima ao gasto estimado na avaliação física e à ingestão que manteve o peso nas últimas semanas; macros conforme preferências e treino; flexibilidade para refeições sociais.\nMonitoramento: tendência de peso e circunferências em intervalos maiores, adesão e qualidade da alimentação. Recuperação de peso após emagrecimento é comum: rever estratégia precocemente.\nMedicamentos: atenção à suspensão de medicamentos para obesidade (ex.: agonistas de GLP-1), com risco de recuperação de peso.\nEncaminhamento: comportamento alimentar desorganizado ou alterações clínicas.",
+ "referencias": [
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "MAN"
+ },
+ "ajuste": {
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.892,
+  "fatores": {
+   "legumes": 0.892,
+   "proteina": 0.892,
+   "energia": 0.892
+  },
+  "kcal_base": 1794,
+  "kcal_calculada": 1589,
+  "em": "2026-11-14"
+ }
+}

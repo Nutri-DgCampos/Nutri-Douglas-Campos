@@ -1,0 +1,16 @@
+{
+ "familia": "HIP — Hipertrofia",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Pese os alimentos na forma indicada até se acostumar com as porções. Distribua as refeições ao longo do dia conforme a sua rotina de treino; os horários são combinados com o nutricionista."},
+  {"titulo": "Proteína em todas as refeições", "texto": "Cada refeição traz uma fonte de proteína (carnes, ovos, laticínios ou leguminosas). Não deixe de consumi-la, principalmente nas refeições perto do treino."},
+  {"titulo": "Energia para treinar e recuperar", "texto": "Os carboidratos (arroz, batata, mandioca, pães, frutas) fornecem energia para o treino. Pular refeições ou reduzir porções por conta própria atrapalha o ganho de massa muscular."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia e também antes, durante e depois do treino. A quantidade indicada é uma referência e muda com calor e transpiração."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista se sentir estufamento, dificuldade de comer todo o volume, ganho de gordura acima do esperado, cansaço persistente ou se mudar a rotina de treino. Não use suplementos ou hormônios sem orientação profissional."}
+ ],
+ "profissional": "Objetivo: ganho de massa muscular com disponibilidade energética adequada, proteína distribuída nas refeições e suporte à recuperação.\nPerfil de aplicação: adultos saudáveis em treino de força regular; nível e rotina indicados no título.\nIndividualização: superávit energético moderado a partir do gasto estimado na avaliação física; proteína por kg de peso corporal conforme objetivo e tolerância; carboidratos ajustados ao volume de treino; distribuir proteína em 3 a 6 refeições. Conferir fibras, cálcio e ferro.\nMonitoramento: peso e composição corporal periódicos, desempenho e cargas registradas no Treino, apetite, sono e adesão. Ganho de gordura acima do esperado pede redução do superávit.\nMedicamentos e suplementos: registrar uso de suplementos; investigar uso de anabolizantes e encaminhar quando pertinente.\nEncaminhamento: alterações laboratoriais, sintomas gastrointestinais persistentes ou suspeita de transtorno alimentar (incluindo dismorfia muscular).\nModelo de referência editável: energia e macros calculados pela base do aplicativo; porções de valores altos podem exigir mais refeições ou alimentos mais densos para caber no apetite do paciente.",
+ "hidratacao": "Referência inicial; ajustar a clima, volume de treino, transpiração e prescrição médica.",
+ "referencias": [
+  "Jäger R et al. International Society of Sports Nutrition Position Stand: protein and exercise. J Int Soc Sports Nutr. 2017;14:20.",
+  "Thomas DT, Erdman KA, Burke LM. American College of Sports Medicine Joint Position Statement: Nutrition and Athletic Performance. Med Sci Sports Exerc. 2016;48(3):543-68."
+ ]
+}

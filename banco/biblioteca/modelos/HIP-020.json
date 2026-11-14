@@ -1,0 +1,251 @@
+{
+ "codigo": "HIP-020",
+ "tipo": "dieta",
+ "nome": "HIP-020 — Hipertrofia — Intermediário — 4.175 kcal",
+ "categoria": "Hipertrofia",
+ "objetivo": "Hipertrofia",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 4175,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a clima, volume de treino, transpiração e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 180
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 55
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 245
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 195
+    },
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 65
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 425
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 190
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "100"
+     },
+     "nome": "Brócolis, cozido",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 11
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 190
+    },
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 205
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "88"
+     },
+     "nome": "Batata, doce, cozida",
+     "gramas": 570
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 11
+    }
+   ]
+  },
+  {
+   "nome": "Lanche extra",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 180
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 55
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 245
+    }
+   ]
+  },
+  {
+   "nome": "Ceia",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 180
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 55
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 245
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Pese os alimentos na forma indicada até se acostumar com as porções. Distribua as refeições ao longo do dia conforme a sua rotina de treino; os horários são combinados com o nutricionista."
+  },
+  {
+   "titulo": "Proteína em todas as refeições",
+   "texto": "Cada refeição traz uma fonte de proteína (carnes, ovos, laticínios ou leguminosas). Não deixe de consumi-la, principalmente nas refeições perto do treino."
+  },
+  {
+   "titulo": "Energia para treinar e recuperar",
+   "texto": "Os carboidratos (arroz, batata, mandioca, pães, frutas) fornecem energia para o treino. Pular refeições ou reduzir porções por conta própria atrapalha o ganho de massa muscular."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia e também antes, durante e depois do treino. A quantidade indicada é uma referência e muda com calor e transpiração."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista se sentir estufamento, dificuldade de comer todo o volume, ganho de gordura acima do esperado, cansaço persistente ou se mudar a rotina de treino. Não use suplementos ou hormônios sem orientação profissional."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: ganho de massa muscular com disponibilidade energética adequada, proteína distribuída nas refeições e suporte à recuperação.\nPerfil de aplicação: adultos saudáveis em treino de força regular; nível e rotina indicados no título.\nIndividualização: superávit energético moderado a partir do gasto estimado na avaliação física; proteína por kg de peso corporal conforme objetivo e tolerância; carboidratos ajustados ao volume de treino; distribuir proteína em 3 a 6 refeições. Conferir fibras, cálcio e ferro.\nMonitoramento: peso e composição corporal periódicos, desempenho e cargas registradas no Treino, apetite, sono e adesão. Ganho de gordura acima do esperado pede redução do superávit.\nMedicamentos e suplementos: registrar uso de suplementos; investigar uso de anabolizantes e encaminhar quando pertinente.\nEncaminhamento: alterações laboratoriais, sintomas gastrointestinais persistentes ou suspeita de transtorno alimentar (incluindo dismorfia muscular).\nModelo de referência editável: energia e macros calculados pela base do aplicativo; porções de valores altos podem exigir mais refeições ou alimentos mais densos para caber no apetite do paciente.",
+ "referencias": [
+  "Jäger R et al. International Society of Sports Nutrition Position Stand: protein and exercise. J Int Soc Sports Nutr. 2017;14:20.",
+  "Thomas DT, Erdman KA, Burke LM. American College of Sports Medicine Joint Position Statement: Nutrition and Athletic Performance. Med Sci Sports Exerc. 2016;48(3):543-68."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "HIP"
+ },
+ "ajuste": {
+  "refeicoes_acrescentadas": [
+   "Ceia (cópia de Café da manhã)",
+   "Lanche extra (cópia de Café da manhã)"
+  ],
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.947,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1.25,
+   "energia": 2.23
+  },
+  "kcal_base": 2144,
+  "kcal_calculada": 4182,
+  "em": "2026-11-14"
+ }
+}

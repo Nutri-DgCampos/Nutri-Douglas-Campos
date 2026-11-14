@@ -1,0 +1,15 @@
+{
+ "familia": "MAN — Manutenção",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "O objetivo agora é manter os resultados. Use as porções do plano como referência e mantenha a regularidade das refeições ao longo da semana."},
+  {"titulo": "Equilíbrio no dia a dia", "texto": "Prefira alimentos in natura e minimamente processados, com legumes, verduras e frutas todos os dias. Eventos e refeições fora de casa fazem parte: volte ao plano na refeição seguinte, sem compensações."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia, mesmo sem sede. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."},
+  {"titulo": "Acompanhamento", "texto": "Continue registrando peso, sono e atividade física nos relatórios. Pequenas variações de peso são normais; tendências de alta ou de baixa por várias semanas devem ser conversadas."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista se a rotina, o treino ou a medicação mudarem, ou se perceber ganho ou perda de peso que não esperava."}
+ ],
+ "profissional": "Objetivo: estabilidade de peso e composição corporal com alimentação adequada e sustentável.\nPerfil de aplicação: pacientes que atingiram a meta ou que buscam manutenção sem condição clínica que exija modelo específico.\nIndividualização: energia próxima ao gasto estimado na avaliação física e à ingestão que manteve o peso nas últimas semanas; macros conforme preferências e treino; flexibilidade para refeições sociais.\nMonitoramento: tendência de peso e circunferências em intervalos maiores, adesão e qualidade da alimentação. Recuperação de peso após emagrecimento é comum: rever estratégia precocemente.\nMedicamentos: atenção à suspensão de medicamentos para obesidade (ex.: agonistas de GLP-1), com risco de recuperação de peso.\nEncaminhamento: comportamento alimentar desorganizado ou alterações clínicas.",
+ "hidratacao": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "referencias": [
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ]
+}

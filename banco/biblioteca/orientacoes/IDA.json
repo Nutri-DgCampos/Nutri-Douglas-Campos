@@ -1,0 +1,21 @@
+{
+ "familia": "IDA — Idosos",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Faça as refeições em horários regulares, mesmo com pouca fome. Se não conseguir comer tudo, priorize a parte com proteína (carne, frango, peixe, ovo, leite, iogurte, feijão)."},
+  {"titulo": "Consistência", "texto": "Se tiver dificuldade para mastigar ou engolir, os alimentos podem ser cozidos até ficarem macios, desfiados ou amassados. Tosse ou engasgo ao comer devem ser comunicados."},
+  {"titulo": "Hidratação", "texto": "Com a idade, a sede diminui: beba água ao longo do dia mesmo sem vontade, salvo restrição médica. Sucos, leite, chás e sopas também contam."},
+  {"titulo": "Movimento", "texto": "Manter-se ativo e fazer exercícios de força orientados ajuda a preservar a força e a independência. A alimentação e o exercício funcionam juntos."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista em caso de perda de peso sem querer, falta de apetite por vários dias, quedas, engasgos, confusão, intestino preso ou mudança de remédios."}
+ ],
+ "profissional": "Objetivo: preservar estado nutricional, massa muscular e funcionalidade.\nPerfil de aplicação: pessoas idosas; avaliar mastigação, deglutição, sarcopenia, função renal, apetite e medicações.\nIndividualização: energia conforme avaliação (ajustar em baixo peso ou obesidade sarcopênica); proteína por kg de peso, distribuída nas refeições, considerando a função renal; cálcio, vitamina D e B12; textura conforme mastigação e deglutição.\nMonitoramento: peso, circunferência da panturrilha, força de preensão e funcionalidade, ingestão alimentar e hidratação. Triagem de risco nutricional (ex.: MNA).\nMedicamentos: polifarmácia, interações com nutrientes, medicamentos que reduzem apetite ou causam boca seca; diuréticos e risco de desidratação.\nEncaminhamento: disfagia (fonoaudiologia), perda de peso involuntária, quedas e declínio funcional.",
+ "hidratacao": "Referência inicial; ajustar a função renal e cardíaca, clima e prescrição médica.",
+ "por_codigo": {
+  "IDA-002": {"profissional": "Apetite reduzido: priorizar densidade energética e proteica, porções menores e mais frequentes; considerar enriquecer preparações."},
+  "IDA-003": {"profissional": "Textura macia: frango cozido no lugar do grelhado e pão macio; adaptar a consistência após avaliação da deglutição."},
+  "IDA-005": {"profissional": "Atenção à proteína: conferir a função renal antes de elevar a proteína."}
+ },
+ "referencias": [
+  "Bauer J et al. Evidence-based recommendations for optimal dietary protein intake in older people: a position paper from the PROT-AGE Study Group. J Am Med Dir Assoc. 2013;14(8):542-59.",
+  "Volkert D et al. ESPEN guideline on clinical nutrition and hydration in geriatrics. Clin Nutr. 2019;38(1):10-47."
+ ]
+}

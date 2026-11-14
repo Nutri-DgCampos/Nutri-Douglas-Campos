@@ -1,0 +1,26 @@
+{
+ "familia": "CLI — Nutrição clínica",
+ "paciente": [
+  {"titulo": "Plano feito para você", "texto": "Este plano é ajustado à sua condição de saúde, aos seus exames e aos remédios que você usa. Não faça restrições por conta própria e não mude remédios sem falar com o médico."},
+  {"titulo": "Como seguir o plano", "texto": "Faça as refeições em horários regulares e pese os alimentos na forma indicada até se acostumar com as porções. Prefira alimentos in natura e preparações caseiras, com pouco sal e pouco óleo."},
+  {"titulo": "Hidratação", "texto": "Beba líquidos conforme a orientação da equipe. Em algumas condições a quantidade de líquidos precisa ser limitada: siga o que foi combinado com o médico e o nutricionista."},
+  {"titulo": "Exames e consultas", "texto": "Leve os exames mais recentes às consultas. Eles mostram se o plano precisa ser ajustado."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise a equipe em caso de mal-estar, inchaço nas pernas, falta de ar, tontura, sede ou urina em excesso, perda de peso sem explicação ou qualquer mudança nos remédios."}
+ ],
+ "profissional": "MODELO CLÍNICO BLOQUEADO até revisão individual (V3 §4.3): requer diagnóstico, avaliação clínica e eventuais restrições de proteína, eletrólitos e líquidos. O cardápio é ponto de partida com alimentos da base; a energia calculada não é meta obrigatória. Não aplicar restrições padronizadas automaticamente nem automatizar alterações de medicação.\nMonitoramento: exames pertinentes à condição, peso, pressão, sintomas e adesão.\nEncaminhamento: descompensação clínica, alterações laboratoriais fora de metas, sinais de alarme.",
+ "hidratacao": "Sem valor padrão: definir conforme condição clínica, função renal e cardíaca e prescrição médica.",
+ "por_codigo": {
+  "CLI-001": {"paciente": [{"titulo": "Glicose", "texto": "Distribua os carboidratos (arroz, feijão, pães, frutas) ao longo do dia, nas quantidades do plano. Se usa insulina ou remédios que baixam a glicose, não pule refeições e saiba reconhecer a hipoglicemia (tremor, suor frio, confusão)."}], "profissional": "Diabetes mellitus tipo 2: individualizar quantidade e distribuição de carboidratos, fibras (integrais, leguminosas, frutas inteiras) e padrão alimentar; compatibilizar com medicações (insulina e sulfonilureias: risco de hipoglicemia; agonistas de GLP-1 e iSGLT2: volume, hidratação); metas de HbA1c e peso individualizadas."},
+  "CLI-002": {"paciente": [{"titulo": "Rins", "texto": "As quantidades de proteína, sal, potássio, fósforo e líquidos dependem do estágio da doença e dos seus exames. Não use sal light, suplementos ou chás sem orientação."}], "profissional": "Doença renal crônica: cardápio com proteína moderada e sem restrições específicas de potássio e fósforo, de propósito — individualizar proteína, sódio, potássio, fósforo e fluidos conforme estágio, exames (TFG, potássio, fósforo, albumina), diálise e estado nutricional. Em diálise a necessidade proteica aumenta. Sal light contém potássio."},
+  "CLI-003": {"paciente": [{"titulo": "Pressão", "texto": "Use pouco sal e prefira temperos naturais (alho, cebola, ervas). Evite embutidos, salgadinhos, temperos prontos e alimentos industrializados com muito sódio. Frutas, verduras e laticínios desnatados ajudam no controle da pressão."}], "profissional": "Hipertensão arterial: padrão DASH (frutas, hortaliças, laticínios desnatados, integrais, oleaginosas) e redução de sódio, com ajuste individual; potássio conforme função renal e medicações (IECA, BRA e diuréticos poupadores de potássio); controle de peso e álcool."},
+  "CLI-004": {"paciente": [{"titulo": "Gorduras do sangue", "texto": "Prefira azeite, peixes, aveia, feijões e frutas. Evite frituras, carnes gordas, embutidos, manteiga em excesso e produtos ultraprocessados."}], "profissional": "Dislipidemia: qualidade das gorduras (reduzir saturadas e trans, priorizar insaturadas), fibras solúveis, peixes; individualizar pelo perfil lipídico, risco cardiovascular e terapêutica (estatinas e outras); triglicerídeos altos: atenção a açúcares e álcool."},
+  "CLI-005": {"paciente": [{"titulo": "Fígado", "texto": "Evite bebidas alcoólicas, refrigerantes, sucos adoçados e doces. A perda gradual de peso, quando indicada, e a atividade física regular ajudam o fígado."}], "profissional": "Esteatose hepática metabólica (MASLD): padrão alimentar de tipo mediterrâneo, redução de açúcares livres e frutose adicionada, álcool; perda de peso gradual quando indicada (déficit individualizado); avaliar fatores cardiometabólicos, composição corporal e doença hepática associada."}
+ },
+ "referencias": [
+  "American Diabetes Association. Standards of Care in Diabetes—2024. Diabetes Care. 2024;47(Suppl 1).",
+  "Ikizler TA et al. KDOQI Clinical Practice Guideline for Nutrition in CKD: 2020 Update. Am J Kidney Dis. 2020;76(3 Suppl 1):S1-S107.",
+  "Barroso WKS et al. Diretrizes Brasileiras de Hipertensão Arterial – 2020. Arq Bras Cardiol. 2021;116(3):516-658.",
+  "Faludi AA et al. Atualização da Diretriz Brasileira de Dislipidemias e Prevenção da Aterosclerose – 2017. Arq Bras Cardiol. 2017;109(2 Supl 1):1-76.",
+  "Rinella ME et al. AASLD Practice Guidance on the clinical assessment and management of nonalcoholic fatty liver disease. Hepatology. 2023;77(5):1797-1835."
+ ]
+}

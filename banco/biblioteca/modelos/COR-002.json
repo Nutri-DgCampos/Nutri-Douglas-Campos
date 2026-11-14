@@ -1,0 +1,1291 @@
+{
+ "codigo": "COR-002",
+ "tipo": "corrida",
+ "nome": "COR-002 — Primeiros 5 km — 12 semanas",
+ "nivel": "iniciante",
+ "objetivo": "Primeiros 5 km",
+ "duracao_semanas": 12,
+ "fase": "Base",
+ "semanas": [
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 1: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 34,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 6,
+       "duracao_min": 2,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 6,
+       "duracao_min": 2,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 1: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 1: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 2: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 40,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 6,
+       "duracao_min": 3,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 6,
+       "duracao_min": 2,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 2: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 2: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 3: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 35,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 5,
+       "duracao_min": 3,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 5,
+       "duracao_min": 2,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 3: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 25,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 3: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 4: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 30,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 4,
+       "duracao_min": 3,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 4,
+       "duracao_min": 2,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 4: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 4: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 5: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 40,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 5,
+       "duracao_min": 4,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 5,
+       "duracao_min": 2,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 5: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 25,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 5: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 6: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 34,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 4,
+       "duracao_min": 5,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 4,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 6: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 6: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 25,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 7: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 38,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 4,
+       "duracao_min": 6,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 4,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 7: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 7: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 8: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 31,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 3,
+       "duracao_min": 6,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 3,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 8: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 8: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 25,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 9: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 37,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 3,
+       "duracao_min": 8,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 3,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 9: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 9: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 10: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 43,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 3,
+       "duracao_min": 10,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 3,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 10: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 45,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 35,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 10: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 11: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 49,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 3,
+       "duracao_min": 12,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 3,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 11: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 45,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 35,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 11: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Fácil",
+     "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Corrida contínua leve; pode intercalar caminhada se necessário.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 12: polimento: volume reduzido antes da prova. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada-corrida",
+     "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+     "duracao_min": 28,
+     "zona": "Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Blocos de corrida cada vez mais longos com caminhada curta.",
+       "repeticoes": 2,
+       "duracao_min": 8,
+       "intensidade": "Z2"
+      },
+      {
+       "tipo": "recuperacao",
+       "descricao": "Recuperação ativa",
+       "repeticoes": 2,
+       "duracao_min": 1,
+       "intensidade": "Z1"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 12: polimento: volume reduzido antes da prova. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Maior duração da semana, em ritmo de conversa.",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Maior duração da semana, em ritmo de conversa.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 12: polimento: volume reduzido antes da prova. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  }
+ ],
+ "orientacoes_aluno": [
+  {
+   "titulo": "Intensidade",
+   "texto": "As zonas (Z1 a Z5) são as suas, configuradas pelo educador físico. Nos treinos leves você deve conseguir conversar; não acelere além da zona indicada."
+  },
+  {
+   "titulo": "Aquecimento e volta à calma",
+   "texto": "Não pule o aquecimento nem a volta à calma: eles fazem parte do tempo total da sessão."
+  },
+  {
+   "titulo": "Registro",
+   "texto": "Registre no aplicativo tempo, distância (se tiver), esforço percebido e qualquer desconforto. Sessão não feita também deve ser informada."
+  },
+  {
+   "titulo": "Recuperação",
+   "texto": "Os dias sem corrida são parte do plano. Durma bem, hidrate-se e alimente-se conforme o plano alimentar."
+  },
+  {
+   "titulo": "Sinais de alerta",
+   "texto": "Pare e avise o educador físico em caso de dor no peito, falta de ar desproporcional, tontura, palpitações ou dor que faça você mudar a passada."
+  }
+ ],
+ "orientacoes_profissional": "Perfil e objetivo: conforme o título (nível e duração do programa). Confirmar histórico de corrida, lesões, condições de saúde e disponibilidade antes de aplicar; ajustar os dias da semana à rotina.\nZonas: Z1–Z5 são relativas; configurar as zonas individuais do aluno no aplicativo antes de enviar. Distância, ritmo e frequência cardíaca absolutos não foram preenchidos e só devem ser informados com dados reais do aluno.\nProgressão: semana a semana, condicionada a sintomas, recuperação e registros; repetir a semana ou reduzir o volume diante de dor, fadiga persistente ou baixa adesão.\nMonitoramento: adesão e esforço percebido no relatório semanal; atenção a dor localizada recorrente (risco de lesão por sobrecarga).\nOrientações ao aluno: corrida e ciclismo ainda não têm campo de observações gerais no plano; repasse as orientações abaixo ao aluno ao enviar o treino.\n\nProgressão: semanas de recuperação com cerca de 75% do volume e polimento na última semana; avançar somente com boa tolerância, sem sintomas e com registros consistentes.",
+ "referencias": [
+  "Seiler S. What is best practice for training intensity and duration distribution in endurance athletes? Int J Sports Physiol Perform. 2010;5(3):276-91.",
+  "Garber CE et al. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults. Med Sci Sports Exerc. 2011;43(7):1334-59."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "programa gerado de banco/biblioteca/endurance.json",
+  "orientacoes": "COR"
+ }
+}

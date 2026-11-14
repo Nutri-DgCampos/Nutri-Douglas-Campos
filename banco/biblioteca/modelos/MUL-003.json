@@ -1,0 +1,221 @@
+{
+ "codigo": "MUL-003",
+ "tipo": "dieta",
+ "nome": "MUL-003 — Saúde da mulher — Pós-menopausa — 1.700 kcal",
+ "categoria": "Saúde da mulher",
+ "objetivo": "Saúde da mulher",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1700,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 85
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 45
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 60
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 145
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "id": "42a7e870-3f74-46a6-a60a-631f376e714a"
+     },
+     "nome": "Geleia de frutas tradicional",
+     "gramas": 20
+    },
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 145
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "91"
+     },
+     "nome": "Batata, inglesa, cozida",
+     "gramas": 175
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 70
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  },
+  {
+   "nome": "Ceia",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 175
+    },
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 13
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça as refeições em horários regulares e pese os alimentos na forma indicada até se acostumar com as porções."
+  },
+  {
+   "titulo": "Nutrientes importantes",
+   "texto": "Inclua todos os dias leite, iogurte ou queijo (cálcio), feijão e carnes ou ovos (ferro e proteína), frutas, legumes e verduras."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia, mesmo sem sede. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."
+  },
+  {
+   "titulo": "Movimento",
+   "texto": "Atividade física regular, incluindo exercícios de força, ajuda a proteger ossos e músculos e a controlar o peso."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista se houver alterações no ciclo menstrual, sintomas intensos da menopausa, cansaço fora do normal, suspeita de gravidez ou mudança de medicação."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: alimentação adequada à fase de vida da mulher indicada no título.\nPerfil de aplicação: mulheres adultas fora da gestação e da lactação (essas fases têm modelos próprios, bloqueados até revisão). Revisar fase de vida e necessidades específicas; não utilizar como prescrição universal.\nIndividualização: energia conforme avaliação; atenção a ferro (perdas menstruais), cálcio e vitamina D (saúde óssea), proteína e fibras; no climatério e pós-menopausa, redistribuição de gordura corporal e risco cardiovascular.\nMonitoramento: peso, circunferência abdominal, exames (hemograma, ferritina, vitamina D, perfil lipídico e glicemia conforme o caso).\nMedicamentos: anticoncepcionais, terapia hormonal e suplementos em uso.\nEncaminhamento: sangramento anormal, sintomas vasomotores intensos, anemia, densitometria alterada.\nPós-menopausa: prevenção de osteoporose e de doença cardiovascular; proteína suficiente e exercício de força.",
+ "referencias": [
+  "Ministério da Saúde. Manual de Atenção à Mulher no Climatério/Menopausa. Brasília, 2008.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "MUL"
+ },
+ "ajuste": {
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.865,
+  "fatores": {
+   "legumes": 0.865,
+   "proteina": 0.865,
+   "energia": 0.865
+  },
+  "kcal_base": 1965,
+  "kcal_calculada": 1692,
+  "em": "2026-11-14"
+ }
+}

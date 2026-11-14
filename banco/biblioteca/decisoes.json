@@ -162,5 +162,200 @@
     "Remada curvada": "Remada curvada com barra",
     "Rosca direta": "Rosca direta com barra",
     "Supino com halteres": "Supino reto com halteres"
+  },
+  "trocas": {
+    "_sobre": "Trocas por família ou código para manter o cardápio-base coerente com a categoria (regras V3 §3 e §4.5). null = retirar o item. ALI-001 tratado como vegetariano estrito (ALI-002 já é ovolactovegetariano): confirmar com o nutricionista.",
+    "ALI-001": {
+      "Ovo de galinha cozido": {
+        "nome": "Soja, queijo (tofu)",
+        "taco": "584"
+      },
+      "Ovo de galinha mexido": {
+        "nome": "Soja, queijo (tofu)",
+        "taco": "584"
+      },
+      "Iogurte natural desnatado": {
+        "nome": "Soja, extrato solúvel, natural, fluido",
+        "taco": "582"
+      },
+      "Leite desnatado UHT": {
+        "nome": "Soja, extrato solúvel, natural, fluido",
+        "taco": "582"
+      },
+      "Queijo minas frescal": {
+        "nome": "Soja, queijo (tofu)",
+        "taco": "584"
+      },
+      "Ricota": {
+        "nome": "Soja, queijo (tofu)",
+        "taco": "584"
+      },
+      "Peito de frango grelhado": {
+        "nome": "Lentilha, cozida",
+        "taco": "577"
+      },
+      "Tilápia grelhada": {
+        "nome": "Lentilha, cozida",
+        "taco": "577"
+      },
+      "Patinho bovino grelhado": {
+        "nome": "Lentilha, cozida",
+        "taco": "577"
+      }
+    },
+    "ALI-002": {
+      "Peito de frango grelhado": {
+        "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+        "taco": "488"
+      },
+      "Tilápia grelhada": {
+        "nome": "Lentilha, cozida",
+        "taco": "577"
+      },
+      "Patinho bovino grelhado": {
+        "nome": "Lentilha, cozida",
+        "taco": "577"
+      }
+    },
+    "ALI-003": {
+      "Leite desnatado UHT": {
+        "nome": "Soja, extrato solúvel, natural, fluido",
+        "taco": "582"
+      },
+      "Iogurte natural desnatado": {
+        "nome": "Soja, extrato solúvel, natural, fluido",
+        "taco": "582"
+      },
+      "Queijo minas frescal": {
+        "nome": "Soja, queijo (tofu)",
+        "taco": "584"
+      },
+      "Ricota": {
+        "nome": "Soja, queijo (tofu)",
+        "taco": "584"
+      }
+    },
+    "ALI-004": {
+      "Pão de forma integral": {
+        "nome": "Cuscuz, de milho, cozido com sal",
+        "taco": "533"
+      },
+      "Pão de forma branco": {
+        "nome": "Cuscuz, de milho, cozido com sal",
+        "taco": "533"
+      },
+      "Macarrão cozido": {
+        "nome": "Batata, doce, cozida",
+        "taco": "88"
+      },
+      "Aveia em flocos": null
+    },
+    "ALI-005": {
+      "Patinho bovino grelhado": {
+        "nome": "Filé de tilápia grelhada",
+        "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+      }
+    },
+    "ALI-006": {
+      "Peito de frango grelhado": {
+        "nome": "Salmão, sem pele, fresco, grelhado",
+        "taco": "317"
+      },
+      "Patinho bovino grelhado": {
+        "nome": "Sardinha, assada",
+        "taco": "318"
+      }
+    },
+    "MET": {
+      "Geleia de frutas": null,
+      "Pão de forma branco": {
+        "nome": "Pão, trigo, forma, integral",
+        "taco": "52"
+      },
+      "Arroz branco cozido": {
+        "nome": "Arroz, integral, cozido",
+        "taco": "1"
+      },
+      "Tapioca hidratada preparada": {
+        "nome": "Pão, trigo, forma, integral",
+        "taco": "52"
+      }
+    },
+    "IDA-003": {
+      "Peito de frango grelhado": {
+        "nome": "Frango, peito, sem pele, cozido",
+        "taco": "408"
+      },
+      "Pão de forma branco": {
+        "nome": "Pão, trigo, forma, integral",
+        "taco": "52"
+      }
+    },
+    "GAS-004": {
+      "Peito de frango grelhado": {
+        "nome": "Frango, peito, sem pele, cozido",
+        "taco": "408"
+      },
+      "Pão de forma branco": {
+        "nome": "Pão, trigo, forma, integral",
+        "taco": "52"
+      }
+    }
+  },
+  "proibidos": {
+    "_sobre": "Expressões regulares (com maiúsculas) sobre o nome do alimento na base: se casar, o validador acusa erro.",
+    "ALI-001": "Ovo|Iogurte|Leite, de vaca|^Queijo|Ricota|Frango|tilápia|Carne|Pescada|Salmão|Sardinha|Atum|Merluza|^Mel",
+    "ALI-002": "Frango|tilápia|Carne|Pescada|Salmão|Sardinha|Atum|Merluza",
+    "ALI-003": "Leite, de vaca|Iogurte|^Queijo|Ricota|Requeijão",
+    "ALI-004": "^Pão|Macarrão|Aveia|Biscoito|trigo",
+    "ALI-005": "Carne, bovina|Porco",
+    "MET": "Geleia"
+  },
+  "proteina_minima_g_kg": {
+    "_sobre": "Piso de proteína por kg do peso de referência aplicado no ajuste (proteína sobe, fontes de energia compensam). FIS: Helms ER et al., J Int Soc Sports Nutr 2014;11:20 recomendam 2,3–3,1 g/kg de massa magra na preparação; 2,0 g/kg de peso corporal é a aproximação conservadora adotada. A CONFIRMAR com o nutricionista.",
+    "FIS": 2.0
+  },
+  "trocas_por_refeicao": {
+    "_sobre": "Trocas por refeição (antes das trocas por categoria): o material antigo trazia arroz e frango em lanches. Não vale para as famílias de atletas listadas em \"exceto\". fator = multiplica as gramas.",
+    "exceto": [
+      "FIS",
+      "HIP",
+      "ESP"
+    ],
+    "Café da manhã": {
+      "Arroz branco cozido": {
+        "para": "Pão de forma integral",
+        "fator": 0.5
+      }
+    },
+    "Lanche da manhã": {
+      "Arroz branco cozido": {
+        "para": "Pão de forma integral",
+        "fator": 0.5
+      },
+      "Peito de frango grelhado": {
+        "para": "Ovo de galinha cozido",
+        "fator": 1
+      }
+    },
+    "Lanche da tarde": {
+      "Arroz branco cozido": {
+        "para": "Pão de forma integral",
+        "fator": 0.5
+      },
+      "Peito de frango grelhado": {
+        "para": "Ovo de galinha cozido",
+        "fator": 1
+      }
+    }
+  },
+  "limite_aumento_proteina": {
+    "_sobre": "Fator máximo de aumento das fontes de proteína no ajuste de energia (padrão 1,25). Clínicos e gestação/lactação: 1,0 — a energia vem das demais fontes; proteína a individualizar (V3 §4.1 e §4.3).",
+    "CLI": 1.0,
+    "MUL-005": 1.0,
+    "MUL-006": 1.0,
+    "MUL-007": 1.0,
+    "MUL-008": 1.0,
+    "MUL-009": 1.0
   }
 }

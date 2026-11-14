@@ -1,0 +1,201 @@
+{
+ "codigo": "ALI-001",
+ "tipo": "dieta",
+ "nome": "ALI-001 — Preferências e restrições alimentares — Vegetariana — 1.500 kcal",
+ "categoria": "Preferências e restrições",
+ "objetivo": "Preferências e restrições alimentares",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1500,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 40
+    },
+    {
+     "alimento": {
+      "taco": "582"
+     },
+     "nome": "Soja, extrato solúvel, natural, fluido",
+     "gramas": 235
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 105
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "584"
+     },
+     "nome": "Soja, queijo (tofu)",
+     "gramas": 55
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "1"
+     },
+     "nome": "Arroz, integral, cozido",
+     "gramas": 130
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "584"
+     },
+     "nome": "Soja, queijo (tofu)",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 11
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "582"
+     },
+     "nome": "Soja, extrato solúvel, natural, fluido",
+     "gramas": 175
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 140
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "id": "563d32f7-b39b-454c-9c9a-8cf2be645345"
+     },
+     "nome": "Macarrão cozido",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "584"
+     },
+     "nome": "Soja, queijo (tofu)",
+     "gramas": 125
+    },
+    {
+     "alimento": {
+      "taco": "157"
+     },
+     "nome": "Tomate, com semente, cru",
+     "gramas": 95
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 11
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "O plano respeita a sua restrição ou preferência alimentar. Pese os alimentos na forma indicada e troque apenas pelas opções combinadas com o nutricionista."
+  },
+  {
+   "titulo": "Rótulos",
+   "texto": "Leia sempre a lista de ingredientes e os avisos do rótulo (\"contém\", \"pode conter\"). As fórmulas dos produtos mudam: confira mesmo nas marcas que você já conhece."
+  },
+  {
+   "titulo": "Fora de casa",
+   "texto": "Em restaurantes e eventos, pergunte como o prato é preparado e se há risco de contato com o ingrediente que você evita. Na dúvida, prefira preparações simples."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia, mesmo sem sede. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista se tiver reação depois de comer (coceira, inchaço, diarreia, falta de ar), cansaço fora do normal ou dificuldade de encontrar os alimentos do plano. Falta de ar ou inchaço de lábios e garganta é emergência."
+  },
+  {
+   "titulo": "Vitamina B12",
+   "texto": "Uma alimentação sem produtos de origem animal não fornece vitamina B12. Converse com o nutricionista sobre exames e a forma de garantir esse nutriente."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: alimentação adequada dentro da restrição ou preferência indicada no título.\nPerfil de aplicação: adultos com a restrição ou escolha alimentar do título; confirmar se é alergia (risco de reação grave), intolerância, doença celíaca ou preferência, pois a conduta muda.\nIndividualização: energia conforme gasto estimado e objetivo; substituições que mantenham proteína, cálcio, ferro, zinco, B12 e fibras; verificar alergias, contaminação cruzada e adequação de nutrientes antes do uso.\nMonitoramento: adequação da ingestão, sintomas, exames pertinentes (hemograma, ferritina, B12, vitamina D conforme o caso).\nEncaminhamento: suspeita de alergia não diagnosticada, sintomas persistentes ou deficiências laboratoriais.\nALI-001 montado como vegetariano estrito, sem nenhum alimento de origem animal (ALI-002 cobre o ovolactovegetariano): confirmar o padrão do paciente. Proteína de leguminosas, tofu e extrato de soja; avaliar B12 (suplementação necessária no vegetarianismo estrito), ferro, zinco, cálcio, iodo e ômega-3.",
+ "referencias": [
+  "Melina V, Craig W, Levin S. Position of the Academy of Nutrition and Dietetics: Vegetarian Diets. J Acad Nutr Diet. 2016;116(12):1970-80.",
+  "Sociedade Vegetariana Brasileira. Guia alimentar de dietas vegetarianas para adultos. São Paulo, 2012.",
+  "Rubio-Tapia A et al. American College of Gastroenterology Guidelines Update: Diagnosis and Management of Celiac Disease. Am J Gastroenterol. 2023;118(1):59-76.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "ALI"
+ },
+ "ajuste": {
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.108,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1.108,
+   "energia": 1.113
+  },
+  "kcal_base": 1354,
+  "kcal_calculada": 1504,
+  "em": "2026-11-14"
+ }
+}

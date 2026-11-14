@@ -1,0 +1,819 @@
+{
+ "codigo": "CIC-002",
+ "tipo": "ciclismo",
+ "nome": "CIC-002 — Iniciante — resistência aeróbia — 8 semanas",
+ "nivel": "iniciante",
+ "objetivo": "Iniciante — resistência aeróbia",
+ "duracao_semanas": 8,
+ "fase": "Base",
+ "semanas": [
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 45,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 1: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 25,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 1: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 75,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 60,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 1: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 45,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 30,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 2: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 25,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 2: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 80,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 65,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 2: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 50,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 35,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 3: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 30,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 3: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 90,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 75,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 3: adaptação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 25,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 4: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 25,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 4: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 70,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 55,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 4: semana de recuperação (volume menor). Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 55,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 40,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 5: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 30,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 5: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 95,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 80,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 5: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 55,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 40,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 6: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 30,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 6: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 100,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 85,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 6: desenvolvimento. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 55,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 40,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 7: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 35,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 7: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 110,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 95,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 7: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Endurance",
+     "descricao": "Pedal contínuo leve.",
+     "duracao_min": 60,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal contínuo leve.",
+       "repeticoes": null,
+       "duracao_min": 45,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 8: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Tempo",
+     "descricao": "Bloco contínuo moderado, sustentável.",
+     "duracao_min": 35,
+     "zona": "Z3",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Bloco contínuo moderado, sustentável.",
+       "repeticoes": null,
+       "duracao_min": 20,
+       "intensidade": "Z3"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 8: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Longo",
+     "descricao": "Pedal longo e leve.",
+     "duracao_min": 115,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "Aquecimento progressivo",
+       "repeticoes": null,
+       "duracao_min": 10,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Pedal longo e leve.",
+       "repeticoes": null,
+       "duracao_min": 100,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "Volta à calma",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Semana 8: consolidação. Ajustar à tolerância e às zonas individuais; sem boa recuperação, repetir a semana anterior."
+    }
+   ]
+  }
+ ],
+ "orientacoes_aluno": [
+  {
+   "titulo": "Segurança",
+   "texto": "Use capacete e sinalização, confira a bicicleta antes de sair e prefira trajetos seguros. Treinos de intensidade podem ser feitos no rolo ou em local sem trânsito."
+  },
+  {
+   "titulo": "Intensidade",
+   "texto": "As zonas (Z1 a Z5) são as suas, configuradas pelo educador físico. Nos treinos leves você deve conseguir conversar; não force além da zona indicada."
+  },
+  {
+   "titulo": "Aquecimento e volta à calma",
+   "texto": "Não pule o aquecimento nem a volta à calma: eles fazem parte do tempo total da sessão."
+  },
+  {
+   "titulo": "Registro",
+   "texto": "Registre no aplicativo tempo, esforço percebido e qualquer desconforto. Sessão não feita também deve ser informada."
+  },
+  {
+   "titulo": "Sinais de alerta",
+   "texto": "Pare e avise o educador físico em caso de dor no peito, falta de ar desproporcional, tontura, palpitações ou dor no joelho, quadril ou lombar durante a pedalada."
+  }
+ ],
+ "orientacoes_profissional": "Perfil e objetivo: conforme o título (nível e duração do programa). Confirmar histórico no ciclismo, ajuste da bicicleta (bike fit), lesões, condições de saúde e disponibilidade antes de aplicar; ajustar os dias da semana à rotina.\nZonas: Z1–Z5 são relativas; configurar as zonas individuais do aluno no aplicativo antes de enviar. Potência, FTP, TSS, frequência cardíaca e altimetria não foram preenchidos e só devem ser informados com dados reais do aluno.\nProgressão: semana a semana, condicionada a sintomas, recuperação e registros; repetir a semana ou reduzir o volume diante de dor, fadiga persistente ou baixa adesão.\nMonitoramento: adesão e esforço percebido no relatório semanal; dor recorrente em joelho, quadril ou lombar pede revisão do ajuste da bicicleta.\nOrientações ao aluno: corrida e ciclismo ainda não têm campo de observações gerais no plano; repasse as orientações abaixo ao aluno ao enviar o treino.\n\nProgressão: semanas de recuperação com cerca de 75% do volume; avançar somente com boa tolerância, sem sintomas e com registros consistentes.",
+ "referencias": [
+  "Seiler S. What is best practice for training intensity and duration distribution in endurance athletes? Int J Sports Physiol Perform. 2010;5(3):276-91.",
+  "Garber CE et al. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults. Med Sci Sports Exerc. 2011;43(7):1334-59."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "programa gerado de banco/biblioteca/endurance.json",
+  "orientacoes": "CIC"
+ }
+}

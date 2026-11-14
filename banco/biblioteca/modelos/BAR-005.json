@@ -1,0 +1,49 @@
+{
+ "codigo": "BAR-005",
+ "tipo": "dieta",
+ "nome": "BAR-005 — Pós-operatório bariátrico — Manutenção tardia: revisão obrigatória",
+ "categoria": "Bariátrica",
+ "objetivo": "Pós-operatório bariátrico",
+ "situacao": "bloqueado",
+ "meta_kcal_nominal": null,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": null,
+ "hidratacao_observacoes": "Sem valor padrão: seguir a equipe cirúrgica e a tolerância da fase.",
+ "refeicoes": [],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Siga a equipe da cirurgia",
+   "texto": "A consistência, a quantidade e o momento de mudar de fase são definidos pela sua equipe da cirurgia e pela sua tolerância, não pelo calendário. Este modelo não substitui essas orientações."
+  },
+  {
+   "titulo": "Como comer",
+   "texto": "Coma e beba devagar, em pequenas quantidades, e pare aos primeiros sinais de saciedade. Mastigue muito bem. Não beba líquidos junto com as refeições, salvo orientação diferente da equipe."
+  },
+  {
+   "titulo": "Hidratação e proteína",
+   "texto": "Beba líquidos em pequenos goles ao longo do dia, entre as refeições. Priorize os alimentos ricos em proteína indicados para a sua fase."
+  },
+  {
+   "titulo": "Vitaminas e minerais",
+   "texto": "Use os suplementos prescritos todos os dias e faça os exames de acompanhamento. A necessidade de suplementos continua por toda a vida."
+  },
+  {
+   "titulo": "Procure atendimento com urgência",
+   "texto": "Vômitos repetidos, não conseguir beber líquidos, sinais de desidratação (boca seca, urina escura ou pouca), dor abdominal forte, febre, formigamento, fraqueza nas pernas, confusão ou alteração da visão exigem avaliação médica imediata."
+  },
+  {
+   "titulo": "Manutenção",
+   "texto": "Comece as refeições pela proteína, evite beliscar ao longo do dia e evite doces e bebidas açucaradas, que podem causar mal-estar e recuperação de peso. Mantenha os suplementos e os exames."
+  }
+ ],
+ "orientacoes_profissional": "MODELO NÃO PRESCRITIVO, bloqueado até revisão: não traz cardápio completo, volumes nem horários, porque dependem do protocolo da equipe cirúrgica (V3 §4.2). Usar como estrutura de orientação da fase.\nAplicável a Sleeve e Bypass em Y de Roux. Sleeve: atenção a refluxo e a intolerâncias na progressão. Bypass: risco de síndrome de dumping (evitar açúcares simples e líquidos calóricos), maior risco de deficiência de ferro, B12, cálcio e vitamina D por exclusão do duodeno.\nIndividualização: progressão de consistência e volume conforme protocolo da equipe e tolerância; hidratação prioritária; adequação proteica progressiva (metas frequentes de cerca de 60–80 g de proteína/dia e 1,5–2 L de líquidos/dia só quando compatíveis com a fase, a tolerância e a orientação da equipe — não aplicar automaticamente); suplementação de vitaminas e minerais conforme protocolo.\nMonitoramento: tolerância, hidratação, ingestão proteica, perda de peso, exames (ferro, ferritina, B12, folato, cálcio, vitamina D, PTH, tiamina conforme o caso).\nAlerta: vômitos persistentes, incapacidade de ingerir líquidos, desidratação e sinais neurológicos (risco de deficiência de tiamina) exigem avaliação clínica urgente.\nNão fixar calorias iguais para todas as fases.\nManutenção tardia: revisão obrigatória; prevenção de recuperação de peso, dumping tardio e deficiências; seguimento bariátrico contínuo.",
+ "referencias": [
+  "Mechanick JI et al. Clinical Practice Guidelines for the Perioperative Nutrition, Metabolic, and Nonsurgical Support of Patients Undergoing Bariatric Procedures – 2019 Update. Surg Obes Relat Dis. 2020;16(2):175-247.",
+  "Parrott J et al. American Society for Metabolic and Bariatric Surgery Integrated Health Nutritional Guidelines for the Surgical Weight Loss Patient 2016 Update: Micronutrients. Surg Obes Relat Dis. 2017;13(5):727-41."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "rascunho novo (clinicos.json)",
+  "orientacoes": "BAR"
+ }
+}

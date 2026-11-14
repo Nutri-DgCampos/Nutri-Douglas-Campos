@@ -1,0 +1,198 @@
+{
+ "codigo": "FIS-BB-005",
+ "tipo": "dieta",
+ "nome": "FIS-BB-005 — Preparação competitiva individualizada — Bodybuilder — D-28 a D-15 — 100 kg",
+ "categoria": "Fisiculturismo — Bodybuilder",
+ "objetivo": "Preparação competitiva individualizada",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 2800,
+ "peso_referencia_kg": 100,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial para todas as fases; ajustar a transpiração, clima e prescrição médica. Não reduzir a ingestão de líquidos na semana da competição.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 310
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 120
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 110
+    },
+    {
+     "alimento": {
+      "taco": "461"
+     },
+     "nome": "Queijo, minas, frescal",
+     "gramas": 70
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "1"
+     },
+     "nome": "Arroz, integral, cozido",
+     "gramas": 275
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 120
+    },
+    {
+     "alimento": {
+      "taco": "377"
+     },
+     "nome": "Carne, bovina, patinho, sem gordura, grelhado",
+     "gramas": 185
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 6
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 245
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 155
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "id": "563d32f7-b39b-454c-9c9a-8cf2be645345"
+     },
+     "nome": "Macarrão cozido",
+     "gramas": 300
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 170
+    },
+    {
+     "alimento": {
+      "taco": "157"
+     },
+     "nome": "Tomate, com semente, cru",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 6
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Pese os alimentos na forma indicada e siga as refeições do plano da fase atual. Os horários são combinados com o nutricionista conforme treino e rotina."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo de todo o dia em todas as fases. Este plano não usa restrição de água, de sal ou remédios para \"secar\": essas práticas são perigosas e não melhoram o resultado."
+  },
+  {
+   "titulo": "Registro",
+   "texto": "Registre peso em jejum, fotos quando combinado, sono, fome, desempenho no treino e funcionamento do intestino. Esses dados guiam os ajustes."
+  },
+  {
+   "titulo": "Suplementos e substâncias",
+   "texto": "Use somente suplementos combinados com o nutricionista. Não use remédios, diuréticos, laxantes ou hormônios por conta própria."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise imediatamente em caso de tontura, desmaio, palpitações, cãibras fortes, urina muito escura ou em pouca quantidade, fraqueza intensa ou alterações de humor importantes."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: suporte nutricional por fase da temporada competitiva, preservando massa magra, desempenho e saúde.\nPerfil de aplicação: atletas da divisão do título; peso de referência do catálogo é apenas ponto de partida — recalcular por peso atual, composição corporal e taxa de perda semanal.\nIndividualização: proteína por kg de peso; carboidratos conforme treino e fase; gorduras sem cortes extremos (manter função hormonal); refeições conforme rotina.\nSegurança (diretriz do catálogo): aparência muscular plana não confirma depleção de glicogênio — revisar carboidratos, treino, recuperação e hidratação; urina concentrada: avaliar ingestão, perdas e sintomas, nunca restringir líquidos; distensão: revisar fibras, lactose, volume e tolerância, evitando intervenções extremas. A estratégia não inclui saturação hídrica obrigatória, restrição de água ou sódio, diuréticos ou depleção automática de carboidratos.\nMonitoramento: peso e taxa de perda semanal, composição corporal, desempenho, sono, fome, humor, ciclo menstrual nas atletas e exames periódicos.\nEncaminhamento: sinais de baixa disponibilidade energética, transtorno alimentar ou dismórfico, uso de substâncias, alterações laboratoriais.\nBodybuilder: maior massa muscular de referência; fases de preparação mais longas costumam exigir ajustes graduais de energia.\nReta final (D-28 a D-15): sem cortes bruscos; definir com o atleta a estratégia da semana de pico com alimentos já testados.",
+ "referencias": [
+  "Helms ER, Aragon AA, Fitschen PJ. Evidence-based recommendations for natural bodybuilding contest preparation: nutrition and supplementation. J Int Soc Sports Nutr. 2014;11:20.",
+  "Escalante G et al. Peak week recommendations for bodybuilders: an evidence based approach. BMC Sports Sci Med Rehabil. 2021;13(1):68.",
+  "Mountjoy M et al. 2023 International Olympic Committee's consensus statement on Relative Energy Deficiency in Sport (REDs). Br J Sports Med. 2023;57(17):1073-97."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "FIS"
+ },
+ "ajuste": {
+  "proteina_g_kg": 1.99,
+  "piso_proteina_g_kg": 2,
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.364,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1.25,
+   "energia": 1.424
+  },
+  "kcal_base": 2053,
+  "kcal_calculada": 2805,
+  "em": "2026-11-14"
+ }
+}

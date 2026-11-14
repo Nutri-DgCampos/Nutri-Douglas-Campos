@@ -1,0 +1,221 @@
+{
+ "codigo": "MUS-010",
+ "tipo": "musculacao",
+ "nome": "MUS-010 — Feminino — hipertrofia intermediária — ABCD 4x",
+ "nivel": "intermediario/avancado: confirmar",
+ "objetivo": "Hipertrofia e condicionamento conforme nível",
+ "dias": [
+  {
+   "dia": "seg",
+   "titulo": "A — Quadríceps e glúteos",
+   "observacao": null,
+   "exercicios": [
+    {
+     "exercicio": "Agachamento livre",
+     "series": 3,
+     "repeticoes_min": 8,
+     "repeticoes_max": 12,
+     "descanso_segundos": 120,
+     "observacao": null
+    },
+    {
+     "exercicio": "Leg press 45°",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Afundo com halteres",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Cadeira extensora",
+     "series": 3,
+     "repeticoes_min": 12,
+     "repeticoes_max": 15,
+     "descanso_segundos": 60,
+     "observacao": null
+    },
+    {
+     "exercicio": "Cadeira abdutora",
+     "series": 3,
+     "repeticoes_min": 12,
+     "repeticoes_max": 20,
+     "descanso_segundos": 60,
+     "observacao": null
+    }
+   ]
+  },
+  {
+   "dia": "ter",
+   "titulo": "B — Peito, ombros e tríceps",
+   "observacao": null,
+   "exercicios": [
+    {
+     "exercicio": "Supino inclinado com halteres",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Desenvolvimento com halteres",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Elevação lateral com halteres",
+     "series": 3,
+     "repeticoes_min": 12,
+     "repeticoes_max": 15,
+     "descanso_segundos": 60,
+     "observacao": null
+    },
+    {
+     "exercicio": "Tríceps corda",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 60,
+     "observacao": null
+    }
+   ]
+  },
+  {
+   "dia": "qui",
+   "titulo": "C — Posteriores e glúteos",
+   "observacao": null,
+   "exercicios": [
+    {
+     "exercicio": "Stiff com barra",
+     "series": 3,
+     "repeticoes_min": 8,
+     "repeticoes_max": 12,
+     "descanso_segundos": 120,
+     "observacao": null
+    },
+    {
+     "exercicio": "Elevação pélvica",
+     "series": 4,
+     "repeticoes_min": 8,
+     "repeticoes_max": 12,
+     "descanso_segundos": 120,
+     "observacao": null
+    },
+    {
+     "exercicio": "Mesa flexora",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Glúteo na polia (coice)",
+     "series": 3,
+     "repeticoes_min": 12,
+     "repeticoes_max": 15,
+     "descanso_segundos": 60,
+     "observacao": null
+    },
+    {
+     "exercicio": "Panturrilha em pé",
+     "series": 3,
+     "repeticoes_min": 12,
+     "repeticoes_max": 15,
+     "descanso_segundos": 60,
+     "observacao": null
+    }
+   ]
+  },
+  {
+   "dia": "sex",
+   "titulo": "D — Costas e bíceps",
+   "observacao": null,
+   "exercicios": [
+    {
+     "exercicio": "Puxada frontal",
+     "series": 3,
+     "repeticoes_min": 8,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Remada baixa",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Remada unilateral com halter",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 90,
+     "observacao": null
+    },
+    {
+     "exercicio": "Face pull",
+     "series": 2,
+     "repeticoes_min": 12,
+     "repeticoes_max": 15,
+     "descanso_segundos": 60,
+     "observacao": null
+    },
+    {
+     "exercicio": "Rosca alternada com halteres",
+     "series": 3,
+     "repeticoes_min": 10,
+     "repeticoes_max": 12,
+     "descanso_segundos": 60,
+     "observacao": null
+    }
+   ]
+  }
+ ],
+ "orientacoes_aluno": [
+  {
+   "titulo": "Execução",
+   "texto": "A técnica vem antes da carga: faça o movimento completo e controlado, sem trancos. Se não conseguir manter a técnica nas últimas repetições, reduza a carga."
+  },
+  {
+   "titulo": "Esforço e descanso",
+   "texto": "Termine cada série sentindo que conseguiria fazer mais algumas repetições, salvo orientação diferente do seu educador físico. Respeite o descanso indicado entre as séries."
+  },
+  {
+   "titulo": "Registro",
+   "texto": "Registre no aplicativo as cargas, repetições e como se sentiu. Esses registros guiam os ajustes do treino."
+  },
+  {
+   "titulo": "Recuperação",
+   "texto": "Durma bem, alimente-se conforme o plano e respeite os dias de descanso. Dor muscular leve nos dias seguintes é comum no início."
+  },
+  {
+   "titulo": "Sinais de alerta",
+   "texto": "Interrompa o treino e avise o educador físico em caso de dor aguda ou articular, tontura, falta de ar fora do normal, palpitações ou mal-estar."
+  }
+ ],
+ "orientacoes_profissional": "Perfil e objetivo: conforme o título do modelo (nível e divisão). Confirmar experiência prévia, histórico de lesões, limitações, liberação médica quando indicada e disponibilidade semanal antes de aplicar.\nCargas: em branco de propósito; definir pela execução e pelo esforço percebido (RPE/RIR) nas primeiras sessões. O volume é calculado pelo aplicativo a partir dos registros; não registrar volume como realizado.\nProgressão: aumentar carga, repetições ou séries somente com técnica consistente, esforço tolerável e boa recuperação; regredir (menos séries, menor amplitude ou exercício alternativo) diante de dor, fadiga acumulada ou queda de desempenho.\nAdaptações: trocar exercícios conforme os equipamentos da academia do aluno e as limitações articulares, mantendo o grupo muscular e o padrão de movimento.\nMonitoramento: adesão semanal, cargas registradas, desconforto relatado e relatório semanal.\n\nProgressão: Progredir somente se técnica, esforço percebido, desempenho e recuperação permitirem; educador físico confirma carga, volume, séries e descanso. Não executar progressão automática.",
+ "referencias": [
+  "American College of Sports Medicine. Progression models in resistance training for healthy adults. Med Sci Sports Exerc. 2009;41(3):687-708.",
+  "Garber CE et al. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults. Med Sci Sports Exerc. 2011;43(7):1334-59."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "antes igual a MUS-006 (masculino); feminino com mais membros inferiores",
+  "orientacoes": "MUS"
+ }
+}

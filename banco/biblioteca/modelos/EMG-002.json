@@ -183,6 +183,12 @@
  "ajuste": {
   "metodo": "fator único sobre as gramas do cardápio-base",
   "fator": 0.859,
+  "fatores": {
+   "legumes": 0.859,
+   "proteina": 0.859,
+   "energia": 0.859
+  },
+  "kcal_base": 1746,
   "kcal_calculada": 1501,
   "em": "2026-11-14"
  }

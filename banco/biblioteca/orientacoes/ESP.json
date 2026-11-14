@@ -1,0 +1,23 @@
+{
+ "familia": "ESP — Desempenho esportivo",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Pese os alimentos na forma indicada até se acostumar com as porções. Os horários das refeições são combinados conforme os seus treinos e provas."},
+  {"titulo": "Antes e depois do treino", "texto": "Faça uma refeição com carboidratos de fácil digestão algumas horas antes de treinos longos ou intensos e uma refeição com carboidratos e proteína depois. Evite testar alimentos novos em dia de prova."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia e reponha os líquidos perdidos no treino, principalmente no calor. Em treinos longos, combine com o nutricionista a necessidade de bebidas com carboidratos e sais."},
+  {"titulo": "Recuperação", "texto": "Respeite as refeições do dia de descanso: elas ajudam a recuperar os estoques de energia e os músculos para o próximo treino."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista em caso de cansaço fora do normal, queda de desempenho, cãibras frequentes, desconforto intestinal no treino, alterações no ciclo menstrual ou perda de peso não planejada."}
+ ],
+ "profissional": "Objetivo: atender à demanda energética do esporte, abastecer e recuperar entre sessões e sustentar desempenho e saúde.\nPerfil de aplicação: praticantes de modalidade e volume indicados no título; os valores energéticos do catálogo são referência e devem ser recalculados pelo gasto real (avaliação física, Rotina semanal com METs do Treino).\nIndividualização: carboidratos ajustados ao volume e à intensidade do dia (periodização por dia de treino e descanso), proteína por kg de peso, gorduras para completar a energia; estratégia de abastecimento durante sessões longas e treino do intestino quando pertinente.\nMonitoramento: peso, desempenho, percepção de esforço, sintomas gastrointestinais no treino e adesão. Atenção a baixa disponibilidade energética (REDs): perda de peso não planejada, fadiga, lesões de repetição e alterações menstruais.\nSuplementos: só com indicação e produto de procedência verificada (risco de doping).\nEncaminhamento: sinais de REDs, anemia ou lesões por estresse.",
+ "hidratacao": "Referência inicial; ajustar à taxa de suor, clima, duração do treino e prescrição médica.",
+ "por_codigo": {
+  "ESP-007": {"profissional": "Treino duplo: prever uma refeição ou lanche de recuperação entre as sessões."},
+  "ESP-015": {"profissional": "Treino duplo: prever uma refeição ou lanche de recuperação entre as sessões."},
+  "ESP-008": {"profissional": "Esportes coletivos: ajustar à posição, minutos jogados e calendário de jogos."},
+  "ESP-016": {"profissional": "Esportes coletivos: ajustar à posição, minutos jogados e calendário de jogos."}
+ },
+ "referencias": [
+  "Thomas DT, Erdman KA, Burke LM. American College of Sports Medicine Joint Position Statement: Nutrition and Athletic Performance. Med Sci Sports Exerc. 2016;48(3):543-68.",
+  "Kerksick CM et al. International Society of Sports Nutrition position stand: nutrient timing. J Int Soc Sports Nutr. 2017;14:33.",
+  "Mountjoy M et al. 2023 International Olympic Committee's consensus statement on Relative Energy Deficiency in Sport (REDs). Br J Sports Med. 2023;57(17):1073-97."
+ ]
+}

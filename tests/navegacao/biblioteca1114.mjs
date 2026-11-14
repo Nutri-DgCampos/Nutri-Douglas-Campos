@@ -95,7 +95,21 @@ conferir("lista traz código e situação", itemEmg?.situacao === "liberado" && 
 await pg.goto(`${B}/nutricao/configuracoes/dieta/modelos`, { waitUntil: "networkidle" });
 await pg.waitForTimeout(1200);
 conferir("modelo bloqueado com etiqueta na biblioteca", await pg.getByText("Bloqueado até revisão").first().isVisible().catch(() => false), null);
-conferir("etiqueta só no bloqueado", (await pg.getByText("Bloqueado até revisão").count()) === 1, await pg.getByText("Bloqueado até revisão").count());
+const bloqueados = Number(sql("select count(*) from modelos_nutricao where tipo = 'dieta' and situacao = 'bloqueado' and arquivado_em is null;"));
+conferir("etiqueta só nos bloqueados", (await pg.getByText("Bloqueado até revisão").count()) === bloqueados, [await pg.getByText("Bloqueado até revisão").count(), bloqueados]);
+// Biblioteca completa importada (fase 2 a 4): 161 liberadas + 15 bloqueadas + 40 treinos.
+conferir(
+  "biblioteca completa na base local",
+  sql("select count(*) filter (where situacao = 'liberado') || ' ' || count(*) filter (where situacao = 'bloqueado') from modelos_nutricao where codigo ~ '^[A-Z]{3}(-[A-Z]{2,3})?-[0-9]{3}$' and codigo <> 'TST-901';") === "161 15" &&
+    sql("select count(*) from treino_modelos where codigo is not null;") === "40",
+  null
+);
+conferir(
+  "clínicos, gestação e bariátricos bloqueados",
+  sql("select count(*) from modelos_nutricao where codigo ~ '^(CLI|BAR)-' or codigo in ('MUL-005','MUL-006','MUL-007','MUL-008','MUL-009');") ===
+    sql("select count(*) from modelos_nutricao where situacao = 'bloqueado' and codigo <> 'TST-901';"),
+  null
+);
 conferir("piloto EMG-002 na biblioteca", await pg.getByText("EMG-002 — Emagrecimento e recomposição").first().isVisible().catch(() => false), null);
 await pg.screenshot({ path: path.join(PASTA, "bib1114-biblioteca.png"), fullPage: true });
 
@@ -120,6 +134,24 @@ conferir("orientações ao paciente copiadas", nova.includes("Como seguir o plan
 conferir("orientações ao nutricionista NÃO copiadas", !nova.includes("Perfil de aplicação") && !nova.includes("Referências técnicas"), null);
 conferir("refeições sem horário", !/"horario":\s*"\d/.test(nova), null);
 conferir("uso contado no piloto", sql("select usos from modelos_nutricao where codigo = 'EMG-002';") === "1", null);
+
+// PDF da dieta feita a partir do modelo: orientações ao paciente sim, ao nutricionista não.
+const NOVA_ID = sql(`select id from dietas where consulta_id = (select consulta_id from dietas where id = '${DIETA}') and id <> '${DIETA}' limit 1;`);
+const b64 = await pg.evaluate(async (u) => {
+  const r = await fetch(u);
+  const bytes = new Uint8Array(await r.arrayBuffer());
+  let s = "";
+  for (const b of bytes) s += String.fromCharCode(b);
+  return btoa(s);
+}, `/api/nutricao/dietas/${NOVA_ID}/pdf`);
+const arquivoPdf = path.join(PASTA, "bib1114-dieta.pdf");
+fs.writeFileSync(arquivoPdf, Buffer.from(b64, "base64"));
+const textoPdf = execSync(`python -c "import sys,pypdf; r=pypdf.PdfReader(sys.argv[1]); print(' '.join(p.extract_text() for p in r.pages))" "${arquivoPdf}"`, {
+  encoding: "utf8",
+  env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+}).replace(/\s+/g, " ");
+conferir("PDF traz as orientações ao paciente", textoPdf.includes("Como seguir o plano") && textoPdf.includes("Goma de mandioca"), textoPdf.slice(0, 300));
+conferir("PDF sem as orientações ao nutricionista", !textoPdf.includes("Perfil de aplicação") && !textoPdf.includes("Referências técnicas"), null);
 
 // --- Editor do modelo bloqueado: aviso, orientações e liberação --------------------------------
 await pg.goto(`${B}/nutricao/configuracoes/dieta/modelos/${TST_ID}`, { waitUntil: "networkidle" });

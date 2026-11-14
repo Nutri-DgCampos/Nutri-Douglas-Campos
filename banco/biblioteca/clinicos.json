@@ -1,0 +1,73 @@
+{
+ "_sobre": "Rascunhos novos dos modelos bloqueados (V3: clínicos e gestação/lactação com cardápio específico, nunca o antigo; bariátricos sem cardápio completo sem protocolo validado). Itens: 'chave|gramas', onde a chave é um alimento de decisoes.json ou 'taco:CÓDIGO Nome'. Gramas são referência de partida; energia calculada pela base e informada, sem meta obrigatória. Todos entram bloqueados até a revisão do nutricionista.",
+ "BAR-001": {"orientacoes": "BAR", "refeicoes": []},
+ "BAR-002": {"orientacoes": "BAR", "refeicoes": []},
+ "BAR-003": {"orientacoes": "BAR", "refeicoes": []},
+ "BAR-004": {"orientacoes": "BAR", "refeicoes": []},
+ "BAR-005": {"orientacoes": "BAR", "refeicoes": []},
+ "CLI-001": {"orientacoes": "CLI", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Ovo de galinha cozido|50", "Queijo minas frescal|30", "Mamão papaia|100"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "Aveia em flocos|15", "taco:239 Morango|100"]},
+  {"nome": "Almoço", "itens": ["Arroz integral cozido|100", "Feijão carioca cozido|100", "Peito de frango grelhado|100", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["taco:222 Maçã Fuji|130", "taco:589 Castanha-do-Brasil|8"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|100", "Tilápia grelhada|120", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|8"]}]},
+ "CLI-002": {"orientacoes": "CLI", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma branco|50", "Ovo de galinha cozido|50", "taco:222 Maçã Fuji|130"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|100", "taco:239 Morango|80"]},
+  {"nome": "Almoço", "itens": ["Arroz branco cozido|120", "Feijão carioca cozido|50", "Peito de frango grelhado|60", "Abobrinha cozida|80", "taco:78 Alface crespa|30", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["taco:239 Morango|100", "Pão de forma branco|25"]},
+  {"nome": "Jantar", "itens": ["Arroz branco cozido|120", "Tilápia grelhada|60", "Chuchu cozido|80", "Azeite de oliva|8"]}]},
+ "CLI-003": {"orientacoes": "CLI", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Banana-prata|90", "Leite desnatado UHT|200"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "taco:239 Morango|100", "taco:594 Linhaça|10"]},
+  {"nome": "Almoço", "itens": ["Arroz integral cozido|100", "Feijão preto cozido|100", "Peito de frango grelhado|100", "taco:116 Couve refogada|40", "taco:97 Beterraba cozida|60", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["taco:214 Laranja pêra|180", "taco:589 Castanha-do-Brasil|8"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|120", "taco:318 Sardinha assada|100", "Brócolis cozido|80", "Abobrinha cozida|60", "Azeite de oliva|8"]}]},
+ "CLI-004": {"orientacoes": "CLI", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Aveia em flocos|30", "Leite desnatado UHT|200", "Banana-prata|90"]},
+  {"nome": "Lanche da manhã", "itens": ["taco:222 Maçã Fuji|130", "taco:589 Castanha-do-Brasil|8"]},
+  {"nome": "Almoço", "itens": ["Arroz integral cozido|100", "taco:577 Lentilha cozida|100", "Peito de frango grelhado|100", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|10"]},
+  {"nome": "Lanche da tarde", "itens": ["Iogurte natural desnatado|170", "taco:594 Linhaça|10", "Mamão papaia|100"]},
+  {"nome": "Jantar", "itens": ["Arroz integral cozido|80", "taco:317 Salmão grelhado|100", "Abobrinha cozida|80", "Tomate cru|60", "Azeite de oliva|8"]}]},
+ "CLI-005": {"orientacoes": "CLI", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Ovo de galinha cozido|50", "Mamão papaia|120"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "taco:239 Morango|100"]},
+  {"nome": "Almoço", "itens": ["Arroz integral cozido|90", "Feijão carioca cozido|100", "Peito de frango grelhado|110", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["taco:222 Maçã Fuji|130", "taco:589 Castanha-do-Brasil|8"]},
+  {"nome": "Jantar", "itens": ["taco:577 Lentilha cozida|80", "Tilápia grelhada|120", "Brócolis cozido|80", "Abobrinha cozida|80", "Azeite de oliva|8"]}]},
+ "MUL-006": {"orientacoes": "GESTACAO", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Ovo de galinha cozido|50", "taco:214 Laranja pêra|180"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "Mamão papaia|120"]},
+  {"nome": "Almoço", "itens": ["Arroz branco cozido|120", "Feijão carioca cozido|100", "Patinho bovino grelhado|100", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["Banana-prata|90", "taco:589 Castanha-do-Brasil|8", "Leite desnatado UHT|200"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|120", "Peito de frango grelhado|100", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|8"]}]},
+ "MUL-007": {"orientacoes": "GESTACAO", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Ovo de galinha cozido|50", "taco:214 Laranja pêra|180"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "Mamão papaia|120", "Aveia em flocos|15"]},
+  {"nome": "Almoço", "itens": ["Arroz branco cozido|130", "Feijão carioca cozido|100", "Patinho bovino grelhado|100", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["Banana-prata|90", "taco:589 Castanha-do-Brasil|8", "Leite desnatado UHT|200"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|130", "taco:317 Salmão grelhado|100", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|8"]},
+  {"nome": "Ceia", "itens": ["Leite desnatado UHT|200", "Pão de forma integral|25"]}]},
+ "MUL-008": {"orientacoes": "GESTACAO", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Ovo de galinha cozido|50"]},
+  {"nome": "Lanche da manhã", "itens": ["taco:214 Laranja pêra|180", "Iogurte natural desnatado|170", "Aveia em flocos|20"]},
+  {"nome": "Almoço", "itens": ["Arroz branco cozido|110", "Feijão carioca cozido|90", "Patinho bovino grelhado|100", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["Banana-prata|90", "taco:589 Castanha-do-Brasil|8", "Leite desnatado UHT|200"]},
+  {"nome": "Lanche da tarde 2", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Mamão papaia|120"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|110", "taco:317 Salmão grelhado|100", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|8"]},
+  {"nome": "Ceia", "itens": ["Leite desnatado UHT|200", "Pão de forma integral|25"]}]},
+ "MUL-005": {"orientacoes": "GESTACAO", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Ovo de galinha cozido|50", "taco:214 Laranja pêra|180"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "Mamão papaia|120", "Aveia em flocos|20"]},
+  {"nome": "Almoço", "itens": ["Arroz branco cozido|130", "Feijão carioca cozido|100", "Patinho bovino grelhado|100", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["Banana-prata|90", "taco:589 Castanha-do-Brasil|8", "Leite desnatado UHT|200"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|130", "taco:317 Salmão grelhado|100", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|8"]},
+  {"nome": "Ceia", "itens": ["Leite desnatado UHT|200", "Pão de forma integral|50", "Queijo minas frescal|30"]}]},
+ "MUL-009": {"orientacoes": "GESTACAO", "refeicoes": [
+  {"nome": "Café da manhã", "itens": ["Pão de forma integral|50", "Queijo minas frescal|30", "Ovo de galinha cozido|50", "taco:214 Laranja pêra|180"]},
+  {"nome": "Lanche da manhã", "itens": ["Iogurte natural desnatado|170", "Mamão papaia|120", "Aveia em flocos|15"]},
+  {"nome": "Almoço", "itens": ["Arroz branco cozido|120", "Feijão carioca cozido|100", "Patinho bovino grelhado|100", "taco:116 Couve refogada|40", "Tomate cru|60", "Azeite de oliva|8"]},
+  {"nome": "Lanche da tarde", "itens": ["Banana-prata|90", "taco:589 Castanha-do-Brasil|8", "Leite desnatado UHT|200"]},
+  {"nome": "Jantar", "itens": ["Batata-doce cozida|120", "taco:318 Sardinha assada|100", "Brócolis cozido|80", "Cenoura cozida|50", "Azeite de oliva|8"]},
+  {"nome": "Ceia", "itens": ["Leite desnatado UHT|200", "Pão de forma integral|25"]}]}
+}

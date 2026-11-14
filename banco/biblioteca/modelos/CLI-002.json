@@ -1,0 +1,209 @@
+{
+ "codigo": "CLI-002",
+ "tipo": "dieta",
+ "nome": "CLI-002 — Doença renal crônica — Doença renal crônica — modelo clínico para individualização",
+ "categoria": "Nutrição clínica",
+ "objetivo": "Doença renal crônica",
+ "situacao": "bloqueado",
+ "meta_kcal_nominal": 1600,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": null,
+ "hidratacao_observacoes": "Sem valor padrão: definir conforme condição clínica, função renal e cardíaca e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 75
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "222"
+     },
+     "nome": "Maçã Fuji",
+     "gramas": 200
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "239"
+     },
+     "nome": "Morango",
+     "gramas": 120
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 185
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 75
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "78"
+     },
+     "nome": "Alface crespa",
+     "gramas": 30
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 12
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "239"
+     },
+     "nome": "Morango",
+     "gramas": 155
+    },
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 40
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 185
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "112"
+     },
+     "nome": "Chuchu, cozido",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 12
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Plano feito para você",
+   "texto": "Este plano é ajustado à sua condição de saúde, aos seus exames e aos remédios que você usa. Não faça restrições por conta própria e não mude remédios sem falar com o médico."
+  },
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça as refeições em horários regulares e pese os alimentos na forma indicada até se acostumar com as porções. Prefira alimentos in natura e preparações caseiras, com pouco sal e pouco óleo."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba líquidos conforme a orientação da equipe. Em algumas condições a quantidade de líquidos precisa ser limitada: siga o que foi combinado com o médico e o nutricionista."
+  },
+  {
+   "titulo": "Exames e consultas",
+   "texto": "Leve os exames mais recentes às consultas. Eles mostram se o plano precisa ser ajustado."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise a equipe em caso de mal-estar, inchaço nas pernas, falta de ar, tontura, sede ou urina em excesso, perda de peso sem explicação ou qualquer mudança nos remédios."
+  },
+  {
+   "titulo": "Rins",
+   "texto": "As quantidades de proteína, sal, potássio, fósforo e líquidos dependem do estágio da doença e dos seus exames. Não use sal light, suplementos ou chás sem orientação."
+  }
+ ],
+ "orientacoes_profissional": "MODELO CLÍNICO BLOQUEADO até revisão individual (V3 §4.3): requer diagnóstico, avaliação clínica e eventuais restrições de proteína, eletrólitos e líquidos. O cardápio é ponto de partida com alimentos da base; a energia calculada não é meta obrigatória. Não aplicar restrições padronizadas automaticamente nem automatizar alterações de medicação.\nMonitoramento: exames pertinentes à condição, peso, pressão, sintomas e adesão.\nEncaminhamento: descompensação clínica, alterações laboratoriais fora de metas, sinais de alarme.\nDoença renal crônica: cardápio com proteína moderada e sem restrições específicas de potássio e fósforo, de propósito — individualizar proteína, sódio, potássio, fósforo e fluidos conforme estágio, exames (TFG, potássio, fósforo, albumina), diálise e estado nutricional. Em diálise a necessidade proteica aumenta. Sal light contém potássio.",
+ "referencias": [
+  "American Diabetes Association. Standards of Care in Diabetes—2024. Diabetes Care. 2024;47(Suppl 1).",
+  "Ikizler TA et al. KDOQI Clinical Practice Guideline for Nutrition in CKD: 2020 Update. Am J Kidney Dis. 2020;76(3 Suppl 1):S1-S107.",
+  "Barroso WKS et al. Diretrizes Brasileiras de Hipertensão Arterial – 2020. Arq Bras Cardiol. 2021;116(3):516-658.",
+  "Faludi AA et al. Atualização da Diretriz Brasileira de Dislipidemias e Prevenção da Aterosclerose – 2017. Arq Bras Cardiol. 2017;109(2 Supl 1):1-76.",
+  "Rinella ME et al. AASLD Practice Guidance on the clinical assessment and management of nonalcoholic fatty liver disease. Hepatology. 2023;77(5):1797-1835."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "rascunho novo (clinicos.json)",
+  "orientacoes": "CLI"
+ },
+ "ajuste": {
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.385,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1,
+   "energia": 1.531
+  },
+  "kcal_base": 1155,
+  "kcal_calculada": 1599,
+  "em": "2026-11-14"
+ }
+}

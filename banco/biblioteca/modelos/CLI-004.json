@@ -1,0 +1,223 @@
+{
+ "codigo": "CLI-004",
+ "tipo": "dieta",
+ "nome": "CLI-004 — Dislipidemia — Dislipidemia — modelo clínico para individualização",
+ "categoria": "Nutrição clínica",
+ "objetivo": "Dislipidemia",
+ "situacao": "bloqueado",
+ "meta_kcal_nominal": 1800,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": null,
+ "hidratacao_observacoes": "Sem valor padrão: definir conforme condição clínica, função renal e cardíaca e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 45
+    },
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 200
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 130
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "222"
+     },
+     "nome": "Maçã Fuji",
+     "gramas": 185
+    },
+    {
+     "alimento": {
+      "taco": "589"
+     },
+     "nome": "Castanha-do-Brasil",
+     "gramas": 11
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "1"
+     },
+     "nome": "Arroz, integral, cozido",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "577"
+     },
+     "nome": "Lentilha cozida",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "100"
+     },
+     "nome": "Brócolis, cozido",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 14
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 170
+    },
+    {
+     "alimento": {
+      "taco": "594"
+     },
+     "nome": "Linhaça",
+     "gramas": 14
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 140
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "1"
+     },
+     "nome": "Arroz, integral, cozido",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "taco": "317"
+     },
+     "nome": "Salmão grelhado",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "157"
+     },
+     "nome": "Tomate, com semente, cru",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 11
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Plano feito para você",
+   "texto": "Este plano é ajustado à sua condição de saúde, aos seus exames e aos remédios que você usa. Não faça restrições por conta própria e não mude remédios sem falar com o médico."
+  },
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça as refeições em horários regulares e pese os alimentos na forma indicada até se acostumar com as porções. Prefira alimentos in natura e preparações caseiras, com pouco sal e pouco óleo."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba líquidos conforme a orientação da equipe. Em algumas condições a quantidade de líquidos precisa ser limitada: siga o que foi combinado com o médico e o nutricionista."
+  },
+  {
+   "titulo": "Exames e consultas",
+   "texto": "Leve os exames mais recentes às consultas. Eles mostram se o plano precisa ser ajustado."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise a equipe em caso de mal-estar, inchaço nas pernas, falta de ar, tontura, sede ou urina em excesso, perda de peso sem explicação ou qualquer mudança nos remédios."
+  },
+  {
+   "titulo": "Gorduras do sangue",
+   "texto": "Prefira azeite, peixes, aveia, feijões e frutas. Evite frituras, carnes gordas, embutidos, manteiga em excesso e produtos ultraprocessados."
+  }
+ ],
+ "orientacoes_profissional": "MODELO CLÍNICO BLOQUEADO até revisão individual (V3 §4.3): requer diagnóstico, avaliação clínica e eventuais restrições de proteína, eletrólitos e líquidos. O cardápio é ponto de partida com alimentos da base; a energia calculada não é meta obrigatória. Não aplicar restrições padronizadas automaticamente nem automatizar alterações de medicação.\nMonitoramento: exames pertinentes à condição, peso, pressão, sintomas e adesão.\nEncaminhamento: descompensação clínica, alterações laboratoriais fora de metas, sinais de alarme.\nDislipidemia: qualidade das gorduras (reduzir saturadas e trans, priorizar insaturadas), fibras solúveis, peixes; individualizar pelo perfil lipídico, risco cardiovascular e terapêutica (estatinas e outras); triglicerídeos altos: atenção a açúcares e álcool.",
+ "referencias": [
+  "American Diabetes Association. Standards of Care in Diabetes—2024. Diabetes Care. 2024;47(Suppl 1).",
+  "Ikizler TA et al. KDOQI Clinical Practice Guideline for Nutrition in CKD: 2020 Update. Am J Kidney Dis. 2020;76(3 Suppl 1):S1-S107.",
+  "Barroso WKS et al. Diretrizes Brasileiras de Hipertensão Arterial – 2020. Arq Bras Cardiol. 2021;116(3):516-658.",
+  "Faludi AA et al. Atualização da Diretriz Brasileira de Dislipidemias e Prevenção da Aterosclerose – 2017. Arq Bras Cardiol. 2017;109(2 Supl 1):1-76.",
+  "Rinella ME et al. AASLD Practice Guidance on the clinical assessment and management of nonalcoholic fatty liver disease. Hepatology. 2023;77(5):1797-1835."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "rascunho novo (clinicos.json)",
+  "orientacoes": "CLI"
+ },
+ "ajuste": {
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.265,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1,
+   "energia": 1.421
+  },
+  "kcal_base": 1423,
+  "kcal_calculada": 1799,
+  "em": "2026-11-14"
+ }
+}

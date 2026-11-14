@@ -38,7 +38,7 @@ import { validarPlanoEndurance } from "../../lib/treinoEndurance.ts";
 const BIB = join(process.cwd(), "banco", "biblioteca");
 const PASTA = join(BIB, "modelos");
 const NUTRIENTES = ["kcal", "proteinas", "carboidratos", "lipidios", "fibras"];
-const TERMOS_DE_RISCO = /diur[ée]tic|desidrata|corte (extremo|de [áa]gua)|restri[çc][ãa]o h[íi]drica/i;
+const TERMOS_DE_RISCO = /diur[ée]tic|desidrata|corte (extremo|de [áa]gua)|restri[çc][ãa]o (h[íi]drica|de [áa]gua|de s[óo]dio)|laxante|deple[çc][ãa]o/i;
 
 // ---------------------------------------------------------------------------
 // Entrada
@@ -209,7 +209,7 @@ function montarMusculacao(m, exercicios) {
 
 function montarEndurance(m) {
   return {
-    ciclo: { fase: null, inicio: null },
+    ciclo: { fase: m.fase ?? null, inicio: null },
     semanas: m.semanas.map((w) => ({
       sessoes: w.sessoes.map((s) => ({
         dia: s.dia, tipo: s.tipo, descricao: s.descricao ?? "", distancia_km: null, duracao_min: s.duracao_min,
@@ -266,7 +266,16 @@ function validar(codigo, m, ctx) {
         if (!a) erros.push(`Alimento não encontrado na base: ${i.nome} (${JSON.stringify(i.alimento)}).`);
         else if (a.arquivado) erros.push(`Alimento arquivado na base: ${a.nome}.`);
         if (!(i.gramas > 0)) erros.push(`Quantidade inválida em ${i.nome}.`);
+        if (i.gramas > 400) avisos.push(`Porção grande: ${i.gramas} g de ${i.nome} (${r.nome}).`);
+        for (const chave of [codigo.split("-")[0], codigo]) {
+          const padrao = decisoes.proibidos?.[chave];
+          if (a && padrao && new RegExp(padrao).test(a.nome)) erros.push(`${a.nome} não combina com a categoria (${chave}).`);
+        }
       }
+    }
+    if (m.ajuste?.refeicoes_acrescentadas) avisos.push(`Refeições acrescentadas para a energia caber: ${m.ajuste.refeicoes_acrescentadas.join(", ")}.`);
+    if (m.ajuste && (m.ajuste.fator < 0.6 || (m.ajuste.fatores?.energia ?? m.ajuste.fator) > 2)) {
+      avisos.push(`Cardápio-base ajustado de ${m.ajuste.kcal_base ?? "?"} kcal com fatores ${JSON.stringify(m.ajuste.fatores ?? m.ajuste.fator)}: conferir se as porções cabem (considerar mais refeições).`);
     }
     const doc = montarDieta(m, ctx.achar);
     const v = validarDocumento(doc);
@@ -290,7 +299,13 @@ function validar(codigo, m, ctx) {
       if (Math.abs(desvio) > 0.1) avisos.push(`Energia calculada ${arred(calc.kcal)} kcal, ${arred(desvio * 100, 1)}% da meta nominal (${m.meta_kcal_nominal}): revisar.`);
     }
     if (m.peso_referencia_kg && calc.proteinas) resultado.proteina_g_kg = arred(calc.proteinas / m.peso_referencia_kg, 2);
-    if (codigo.startsWith("FIS") && TERMOS_DE_RISCO.test(textos)) avisos.push("Texto cita diurético/desidratação/corte extremo: conferir que é só alerta ou proibição.");
+    // Prática de risco citada sem negação na mesma frase = aviso para revisão.
+    const frases = JSON.parse(textos).flat().flatMap((t) => (typeof t === "string" ? t : `${t.titulo}. ${t.texto}`).split(/[.;:\n]+/));
+    for (const frase of frases) {
+      if (codigo.startsWith("FIS") && TERMOS_DE_RISCO.test(frase) && !/\b(n[ãa]o|nunca|sem|nem|evit\w*|perigos\w*)\b/i.test(frase)) {
+        avisos.push(`Prática de risco citada sem proibição: “${frase.trim().slice(0, 120)}”.`);
+      }
+    }
     resultado.conteudo = v.documento ? semReferencia(documentoParaModelo(v.documento)) : null;
   } else if (m.tipo === "musculacao") {
     if (!m.orientacoes_aluno?.length) erros.push("Faltam as orientações ao aluno.");
@@ -362,44 +377,146 @@ function marcar(codigo, dados) {
 async function cmdValidar(pool) {
   const r = await preparar(pool, codigosPedidos());
   r.forEach(({ v }) => imprimir(v));
-  for (const { v } of r) if (!v.erros.length) marcar(v.codigo, { status: "validado_tecnicamente", hash: v.hash, avisos: v.avisos.length });
+  // Não rebaixa modelo já importado com o mesmo conteúdo (mesmo hash).
+  const controle = JSON.parse(readFileSync(join(BIB, "controle.json"), "utf8"));
+  for (const { v } of r) {
+    if (v.erros.length) continue;
+    const atual = controle.modelos[v.codigo];
+    if (atual?.status === "importado_homologacao" && atual.hash === v.hash) continue;
+    marcar(v.codigo, { status: "validado_tecnicamente", hash: v.hash, avisos: v.avisos.length });
+  }
   console.log(`\n${r.filter(({ v }) => !v.erros.length).length} de ${r.length} sem erros.`);
 }
 
 // Ajuste à meta de energia (opção b do nutricionista: cardápio-base com as
-// gramas ajustadas). Todos os itens no mesmo fator; arredondamento de 5 g
-// (1 g abaixo de 20 g). Não ajusta bloqueados (meta nominal não é meta
-// obrigatória em clínicos/gestação) nem modelo sem meta.
+// gramas ajustadas por objetivo). Não ajusta bloqueados (meta nominal não é
+// meta obrigatória em clínicos/gestação) nem modelo sem meta.
+// - Para baixo: todos os itens no mesmo fator.
+// - Para cima: legumes e verduras ficam; fontes de proteína sobem no máximo
+//   25%; as fontes de energia (cereais, tubérculos, pães, leguminosas, frutas,
+//   azeite) completam a diferença. Evita multiplicar proteína e legumes em
+//   cardápios de energia alta.
+// Arredondamento de 5 g (1 g abaixo de 20 g); até 6 passos para ficar a 3%.
+const GRUPO_LEGUMES = /^(Abobrinha|Abóbora|Brócolis|Cenoura|Chuchu|Tomate|Alface|Couve|Espinafre|Beterraba|Pepino|Repolho|Vagem|Berinjela)/;
+const GRUPO_PROTEINA = /Frango|tilápia|Carne|bovina|Ovo|Salmão|Sardinha|Atum|Pescada|Merluza|tofu|^Queijo|Ricota|Iogurte|Leite|Soja, extrato/;
+const LIMITE_PROTEINA = 1.25;
+
+function grupoDoAlimento(nome) {
+  if (GRUPO_LEGUMES.test(nome)) return "legumes";
+  if (GRUPO_PROTEINA.test(nome)) return "proteina";
+  return "energia";
+}
+
+const arredondarGramas = (g) => (g >= 20 ? Math.max(5, Math.round(g / 5) * 5) : Math.max(1, Math.round(g)));
+
 async function cmdAjustar(pool) {
   for (const codigo of codigosPedidos()) {
     const m = lerModelo(codigo);
     if (!m || m.tipo !== "dieta") continue;
-    if (m.situacao === "bloqueado" || !m.meta_kcal_nominal || !m.refeicoes.length) {
+    // Bloqueado só é ajustado quando é rascunho novo (clinicos.json): a meta do
+    // catálogo serve de ponto de partida, sem virar meta obrigatória.
+    const rascunhoNovo = m.origem?.conteudo_base?.startsWith("rascunho novo");
+    if ((m.situacao === "bloqueado" && !rascunhoNovo) || !m.meta_kcal_nominal || !m.refeicoes.length) {
       console.log(`${codigo}: não ajustado (${m.situacao === "bloqueado" ? "bloqueado" : "sem meta ou refeições"})`);
       continue;
     }
-    let fator = 1;
-    for (let passo = 0; passo < 4; passo++) {
-      const [{ v }] = await preparar(pool, [codigo]);
-      const kcal = v.calculo?.kcal;
-      if (!kcal || v.erros.length) { console.log(`${codigo}: não ajustado (${v.erros[0] ?? "sem energia calculada"})`); break; }
-      const desvio = (kcal - m.meta_kcal_nominal) / m.meta_kcal_nominal;
-      if (Math.abs(desvio) <= 0.03) {
-        if (passo > 0) {
-          m.ajuste = { metodo: "fator único sobre as gramas do cardápio-base", fator: arred(fator, 3), kcal_calculada: arred(kcal), em: new Date().toISOString().slice(0, 10) };
-          gravarJsonAtomico(join(PASTA, `${codigo}.json`), m);
-        }
-        console.log(`${codigo}: ${passo ? `ajustado (fator ${arred(fator, 3)})` : "já dentro de 3%"} → ${arred(kcal)} kcal (meta ${m.meta_kcal_nominal})`);
-        break;
-      }
-      const f = m.meta_kcal_nominal / kcal;
-      fator *= f;
+    const { achar, composicoes } = await resolverAlimentos(pool, [m]);
+    // Energia alta para o cardápio-base: até duas refeições a mais (cópia do
+    // lanche mais energético), em vez de inflar as porções.
+    const kcalItem = (i) => {
+      const a = achar(i.alimento);
+      return a ? ((composicoes[a.id]?.kcal?.valor ?? 0) * i.gramas) / 100 : 0;
+    };
+    const fatorEnergia = () => {
+      const k = { legumes: 0, proteina: 0, energia: 0 };
       for (const r of m.refeicoes) for (const i of r.itens) {
-        const g = i.gramas * f;
-        i.gramas = g >= 20 ? Math.max(5, Math.round(g / 5) * 5) : Math.max(1, Math.round(g));
+        const a = achar(i.alimento);
+        k[a ? grupoDoAlimento(a.nome) : "energia"] += kcalItem(i);
       }
-      writeFileSync(join(PASTA, `${codigo}.json`), JSON.stringify(m, null, 1) + "\n", "utf8");
+      const total = k.legumes + k.proteina + k.energia;
+      if (m.meta_kcal_nominal <= total) return 0;
+      const fp = Math.min(m.meta_kcal_nominal / total, decisoes.limite_aumento_proteina?.[codigo] ?? decisoes.limite_aumento_proteina?.[codigo.split("-")[0]] ?? LIMITE_PROTEINA);
+      return k.energia > 0 ? (m.meta_kcal_nominal - k.legumes - k.proteina * fp) / k.energia : Infinity;
+    };
+    const acrescentadas = [];
+    while (!rascunhoNovo && fatorEnergia() > 1.5 && acrescentadas.length < 2) {
+      const kcalRef = (r) => r.itens.reduce((s, i) => s + kcalItem(i), 0);
+      const fonte = m.refeicoes.filter((r) => /Lanche|Café/.test(r.nome)).sort((a, b) => kcalRef(b) - kcalRef(a))[0];
+      if (!fonte) break;
+      const temCeia = m.refeicoes.some((r) => r.nome === "Ceia");
+      const nova = { nome: temCeia ? (m.refeicoes.some((r) => r.nome === "Lanche extra") ? "Lanche extra 2" : "Lanche extra") : "Ceia", itens: fonte.itens.map((i) => ({ ...i })) };
+      if (temCeia) m.refeicoes.splice(m.refeicoes.findIndex((r) => r.nome === "Ceia"), 0, nova);
+      else m.refeicoes.push(nova);
+      acrescentadas.push(`${nova.nome} (cópia de ${fonte.nome})`);
     }
+    const itens = m.refeicoes.flatMap((r) => r.itens);
+    const info = itens.map((i) => {
+      const a = achar(i.alimento);
+      return { i, base: i.gramas, grupo: a ? grupoDoAlimento(a.nome) : "energia", kcal100: a ? composicoes[a.id]?.kcal?.valor ?? 0 : 0 };
+    });
+    const kcalDe = (lista, campo = "gramas") => lista.reduce((s, x) => s + (x.kcal100 * (campo === "base" ? x.base : x.i.gramas)) / 100, 0);
+    const meta = m.meta_kcal_nominal;
+    const inicial = kcalDe(info, "base");
+    if (!inicial) { console.log(`${codigo}: não ajustado (sem energia calculada)`); continue; }
+    const fatores = { legumes: 1, proteina: 1, energia: 1 };
+    const subir = meta > inicial;
+    if (!subir) {
+      fatores.legumes = fatores.proteina = fatores.energia = meta / inicial;
+    } else {
+      const por = (g) => kcalDe(info.filter((x) => x.grupo === g), "base");
+      const limiteProt = decisoes.limite_aumento_proteina?.[codigo] ?? decisoes.limite_aumento_proteina?.[codigo.split("-")[0]] ?? LIMITE_PROTEINA;
+      fatores.proteina = Math.min(meta / inicial, limiteProt);
+      const energia = por("energia");
+      fatores.energia = energia > 0 ? (meta - por("legumes") - por("proteina") * fatores.proteina) / energia : meta / inicial;
+    }
+    for (const x of info) x.i.gramas = arredondarGramas(x.base * fatores[x.grupo]);
+    // Correção fina do arredondamento: pequenos passos uniformes no grupo que mais varia.
+    const alvo = subir ? "energia" : null;
+    for (let passo = 0; passo < 6; passo++) {
+      const kcal = kcalDe(info);
+      const desvio = (kcal - meta) / meta;
+      if (Math.abs(desvio) <= 0.03) break;
+      const grupo = alvo ? info.filter((y) => y.grupo === alvo) : info;
+      const f = 1 + (meta - kcal) / Math.max(1, kcalDe(grupo));
+      for (const x of grupo) x.i.gramas = arredondarGramas(x.i.gramas * f);
+    }
+    // Piso de proteína por kg do peso de referência (decisoes.json): fontes de
+    // proteína sobem até o piso e as fontes de energia compensam a energia.
+    const piso = decisoes.proteina_minima_g_kg?.[codigo.split("-")[0]];
+    let protFinal = null;
+    if (piso && m.peso_referencia_kg) {
+      for (const x of info) {
+        const a = achar(x.i.alimento);
+        x.prot100 = a ? composicoes[a.id]?.proteinas?.valor ?? 0 : 0;
+      }
+      const protDe = (lista) => lista.reduce((s, x) => s + (x.prot100 * x.i.gramas) / 100, 0);
+      for (let passo = 0; passo < 6; passo++) {
+        const alvoProt = piso * m.peso_referencia_kg;
+        const atual = protDe(info);
+        const fontes = info.filter((x) => x.grupo === "proteina");
+        if (atual >= alvoProt * 0.98 || !fontes.length) break;
+        const fp = 1 + (alvoProt - atual) / Math.max(1, protDe(fontes));
+        for (const x of fontes) x.i.gramas = arredondarGramas(x.i.gramas * fp);
+        const energia = info.filter((x) => x.grupo === "energia");
+        const fe = 1 + (meta - kcalDe(info)) / Math.max(1, kcalDe(energia));
+        for (const x of energia) x.i.gramas = arredondarGramas(x.i.gramas * fe);
+      }
+      protFinal = arred(protDe(info) / m.peso_referencia_kg, 2);
+    }
+    const kcal = kcalDe(info);
+    m.ajuste = {
+      ...(protFinal !== null ? { proteina_g_kg: protFinal, piso_proteina_g_kg: piso } : {}),
+      ...(acrescentadas.length ? { refeicoes_acrescentadas: acrescentadas } : {}),
+      metodo: subir ? "por grupo: legumes fixos, proteína até +25%, fontes de energia completam" : "fator único sobre as gramas do cardápio-base",
+      fator: arred(meta / inicial, 3),
+      fatores: { legumes: arred(fatores.legumes, 3), proteina: arred(fatores.proteina, 3), energia: arred(fatores.energia, 3) },
+      kcal_base: arred(inicial),
+      kcal_calculada: arred(kcal),
+      em: new Date().toISOString().slice(0, 10),
+    };
+    gravarJsonAtomico(join(PASTA, `${codigo}.json`), m);
+    const fora = Math.abs((kcal - meta) / meta) > 0.03 ? " (FORA de 3%)" : "";
+    console.log(`${codigo}: ${arred(inicial)} → ${arred(kcal)} kcal (meta ${meta})${fora} fatores ${JSON.stringify(m.ajuste.fatores)}`);
   }
 }
 
@@ -482,7 +599,61 @@ async function cmdReverter(pool) {
   if (usados.rows.length) console.log(`mantidos por já terem sido usados: ${usados.rows.map((l) => l.codigo).join(", ")}`);
 }
 
-const COMANDOS = { validar: cmdValidar, ajustar: cmdAjustar, importar: cmdImportar, reverter: cmdReverter };
+// Relatório por código (V3, procedimentos de validação): todos os 220 do
+// catálogo, com situação, destino, cálculo, avisos e hash. Grava
+// banco/biblioteca/relatorio.md.
+async function cmdRelatorio(pool) {
+  const todos = Object.keys(catalogo).sort();
+  const comArquivo = todos.filter((c) => existsSync(join(PASTA, `${c}.json`)));
+  const r = Object.fromEntries((await preparar(pool, comArquivo)).map(({ m, v }) => [v.codigo, { m, v }]));
+  const noBanco = new Set([
+    ...(await pool.query("select codigo from public.modelos_nutricao where codigo is not null")).rows.map((l) => l.codigo),
+    ...(await pool.query("select codigo from public.treino_modelos where codigo is not null")).rows.map((l) => l.codigo),
+  ]);
+  const linhas = [];
+  const cont = { importado: 0, bloqueado: 0, protegido: 0, pendente: 0, erro: 0, avisos: 0 };
+  for (const c of todos) {
+    const cat = catalogo[c];
+    if (decisoes.protegidos.includes(c)) {
+      cont.protegido++;
+      linhas.push(`| ${c} | protegido | já existe na produção (cadastro manual) | — | — |`);
+      continue;
+    }
+    const item = r[c];
+    if (!item) { cont.pendente++; linhas.push(`| ${c} | pendente | sem arquivo | — | — |`); continue; }
+    const { m, v } = item;
+    if (v.erros.length) cont.erro++;
+    if (v.avisos.length) cont.avisos++;
+    const importado = noBanco.has(c);
+    if (importado) cont.importado++;
+    if (m.situacao === "bloqueado") cont.bloqueado++;
+    const situacao = v.erros.length ? "ERRO" : `${importado ? "importado (base local)" : "validado"}${m.situacao === "bloqueado" ? ", bloqueado" : ""}`;
+    let calculo = "—";
+    if (m.tipo === "dieta") {
+      const k = v.calculo?.kcal;
+      calculo = k ? `${Math.round(k)} kcal (meta ${m.meta_kcal_nominal ?? "—"}); P ${Math.round(v.calculo.proteinas)} g${v.proteina_g_kg ? ` = ${v.proteina_g_kg} g/kg` : ""}; fibras ${Math.round(v.calculo.fibras ?? 0)} g` : "sem cardápio (não prescritivo)";
+    } else if (m.tipo === "musculacao") calculo = `${v.calculo.sessoes} sessões, ${v.calculo.exercicios} exercícios, ${v.calculo.series} séries`;
+    else calculo = `${v.calculo.semanas} semanas, ${v.calculo.sessoes} sessões, ${v.calculo.minutos} min`;
+    const obs = [...v.erros.map((e) => `ERRO: ${e}`), ...v.avisos].join(" · ").replace(/\|/g, "/") || "—";
+    linhas.push(`| ${c} | ${situacao} | ${cat.titulo.replace(/\|/g, "/")} | ${calculo} | ${obs} |`);
+  }
+  const texto = [
+    "# Biblioteca Mestre V3 — relatório por código",
+    "",
+    `Gerado em ${new Date().toISOString().slice(0, 10)} por \`node scripts/biblioteca/biblioteca.mjs relatorio\` (base local). Valores calculados pela base de alimentos do aplicativo. Validação técnica não é validação clínica: todos os modelos exigem revisão profissional e individualização antes do uso.`,
+    "",
+    `Catálogo: ${todos.length} códigos · importados na base local: ${cont.importado} (bloqueados: ${cont.bloqueado}) · protegidos (já na produção): ${cont.protegido} · pendentes: ${cont.pendente} · com erro: ${cont.erro} · com avisos: ${cont.avisos}.`,
+    "",
+    "| Código | Situação | Título do catálogo | Cálculo | Avisos |",
+    "|---|---|---|---|---|",
+    ...linhas,
+    "",
+  ].join("\n");
+  writeFileSync(join(BIB, "relatorio.md"), texto, "utf8");
+  console.log(`relatório gravado: ${JSON.stringify(cont)}`);
+}
+
+const COMANDOS = { validar: cmdValidar, ajustar: cmdAjustar, importar: cmdImportar, reverter: cmdReverter, relatorio: cmdRelatorio };
 if (!COMANDOS[comando]) {
   console.log("Comandos: validar | ajustar | importar | reverter (veja o cabeçalho do arquivo).");
   process.exit(1);

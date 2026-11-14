@@ -1,0 +1,222 @@
+{
+ "codigo": "ESP-003",
+ "tipo": "dieta",
+ "nome": "ESP-003 — Desempenho esportivo — Meia maratona — 2.200 kcal",
+ "categoria": "Desempenho esportivo",
+ "objetivo": "Desempenho esportivo",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 2200,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar à taxa de suor, clima, duração do treino e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 95
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 95
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 130
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 70
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 210
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 70
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 95
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 10
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "53"
+     },
+     "nome": "Pão, trigo, francês",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "id": "42a7e870-3f74-46a6-a60a-631f376e714a"
+     },
+     "nome": "Geleia de frutas tradicional",
+     "gramas": 25
+    },
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 165
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "91"
+     },
+     "nome": "Batata, inglesa, cozida",
+     "gramas": 250
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 10
+    }
+   ]
+  },
+  {
+   "nome": "Ceia",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 195
+    },
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 25
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Pese os alimentos na forma indicada até se acostumar com as porções. Os horários das refeições são combinados conforme os seus treinos e provas."
+  },
+  {
+   "titulo": "Antes e depois do treino",
+   "texto": "Faça uma refeição com carboidratos de fácil digestão algumas horas antes de treinos longos ou intensos e uma refeição com carboidratos e proteína depois. Evite testar alimentos novos em dia de prova."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia e reponha os líquidos perdidos no treino, principalmente no calor. Em treinos longos, combine com o nutricionista a necessidade de bebidas com carboidratos e sais."
+  },
+  {
+   "titulo": "Recuperação",
+   "texto": "Respeite as refeições do dia de descanso: elas ajudam a recuperar os estoques de energia e os músculos para o próximo treino."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista em caso de cansaço fora do normal, queda de desempenho, cãibras frequentes, desconforto intestinal no treino, alterações no ciclo menstrual ou perda de peso não planejada."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: atender à demanda energética do esporte, abastecer e recuperar entre sessões e sustentar desempenho e saúde.\nPerfil de aplicação: praticantes de modalidade e volume indicados no título; os valores energéticos do catálogo são referência e devem ser recalculados pelo gasto real (avaliação física, Rotina semanal com METs do Treino).\nIndividualização: carboidratos ajustados ao volume e à intensidade do dia (periodização por dia de treino e descanso), proteína por kg de peso, gorduras para completar a energia; estratégia de abastecimento durante sessões longas e treino do intestino quando pertinente.\nMonitoramento: peso, desempenho, percepção de esforço, sintomas gastrointestinais no treino e adesão. Atenção a baixa disponibilidade energética (REDs): perda de peso não planejada, fadiga, lesões de repetição e alterações menstruais.\nSuplementos: só com indicação e produto de procedência verificada (risco de doping).\nEncaminhamento: sinais de REDs, anemia ou lesões por estresse.",
+ "referencias": [
+  "Thomas DT, Erdman KA, Burke LM. American College of Sports Medicine Joint Position Statement: Nutrition and Athletic Performance. Med Sci Sports Exerc. 2016;48(3):543-68.",
+  "Kerksick CM et al. International Society of Sports Nutrition position stand: nutrient timing. J Int Soc Sports Nutr. 2017;14:33.",
+  "Mountjoy M et al. 2023 International Olympic Committee's consensus statement on Relative Energy Deficiency in Sport (REDs). Br J Sports Med. 2023;57(17):1073-97."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "ESP"
+ },
+ "ajuste": {
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.969,
+  "fatores": {
+   "legumes": 0.969,
+   "proteina": 0.969,
+   "energia": 0.969
+  },
+  "kcal_base": 2270,
+  "kcal_calculada": 2222,
+  "em": "2026-11-14"
+ }
+}

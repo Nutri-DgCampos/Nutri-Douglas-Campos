@@ -1,0 +1,198 @@
+{
+ "codigo": "ROT-004",
+ "tipo": "dieta",
+ "nome": "ROT-004 — Rotinas — Turno noturno — 1.800 kcal",
+ "categoria": "Rotinas",
+ "objetivo": "Rotinas",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1800,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 65
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 170
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 220
+    },
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 25
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 150
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 130
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 155
+    },
+    {
+     "alimento": {
+      "taco": "100"
+     },
+     "nome": "Brócolis, cozido",
+     "gramas": 95
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 13
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 130
+    },
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 230
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "88"
+     },
+     "nome": "Batata, doce, cozida",
+     "gramas": 200
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 155
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 13
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "O plano foi pensado para caber na sua rotina. Os horários das refeições são combinados com o nutricionista; o importante é manter a regularidade e não ficar muitas horas sem comer."
+  },
+  {
+   "titulo": "Organização",
+   "texto": "Separe um momento da semana para planejar as compras e adiantar preparações (arroz, feijão, proteínas e legumes cozidos). Guarde porções individuais na geladeira ou no congelador."
+  },
+  {
+   "titulo": "Segurança dos alimentos",
+   "texto": "Leve marmitas em bolsa térmica, mantenha na geladeira assim que possível e aqueça bem antes de comer. Alimentos cozidos devem ir para a geladeira em até duas horas."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Tenha sempre uma garrafa de água por perto. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista se a rotina mudar (horários, turnos, viagens) ou se alguma refeição do plano não estiver funcionando, para ajustarmos."
+  },
+  {
+   "titulo": "Turno noturno",
+   "texto": "Faça uma refeição principal antes do turno e lanches leves durante a madrugada. Evite refeições muito volumosas e café em excesso perto do horário de dormir."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: adesão e qualidade alimentar em rotinas com pouco tempo, turnos ou deslocamentos.\nPerfil de aplicação: adultos cuja principal barreira é logística; objetivo de peso conforme avaliação.\nIndividualização: distribuir refeições pelos horários reais (turnos, viagens), priorizar preparações que se conservam bem e opções práticas sem ultraprocessados em excesso; energia conforme gasto estimado e objetivo.\nMonitoramento: adesão, regularidade das refeições, sono e sintomas digestivos; trabalhadores em turno noturno têm maior risco cardiometabólico e de alterações de sono.\nEncaminhamento: distúrbios do sono importantes ou alterações metabólicas.\nTurno noturno: organizar as refeições pelo ciclo de sono do paciente, evitar grandes volumes na madrugada e observar glicemia e peso.",
+ "referencias": [
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "ROT"
+ },
+ "ajuste": {
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.301,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1.25,
+   "energia": 1.345
+  },
+  "kcal_base": 1384,
+  "kcal_calculada": 1790,
+  "em": "2026-11-14"
+ }
+}

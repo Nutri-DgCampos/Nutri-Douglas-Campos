@@ -1,0 +1,225 @@
+{
+ "codigo": "MUL-006",
+ "tipo": "dieta",
+ "nome": "MUL-006 — Gestação — 1º trimestre — Gestação — 1º trimestre — modelo de referência",
+ "categoria": "Saúde da mulher",
+ "objetivo": "Gestação — 1º trimestre",
+ "situacao": "bloqueado",
+ "meta_kcal_nominal": 2000,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "461"
+     },
+     "nome": "Queijo, minas, frescal",
+     "gramas": 30
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "214"
+     },
+     "nome": "Laranja pêra",
+     "gramas": 280
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 170
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 190
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 190
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 155
+    },
+    {
+     "alimento": {
+      "taco": "377"
+     },
+     "nome": "Carne, bovina, patinho, sem gordura, grelhado",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "116"
+     },
+     "nome": "Couve refogada",
+     "gramas": 40
+    },
+    {
+     "alimento": {
+      "taco": "157"
+     },
+     "nome": "Tomate, com semente, cru",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 13
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 140
+    },
+    {
+     "alimento": {
+      "taco": "589"
+     },
+     "nome": "Castanha-do-Brasil",
+     "gramas": 13
+    },
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 200
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "88"
+     },
+     "nome": "Batata, doce, cozida",
+     "gramas": 190
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "100"
+     },
+     "nome": "Brócolis, cozido",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 13
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça refeições menores e mais frequentes ao longo do dia. Pese os alimentos na forma indicada até se acostumar com as porções; o plano é ajustado nas consultas conforme o seu ganho de peso e os exames."
+  },
+  {
+   "titulo": "Segurança dos alimentos",
+   "texto": "Coma carnes, ovos e peixes bem cozidos; prefira leite e queijos pasteurizados; lave bem frutas e verduras. Evite carnes e peixes crus (incluindo sushi), patês e embutidos crus. Não consuma bebidas alcoólicas e limite o café conforme a orientação da equipe."
+  },
+  {
+   "titulo": "Nutrientes importantes",
+   "texto": "Inclua todos os dias feijão e folhas verde-escuras (folato e ferro), carnes e ovos (ferro e colina), leite, iogurte ou queijo (cálcio) e peixes cozidos duas vezes por semana. Use sal iodado. Os suplementos são prescritos pela equipe: o plano não substitui essa prescrição."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia, mesmo sem sede. Durante a amamentação, tenha sempre água por perto."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Procure atendimento em caso de vômitos que impedem de comer ou beber, sangramento, inchaço súbito no rosto ou nas mãos, dor de cabeça forte, alteração da visão, febre ou perda de peso. Avise o nutricionista se tiver enjoo, azia ou intestino preso frequentes."
+  }
+ ],
+ "orientacoes_profissional": "MODELO BLOQUEADO até revisão (V3 §4.1). Cardápio de referência com alimentos da base; a energia calculada não é meta obrigatória. Ajustar energia e nutrientes à avaliação, ao estado nutricional pré-gestacional, à evolução ponderal, à fase gestacional ou pós-parto e ao quadro clínico.\nEnergia de referência (IOM, 2005): sem acréscimo no 1º trimestre; cerca de +340 kcal/dia no 2º e +452 kcal/dia no 3º; lactação nos primeiros 6 meses cerca de +330 kcal/dia (500 − 170 da mobilização de reservas) e de 7 a 12 meses cerca de +400 kcal/dia — referências populacionais, não metas automáticas.\nNutrientes de atenção: folato, ferro, iodo, cálcio, vitamina D, B12, colina e DHA. Suplementos, restrições e metas de ganho de peso dependem de avaliação (não prescrever automaticamente).\nSegurança alimentar: listeriose e toxoplasmose (carnes, ovos e peixes bem cozidos, laticínios pasteurizados, higiene de vegetais); peixes com mais mercúrio devem ser evitados; álcool contraindicado; cafeína limitada.\nMonitoramento: ganho de peso por trimestre, glicemia (diabetes gestacional), pressão, hemograma e ferritina, sintomas (náuseas, pirose, constipação).\nEncaminhamento: hiperêmese, sinais de pré-eclâmpsia, diabetes gestacional, ganho de peso inadequado.\n1º trimestre: sem acréscimo energético de referência; náuseas e vômitos — fracionar, alimentos secos e frios podem ajudar; folato desde o início.",
+ "referencias": [
+  "Institute of Medicine. Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids. Washington, DC: National Academies Press; 2005.",
+  "Institute of Medicine. Weight Gain During Pregnancy: Reexamining the Guidelines. Washington, DC: National Academies Press; 2009.",
+  "World Health Organization. WHO recommendations on antenatal care for a positive pregnancy experience. Geneva: WHO; 2016.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "rascunho novo (clinicos.json)",
+  "orientacoes": "GESTACAO"
+ },
+ "ajuste": {
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.312,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1,
+   "energia": 1.564
+  },
+  "kcal_base": 1524,
+  "kcal_calculada": 2020,
+  "em": "2026-11-14"
+ }
+}

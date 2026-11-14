@@ -1,0 +1,21 @@
+{
+ "familia": "MUL — Saúde da mulher (MUL-001 a 004; gestação e lactação têm modelos próprios bloqueados)",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "Faça as refeições em horários regulares e pese os alimentos na forma indicada até se acostumar com as porções."},
+  {"titulo": "Nutrientes importantes", "texto": "Inclua todos os dias leite, iogurte ou queijo (cálcio), feijão e carnes ou ovos (ferro e proteína), frutas, legumes e verduras."},
+  {"titulo": "Hidratação", "texto": "Beba água ao longo do dia, mesmo sem sede. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."},
+  {"titulo": "Movimento", "texto": "Atividade física regular, incluindo exercícios de força, ajuda a proteger ossos e músculos e a controlar o peso."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista se houver alterações no ciclo menstrual, sintomas intensos da menopausa, cansaço fora do normal, suspeita de gravidez ou mudança de medicação."}
+ ],
+ "profissional": "Objetivo: alimentação adequada à fase de vida da mulher indicada no título.\nPerfil de aplicação: mulheres adultas fora da gestação e da lactação (essas fases têm modelos próprios, bloqueados até revisão). Revisar fase de vida e necessidades específicas; não utilizar como prescrição universal.\nIndividualização: energia conforme avaliação; atenção a ferro (perdas menstruais), cálcio e vitamina D (saúde óssea), proteína e fibras; no climatério e pós-menopausa, redistribuição de gordura corporal e risco cardiovascular.\nMonitoramento: peso, circunferência abdominal, exames (hemograma, ferritina, vitamina D, perfil lipídico e glicemia conforme o caso).\nMedicamentos: anticoncepcionais, terapia hormonal e suplementos em uso.\nEncaminhamento: sangramento anormal, sintomas vasomotores intensos, anemia, densitometria alterada.",
+ "hidratacao": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "por_codigo": {
+  "MUL-002": {"profissional": "Climatério: sintomas vasomotores, sono, ganho de gordura abdominal; cálcio, vitamina D e proteína para massa óssea e muscular."},
+  "MUL-003": {"profissional": "Pós-menopausa: prevenção de osteoporose e de doença cardiovascular; proteína suficiente e exercício de força."},
+  "MUL-004": {"profissional": "Atividade física: ajustar energia ao gasto do treino e observar sinais de baixa disponibilidade energética (alterações menstruais)."}
+ },
+ "referencias": [
+  "Ministério da Saúde. Manual de Atenção à Mulher no Climatério/Menopausa. Brasília, 2008.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ]
+}

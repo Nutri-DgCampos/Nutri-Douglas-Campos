@@ -1,0 +1,196 @@
+{
+ "codigo": "MET-005",
+ "tipo": "dieta",
+ "nome": "MET-005 — Controle metabólico individualizado — Rotina sedentária — 1.900 kcal",
+ "categoria": "Saúde metabólica",
+ "objetivo": "Controle metabólico individualizado",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1900,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a função renal e cardíaca, clima e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 50
+    },
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 225
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 100
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 65
+    },
+    {
+     "alimento": {
+      "taco": "461"
+     },
+     "nome": "Queijo, minas, frescal",
+     "gramas": 50
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "1"
+     },
+     "nome": "Arroz, integral, cozido",
+     "gramas": 160
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "377"
+     },
+     "nome": "Carne, bovina, patinho, sem gordura, grelhado",
+     "gramas": 135
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 85
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 6
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 175
+    },
+    {
+     "alimento": {
+      "taco": "226"
+     },
+     "nome": "Mamão, Papaia, cru",
+     "gramas": 135
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "id": "563d32f7-b39b-454c-9c9a-8cf2be645345"
+     },
+     "nome": "Macarrão cozido",
+     "gramas": 175
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 125
+    },
+    {
+     "alimento": {
+      "taco": "157"
+     },
+     "nome": "Tomate, com semente, cru",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 6
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça as refeições em horários regulares e não fique muitas horas sem comer. Pese os alimentos na forma indicada até se acostumar com as porções."
+  },
+  {
+   "titulo": "Montagem do prato",
+   "texto": "Comece pelos legumes e verduras, inclua uma fonte de proteína e prefira arroz integral, feijão e pães integrais. Doces, refrigerantes e sucos adoçados devem ser evitados."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Beba água ao longo do dia. Bebidas açucaradas e alcoólicas atrapalham o controle da glicose e das gorduras do sangue."
+  },
+  {
+   "titulo": "Remédios e exames",
+   "texto": "Não mude nem suspenda remédios por conta própria. Leve os exames mais recentes às consultas."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Se você usa remédio para diabetes e sentir tremor, suor frio, fome súbita ou confusão, pode ser hipoglicemia: siga a orientação médica e avise a equipe. Avise também se tiver sede e urina em excesso ou perda de peso sem explicação."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: melhorar marcadores cardiometabólicos (glicemia, lipídios, pressão, circunferência abdominal) com padrão alimentar sustentável.\nPerfil de aplicação: risco ou alteração metabólica sem doença que exija modelo clínico específico (para diabetes tipo 2, dislipidemia, hipertensão, doença renal e esteatose usar os modelos CLI, que exigem revisão).\nIndividualização: considerar glicemia, medicamentos, risco de hipoglicemia, perfil lipídico e exames; ajustar qualidade e distribuição de carboidratos (integrais, fibras, leguminosas), gorduras insaturadas, sódio; déficit energético quando houver excesso de peso.\nMonitoramento: exames (glicemia, HbA1c, perfil lipídico), pressão, peso e circunferência abdominal.\nMedicamentos: insulina e sulfonilureias exigem atenção a horários e quantidade de carboidratos (hipoglicemia); estatinas, metformina e agonistas de GLP-1 conforme o caso.\nEncaminhamento: valores laboratoriais fora das metas, sintomas de hiperglicemia, hipoglicemias.",
+ "referencias": [
+  "American Diabetes Association. Standards of Care in Diabetes—2024. Diabetes Care. 2024;47(Suppl 1).",
+  "Faludi AA et al. Atualização da Diretriz Brasileira de Dislipidemias e Prevenção da Aterosclerose – 2017. Arq Bras Cardiol. 2017;109(2 Supl 1):1-76.",
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "MET"
+ },
+ "ajuste": {
+  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+  "fator": 1.114,
+  "fatores": {
+   "legumes": 1,
+   "proteina": 1.114,
+   "energia": 1.118
+  },
+  "kcal_base": 1706,
+  "kcal_calculada": 1908,
+  "em": "2026-11-14"
+ }
+}

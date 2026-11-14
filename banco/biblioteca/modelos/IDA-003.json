@@ -1,0 +1,221 @@
+{
+ "codigo": "IDA-003",
+ "tipo": "dieta",
+ "nome": "IDA-003 — Saúde e funcionalidade na pessoa idosa — Textura macia — 1.700 kcal",
+ "categoria": "Idosos",
+ "objetivo": "Saúde e funcionalidade na pessoa idosa",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1700,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a função renal e cardíaca, clima e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 55
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 90
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 45
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 60
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 145
+    },
+    {
+     "alimento": {
+      "taco": "561"
+     },
+     "nome": "Feijão, carioca, cozido",
+     "gramas": 60
+    },
+    {
+     "alimento": {
+      "taco": "408"
+     },
+     "nome": "Frango, peito, sem pele, cozido",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "70"
+     },
+     "nome": "Abobrinha, italiana, cozida",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 55
+    },
+    {
+     "alimento": {
+      "id": "42a7e870-3f74-46a6-a60a-631f376e714a"
+     },
+     "nome": "Geleia de frutas tradicional",
+     "gramas": 20
+    },
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 150
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "91"
+     },
+     "nome": "Batata, inglesa, cozida",
+     "gramas": 180
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "109"
+     },
+     "nome": "Cenoura, cozida",
+     "gramas": 70
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  },
+  {
+   "nome": "Ceia",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "457"
+     },
+     "nome": "Leite, de vaca, desnatado, UHT",
+     "gramas": 180
+    },
+    {
+     "alimento": {
+      "taco": "7"
+     },
+     "nome": "Aveia, flocos, crua",
+     "gramas": 13
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça as refeições em horários regulares, mesmo com pouca fome. Se não conseguir comer tudo, priorize a parte com proteína (carne, frango, peixe, ovo, leite, iogurte, feijão)."
+  },
+  {
+   "titulo": "Consistência",
+   "texto": "Se tiver dificuldade para mastigar ou engolir, os alimentos podem ser cozidos até ficarem macios, desfiados ou amassados. Tosse ou engasgo ao comer devem ser comunicados."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Com a idade, a sede diminui: beba água ao longo do dia mesmo sem vontade, salvo restrição médica. Sucos, leite, chás e sopas também contam."
+  },
+  {
+   "titulo": "Movimento",
+   "texto": "Manter-se ativo e fazer exercícios de força orientados ajuda a preservar a força e a independência. A alimentação e o exercício funcionam juntos."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista em caso de perda de peso sem querer, falta de apetite por vários dias, quedas, engasgos, confusão, intestino preso ou mudança de remédios."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: preservar estado nutricional, massa muscular e funcionalidade.\nPerfil de aplicação: pessoas idosas; avaliar mastigação, deglutição, sarcopenia, função renal, apetite e medicações.\nIndividualização: energia conforme avaliação (ajustar em baixo peso ou obesidade sarcopênica); proteína por kg de peso, distribuída nas refeições, considerando a função renal; cálcio, vitamina D e B12; textura conforme mastigação e deglutição.\nMonitoramento: peso, circunferência da panturrilha, força de preensão e funcionalidade, ingestão alimentar e hidratação. Triagem de risco nutricional (ex.: MNA).\nMedicamentos: polifarmácia, interações com nutrientes, medicamentos que reduzem apetite ou causam boca seca; diuréticos e risco de desidratação.\nEncaminhamento: disfagia (fonoaudiologia), perda de peso involuntária, quedas e declínio funcional.\nTextura macia: frango cozido no lugar do grelhado e pão macio; adaptar a consistência após avaliação da deglutição.",
+ "referencias": [
+  "Bauer J et al. Evidence-based recommendations for optimal dietary protein intake in older people: a position paper from the PROT-AGE Study Group. J Am Med Dir Assoc. 2013;14(8):542-59.",
+  "Volkert D et al. ESPEN guideline on clinical nutrition and hydration in geriatrics. Clin Nutr. 2019;38(1):10-47."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "IDA"
+ },
+ "ajuste": {
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.889,
+  "fatores": {
+   "legumes": 0.889,
+   "proteina": 0.889,
+   "energia": 0.889
+  },
+  "kcal_base": 1913,
+  "kcal_calculada": 1692,
+  "em": "2026-11-14"
+ }
+}

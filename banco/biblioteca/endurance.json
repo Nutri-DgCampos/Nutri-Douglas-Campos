@@ -1,0 +1,112 @@
+{
+ "_sobre": "Especificação dos programas de corrida e ciclismo (V3 §5.2/5.3). Gerados por scripts/biblioteca/converter.py: aquecimento + bloco principal + volta à calma; contínuo com 'principal' [início, pico] em minutos (progressão linear nas semanas normais, 75% nas semanas de recuperação, 60% do pico no polimento); intervalado com 'rep' (número ou lista por semana), 'dur' e 'rec' em minutos. Zonas sempre relativas (Z1–Z5) às zonas individuais do aluno; nenhuma métrica absoluta.",
+ "COR-001": {"semanas": 8, "dias": ["ter", "qui", "sab"], "fase": "Base", "aquecimento": 5, "desaquecimento": 5, "recuperacao": [], "polimento": false,
+  "sessoes": [
+   {"tipo": "Caminhada-corrida", "zona": "Z1–Z2", "rep": [8, 8, 7, 6, 6, 5, 4, 4], "dur": [1, 1, 2, 2, 3, 3, 4, 5], "rec": [2, 2, 2, 2, 2, 1, 1, 1], "zona_bloco": "Z2", "zona_rec": "Z1", "desc": "Trote confortável alternado com caminhada."},
+   {"tipo": "Caminhada-corrida", "zona": "Z1–Z2", "rep": [8, 8, 7, 6, 6, 5, 4, 4], "dur": [1, 1, 2, 2, 3, 3, 4, 5], "rec": [2, 2, 2, 2, 2, 1, 1, 1], "zona_bloco": "Z2", "zona_rec": "Z1", "desc": "Trote confortável alternado com caminhada."},
+   {"tipo": "Caminhada-corrida", "zona": "Z1–Z2", "rep": [9, 9, 8, 7, 7, 6, 5, 5], "dur": [1, 1, 2, 2, 3, 3, 4, 5], "rec": [2, 2, 2, 2, 2, 1, 1, 1], "zona_bloco": "Z2", "zona_rec": "Z1", "desc": "Sessão um pouco mais longa da semana, no mesmo ritmo confortável."}]},
+ "COR-002": {"semanas": 12, "dias": ["ter", "qui", "sab"], "fase": "Base", "aquecimento": 5, "desaquecimento": 5, "recuperacao": [4, 8], "polimento": true,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [15, 30], "desc": "Corrida contínua leve; pode intercalar caminhada se necessário."},
+   {"tipo": "Caminhada-corrida", "zona": "Z2", "rep": [6, 6, 5, 4, 5, 4, 4, 3, 3, 3, 3, 2], "dur": [2, 3, 3, 3, 4, 5, 6, 6, 8, 10, 12, 8], "rec": [2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1], "zona_bloco": "Z2", "zona_rec": "Z1", "desc": "Blocos de corrida cada vez mais longos com caminhada curta."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [20, 35], "desc": "Maior duração da semana, em ritmo de conversa."}]},
+ "COR-003": {"semanas": 8, "dias": ["ter", "qui", "sab", "dom"], "fase": "Específico", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4], "polimento": true,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [25, 30], "desc": "Corrida leve de recuperação ativa."},
+   {"tipo": "Intervalado", "zona": "Z4", "rep": [5, 6, 6, 4, 7, 8, 8, 4], "dur": 3, "rec": 2, "zona_bloco": "Z4", "zona_rec": "Z1", "desc": "Tiros de 3 minutos forte e controlado, recuperação trotando ou caminhando."},
+   {"tipo": "Tempo / limiar", "zona": "Z3", "principal": [12, 20], "desc": "Bloco contínuo em ritmo moderadamente forte e sustentável."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [40, 55], "desc": "Rodagem longa e leve."}]},
+ "COR-004": {"semanas": 12, "dias": ["ter", "qui", "sab"], "fase": "Construção", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4, 8], "polimento": true,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [25, 35], "desc": "Corrida contínua leve."},
+   {"tipo": "Fartlek", "zona": "Z2–Z3", "rep": [6, 6, 7, 5, 8, 8, 9, 6, 10, 10, 10, 6], "dur": 1, "rec": 2, "zona_bloco": "Z3", "zona_rec": "Z1–Z2", "desc": "Acelerações curtas e soltas, sem chegar ao máximo."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [40, 70], "desc": "Rodagem longa e leve, aumentando aos poucos."}]},
+ "COR-005": {"semanas": 8, "dias": ["ter", "qui", "sab", "dom"], "fase": "Específico", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4], "polimento": true,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [30, 40], "desc": "Corrida leve de recuperação ativa."},
+   {"tipo": "Intervalado", "zona": "Z4", "rep": [4, 5, 5, 3, 6, 6, 6, 3], "dur": 5, "rec": 2, "zona_bloco": "Z4", "zona_rec": "Z1", "desc": "Tiros longos de 5 minutos no limiar alto, recuperação curta trotando."},
+   {"tipo": "Tempo / limiar", "zona": "Z3", "principal": [20, 30], "desc": "Bloco contínuo em ritmo de prova de 10 km controlado."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [60, 80], "desc": "Rodagem longa e leve."}]},
+ "COR-006": {"semanas": 12, "dias": ["ter", "qui", "sab", "dom"], "fase": "Base", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4, 8], "polimento": true,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [30, 45], "desc": "Corrida contínua leve."},
+   {"tipo": "Tempo / limiar", "zona": "Z3", "principal": [15, 30], "desc": "Bloco contínuo moderadamente forte, sustentável."},
+   {"tipo": "Regenerativo", "zona": "Z1", "principal": [20, 25], "desc": "Trote bem leve, apenas para soltar."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [60, 110], "desc": "Rodagem longa e leve; principal sessão do programa."}]},
+ "COR-007": {"semanas": 8, "dias": ["ter", "qui", "sab"], "fase": "Base", "aquecimento": 5, "desaquecimento": 5, "recuperacao": [4], "polimento": false,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [25, 40], "desc": "Corrida contínua leve, em ritmo de conversa."},
+   {"tipo": "Fácil", "zona": "Z2", "principal": [25, 40], "desc": "Corrida contínua leve a moderada, sem acelerar."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [40, 65], "desc": "Rodagem mais longa da semana."}]},
+ "COR-008": {"semanas": 4, "dias": ["ter", "qui", "sab"], "fase": "Recuperação / deload", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [], "polimento": false,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [30, 30], "desc": "Corrida contínua leve."},
+   {"tipo": "Fartlek", "zona": "Z2–Z3", "rep": 6, "dur": 2, "rec": 2, "zona_bloco": "Z3", "zona_rec": "Z1–Z2", "desc": "Acelerações moderadas para manter o estímulo."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [50, 50], "desc": "Rodagem longa e leve."}]},
+ "COR-009": {"semanas": 4, "dias": ["ter", "qui", "sab"], "fase": "Base", "aquecimento": 5, "desaquecimento": 5, "recuperacao": [], "polimento": false,
+  "sessoes": [
+   {"tipo": "Caminhada-corrida", "zona": "Z1–Z2", "rep": [6, 5, 4, 3], "dur": [3, 4, 6, 8], "rec": 1, "zona_bloco": "Z2", "zona_rec": "Z1", "desc": "Retorno gradual: corrida leve com pausas de caminhada."},
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [15, 25], "desc": "Corrida contínua leve; interromper se houver dor."},
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [20, 30], "desc": "Corrida contínua leve, um pouco mais longa."}]},
+ "COR-010": {"semanas": 8, "dias": ["ter", "qui", "sab"], "fase": "Construção", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4], "polimento": false,
+  "sessoes": [
+   {"tipo": "Fácil", "zona": "Z1–Z2", "principal": [25, 40], "desc": "Corrida contínua leve."},
+   {"tipo": "Fartlek", "zona": "Z2–Z3", "rep": [6, 6, 7, 5, 8, 8, 8, 5], "dur": 1, "rec": 1, "zona_bloco": "Z3", "zona_rec": "Z1–Z2", "desc": "Acelerações curtas e soltas."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [40, 60], "desc": "Rodagem longa e leve."}]},
+ "CIC-001": {"semanas": 4, "dias": ["ter", "qui", "sab"], "fase": "Base", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [], "polimento": false,
+  "sessoes": [
+   {"tipo": "Endurance", "zona": "Z1–Z2", "principal": [25, 35], "desc": "Pedal contínuo leve, cadência confortável."},
+   {"tipo": "Endurance", "zona": "Z2", "principal": [25, 35], "desc": "Pedal contínuo leve a moderado."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [40, 55], "desc": "Pedal mais longo da semana, em terreno plano."}]},
+ "CIC-002": {"semanas": 8, "dias": ["ter", "qui", "sab"], "fase": "Base", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4], "polimento": false,
+  "sessoes": [
+   {"tipo": "Endurance", "zona": "Z1–Z2", "principal": [30, 45], "desc": "Pedal contínuo leve."},
+   {"tipo": "Tempo", "zona": "Z3", "principal": [10, 20], "desc": "Bloco contínuo moderado, sustentável."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [60, 100], "desc": "Pedal longo e leve."}]},
+ "CIC-003": {"semanas": 12, "dias": ["ter", "qui", "sab", "dom"], "fase": "Base", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4, 8], "polimento": false,
+  "sessoes": [
+   {"tipo": "Recuperativo", "zona": "Z1", "principal": [30, 30], "desc": "Pedal bem leve, cadência solta."},
+   {"tipo": "Endurance", "zona": "Z2", "principal": [45, 70], "desc": "Pedal contínuo em Z2."},
+   {"tipo": "Tempo", "zona": "Z3", "principal": [15, 30], "desc": "Bloco contínuo moderado."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [75, 150], "desc": "Pedal longo; principal sessão da base aeróbia."}]},
+ "CIC-004": {"semanas": 12, "dias": ["ter", "qui", "sab", "dom"], "fase": "Construção", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4, 8], "polimento": false,
+  "sessoes": [
+   {"tipo": "Endurance", "zona": "Z1–Z2", "principal": [40, 50], "desc": "Pedal contínuo leve."},
+   {"tipo": "Sweet spot", "zona": "Z3–Z4", "rep": [3, 3, 4, 2, 4, 4, 5, 3, 5, 5, 5, 3], "dur": 10, "rec": 5, "zona_bloco": "Z3–Z4", "zona_rec": "Z1", "desc": "Blocos longos entre o moderado e o limiar."},
+   {"tipo": "Endurance", "zona": "Z2", "principal": [60, 90], "desc": "Pedal contínuo em Z2."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [90, 210], "desc": "Pedal de longa duração; treinar a alimentação e a hidratação durante o pedal."}]},
+ "CIC-005": {"semanas": 8, "dias": ["ter", "qui", "sab", "dom"], "fase": "Construção", "aquecimento": 15, "desaquecimento": 10, "recuperacao": [4], "polimento": false,
+  "sessoes": [
+   {"tipo": "Recuperativo", "zona": "Z1", "principal": [30, 30], "desc": "Pedal bem leve."},
+   {"tipo": "Intervalado", "zona": "Z4", "rep": [4, 5, 5, 3, 6, 6, 6, 3], "dur": 4, "rec": 3, "zona_bloco": "Z4", "zona_rec": "Z1", "desc": "Blocos de 4 minutos no limiar."},
+   {"tipo": "Tempo", "zona": "Z3", "principal": [20, 35], "desc": "Bloco contínuo moderado, simulando ritmo de grupo."},
+   {"tipo": "Longo", "zona": "Z2", "principal": [90, 150], "desc": "Pedal longo em estrada."}]},
+ "CIC-006": {"semanas": 8, "dias": ["ter", "qui", "sab", "dom"], "fase": "Específico", "aquecimento": 15, "desaquecimento": 10, "recuperacao": [4], "polimento": false,
+  "sessoes": [
+   {"tipo": "Recuperativo", "zona": "Z1", "principal": [30, 30], "desc": "Pedal bem leve."},
+   {"tipo": "Subida", "zona": "Z3–Z4", "rep": [3, 4, 4, 2, 5, 5, 6, 3], "dur": 6, "rec": 4, "zona_bloco": "Z3–Z4", "zona_rec": "Z1", "desc": "Subidas longas sentado, cadência controlada; descer recuperando."},
+   {"tipo": "Subida", "zona": "Z4", "rep": [6, 6, 8, 4, 8, 10, 10, 5], "dur": 1, "rec": 2, "zona_bloco": "Z4", "zona_rec": "Z1", "desc": "Subidas curtas e fortes, alternando sentado e em pé."},
+   {"tipo": "Longo", "zona": "Z2", "principal": [90, 140], "desc": "Pedal longo em terreno ondulado, subidas em ritmo confortável."}]},
+ "CIC-007": {"semanas": 8, "dias": ["ter", "qui", "sab", "dom"], "fase": "Específico", "aquecimento": 15, "desaquecimento": 10, "recuperacao": [4], "polimento": false,
+  "sessoes": [
+   {"tipo": "Recuperativo", "zona": "Z1", "principal": [30, 30], "desc": "Pedal bem leve."},
+   {"tipo": "VO2máx.", "zona": "Z5", "rep": [4, 5, 5, 3, 6, 6, 6, 3], "dur": 3, "rec": 3, "zona_bloco": "Z5", "zona_rec": "Z1", "desc": "Esforços de 3 minutos muito fortes, recuperação completa."},
+   {"tipo": "Sweet spot", "zona": "Z3–Z4", "rep": [2, 2, 3, 2, 3, 3, 3, 2], "dur": 12, "rec": 5, "zona_bloco": "Z3–Z4", "zona_rec": "Z1", "desc": "Blocos longos entre o moderado e o limiar."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [80, 120], "desc": "Pedal longo e leve."}]},
+ "CIC-008": {"semanas": 4, "dias": ["ter", "qui", "sab"], "fase": "Construção", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [], "polimento": false,
+  "sessoes": [
+   {"tipo": "Endurance", "zona": "Z1–Z2", "principal": [30, 40], "desc": "Pedal contínuo leve."},
+   {"tipo": "Tempo", "zona": "Z3", "principal": [10, 20], "desc": "Bloco contínuo moderado."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [55, 75], "desc": "Pedal longo e leve."}]},
+ "CIC-009": {"semanas": 4, "dias": ["ter", "qui", "sab"], "fase": "Recuperação / deload", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [], "polimento": false,
+  "sessoes": [
+   {"tipo": "Endurance", "zona": "Z1–Z2", "principal": [40, 40], "desc": "Pedal contínuo leve."},
+   {"tipo": "Sweet spot", "zona": "Z3–Z4", "rep": 2, "dur": 10, "rec": 5, "zona_bloco": "Z3–Z4", "zona_rec": "Z1", "desc": "Dois blocos moderados a fortes para manter o estímulo."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [70, 70], "desc": "Pedal longo e leve."}]},
+ "CIC-010": {"semanas": 12, "dias": ["ter", "qui", "sab", "dom"], "fase": "Construção", "aquecimento": 10, "desaquecimento": 5, "recuperacao": [4, 8], "polimento": true,
+  "sessoes": [
+   {"tipo": "Endurance", "zona": "Z1–Z2", "principal": [35, 45], "desc": "Pedal contínuo leve."},
+   {"tipo": "Tempo", "zona": "Z3", "principal": [15, 30], "desc": "Bloco contínuo moderado, em ritmo de evento."},
+   {"tipo": "Recuperativo", "zona": "Z1", "principal": [30, 30], "desc": "Pedal bem leve."},
+   {"tipo": "Longo", "zona": "Z1–Z2", "principal": [60, 150], "desc": "Pedal longo, aproximando a duração do evento; testar alimentação e hidratação."}]}
+}

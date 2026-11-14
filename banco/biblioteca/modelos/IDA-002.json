@@ -1,0 +1,195 @@
+{
+ "codigo": "IDA-002",
+ "tipo": "dieta",
+ "nome": "IDA-002 — Saúde e funcionalidade na pessoa idosa — Apetite reduzido — 1.600 kcal",
+ "categoria": "Idosos",
+ "objetivo": "Saúde e funcionalidade na pessoa idosa",
+ "situacao": "liberado",
+ "meta_kcal_nominal": 1600,
+ "peso_referencia_kg": null,
+ "hidratacao_ml_kg": 35,
+ "hidratacao_observacoes": "Referência inicial; ajustar a função renal e cardíaca, clima e prescrição médica.",
+ "refeicoes": [
+  {
+   "nome": "Café da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "id": "90f43614-a701-4d94-a87e-4f9079bf545d"
+     },
+     "nome": "Goma de mandioca, assada",
+     "gramas": 65
+    },
+    {
+     "alimento": {
+      "taco": "488"
+     },
+     "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+     "gramas": 90
+    },
+    {
+     "alimento": {
+      "taco": "236"
+     },
+     "nome": "Melão, cru",
+     "gramas": 110
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da manhã",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "449"
+     },
+     "nome": "Iogurte, natural, desnatado",
+     "gramas": 145
+    },
+    {
+     "alimento": {
+      "taco": "182"
+     },
+     "nome": "Banana, prata, crua",
+     "gramas": 80
+    }
+   ]
+  },
+  {
+   "nome": "Almoço",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "3"
+     },
+     "nome": "Arroz, tipo 1, cozido",
+     "gramas": 110
+    },
+    {
+     "alimento": {
+      "taco": "567"
+     },
+     "nome": "Feijão, preto, cozido",
+     "gramas": 80
+    },
+    {
+     "alimento": {
+      "taco": "410"
+     },
+     "nome": "Frango, peito, sem pele, grelhado",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "64"
+     },
+     "nome": "Abóbora, cabotian, cozida",
+     "gramas": 105
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  },
+  {
+   "nome": "Lanche da tarde",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "52"
+     },
+     "nome": "Pão, trigo, forma, integral",
+     "gramas": 45
+    },
+    {
+     "alimento": {
+      "taco": "469"
+     },
+     "nome": "Queijo, ricota",
+     "gramas": 55
+    }
+   ]
+  },
+  {
+   "nome": "Jantar",
+   "itens": [
+    {
+     "alimento": {
+      "taco": "129"
+     },
+     "nome": "Mandioca, cozida",
+     "gramas": 115
+    },
+    {
+     "alimento": {
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+     },
+     "nome": "Filé de tilápia grelhada",
+     "gramas": 110
+    },
+    {
+     "alimento": {
+      "taco": "112"
+     },
+     "nome": "Chuchu, cozido",
+     "gramas": 100
+    },
+    {
+     "alimento": {
+      "taco": "260"
+     },
+     "nome": "Azeite, de oliva, extra virgem",
+     "gramas": 9
+    }
+   ]
+  }
+ ],
+ "orientacoes_paciente": [
+  {
+   "titulo": "Como seguir o plano",
+   "texto": "Faça as refeições em horários regulares, mesmo com pouca fome. Se não conseguir comer tudo, priorize a parte com proteína (carne, frango, peixe, ovo, leite, iogurte, feijão)."
+  },
+  {
+   "titulo": "Consistência",
+   "texto": "Se tiver dificuldade para mastigar ou engolir, os alimentos podem ser cozidos até ficarem macios, desfiados ou amassados. Tosse ou engasgo ao comer devem ser comunicados."
+  },
+  {
+   "titulo": "Hidratação",
+   "texto": "Com a idade, a sede diminui: beba água ao longo do dia mesmo sem vontade, salvo restrição médica. Sucos, leite, chás e sopas também contam."
+  },
+  {
+   "titulo": "Movimento",
+   "texto": "Manter-se ativo e fazer exercícios de força orientados ajuda a preservar a força e a independência. A alimentação e o exercício funcionam juntos."
+  },
+  {
+   "titulo": "Quando procurar a equipe",
+   "texto": "Avise o nutricionista em caso de perda de peso sem querer, falta de apetite por vários dias, quedas, engasgos, confusão, intestino preso ou mudança de remédios."
+  }
+ ],
+ "orientacoes_profissional": "Objetivo: preservar estado nutricional, massa muscular e funcionalidade.\nPerfil de aplicação: pessoas idosas; avaliar mastigação, deglutição, sarcopenia, função renal, apetite e medicações.\nIndividualização: energia conforme avaliação (ajustar em baixo peso ou obesidade sarcopênica); proteína por kg de peso, distribuída nas refeições, considerando a função renal; cálcio, vitamina D e B12; textura conforme mastigação e deglutição.\nMonitoramento: peso, circunferência da panturrilha, força de preensão e funcionalidade, ingestão alimentar e hidratação. Triagem de risco nutricional (ex.: MNA).\nMedicamentos: polifarmácia, interações com nutrientes, medicamentos que reduzem apetite ou causam boca seca; diuréticos e risco de desidratação.\nEncaminhamento: disfagia (fonoaudiologia), perda de peso involuntária, quedas e declínio funcional.\nApetite reduzido: priorizar densidade energética e proteica, porções menores e mais frequentes; considerar enriquecer preparações.",
+ "referencias": [
+  "Bauer J et al. Evidence-based recommendations for optimal dietary protein intake in older people: a position paper from the PROT-AGE Study Group. J Am Med Dir Assoc. 2013;14(8):542-59.",
+  "Volkert D et al. ESPEN guideline on clinical nutrition and hydration in geriatrics. Clin Nutr. 2019;38(1):10-47."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "IDA"
+ },
+ "ajuste": {
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.892,
+  "fatores": {
+   "legumes": 0.892,
+   "proteina": 0.892,
+   "energia": 0.892
+  },
+  "kcal_base": 1794,
+  "kcal_calculada": 1589,
+  "em": "2026-11-14"
+ }
+}

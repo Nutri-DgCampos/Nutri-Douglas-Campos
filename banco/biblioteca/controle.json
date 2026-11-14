@@ -5,156 +5,292 @@
   "total": 220,
   "modelos": {
     "ALI-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "694408192ef8a66e99a7f1a14260f3d2a3da943c01ddcbf828616e2cec133022",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.497Z",
+      "situacao": "liberado"
     },
     "ALI-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b71292bdcbb9e7c10264b7aa901ae348f643cdc613ef57f71c2ba9ae5070a12d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.501Z",
+      "situacao": "liberado"
     },
     "ALI-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "feb744884a3840ed25cd74d76aa6881f36264f327bdbfaec8958d4f419489089",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.504Z",
+      "situacao": "liberado"
     },
     "ALI-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b4c911b89d30781533ddd0872f4ae06daf3af575d95a5bcbd42eef9dbc5fe610",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.505Z",
+      "situacao": "liberado"
     },
     "ALI-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "beed1865b7f1bbfcbc881a11292526ecaa4ad4bf34a6894a9114c453e31e0d72",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.507Z",
+      "situacao": "liberado"
     },
     "ALI-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7e4bb706516d9320bda18095b1cc26c9ffdc08b579c08e7abba78728d1342413",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.508Z",
+      "situacao": "liberado"
     },
     "BAR-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "186c23d9511334c9bf6c42254d585452db5a6ab17ea66935d1e0cdb68852c624",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.510Z",
+      "situacao": "bloqueado"
     },
     "BAR-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "a9a09b6771bd6b835bff34ced9a08c10bf844c3b8324b00b9e840266a30bc1da",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.512Z",
+      "situacao": "bloqueado"
     },
     "BAR-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "8a8bc161c3a4be320f3e9733c0c8b743332987de529a56b46e68b7ed199076d2",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.513Z",
+      "situacao": "bloqueado"
     },
     "BAR-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "1d246c6f999116ef9e412e8882b6798e36ea73b859e7402ad0959ab75bab5cf5",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.515Z",
+      "situacao": "bloqueado"
     },
     "BAR-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "4560ae8b52215bacb5c457a87c75b5e168b03367eeeb9851f4f5fd3c23a1fba3",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.516Z",
+      "situacao": "bloqueado"
     },
     "CIC-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "23e15f8fd4c88b130122e539ba96898a77d1eff9861d878aa72fdaf2933c0368",
+      "hash": "84c659b7c7881c02066ee35c3e89f8f488cfdbf166e96df69160533baddafb5c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T22:50:33.604Z",
+      "atualizado_em": "2026-11-14T23:36:17.518Z",
       "situacao": null
     },
     "CIC-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "302a9c1a210017f5b200ff11a753016e69537d9d68e00722e211f9cd2b952dee",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.520Z",
+      "situacao": null
     },
     "CIC-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "99126ac3e7f6935bd6eae6166c70f27ce3633eaa49af18209633f29fd1343712",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.522Z",
+      "situacao": null
     },
     "CIC-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5c5120180a30cdaae862ae7332d540c64a8450bf405d6a6e591b03aa38889769",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.524Z",
+      "situacao": null
     },
     "CIC-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a3196526ab2c5a509af4c3fa5d2f43bb430177b5e784458ccd68727b33560b62",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.525Z",
+      "situacao": null
     },
     "CIC-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "2b07ebcca33a0dd051b08a5793fcffa33e914dae5ac4b31504b99263336f73b2",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.528Z",
+      "situacao": null
     },
     "CIC-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "bfec6a6094ebeb2404d17fe3ce04681787972ed771e01c987e730f1401b7dda9",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.530Z",
+      "situacao": null
     },
     "CIC-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "cac9c25c1601da2f1152e75f99117efa9a7f5d2efbbe30696515b20f0a7780ee",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.532Z",
+      "situacao": null
     },
     "CIC-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e9fa6dd3de08b9aaa61f80d1fa966be4c9e374303ef9b3c013a1e88749ac63dd",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.533Z",
+      "situacao": null
     },
     "CIC-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d4c82cdb27b55a4876946f66e8846f48a4b431a748c5747c03188b9f94e87c0f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.535Z",
+      "situacao": null
     },
     "CLI-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "fca281af43b03717d83dc200f16d5d4ef46d7e799031a50397a5536c86af0ae1",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.537Z",
+      "situacao": "bloqueado"
     },
     "CLI-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "b571f2f4779cf6bd258014426546ea4b6cd61290e0a0c942d60eed63f74bff36",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.538Z",
+      "situacao": "bloqueado"
     },
     "CLI-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "70fcd5b56fa2c5ab93a5055e344c42457db92eef2a7076dd5e56f3d4c7ba8643",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.540Z",
+      "situacao": "bloqueado"
     },
     "CLI-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "f94accd4246a6e6273f83452ebe9fd28d71b1b77513cae093951cde389c6ce9f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.542Z",
+      "situacao": "bloqueado"
     },
     "CLI-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "839ef111687e1d7807b3f9b77f94abc4e183f8fb63606ddac5642cc7aec18a77",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.543Z",
+      "situacao": "bloqueado"
     },
     "COR-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "ba51fe671133c67eb93a0335ec8699ffce1c1523fe55730ec27977a6c8ca424c",
+      "hash": "16f4f12eb917d7017eb05ecde7ab653e7df58fb09c9e849fb358a1b319b98a92",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T22:50:33.590Z",
+      "atualizado_em": "2026-11-14T23:36:17.545Z",
       "situacao": null
     },
     "COR-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5100968147f7c448f3049b93cccde021451cf259a359ddaefae3db7e1daeb0ca",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.546Z",
+      "situacao": null
     },
     "COR-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8b3da25873c32df21fe00c31f0fe599d4097e83168258c10cffa9270c25cb5ac",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.548Z",
+      "situacao": null
     },
     "COR-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e65e44aa1727ef9207fa5e2ac3623d678379f951138fee5de7e84e1248098f2d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.549Z",
+      "situacao": null
     },
     "COR-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "35d8888a03f9dec8276f6aed0ac795f8f1dde9cc629fbfc7b11e1b1849a68e4f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.551Z",
+      "situacao": null
     },
     "COR-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "624d2b595f2eadfb0ac70b9975ec4001756d111beab92d680ff62254193889d8",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.553Z",
+      "situacao": null
     },
     "COR-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f8be4e865b46015e9cb7b1fe70b9aa509760f6a16477cc6775966a886a76ba0e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.555Z",
+      "situacao": null
     },
     "COR-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7116e8a6908b1cf6743d4fae4ea22df486734e4200c03b1268b7df51932db9e4",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.556Z",
+      "situacao": null
     },
     "COR-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "21c08f581ec8a75a8fcd60ca6a7f7cbff132b1a4107de3d39604585d231b176c",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.558Z",
+      "situacao": null
     },
     "COR-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "45070694a0a901b6207b85ea74834701af892e0a5973fafb5ebccbdf2bfd8b3c",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.560Z",
+      "situacao": null
     },
     "EMG-001": {
       "status": "protegido_existente",
@@ -164,222 +300,434 @@
     "EMG-002": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "79ec874bff802cd919f301feebdc5d54cf960137ac4b06916a150b75c7fa876d",
+      "hash": "241f519843ad3c12d6c37774290874e1943eebcc2f24efbb777d65650d23d93a",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T22:50:33.557Z",
+      "atualizado_em": "2026-11-14T23:36:17.561Z",
       "situacao": "liberado"
     },
     "EMG-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "51c0f2d0e6869f98fa943aaef883dc38eae1493d327147cebccd803e06cb630d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.563Z",
+      "situacao": "liberado"
     },
     "EMG-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "00e45f040ec424e959673d2188100de0b66a80b73a27e9a87ead3bbbe6d5f7f0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.564Z",
+      "situacao": "liberado"
     },
     "EMG-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "cf31f27670ed5b580eb0d8c457ae97d2a641dadff94c014f63a0f97d77e4b018",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.566Z",
+      "situacao": "liberado"
     },
     "EMG-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d35cc6a8a2be8fea1256e7726c7b2d43a17b691232a9dd8414286a29cb2ebbb0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.567Z",
+      "situacao": "liberado"
     },
     "EMG-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6e3d0cc3fb1f771e877040b25163797d19c6b1ace071d601cc47f31d61575035",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.569Z",
+      "situacao": "liberado"
     },
     "EMG-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5a9e38c8bb48f4681bd0269e1bbb4e87847424f28c1e00dbe6e34859083a4f57",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.571Z",
+      "situacao": "liberado"
     },
     "EMG-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "293234626114fc3f73624fa2b9bdff99445a070ae3f93e19a416f15323b4e8ed",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.573Z",
+      "situacao": "liberado"
     },
     "EMG-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e7094d5d7769cfc32304324c83fafd3598e281aebadbf4be923af4c1bdc5987a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.575Z",
+      "situacao": "liberado"
     },
     "EMG-011": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "4cfd5d6cfc4293d92098f405d95912556204249c4a906d5f660761e89b256d3c",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.576Z",
+      "situacao": "liberado"
     },
     "EMG-012": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f97e8e82a88bf0e52eaa08827ec412f023d586abc90bc99357340d4ea3cf1b13",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.578Z",
+      "situacao": "liberado"
     },
     "EMG-013": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "599ee7a0ada611228afbe3fc98cb4387b82e7f794e0ba6c25dde7c6b8c7a95a0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.580Z",
+      "situacao": "liberado"
     },
     "EMG-014": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "64cb93d65f0e52f6e2bf3d8303d35f39cbcb2bedbb90ad9745c3219d4deb8a3f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.581Z",
+      "situacao": "liberado"
     },
     "EMG-015": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "1142b47cabf8ed9b500c83a4db574c113f3ad79ca5b96f2c315753885d972519",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.583Z",
+      "situacao": "liberado"
     },
     "EMG-016": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "bc177ef21b4f7fad212b6c4127a5c604bfb791f72269f1435ffaa2046b8f1697",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.585Z",
+      "situacao": "liberado"
     },
     "EMG-017": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "677bff15e062cee57a70349f9451ee975387365f964e1211f8bbaabd9b7ac4d0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.587Z",
+      "situacao": "liberado"
     },
     "EMG-018": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "36424e097b207beeffe0abfcbadebad8fc58f1090cb6a4e243799500bd6dc736",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.589Z",
+      "situacao": "liberado"
     },
     "EMG-019": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e0c1787a792c360d8005016b52341fb2b601c96f872e346af9a7b035c1b5d152",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.591Z",
+      "situacao": "liberado"
     },
     "EMG-020": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "da33c5c33ceb20da88ae64815f5e0e73b72a35eda81549b62379ebe284ae4fa3",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.592Z",
+      "situacao": "liberado"
     },
     "EMG-021": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "0ea88f4521711bde9c5a9853a41b098ad35ff883cc616a07e2a7971bc235b6f3",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.594Z",
+      "situacao": "liberado"
     },
     "EMG-022": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "024e9fee3d66e03c20687782d1bde5995ff3db283bbf279122984b2078ea20e8",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.596Z",
+      "situacao": "liberado"
     },
     "EMG-023": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d60d129f68c7f444f89d06dde7dfb0d178ebbd8ef97bec91154439df9fbc8749",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.597Z",
+      "situacao": "liberado"
     },
     "ESP-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e49e9071fb656d7f873e69613bf44fd2fa9776b628e6179a174db6b6bd9e065d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.599Z",
+      "situacao": "liberado"
     },
     "ESP-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "24b3ade8d02b0fc072a0d480ded7df77e51f1d28a18b870ce0b1312d58eaa3a9",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.601Z",
+      "situacao": "liberado"
     },
     "ESP-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "759333998db4f7a8415fbfc34baf3ec237a854fd336b0b1b91ca34365082e98e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.603Z",
+      "situacao": "liberado"
     },
     "ESP-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a4512b932db97571bb12a1966c3b80dca1cc2dce93b1be8c312b622c2c7d5c3d",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.605Z",
+      "situacao": "liberado"
     },
     "ESP-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e51aeb903d2a0d0f3856e1b9edcda999ee83fc701a08230cd5f04bc572e83a0a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.606Z",
+      "situacao": "liberado"
     },
     "ESP-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b5160045bb971131a301d12247f14314ddd1b23b3a23b45f927f57fccb5ebb20",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.608Z",
+      "situacao": "liberado"
     },
     "ESP-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8972739639cf15ff693235ebb0545c2fe5fd3b92de4e8a6454ba14315d85e448",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.609Z",
+      "situacao": "liberado"
     },
     "ESP-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e1751c7938dc17d888569f2fa7f1deac0b73eca60b2f370427e5e993a0786e20",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.611Z",
+      "situacao": "liberado"
     },
     "ESP-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d4d75eb1d029bfbb6973ecaddb243af9f97550623c401c11f46feffdd188f182",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.613Z",
+      "situacao": "liberado"
     },
     "ESP-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "bf60b391d77a6b78aa7661eb42842b3d0369edb81a71bb77241237a16de41ffd",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.614Z",
+      "situacao": "liberado"
     },
     "ESP-011": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "4e241dddb7ce248b8288eed34fe76c6f98a9bf6482679053683b245c0e0bf616",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.616Z",
+      "situacao": "liberado"
     },
     "ESP-012": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5d44886d49a20a11ea8c1543f6ff02d9c4762663ccab91540da5090c2db14dfb",
+      "avisos": 2,
+      "atualizado_em": "2026-11-14T23:36:17.618Z",
+      "situacao": "liberado"
     },
     "ESP-013": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "4361dcd399af5b1af9e83020264c8792bf890f902949cbca56c52018bc071467",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.620Z",
+      "situacao": "liberado"
     },
     "ESP-014": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f6aeaa381b8737499b5735410a04b099a629bef81f47f7641dc56c85b8879003",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.622Z",
+      "situacao": "liberado"
     },
     "ESP-015": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "18991eaa14fafae401a4cbeb6973f9f544ac34be0c10408046c1a42c88b12533",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.624Z",
+      "situacao": "liberado"
     },
     "ESP-016": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d0295688b29cbfbdbace94c2ebaace3b23dee751614c4ee3dbbef408e64383d3",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.626Z",
+      "situacao": "liberado"
     },
     "FIS-BB-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "3af5feb5a0aad6683215ffed19a0c38744b5f5f33a926ebfd7c8a8a994882d60",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.627Z",
+      "situacao": "liberado"
     },
     "FIS-BB-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "4010b20a96d50444e51685aa7bcc1db55e4d8f10af72de4fb66ee690a667b910",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.629Z",
+      "situacao": "liberado"
     },
     "FIS-BB-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f7f98b43df019ad1fda9b2596748caf6fcbe625d2b8b6da0ec3b08793c9416e4",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.631Z",
+      "situacao": "liberado"
     },
     "FIS-BB-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d4869c687435bfc5dca867827741b6b752761d81db324ea8aded5bbbe3b23f4f",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.632Z",
+      "situacao": "liberado"
     },
     "FIS-BB-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ac6d09e777465498add44cd1259a63ee9c6d13ea685c82fe80666f59249e984a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.634Z",
+      "situacao": "liberado"
     },
     "FIS-BB-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "81af66e6ac77ba8c9120641967aaab2b2790b8f2495435941316b2fe3f12286f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.637Z",
+      "situacao": "liberado"
     },
     "FIS-BB-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "014fd249d26f0152bdec49faec50ff3d6b1b14251567eb55d5bbf0c594779b86",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.638Z",
+      "situacao": "liberado"
     },
     "FIS-BB-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "9df7aa8d8f212d42b8b6131113bdbd36698c0995abca3e57a329170c57ddf99c",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.640Z",
+      "situacao": "liberado"
     },
     "FIS-BB-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7c352038e99bc46eb9d3bbae68414098618f9821dcf1537eb9e1e87a939d3cfe",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.641Z",
+      "situacao": "liberado"
     },
     "FIS-BB-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a305859e95d4204a83ee651442761ce491f686859d37b70309383a4c679a58de",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.643Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8e76d137f30761b95bb841a73e6edf94f78ca1a8b194ddb9fd02ad6c9fb5be13",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.645Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8fff6ccc2f74957b75b479bd4249321a0a7e1e74951c486ede9f8c0a70ea9e7d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.646Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5f5973ffe4cea897d772448bc41fcdcbbf16beec446d42f55225b50178daedee",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.648Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "39cc028852b0a71a68ffd5a7bb8dfbd443533bd9787f2152a739161abfd24502",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.649Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "24741c158c6e90dc133ac64d68d77594880330dcf28de8fbdd709d223e5e5129",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.651Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "c6dddf0cd13a3471ba06da3d23d3662f518f828645369e4d82120d24af36c8a6",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.653Z",
+      "situacao": "liberado"
     },
     "FIS-BIK-007": {
       "status": "protegido_existente",
@@ -397,536 +745,1019 @@
       "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
     },
     "FIS-BIK-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "3a2857768ba9c288f12a9b3c6c6ab5c64467bbb24bcdf74e952ee5f3c6a63d10",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.654Z",
+      "situacao": "liberado"
     },
     "FIS-CP-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7d3ed03978eb71e8b140e3832b8e863ff503cfd018c8f1e0dc1da8a3c0377138",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.656Z",
+      "situacao": "liberado"
     },
     "FIS-CP-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "be796c3ce7d1686e42cc6b6848a7ce7d38f57f0b021dcb5305205267ed9d2afb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.658Z",
+      "situacao": "liberado"
     },
     "FIS-CP-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "9b1901c1692262c6edc3b26e9a4667e4cc5e041f976d19ba5f2bf2695a7b7730",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.659Z",
+      "situacao": "liberado"
     },
     "FIS-CP-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "61ffc6f0005633ff423214ba2a93efe0b561fca4790008267ac086360f465676",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.661Z",
+      "situacao": "liberado"
     },
     "FIS-CP-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f41679b34195f0bb286c8446a82240709ea2693c5c12eb978518140d443bcb8a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.662Z",
+      "situacao": "liberado"
     },
     "FIS-CP-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "458814085d350c26bb53aa212a211180816614f4a2e78fcde30c76c279a83066",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.664Z",
+      "situacao": "liberado"
     },
     "FIS-CP-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b85d3a3edeea14fe61fecf9df1b2a9aa3d2292b3b92d5a8d257df83dd39fd849",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.665Z",
+      "situacao": "liberado"
     },
     "FIS-CP-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "1d2a229cca55611e5d83fc28f9099cad2eea62afe47342c38660fb80e2d37bda",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.667Z",
+      "situacao": "liberado"
     },
     "FIS-CP-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "07ec5ada7a630b8f22a29ae5f2b9cabb81068e7ad9609ae031499fc17f4c0a0d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.669Z",
+      "situacao": "liberado"
     },
     "FIS-CP-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "2fe35fc8427034161761aff3d4f97b174cef5499a8b742f72e24da9934fd424e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.671Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7b6cf40c35314d33123ccef8a39b0c6eb433c73b234fb2fcce51a8b92b8a5d08",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.673Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "66116a8ac596b927d446e953fde9ca4f1a752ae1e95638d69dcf5bdb45524448",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.674Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "9bbd9734832a2d15fe3b74f5a9a138450655fa80d2cdade56f2ea4d104c52baa",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.676Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "24c5155fc2fcdfab0463a429668a82f5a01e8982841d2c8792ef7d93a4615082",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.677Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ba00e1fdf0f019be146429c8d99f8f56ef00aa11717269538fa1667fd98bb698",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.679Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "07d66bb7d9cb51824268927ef3c380eeb49cd60ec9ad0ac874bea1a6ed43de59",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.681Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e8b6f144bd75791b1ebade0388d6bfc2d6a1b97025a9a25bdf0ebb0f9e2963a7",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.682Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b933bb0bcbd85b3e874688fb2fd8d215695b188d8cebf045d144765365beb972",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.684Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "72041822efa81bc400d1f8ff8cd801ce83a14d1d6ee75cfb16ba908cc06d4053",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.686Z",
+      "situacao": "liberado"
     },
     "FIS-FIG-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "2c893985cbdaa96ac1a3e2c78735b319d08b758d3530670f6f979ea96fc10a81",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.688Z",
+      "situacao": "liberado"
     },
     "FIS-MP-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "332d931cbf027007de69e55c179e569884328a1c92e9a1c085c178cae6658228",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.689Z",
+      "situacao": "liberado"
     },
     "FIS-MP-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a6ffa0c912359293245b61e6891b59be8dc718cae6b32c7e849487faede5fce4",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.691Z",
+      "situacao": "liberado"
     },
     "FIS-MP-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "bd313ab06a9054cc4ad409dca682ec1672033de670781a4348894f220009c4c3",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.693Z",
+      "situacao": "liberado"
     },
     "FIS-MP-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ee696070604c4a22635ef0fc187a77effe0ab61b0984f6835dfab1a7b9fe2a1f",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.694Z",
+      "situacao": "liberado"
     },
     "FIS-MP-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6fc26ff96d7b92a837a2db9f662e2c2c4d4c5bb09b38de4ddd626d41c0fcc211",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.696Z",
+      "situacao": "liberado"
     },
     "FIS-MP-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "bbc6bebd420bb129d3596d48e0ff9cc7d88f9ddc5c0490307f96cd2b18c5d276",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.697Z",
+      "situacao": "liberado"
     },
     "FIS-MP-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "40f69fdb91e0efebb0329607291e6d910b95f10d3a5d522be6da24a4b21df8b0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.699Z",
+      "situacao": "liberado"
     },
     "FIS-MP-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5c62b4ae6267d1a1ce812b97e71cd5350b588f5e46ec6529040501b9c79a431b",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.701Z",
+      "situacao": "liberado"
     },
     "FIS-MP-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b40b81c62d55342c86c642978b8614baddc92ad046f89ecc817346a0e197ca41",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.703Z",
+      "situacao": "liberado"
     },
     "FIS-MP-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "69c5ce1281b63c23113d13926f486b0cd290a8909e8ffc17dd363e51b9465863",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.705Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f7f941e1dad37cf6c6a03231620724b33a760f3100cdca37cd049fb05e91bde5",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.707Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "36bde9d5870711008ddce66f244a5eb7814b074e74e0f6db692cc12571940343",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.709Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "81be4727ba0aa9328be73648d0b9060e568bf674a7a716970f425fbbf01c9072",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.710Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ea07ad4a7165de4d6157bc7c3f1da1daa6ba8fbeee36f6dbe268a9b7bfab70d5",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.712Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "df2bd7cdf9051d1b4c5d8529158cc9e5df09d6226759c043994fa71add5998f7",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.714Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "4bdb2fb4d8f3388ab8e7dd223e4740673816264adc88261295f9dec924a5798f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.715Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "3e3c45f591df85df7db64b88d77635d81f2bcd7f1885c578935125011ecaaed7",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.717Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "58f9c3b6ab2cbb6160e89bd2f951a112a720713ab0fbe4188350484597d13ce6",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.719Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "acb211360d5eed2b92dc363c57493d40251f688645735879b679f64ef0142b1b",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.721Z",
+      "situacao": "liberado"
     },
     "FIS-WEL-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "729c4a52c7f6f41238dbde2b84140eb532ce192cd2928fbb731ebf27c1ff1724",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.723Z",
+      "situacao": "liberado"
     },
     "GAS-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "20464ff5ccabca2955d19d82230bac97987d15a4172e1f08b6c340d1fe787a8e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.725Z",
+      "situacao": "liberado"
     },
     "GAS-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "374ead0d74fccfcd33eb5c51c48c7e535e9201e17b11b88f13d8fe015caf3d9b",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.726Z",
+      "situacao": "liberado"
     },
     "GAS-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7bf6220c0eda23841e569296bef8e909d83faba060e407e9c5bf2cf3902cc5ce",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.728Z",
+      "situacao": "liberado"
     },
     "GAS-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6a98af6c27fab00818dd2aaaa35f6e93e94b4e0f1f946b20e438e843ec52c468",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.730Z",
+      "situacao": "liberado"
     },
     "GAS-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "3da84d75da4ad41b2b9b25b58379a93b808685d3e2fd96b8dc1faffc900cfd13",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.732Z",
+      "situacao": "liberado"
     },
     "GAS-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7c31427a2a81123f50dddb3ea66bab6bbb392362c0bd37978ffd4a79763adf9a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.734Z",
+      "situacao": "liberado"
     },
     "GAS-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8ff7061f4c8de222c1aa8d50568586843445229bc4c2fb273f6d076b80d4ce5f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.736Z",
+      "situacao": "liberado"
     },
     "GAS-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "504b6e3cd646d73dcdf6da0731e41388b97e549de35c606e472b5cc21a3bb5be",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.738Z",
+      "situacao": "liberado"
     },
     "HIP-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "284c7fbf6b53daf1cf9f3fe02f93ccab37c25471f46b77581d6d41ea40cee916",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.740Z",
+      "situacao": "liberado"
     },
     "HIP-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b22fb6a71b585afc2926243ca7400760557ba9eba0b3fb99608fbea89bd8e315",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.742Z",
+      "situacao": "liberado"
     },
     "HIP-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "170c59b7dab80f8ded94447036731028dfaa90e6394db7a18003a4038add7fdc",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.744Z",
+      "situacao": "liberado"
     },
     "HIP-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "1f5e27ee9205e4622b735625c23c90e9f24ab92d9caa9b22951c66545f5c8cfe",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.746Z",
+      "situacao": "liberado"
     },
     "HIP-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d7aca3896d3871522884f8b69c8a555a4dc12569d8ae355ba5454c67c7fd4597",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.748Z",
+      "situacao": "liberado"
     },
     "HIP-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6e956e5a4ac068c7745855cc4cb5fd9aa6b2787dd4671d43d39b90e000b192f8",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.750Z",
+      "situacao": "liberado"
     },
     "HIP-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "5c3beb12a436d5061c7def6f758df16032517ca9832f37c27c3c1efd7ae14209",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.752Z",
+      "situacao": "liberado"
     },
     "HIP-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "252f3c8239a084347d9834fe378f25c167a5cf363d488e7a4edc36ad60995864",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.754Z",
+      "situacao": "liberado"
     },
     "HIP-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6d7f4ba30f9d822f30774d527d47ee07b8d7c09b20e9cfb8bee36010422f83dc",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.755Z",
+      "situacao": "liberado"
     },
     "HIP-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ec2155035ce293ff792a2f00e188b4c3141d428403afa6cb654e8f89d5773edb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.757Z",
+      "situacao": "liberado"
     },
     "HIP-011": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "79affae2f6df8b9dd6741ef67ceecb27d89b71b08d062967aa8979cf96abf7d7",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.759Z",
+      "situacao": "liberado"
     },
     "HIP-012": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a67d31ade23cb970c591141134769af0aac4c57963a4c906b2bd5992eefff43c",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.760Z",
+      "situacao": "liberado"
     },
     "HIP-013": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7f7d6ed375f31a5f31e64614f3d08721540588b08534e88a4864fb35a426907e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.762Z",
+      "situacao": "liberado"
     },
     "HIP-014": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6984e59208d2ead7ac9052d6bbe711e612f9c39fd4299d1bc31eb9d8fa2d1ad8",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.764Z",
+      "situacao": "liberado"
     },
     "HIP-015": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "462b32012b1382fa463913b58e53811f033337849ef14567211100be9e96c4e0",
+      "avisos": 2,
+      "atualizado_em": "2026-11-14T23:36:17.766Z",
+      "situacao": "liberado"
     },
     "HIP-016": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6b6018c908ad02bb7baf46fa761d422287a54da4b5b67679a3d19491975103cf",
+      "avisos": 2,
+      "atualizado_em": "2026-11-14T23:36:17.767Z",
+      "situacao": "liberado"
     },
     "HIP-017": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d8fd8b0efc9a87c2f2c31c26e7b9bd9fbd7319a203b6ab5ad805fa1f4213c21b",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.770Z",
+      "situacao": "liberado"
     },
     "HIP-018": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "20af51a81907e46939c4bf5682cb9cb0cce77554e06d77d6ab8e54f9daf76a0e",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.772Z",
+      "situacao": "liberado"
     },
     "HIP-019": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6284b66a263f85a3874f63e225da97c9eb5c06ccd17591da8c42d95ff67046dd",
+      "avisos": 2,
+      "atualizado_em": "2026-11-14T23:36:17.774Z",
+      "situacao": "liberado"
     },
     "HIP-020": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "32387f18942defa192c3c5e7eb87ce58950a9021f384feab22a384fdc6a83181",
+      "avisos": 4,
+      "atualizado_em": "2026-11-14T23:36:17.775Z",
+      "situacao": "liberado"
     },
     "HIP-021": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "03b38ea307ca6a609068298c1201413289142e6675a6e2d26da8ca0b5a7fcb88",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.777Z",
+      "situacao": "liberado"
     },
     "HIP-022": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b3643a9c02681b92249215876a5f37f5d2a85af1c1af84bf9dd59c6d989244e3",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.779Z",
+      "situacao": "liberado"
     },
     "HIP-023": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e688b31ea56db42d259738b0dea4823216535c67ee678c16dbfe800084de49b2",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.780Z",
+      "situacao": "liberado"
     },
     "IDA-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "bee36f796eaa0fface5fd20ff1b0a5df91f583d584b253609cc9c76b235a28ca",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.782Z",
+      "situacao": "liberado"
     },
     "IDA-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "861fa8aa2bb7945381d47d6b9d305e0dfbfd2a7fad4c452ec004c25c0afc2fcb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.785Z",
+      "situacao": "liberado"
     },
     "IDA-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "9dee652085effb824cf40107439fca57b67629733b8b662c1462e3bd7b991420",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.788Z",
+      "situacao": "liberado"
     },
     "IDA-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "91cc29c05533c76ba993bbdcce5f2138a3a1d03b93f4ae2a6507fe5bb2cd35e0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.790Z",
+      "situacao": "liberado"
     },
     "IDA-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b74427132b3aff3b639c20749f215cd992960519e9c0d00aa45b7cf3b950ce7e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.792Z",
+      "situacao": "liberado"
     },
     "MAN-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "476f134767e1e83466ee2b519d2d93a26e2a0d32573445420e8356383722f9b4",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.793Z",
+      "situacao": "liberado"
     },
     "MAN-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d2ad2856ec1a3e9ce419f6af883cfa12523b358b928a6959a2d88944293d8057",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.795Z",
+      "situacao": "liberado"
     },
     "MAN-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "544ee06f384302c58a95ce7518b5e64608ed8108916acb99dc88d6324a892960",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.797Z",
+      "situacao": "liberado"
     },
     "MAN-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7bb98822e39673796115f217529a6f896f809ff076a7435725ddac1491e7d4aa",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.799Z",
+      "situacao": "liberado"
     },
     "MAN-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ba37d5afbb4063cdd3860f6c37021d4368fd83be5ff59595f81d35ab101f3d65",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.801Z",
+      "situacao": "liberado"
     },
     "MET-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8357a4f7c07c18c4128dd6127eeabfcc3a9b3355db9a89c38ce528d668c5ff6e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.803Z",
+      "situacao": "liberado"
     },
     "MET-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e99416dc54244814d5b77085b2cd87a14e2bc45afad0502ee1cdfd4d73c6121b",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.804Z",
+      "situacao": "liberado"
     },
     "MET-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "e20f9b4c3aa7f5acc1bd279cbcec0dd0b4c11c944acf532158fac846f07926d4",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.806Z",
+      "situacao": "liberado"
     },
     "MET-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "14e07fe41c8e4106ce018eaddec6d43973b5f29cf84f2a935f5af812eaf2cad7",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.808Z",
+      "situacao": "liberado"
     },
     "MET-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "d69f4ce505c6e23ecae2d582009d43a88ff4076153d9db0426a54a6de2e7598f",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.809Z",
+      "situacao": "liberado"
     },
     "MET-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "f36bd65b32e58b7c436a1bd5b68dd66beeb9d96f4629371d82475fdf059cd0fc",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.811Z",
+      "situacao": "liberado"
     },
     "MET-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "973d8133f16a0078107dfbc7f5ef430b20178051b3f8ebfd17471be8187f47eb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.812Z",
+      "situacao": "liberado"
     },
     "MET-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "867e4b54b98d78e0f5e804b5910dcf478629ad4098386f6d50a1d1c31216bf20",
+      "avisos": 1,
+      "atualizado_em": "2026-11-14T23:36:17.814Z",
+      "situacao": "liberado"
     },
     "MET-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "75926f35ce9982f1722d09077f416b8844ad18e9a8658689c82fd3cecb6650a3",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.816Z",
+      "situacao": "liberado"
     },
     "MET-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "13787f008ac06ef1b5bcf125aea4dd2a5ec73545051f15091a0652ee9f408f54",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.818Z",
+      "situacao": "liberado"
     },
     "MUL-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "17eb5f1ce2a81825790c769c2f955715a140162ce7472c1fb21e759b7b7d359e",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.820Z",
+      "situacao": "liberado"
     },
     "MUL-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "3a84c07a4816db44f2f698f32040690ee81cad5b3ec245d4e3dc4a7f9f5c1452",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.822Z",
+      "situacao": "liberado"
     },
     "MUL-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "1289715c1af395e18a7c49f2631489832983059596523115c229a3016096655b",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.823Z",
+      "situacao": "liberado"
     },
     "MUL-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "df7fd90791d5ab5c0b02362679ce7cb7e8604ae395d1fb31b3dcb53651b02418",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.825Z",
+      "situacao": "liberado"
     },
     "MUL-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "31aaf5475fb19304b20a6af6297d7484deccca40bccc18b2356f825c6d503f6d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.827Z",
+      "situacao": "bloqueado"
     },
     "MUL-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "651e998d8d500239c9a5cae5b9ecbe76f9c98c1c2b932fe3c4a315e371ea22fb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.828Z",
+      "situacao": "bloqueado"
     },
     "MUL-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "45b9d1f9f894b227f2438f22b50c958603cef7f917c22daa6e61f8638386d4d9",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.830Z",
+      "situacao": "bloqueado"
     },
     "MUL-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "042bc0c183bfa912793dbf3e3d23d8b1860ed58465191df75b3b9f1bdb805089",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.831Z",
+      "situacao": "bloqueado"
     },
     "MUL-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": true
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": true,
+      "hash": "55f64624d5f58bd47b36e23f311ceb624000a3bc3efb8aa4afce468a26c7aa10",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.833Z",
+      "situacao": "bloqueado"
     },
     "MUS-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b5b04671c22ad06624a5a7ef5e9ffa0e8157622ebed72f971d5db56a44bef827",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.835Z",
+      "situacao": null
     },
     "MUS-002": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
       "hash": "b8cdb24ab48b8f8ba30d271d7a73218c98a12922eaa752803f250bd48e773f63",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T22:50:33.574Z",
+      "atualizado_em": "2026-11-14T23:36:17.837Z",
       "situacao": null
     },
     "MUS-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "39b626875fd539cc41f4b216ac6a438dc90a2ab70cfc9b6bcde9e56c06fbb410",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.838Z",
+      "situacao": null
     },
     "MUS-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "639536c698418400ff59691c65f3f3896f5d977ba58f772cff2f84139ea300c8",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.840Z",
+      "situacao": null
     },
     "MUS-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8e4dd8674c1246770fbc0199f79e2b607cc00190bb0abc66a60fac79ffdf5efd",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.841Z",
+      "situacao": null
     },
     "MUS-006": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "87de1dcaf9320cd119c1c7e6edc3523457819119ff34fc0d2c1768e1c103bf8a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.843Z",
+      "situacao": null
     },
     "MUS-007": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7cdb6acaed4c4f73f291dfe49a3fd5c4153905bc07ff4ede97284613a72ad175",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.845Z",
+      "situacao": null
     },
     "MUS-008": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a0829aa36acbf612b7b1cae7459953bdbef2850fa815d5a76203038c5b2d8f43",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.846Z",
+      "situacao": null
     },
     "MUS-009": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "a81f0a47f5f078a4821ddcb4d4739b65edfb1c0c51ffd9b5f1d4c9dcf31e6cb1",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.848Z",
+      "situacao": null
     },
     "MUS-010": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "7240da35a572ef94afa6525a42a4bcc96d4e46d3291332470a49c7f76205e370",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.849Z",
+      "situacao": null
     },
     "MUS-011": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "33e7563c556605403a92929379601a5b606cb96a1c0826983ad2ccb9510dfaee",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.851Z",
+      "situacao": null
     },
     "MUS-012": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "417850d5cd4bf276287dea0efb0de3aac50eacb02aaba6421f402053233bb5fe",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.853Z",
+      "situacao": null
     },
     "MUS-013": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "4f6782947b5160bc5e8fc36207e360965b52664272e3d21357e468938c8021f8",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.855Z",
+      "situacao": null
     },
     "MUS-014": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "70eda49592fcdbf21f832ad90205e972e9452621cb42518f5041a258b92403cb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.856Z",
+      "situacao": null
     },
     "MUS-015": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "eb87049b1a4fb8e9045feb243445ebf3a5557f365bf5132505d6e518da0b73f0",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.858Z",
+      "situacao": null
     },
     "MUS-016": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "2c44f17f6c5d9ade10a06fa8fffeb972d636466eda40f83e128d721cf0dc7ad9",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.860Z",
+      "situacao": null
     },
     "MUS-017": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "195c8b88050c98d8f68eddbacaf575bcd017a7dbfe6d879e1b3c3dace0923a2a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.861Z",
+      "situacao": null
     },
     "MUS-018": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "6b2e53104805e9477cdfed0b5833ca1d91c4e7df5154dcc34322f4316dee3152",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.863Z",
+      "situacao": null
     },
     "MUS-019": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "c86a1a905b25281bf3e01386a8ca1ca3481138a81202f4c567e69cab2d660bbb",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.865Z",
+      "situacao": null
     },
     "MUS-020": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "637c542e96a1ab549a624393af2ce38747c9e36d88725d6faa51eec1ecaee3fa",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.867Z",
+      "situacao": null
     },
     "ROT-001": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "05e3627309f23bc2832a3cddfd00b7f4a652109b3fc9f5c2cd30ffb100f2d88a",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.869Z",
+      "situacao": "liberado"
     },
     "ROT-002": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "9fecef9d4927fd001f77573a729d828cdabe2733d74e1c7d6e48784f314468e9",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.871Z",
+      "situacao": "liberado"
     },
     "ROT-003": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "81b7d93de7bc62ef44b2cd2e82cd1d5b73071e8e3975ee393663b5010c503659",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.873Z",
+      "situacao": "liberado"
     },
     "ROT-004": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "8d1599540cd05df4a1c5fb15bb29c91589e039c8085c5bcc045de2c43ac0b1b4",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.874Z",
+      "situacao": "liberado"
     },
     "ROT-005": {
-      "status": "pendente",
-      "bloqueio_clinico_original": false
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "1cb543a723d4c507ce609169dcd6636b36435c2d02182df7c80897d4993a4728",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T23:36:17.876Z",
+      "situacao": "liberado"
     }
   },
   "ultimo_lote": {
-    "nome": "pilotos",
-    "codigos": [
-      "EMG-002",
-      "MUS-002",
-      "COR-001",
-      "CIC-001"
-    ],
+    "nome": "fases 2 a 4: 161 dietas liberadas, 40 treinos, 15 bloqueados",
     "em": "2026-11-14"
   },
-  "proximo_lote": {
-    "nome": "EMG restantes",
-    "codigos": [
-      "EMG-003",
-      "EMG-004",
-      "EMG-005",
-      "EMG-006",
-      "EMG-007",
-      "EMG-008",
-      "EMG-009",
-      "EMG-010"
-    ]
-  },
-  "producao_autorizada": false
+  "proximo_lote": null,
+  "producao_autorizada": false,
+  "situacao_geral": "216 modelos novos validados e importados na base local (15 bloqueados) + 4 protegidos existentes na produção = 220. Produção: aguardando autorização expressa."
 }

@@ -1,0 +1,24 @@
+{
+ "familia": "ROT — Rotina alimentar",
+ "paciente": [
+  {"titulo": "Como seguir o plano", "texto": "O plano foi pensado para caber na sua rotina. Os horários das refeições são combinados com o nutricionista; o importante é manter a regularidade e não ficar muitas horas sem comer."},
+  {"titulo": "Organização", "texto": "Separe um momento da semana para planejar as compras e adiantar preparações (arroz, feijão, proteínas e legumes cozidos). Guarde porções individuais na geladeira ou no congelador."},
+  {"titulo": "Segurança dos alimentos", "texto": "Leve marmitas em bolsa térmica, mantenha na geladeira assim que possível e aqueça bem antes de comer. Alimentos cozidos devem ir para a geladeira em até duas horas."},
+  {"titulo": "Hidratação", "texto": "Tenha sempre uma garrafa de água por perto. A quantidade indicada é uma referência e pode mudar com calor, atividade física ou orientação médica."},
+  {"titulo": "Quando procurar a equipe", "texto": "Avise o nutricionista se a rotina mudar (horários, turnos, viagens) ou se alguma refeição do plano não estiver funcionando, para ajustarmos."}
+ ],
+ "profissional": "Objetivo: adesão e qualidade alimentar em rotinas com pouco tempo, turnos ou deslocamentos.\nPerfil de aplicação: adultos cuja principal barreira é logística; objetivo de peso conforme avaliação.\nIndividualização: distribuir refeições pelos horários reais (turnos, viagens), priorizar preparações que se conservam bem e opções práticas sem ultraprocessados em excesso; energia conforme gasto estimado e objetivo.\nMonitoramento: adesão, regularidade das refeições, sono e sintomas digestivos; trabalhadores em turno noturno têm maior risco cardiometabólico e de alterações de sono.\nEncaminhamento: distúrbios do sono importantes ou alterações metabólicas.",
+ "hidratacao": "Referência inicial; ajustar a clima, atividade física, condições clínicas e prescrição médica.",
+ "por_codigo": {
+  "ROT-004": {
+   "paciente": [{"titulo": "Turno noturno", "texto": "Faça uma refeição principal antes do turno e lanches leves durante a madrugada. Evite refeições muito volumosas e café em excesso perto do horário de dormir."}],
+   "profissional": "Turno noturno: organizar as refeições pelo ciclo de sono do paciente, evitar grandes volumes na madrugada e observar glicemia e peso."
+  },
+  "ROT-005": {
+   "paciente": [{"titulo": "Em viagem", "texto": "Leve lanches práticos (frutas, castanhas, iogurte quando houver refrigeração) e, em restaurantes, monte o prato parecido com o do plano."}]
+  }
+ },
+ "referencias": [
+  "Ministério da Saúde. Guia Alimentar para a População Brasileira, 2ª ed. Brasília, 2014."
+ ]
+}
