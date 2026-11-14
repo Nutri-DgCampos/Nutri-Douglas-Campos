@@ -1,0 +1,15 @@
+{
+ "familia": "CIC — Ciclismo",
+ "aluno": [
+  {"titulo": "Segurança", "texto": "Use capacete e sinalização, confira a bicicleta antes de sair e prefira trajetos seguros. Treinos de intensidade podem ser feitos no rolo ou em local sem trânsito."},
+  {"titulo": "Intensidade", "texto": "As zonas (Z1 a Z5) são as suas, configuradas pelo educador físico. Nos treinos leves você deve conseguir conversar; não force além da zona indicada."},
+  {"titulo": "Aquecimento e volta à calma", "texto": "Não pule o aquecimento nem a volta à calma: eles fazem parte do tempo total da sessão."},
+  {"titulo": "Registro", "texto": "Registre no aplicativo tempo, esforço percebido e qualquer desconforto. Sessão não feita também deve ser informada."},
+  {"titulo": "Sinais de alerta", "texto": "Pare e avise o educador físico em caso de dor no peito, falta de ar desproporcional, tontura, palpitações ou dor no joelho, quadril ou lombar durante a pedalada."}
+ ],
+ "profissional": "Perfil e objetivo: conforme o título (nível e duração do programa). Confirmar histórico no ciclismo, ajuste da bicicleta (bike fit), lesões, condições de saúde e disponibilidade antes de aplicar; ajustar os dias da semana à rotina.\nZonas: Z1–Z5 são relativas; configurar as zonas individuais do aluno no aplicativo antes de enviar. Potência, FTP, TSS, frequência cardíaca e altimetria não foram preenchidos e só devem ser informados com dados reais do aluno.\nProgressão: semana a semana, condicionada a sintomas, recuperação e registros; repetir a semana ou reduzir o volume diante de dor, fadiga persistente ou baixa adesão.\nMonitoramento: adesão e esforço percebido no relatório semanal; dor recorrente em joelho, quadril ou lombar pede revisão do ajuste da bicicleta.\nOrientações ao aluno: corrida e ciclismo ainda não têm campo de observações gerais no plano; repasse as orientações abaixo ao aluno ao enviar o treino.",
+ "referencias": [
+  "Seiler S. What is best practice for training intensity and duration distribution in endurance athletes? Int J Sports Physiol Perform. 2010;5(3):276-91.",
+  "Garber CE et al. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults. Med Sci Sports Exerc. 2011;43(7):1334-59."
+ ]
+}

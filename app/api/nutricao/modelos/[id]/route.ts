@@ -18,7 +18,14 @@ type Linha = {
   revisao: number;
   arquivado_em: string | null;
   atualizado_em: string;
+  codigo: string | null;
+  situacao: "liberado" | "bloqueado";
+  orientacoes_profissional: string | null;
+  biblioteca: unknown;
+  liberado_em: string | null;
 };
+
+const LIMITE_ORIENTACOES = 20_000;
 
 // Modelo completo, com os dados dos alimentos usados (editor do modelo).
 export async function GET(request: Request, { params }: Contexto) {
@@ -29,7 +36,9 @@ export async function GET(request: Request, { params }: Contexto) {
   if (!UUID.test(id)) return recusar("Modelo inválido.", 400);
 
   const resultado = await obterPool().query<Linha>(
-    "select id, tipo, nome, conteudo, usos, revisao, arquivado_em, atualizado_em from public.modelos_nutricao where id = $1",
+    `select id, tipo, nome, conteudo, usos, revisao, arquivado_em, atualizado_em,
+            codigo, situacao, orientacoes_profissional, biblioteca, liberado_em
+       from public.modelos_nutricao where id = $1`,
     [id]
   );
   const modelo = resultado.rows[0];
@@ -59,6 +68,16 @@ export async function PUT(request: Request, { params }: Contexto) {
   if (!nome) return recusar("Informe o nome do modelo.", 400);
   if (!Number.isInteger(dados?.revisao)) return recusar("Revisão do modelo não informada.", 400);
 
+  // Orientações ao nutricionista: ficam só no modelo (não vão para a dieta).
+  // Ausente = mantém o texto atual.
+  const orientacoes = dados?.orientacoes_profissional;
+  if (orientacoes !== undefined && orientacoes !== null && typeof orientacoes !== "string") {
+    return recusar("Orientações ao nutricionista inválidas.", 400);
+  }
+  if (typeof orientacoes === "string" && orientacoes.length > LIMITE_ORIENTACOES) {
+    return recusar("Orientações ao nutricionista muito longas.", 400);
+  }
+
   const pool = obterPool();
   const atual = await pool.query<{ tipo: TipoDeModelo }>("select tipo from public.modelos_nutricao where id = $1", [id]);
   if (!atual.rows[0]) return recusar("Modelo não encontrado.", 404);
@@ -68,10 +87,18 @@ export async function PUT(request: Request, { params }: Contexto) {
 
   const resultado = await pool.query<{ revisao: number; atualizado_em: string }>(
     `update public.modelos_nutricao
-        set nome = $2, conteudo = $3, revisao = revisao + 1, atualizado_em = now()
+        set nome = $2, conteudo = $3, revisao = revisao + 1, atualizado_em = now(),
+            orientacoes_profissional = case when $5 then $6 else orientacoes_profissional end
       where id = $1 and revisao = $4
       returning revisao, atualizado_em`,
-    [id, nome, JSON.stringify(validacao.conteudo), dados.revisao]
+    [
+      id,
+      nome,
+      JSON.stringify(validacao.conteudo),
+      dados.revisao,
+      orientacoes !== undefined,
+      typeof orientacoes === "string" && orientacoes.trim() ? orientacoes : null,
+    ]
   );
 
   if (!resultado.rows[0]) {
@@ -81,7 +108,7 @@ export async function PUT(request: Request, { params }: Contexto) {
   return NextResponse.json(resultado.rows[0]);
 }
 
-// Arquivar ou reativar.
+// Arquivar, reativar ou liberar (modelo da biblioteca bloqueado até revisão).
 export async function PATCH(request: Request, { params }: Contexto) {
   const contexto = await exigirNutricionista(request);
   if (contexto instanceof NextResponse) return contexto;
@@ -90,6 +117,16 @@ export async function PATCH(request: Request, { params }: Contexto) {
   if (!UUID.test(id)) return recusar("Modelo inválido.", 400);
 
   const dados = await request.json().catch(() => null);
+  if (dados?.acao === "liberar") {
+    const liberado = await obterPool().query(
+      `update public.modelos_nutricao
+          set situacao = 'liberado', liberado_em = now(), liberado_por = $2, revisao = revisao + 1
+        where id = $1 and situacao = 'bloqueado' returning id`,
+      [id, contexto.usuarioId]
+    );
+    if (!liberado.rows[0]) return recusar("Modelo não encontrado ou já liberado.", 404);
+    return NextResponse.json({ sucesso: true });
+  }
   if (dados?.acao !== "arquivar" && dados?.acao !== "reativar") return recusar("Ação inválida.", 400);
 
   const resultado = await obterPool().query(

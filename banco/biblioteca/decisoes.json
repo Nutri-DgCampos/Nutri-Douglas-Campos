@@ -1,0 +1,166 @@
+{
+  "decididas_em": "2026-11-14",
+  "por": "nutricionista (respostas 1 a 6 de 14/11/2026)",
+  "cardapios": "Opção b: poucos cardápios-base ajustados em gramas por objetivo.",
+  "kcal_nominal": {
+    "FIS-BIK-007": 2100,
+    "FIS-BIK-008": 2300,
+    "FIS-BIK-009": 2000
+  },
+  "mul_gestacao_lactacao": [
+    "MUL-005",
+    "MUL-006",
+    "MUL-007",
+    "MUL-008",
+    "MUL-009"
+  ],
+  "protegidos": [
+    "EMG-001",
+    "FIS-BIK-007",
+    "FIS-BIK-008",
+    "FIS-BIK-009"
+  ],
+  "alimentos": {
+    "Abobrinha cozida": {
+      "nome": "Abobrinha, italiana, cozida",
+      "taco": "70"
+    },
+    "Abóbora cozida": {
+      "nome": "Abóbora, cabotian, cozida",
+      "taco": "64"
+    },
+    "Arroz branco cozido": {
+      "nome": "Arroz, tipo 1, cozido",
+      "taco": "3"
+    },
+    "Arroz integral cozido": {
+      "nome": "Arroz, integral, cozido",
+      "taco": "1"
+    },
+    "Aveia em flocos": {
+      "nome": "Aveia, flocos, crua",
+      "taco": "7"
+    },
+    "Azeite de oliva": {
+      "nome": "Azeite, de oliva, extra virgem",
+      "taco": "260"
+    },
+    "Banana-prata": {
+      "nome": "Banana, prata, crua",
+      "taco": "182"
+    },
+    "Batata inglesa cozida": {
+      "nome": "Batata, inglesa, cozida",
+      "taco": "91"
+    },
+    "Batata-doce cozida": {
+      "nome": "Batata, doce, cozida",
+      "taco": "88"
+    },
+    "Bebida vegetal sem açúcar (composição a validar)": {
+      "nome": "Soja, extrato solúvel, natural, fluido",
+      "taco": "582"
+    },
+    "Brócolis cozido": {
+      "nome": "Brócolis, cozido",
+      "taco": "100"
+    },
+    "Cenoura cozida": {
+      "nome": "Cenoura, cozida",
+      "taco": "109"
+    },
+    "Chuchu cozido": {
+      "nome": "Chuchu, cozido",
+      "taco": "112"
+    },
+    "Feijão carioca cozido": {
+      "nome": "Feijão, carioca, cozido",
+      "taco": "561"
+    },
+    "Feijão preto cozido": {
+      "nome": "Feijão, preto, cozido",
+      "taco": "567"
+    },
+    "Geleia de frutas": {
+      "nome": "Geleia de frutas tradicional",
+      "id": "42a7e870-3f74-46a6-a60a-631f376e714a"
+    },
+    "Iogurte natural desnatado": {
+      "nome": "Iogurte, natural, desnatado",
+      "taco": "449"
+    },
+    "Leite desnatado UHT": {
+      "nome": "Leite, de vaca, desnatado, UHT",
+      "taco": "457"
+    },
+    "Macarrão cozido": {
+      "nome": "Macarrão cozido",
+      "id": "563d32f7-b39b-454c-9c9a-8cf2be645345"
+    },
+    "Mamão papaia": {
+      "nome": "Mamão, Papaia, cru",
+      "taco": "226"
+    },
+    "Mandioca cozida": {
+      "nome": "Mandioca, cozida",
+      "taco": "129"
+    },
+    "Melão": {
+      "nome": "Melão, cru",
+      "taco": "236"
+    },
+    "Ovo de galinha cozido": {
+      "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+      "taco": "488"
+    },
+    "Ovo de galinha mexido": {
+      "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
+      "taco": "488"
+    },
+    "Patinho bovino grelhado": {
+      "nome": "Carne, bovina, patinho, sem gordura, grelhado",
+      "taco": "377"
+    },
+    "Peito de frango grelhado": {
+      "nome": "Frango, peito, sem pele, grelhado",
+      "taco": "410"
+    },
+    "Pão de forma branco": {
+      "nome": "Pão, trigo, francês",
+      "taco": "53"
+    },
+    "Pão de forma integral": {
+      "nome": "Pão, trigo, forma, integral",
+      "taco": "52"
+    },
+    "Queijo minas frescal": {
+      "nome": "Queijo, minas, frescal",
+      "taco": "461"
+    },
+    "Ricota": {
+      "nome": "Queijo, ricota",
+      "taco": "469"
+    },
+    "Tapioca hidratada preparada": {
+      "nome": "Goma de mandioca, assada",
+      "id": "90f43614-a701-4d94-a87e-4f9079bf545d"
+    },
+    "Tilápia grelhada": {
+      "nome": "Filé de tilápia grelhada",
+      "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
+    },
+    "Tomate cru": {
+      "nome": "Tomate, com semente, cru",
+      "taco": "157"
+    }
+  },
+  "exercicios": {
+    "Crucifixo na máquina": "Crucifixo no peck deck",
+    "Levantamento terra romeno": "Stiff com barra",
+    "Prancha abdominal": "Prancha",
+    "Puxada alta pronada": "Puxada frontal",
+    "Remada curvada": "Remada curvada com barra",
+    "Rosca direta": "Rosca direta com barra",
+    "Supino com halteres": "Supino reto com halteres"
+  }
+}

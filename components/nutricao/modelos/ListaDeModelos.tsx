@@ -17,6 +17,8 @@ export type ResumoDoModelo = {
   atualizado_em: string;
   resumo: string | null;
   quantidade: number | null;
+  codigo?: string | null;
+  situacao?: "liberado" | "bloqueado";
 };
 
 // Lista de uma biblioteca de modelos (observações, refeições ou dietas):
@@ -136,6 +138,7 @@ export default function ListaDeModelos({
                     <span className="flex items-center gap-2">
                       <span className="truncate font-semibold text-gray-900">{modelo.nome}</span>
                       {modelo.arquivado_em ? <Tag value="Arquivado" severity="secondary" className="selo-status" /> : null}
+                      {modelo.situacao === "bloqueado" ? <Tag value="Bloqueado até revisão" severity="warning" className="selo-status" /> : null}
                     </span>
                     <span className="block truncate text-sm text-gray-500">{detalhe(modelo)}</span>
                     <span className="block text-xs text-gray-400">

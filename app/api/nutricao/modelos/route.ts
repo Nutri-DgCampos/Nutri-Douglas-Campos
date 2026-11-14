@@ -31,7 +31,7 @@ export async function GET(request: Request) {
   }
 
   const resultado = await obterPool().query(
-    `select id, tipo, nome, usos, arquivado_em, atualizado_em,
+    `select id, tipo, nome, codigo, situacao, usos, arquivado_em, atualizado_em,
             case tipo
               when 'observacao' then conteudo->>'texto'
               when 'refeicao' then conteudo->>'nome'
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
        from public.modelos_nutricao
       where ${condicoes.join(" and ")}
       order by arquivado_em nulls first, nome
-      limit 200`,
+      limit 300`,
     parametros
   );
 

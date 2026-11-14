@@ -1,0 +1,818 @@
+{
+ "codigo": "COR-001",
+ "tipo": "corrida",
+ "nome": "COR-001 — Iniciação caminhada/trote — 8 semanas",
+ "nivel": "iniciante",
+ "objetivo": "Iniciação caminhada/trote",
+ "duracao_semanas": 8,
+ "semanas": [
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 19,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 19,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "recuperação relativa",
+     "duracao_min": 25,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 15,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 5,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "recuperação relativa",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "recuperação relativa",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 19,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 24,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 19,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 24,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 19,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "adaptação/progressão",
+     "duracao_min": 45,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 29,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  },
+  {
+   "sessoes": [
+    {
+     "dia": "ter",
+     "tipo": "Caminhada e trote",
+     "descricao": "recuperação relativa",
+     "duracao_min": 30,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 14,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "qui",
+     "tipo": "Caminhada e trote",
+     "descricao": "recuperação relativa",
+     "duracao_min": 35,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 19,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    },
+    {
+     "dia": "sab",
+     "tipo": "Sessão contínua leve",
+     "descricao": "recuperação relativa",
+     "duracao_min": 40,
+     "zona": "Z1–Z2",
+     "blocos": [
+      {
+       "tipo": "aquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "bloco",
+       "descricao": "Alternar caminhada e trote confortável; proporção individualizada pelo profissional.",
+       "repeticoes": null,
+       "duracao_min": 24,
+       "intensidade": "Z1–Z2"
+      },
+      {
+       "tipo": "desaquecimento",
+       "descricao": "",
+       "repeticoes": null,
+       "duracao_min": 8,
+       "intensidade": "Z1"
+      }
+     ],
+     "observacao": "Ajustar por condição física, zonas reais e tolerância; não usar metas absolutas fictícias."
+    }
+   ]
+  }
+ ],
+ "orientacoes_aluno": [
+  {
+   "titulo": "Intensidade",
+   "texto": "As zonas (Z1 a Z5) são as suas, configuradas pelo educador físico. Nos treinos leves você deve conseguir conversar; não acelere além da zona indicada."
+  },
+  {
+   "titulo": "Aquecimento e volta à calma",
+   "texto": "Não pule o aquecimento nem a volta à calma: eles fazem parte do tempo total da sessão."
+  },
+  {
+   "titulo": "Registro",
+   "texto": "Registre no aplicativo tempo, distância (se tiver), esforço percebido e qualquer desconforto. Sessão não feita também deve ser informada."
+  },
+  {
+   "titulo": "Recuperação",
+   "texto": "Os dias sem corrida são parte do plano. Durma bem, hidrate-se e alimente-se conforme o plano alimentar."
+  },
+  {
+   "titulo": "Sinais de alerta",
+   "texto": "Pare e avise o educador físico em caso de dor no peito, falta de ar desproporcional, tontura, palpitações ou dor que faça você mudar a passada."
+  }
+ ],
+ "orientacoes_profissional": "Perfil e objetivo: conforme o título (nível e duração do programa). Confirmar histórico de corrida, lesões, condições de saúde e disponibilidade antes de aplicar; ajustar os dias da semana à rotina.\nZonas: Z1–Z5 são relativas; configurar as zonas individuais do aluno no aplicativo antes de enviar. Distância, ritmo e frequência cardíaca absolutos não foram preenchidos e só devem ser informados com dados reais do aluno.\nProgressão: semana a semana, condicionada a sintomas, recuperação e registros; repetir a semana ou reduzir o volume diante de dor, fadiga persistente ou baixa adesão.\nMonitoramento: adesão e esforço percebido no relatório semanal; atenção a dor localizada recorrente (risco de lesão por sobrecarga).\nOrientações ao aluno: corrida e ciclismo ainda não têm campo de observações gerais no plano; repasse as orientações abaixo ao aluno ao enviar o treino.\n\nProgressão: Progressão semanal sugerida de volume/intensidade condicionada a desempenho, sintomas, recuperação e avaliação do educador físico. Zonas Z1–Z5 editáveis; não inventar FC, ritmo ou potência absoluta.",
+ "referencias": [
+  "Seiler S. What is best practice for training intensity and duration distribution in endurance athletes? Int J Sports Physiol Perform. 2010;5(3):276-91.",
+  "Garber CE et al. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults. Med Sci Sports Exerc. 2011;43(7):1334-59."
+ ],
+ "origem": {
+  "catalogo": "V3",
+  "conteudo_base": "SPEC única 11/2026",
+  "orientacoes": "COR"
+ }
+}

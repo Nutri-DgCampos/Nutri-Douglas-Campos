@@ -340,7 +340,15 @@ export function JanelaRotina({
   );
 }
 
-export type ModeloNaLista = { id: string; nome: string; compartilhado: boolean; meu: boolean; sessoes: number };
+export type ModeloNaLista = {
+  id: string;
+  nome: string;
+  compartilhado: boolean;
+  meu: boolean;
+  sessoes: number;
+  codigo?: string | null;
+  orientacoes_profissional?: string | null;
+};
 
 export function JanelaModelos({
   aberta,
@@ -357,6 +365,8 @@ export function JanelaModelos({
   onEscolher: (m: ModeloNaLista) => void;
   onArquivar: (m: ModeloNaLista) => void;
 }) {
+  // Modelo com as orientações ao educador abertas (só leitura; não escolhe o modelo).
+  const [abertoId, setAbertoId] = useState<string | null>(null);
   return (
     <Dialog header="Modelos de treino" visible={aberta} onHide={onFechar} className="w-full max-w-lg" modal>
       <p className="text-sm text-gray-600">O modelo escolhido vira um novo rascunho para este aluno.</p>
@@ -365,14 +375,33 @@ export function JanelaModelos({
       ) : (
         <ul className="mt-3 divide-y divide-gray-100">
           {modelos.map((m) => (
-            <li key={m.id} className="flex items-center gap-2">
-              <button type="button" onClick={() => onEscolher(m)} className="min-w-0 flex-1 px-2 py-2 text-left hover:bg-primary-50">
-                <span className="block font-semibold text-gray-900">{m.nome}</span>
-                <span className="block text-xs text-gray-500">
-                  {contagem(m.sessoes, modalidade !== "musculacao")} · {m.meu ? (m.compartilhado ? "meu, compartilhado" : "meu, privado") : "compartilhado"}
-                </span>
-              </button>
-              {m.meu ? <Button type="button" icon="pi pi-inbox" text severity="danger" size="small" aria-label={`Arquivar o modelo ${m.nome}`} tooltip="Arquivar" onClick={() => onArquivar(m)} /> : null}
+            <li key={m.id}>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => onEscolher(m)} className="min-w-0 flex-1 px-2 py-2 text-left hover:bg-primary-50">
+                  <span className="block font-semibold text-gray-900">{m.nome}</span>
+                  <span className="block text-xs text-gray-500">
+                    {m.codigo ? `${m.codigo} · ` : ""}
+                    {contagem(m.sessoes, modalidade !== "musculacao")} · {m.meu ? (m.compartilhado ? "meu, compartilhado" : "meu, privado") : "compartilhado"}
+                  </span>
+                </button>
+                {m.meu ? <Button type="button" icon="pi pi-inbox" text severity="danger" size="small" aria-label={`Arquivar o modelo ${m.nome}`} tooltip="Arquivar" onClick={() => onArquivar(m)} /> : null}
+              </div>
+              {m.orientacoes_profissional?.trim() ? (
+                <div className="px-2 pb-2">
+                  <button
+                    type="button"
+                    aria-expanded={abertoId === m.id}
+                    onClick={() => setAbertoId(abertoId === m.id ? null : m.id)}
+                    className="text-xs font-semibold text-primary-700 hover:underline"
+                  >
+                    <i className={`pi ${abertoId === m.id ? "pi-chevron-up" : "pi-chevron-down"} mr-1 text-[0.65rem]`} aria-hidden="true" />
+                    Orientações ao educador
+                  </button>
+                  {abertoId === m.id ? (
+                    <p className="mt-1 whitespace-pre-line break-words rounded-md bg-gray-50 p-2 text-sm text-gray-700">{m.orientacoes_profissional}</p>
+                  ) : null}
+                </div>
+              ) : null}
             </li>
           ))}
         </ul>

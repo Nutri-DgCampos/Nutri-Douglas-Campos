@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";
+import { Tag } from "primereact/tag";
 import { SITUACOES_DO_FORMULARIO, type Recordatorio, type SituacaoDoFormulario } from "@/lib/nutricao/anamnese";
 import { formatarData } from "@/lib/nutricao/paciente";
 
@@ -22,7 +23,7 @@ type DietaDeOrigem = {
   arquivada_em: string | null;
 };
 
-type Modelo = { id: string; nome: string; resumo: string | null; quantidade: number | null };
+type Modelo = { id: string; nome: string; resumo: string | null; quantidade: number | null; situacao?: string };
 
 type Aba = "consultas" | "recordatorio" | "outros" | "modelos";
 
@@ -345,20 +346,30 @@ export default function JanelaImportar({
                 <p className="text-sm text-gray-500">Nenhum modelo de dieta encontrado.</p>
               ) : (
                 <ul className="max-h-64 space-y-1 overflow-y-auto">
-                  {modelos.map((m) => (
-                    <li key={m.id}>
-                      <label className={`flex cursor-pointer items-start gap-2 rounded-lg border p-2 ${escolhida?.id === m.id ? "border-primary-400 bg-primary-50" : "border-gray-200"}`}>
-                        <RadioButton checked={escolhida?.id === m.id} onChange={() => setEscolhida({ tipo: "modelo", id: m.id })} />
-                        <span className="text-sm">
-                          <span className="block font-semibold text-gray-900">{m.nome}</span>
-                          <span className="block text-gray-600">
-                            {m.resumo ? `${m.resumo} · ` : ""}
-                            {m.quantidade ?? 0} refeição(ões)
+                  {modelos.map((m) => {
+                    const bloqueado = m.situacao === "bloqueado";
+                    return (
+                      <li key={m.id}>
+                        <label
+                          className={`flex items-start gap-2 rounded-lg border p-2 ${bloqueado ? "cursor-not-allowed border-gray-200 bg-gray-50 opacity-70" : `cursor-pointer ${escolhida?.id === m.id ? "border-primary-400 bg-primary-50" : "border-gray-200"}`}`}
+                        >
+                          <RadioButton
+                            checked={escolhida?.id === m.id}
+                            disabled={bloqueado}
+                            onChange={() => setEscolhida({ tipo: "modelo", id: m.id })}
+                          />
+                          <span className="min-w-0 text-sm">
+                            <span className="block font-semibold text-gray-900">{m.nome}</span>
+                            <span className="block text-gray-600">
+                              {m.resumo ? `${m.resumo} · ` : ""}
+                              {m.quantidade ?? 0} refeição(ões)
+                            </span>
+                            {bloqueado ? <Tag value="Bloqueado até revisão" severity="warning" className="selo-status mt-1" /> : null}
                           </span>
-                        </span>
-                      </label>
-                    </li>
-                  ))}
+                        </label>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>

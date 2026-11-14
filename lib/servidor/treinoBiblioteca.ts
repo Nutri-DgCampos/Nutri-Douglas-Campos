@@ -226,8 +226,19 @@ export async function definirAcademiaDoAluno(profissional: ProfissionalDeTreino,
 const MODALIDADES_DE_MODELO = ["musculacao", "corrida", "ciclismo"];
 
 export async function listarModelos(profissional: ProfissionalDeTreino, modalidade = "musculacao") {
-  const r = await obterPool().query<{ id: string; nome: string; compartilhado: boolean; meu: boolean; sessoes: number; criado_em: string }>(
-    `select id, nome, compartilhado, criado_por = $1 as meu,
+  // codigo e orientacoes_profissional: modelos da Biblioteca Mestre (038);
+  // as orientações ao educador ficam só no modelo (não vão para o aluno).
+  const r = await obterPool().query<{
+    id: string;
+    nome: string;
+    compartilhado: boolean;
+    meu: boolean;
+    sessoes: number;
+    criado_em: string;
+    codigo: string | null;
+    orientacoes_profissional: string | null;
+  }>(
+    `select id, nome, compartilhado, criado_por = $1 as meu, codigo, orientacoes_profissional,
             coalesce(jsonb_array_length(plano->'dias'), jsonb_array_length(plano->'semanas'), 0) as sessoes, criado_em
        from public.treino_modelos
       where arquivado_em is null and modalidade = $2 and (compartilhado or criado_por = $1)

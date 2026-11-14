@@ -1,0 +1,932 @@
+{
+  "versao": 3,
+  "ambiente": "homologacao_local (Docker nutri-postgres); produção só com autorização expressa",
+  "auditoria": "concluida em 2026-11-14 (docs/modulo-nutricao/07-biblioteca-mestre-2026-11-14.md)",
+  "total": 220,
+  "modelos": {
+    "ALI-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ALI-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ALI-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ALI-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ALI-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ALI-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "BAR-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "BAR-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "BAR-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "BAR-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "BAR-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "CIC-001": {
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "23e15f8fd4c88b130122e539ba96898a77d1eff9861d878aa72fdaf2933c0368",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T22:50:33.604Z",
+      "situacao": null
+    },
+    "CIC-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CIC-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "CLI-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "CLI-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "CLI-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "CLI-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "CLI-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "COR-001": {
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "ba51fe671133c67eb93a0335ec8699ffce1c1523fe55730ec27977a6c8ca424c",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T22:50:33.590Z",
+      "situacao": null
+    },
+    "COR-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "COR-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-001": {
+      "status": "protegido_existente",
+      "bloqueio_clinico_original": false,
+      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+    },
+    "EMG-002": {
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "79ec874bff802cd919f301feebdc5d54cf960137ac4b06916a150b75c7fa876d",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T22:50:33.557Z",
+      "situacao": "liberado"
+    },
+    "EMG-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-011": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-012": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-013": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-014": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-015": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-016": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-017": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-018": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-019": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-020": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-021": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-022": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "EMG-023": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-011": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-012": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-013": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-014": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-015": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ESP-016": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BB-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-BIK-007": {
+      "status": "protegido_existente",
+      "bloqueio_clinico_original": false,
+      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+    },
+    "FIS-BIK-008": {
+      "status": "protegido_existente",
+      "bloqueio_clinico_original": false,
+      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+    },
+    "FIS-BIK-009": {
+      "status": "protegido_existente",
+      "bloqueio_clinico_original": false,
+      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+    },
+    "FIS-BIK-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-CP-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-FIG-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-MP-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "FIS-WEL-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "GAS-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-011": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-012": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-013": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-014": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-015": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-016": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-017": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-018": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-019": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-020": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-021": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-022": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "HIP-023": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "IDA-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "IDA-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "IDA-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "IDA-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "IDA-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MAN-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MAN-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MAN-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MAN-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MAN-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MET-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUL-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUL-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUL-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUL-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUL-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "MUL-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "MUL-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "MUL-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "MUL-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": true
+    },
+    "MUS-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-002": {
+      "status": "importado_homologacao",
+      "bloqueio_clinico_original": false,
+      "hash": "b8cdb24ab48b8f8ba30d271d7a73218c98a12922eaa752803f250bd48e773f63",
+      "avisos": 0,
+      "atualizado_em": "2026-11-14T22:50:33.574Z",
+      "situacao": null
+    },
+    "MUS-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-006": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-007": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-008": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-009": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-010": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-011": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-012": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-013": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-014": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-015": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-016": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-017": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-018": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-019": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "MUS-020": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ROT-001": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ROT-002": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ROT-003": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ROT-004": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    },
+    "ROT-005": {
+      "status": "pendente",
+      "bloqueio_clinico_original": false
+    }
+  },
+  "ultimo_lote": {
+    "nome": "pilotos",
+    "codigos": [
+      "EMG-002",
+      "MUS-002",
+      "COR-001",
+      "CIC-001"
+    ],
+    "em": "2026-11-14"
+  },
+  "proximo_lote": {
+    "nome": "EMG restantes",
+    "codigos": [
+      "EMG-003",
+      "EMG-004",
+      "EMG-005",
+      "EMG-006",
+      "EMG-007",
+      "EMG-008",
+      "EMG-009",
+      "EMG-010"
+    ]
+  },
+  "producao_autorizada": false
+}

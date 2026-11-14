@@ -60,11 +60,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (!recordatorioTemConteudo(validacao.valor)) return recusar("O recordatório não tem alimentos informados.", 400);
     fonte = documentoDoRecordatorio(validacao.valor);
   } else if (origem.tipo === "modelo") {
-    const modelo = await pool.query<{ conteudo: unknown }>(
-      "select conteudo from public.modelos_nutricao where id = $1 and tipo = 'dieta' and arquivado_em is null",
+    const modelo = await pool.query<{ conteudo: unknown; situacao: string }>(
+      "select conteudo, situacao from public.modelos_nutricao where id = $1 and tipo = 'dieta' and arquivado_em is null",
       [origem.id]
     );
     if (!modelo.rows[0]) return recusar("Modelo não encontrado ou arquivado.", 404);
+    // Biblioteca Mestre: modelo bloqueado só é usado depois de revisado e liberado.
+    if (modelo.rows[0].situacao !== "liberado") {
+      return recusar("Este modelo está bloqueado até a revisão do nutricionista. Revise e libere na biblioteca antes de usar.", 409);
+    }
     const validacao = validarDocumento(modelo.rows[0].conteudo);
     if ("erro" in validacao) return recusar(validacao.erro, 400);
     fonte = validacao.documento;

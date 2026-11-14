@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Message } from "primereact/message";
 import { Skeleton } from "primereact/skeleton";
 import BotaoVoltar from "@/components/BotaoVoltar";
 import { Totalizador } from "@/components/nutricao/editor/BlocoRefeicao";
@@ -13,7 +14,7 @@ import ListaDeRefeicoes from "@/components/nutricao/editor/ListaDeRefeicoes";
 import ObservacoesDaDieta from "@/components/nutricao/editor/ObservacoesDaDieta";
 import type { BaseDosAlimentos, Nutriente } from "@/components/nutricao/editor/tipos";
 import { api } from "@/lib/api";
-import { avisar } from "@/lib/avisos";
+import { avisar, pedirConfirmacao } from "@/lib/avisos";
 import { documentoVazio, novaRefeicao, totaisDaDieta, type DocumentoDieta, type Refeicao } from "@/lib/nutricao/dieta";
 
 const MACROS = ["kcal", "carboidratos", "proteinas", "lipidios"];
@@ -37,6 +38,9 @@ export default function EditorDeModelo({ tipo, id }: { tipo: "refeicao" | "dieta
   const [pendente, setPendente] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [usos, setUsos] = useState(0);
+  const [orientacoes, setOrientacoes] = useState("");
+  const [bloqueado, setBloqueado] = useState(false);
+  const [liberando, setLiberando] = useState(false);
   const documentoRef = useRef(documento);
 
   const carregar = useCallback(async () => {
@@ -59,6 +63,8 @@ export default function EditorDeModelo({ tipo, id }: { tipo: "refeicao" | "dieta
     setNome(dados.modelo.nome);
     setRevisao(dados.modelo.revisao);
     setUsos(dados.modelo.usos);
+    setOrientacoes(dados.modelo.orientacoes_profissional ?? "");
+    setBloqueado(dados.modelo.situacao === "bloqueado");
     setNutrientes(dados.nutrientes);
     setBase({ alimentos: dados.alimentos, composicoes: dados.composicoes });
     setPendente(false);
@@ -95,7 +101,14 @@ export default function EditorDeModelo({ tipo, id }: { tipo: "refeicao" | "dieta
       const resposta = await fetch(novo ? "/api/nutricao/modelos" : `/api/nutricao/modelos/${id}`, {
         method: novo ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo, nome, conteudo, revisao }),
+        body: JSON.stringify({
+          tipo,
+          nome,
+          conteudo,
+          revisao,
+          // Só modelo de dieta tem orientações; texto vazio vira null.
+          ...(tipo === "dieta" ? { orientacoes_profissional: orientacoes.trim() || null } : {}),
+        }),
       });
       const resultado = await resposta.json().catch(() => null);
       if (!resposta.ok) {
@@ -108,6 +121,35 @@ export default function EditorDeModelo({ tipo, id }: { tipo: "refeicao" | "dieta
       else setRevisao(resultado.revisao);
     } finally {
       setSalvando(false);
+    }
+  }
+
+  async function liberar() {
+    if (pendente) {
+      avisar("Salve as alterações do modelo antes de liberá-lo.", "warn");
+      return;
+    }
+    const confirmado = await pedirConfirmacao(
+      `Liberar “${nome}” para uso? Depois disso ele poderá ser usado em dietas e importado por todos os profissionais.`,
+      { aceitar: "Liberar", rejeitar: "Cancelar", titulo: "Liberar modelo" }
+    );
+    if (!confirmado) return;
+    setLiberando(true);
+    try {
+      const resposta = await fetch(`/api/nutricao/modelos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acao: "liberar" }),
+      });
+      const resultado = await resposta.json().catch(() => null);
+      if (!resposta.ok) {
+        avisar(resultado?.erro ?? "Não foi possível liberar o modelo.", "error");
+        return;
+      }
+      await carregar();
+      avisar("Modelo liberado para uso.", "success");
+    } finally {
+      setLiberando(false);
     }
   }
 
@@ -128,6 +170,21 @@ export default function EditorDeModelo({ tipo, id }: { tipo: "refeicao" | "dieta
         <h1 className="text-2xl font-bold text-gray-900">
           {novo ? "Novo modelo de" : "Modelo de"} {tipo === "refeicao" ? "refeição" : "dieta"}
         </h1>
+
+        {tipo === "dieta" && bloqueado ? (
+          <Message
+            severity="warn"
+            className="w-full justify-start"
+            content={
+              <div className="flex w-full flex-wrap items-center justify-between gap-3">
+                <span className="min-w-0 flex-1 text-sm">
+                  Modelo da biblioteca bloqueado até a sua revisão. Ele não pode ser usado em dietas enquanto não for liberado.
+                </span>
+                <Button type="button" icon="pi pi-lock-open" label="Liberar para uso" size="small" loading={liberando} onClick={liberar} />
+              </div>
+            }
+          />
+        ) : null}
 
         <div className="cartao grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
           <label className="block sm:col-span-2">
@@ -153,6 +210,22 @@ export default function EditorDeModelo({ tipo, id }: { tipo: "refeicao" | "dieta
                 <InputText value={documento.titulo} onChange={(e) => alterar((d) => void (d.titulo = e.target.value))} className="w-full" />
               </label>
             </>
+          ) : null}
+          {tipo === "dieta" ? (
+            <label className="block sm:col-span-2">
+              <span className="mb-1 block text-sm font-semibold text-gray-700">Orientações ao nutricionista</span>
+              <InputTextarea
+                value={orientacoes}
+                autoResize
+                rows={3}
+                className="w-full"
+                onChange={(e) => {
+                  setOrientacoes(e.target.value);
+                  setPendente(true);
+                }}
+              />
+              <span className="mt-1 block text-xs text-gray-500">Ficam só no modelo: não vão para a dieta nem para o paciente.</span>
+            </label>
           ) : null}
           <div className="flex flex-wrap items-center justify-between gap-2 sm:col-span-2">
             <span className="text-xs text-gray-500">
