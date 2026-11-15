@@ -1,6 +1,6 @@
 {
   "versao": 3,
-  "ambiente": "homologacao_local (Docker nutri-postgres); produção só com autorização expressa",
+  "ambiente": "homologacao_local e producao (carga em 2026-11-15)",
   "auditoria": "concluida em 2026-11-14 (docs/modulo-nutricao/07-biblioteca-mestre-2026-11-14.md)",
   "total": 220,
   "modelos": {
@@ -296,7 +296,7 @@
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
       "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/EMG-001.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
-      "ajuste": "preparado"
+      "ajuste": "aplicado na produção em 2026-11-15"
     },
     "EMG-002": {
       "status": "importado_homologacao",
@@ -734,19 +734,19 @@
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
       "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/FIS-BIK-007.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
-      "ajuste": "preparado"
+      "ajuste": "aplicado na produção em 2026-11-15"
     },
     "FIS-BIK-008": {
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
       "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/FIS-BIK-008.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
-      "ajuste": "preparado"
+      "ajuste": "aplicado na produção em 2026-11-15"
     },
     "FIS-BIK-009": {
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
       "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/FIS-BIK-009.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
-      "ajuste": "preparado"
+      "ajuste": "aplicado na produção em 2026-11-15"
     },
     "FIS-BIK-010": {
       "status": "importado_homologacao",
@@ -1758,10 +1758,10 @@
     }
   },
   "ultimo_lote": {
-    "nome": "15/11: leite desnatado UHT completado (88 dietas reajustadas e reimportadas), observações do aluno em corrida/ciclismo (20 reimportados), ajuste dos 4 protegidos preparado",
+    "nome": "carga na produção: 216 importados, 4 protegidos ajustados",
     "em": "2026-11-15"
   },
   "proximo_lote": null,
   "producao_autorizada": true,
-  "situacao_geral": "216 modelos novos validados e importados na base local (15 bloqueados) + 4 protegidos com ajuste preparado = 220. Produção: autorizada pelo nutricionista em 15/11 (resposta 6); execução a combinar com o usuário, depois do deploy da 038."
+  "situacao_geral": "216 modelos novos + 4 protegidos ajustados = 220, na base local e na PRODUÇÃO (carga em 15/11, com aprovação do usuário). Os 15 bloqueados aguardam revisão do nutricionista no app."
 }

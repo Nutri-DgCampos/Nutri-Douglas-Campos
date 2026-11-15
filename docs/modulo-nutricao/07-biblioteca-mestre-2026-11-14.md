@@ -229,12 +229,12 @@ O nutricionista respondeu "a" às seis perguntas.
 
 | # | Pergunta | Resposta | O que foi feito |
 |---|---|---|---|
-| 1 | Os 4 modelos manuais estão abaixo do valor do nome | Ajustar as porções até o valor do nome | Ajuste preparado; aplicação na carga (seção 12.3) |
+| 1 | Os 4 modelos manuais estão abaixo do valor do nome | Ajustar as porções até o valor do nome | Ajuste aplicado na produção em 15/11 (seções 12.3 e 12.5) |
 | 2 | ALI-001 como vegetariana estrita | Confirmado | Nada a mudar |
 | 3 | Piso de proteína de 2,0 g/kg no fisiculturismo | Confirmado | Nada a mudar |
 | 4 | Pão de forma branco | Pão francês | Nada a mudar (já era assim) |
 | 5 | Orientações ao aluno em corrida e ciclismo | O aluno vê direto no app | Campo criado (seção 12.1) |
-| 6 | Autorização para colocar os modelos no sistema oficial | Autorizado | Execução a combinar com o usuário, depois do deploy da 038 (seção 12.4) |
+| 6 | Autorização para colocar os modelos no sistema oficial | Autorizado | Carga feita em 15/11, com aprovação do usuário (seção 12.5) |
 
 ## 11. Andamento
 
@@ -245,9 +245,9 @@ O nutricionista respondeu "a" às seis perguntas.
 | 3. Treinos (40) | 100% | concluída; corrida e ciclismo com observações ao aluno (seção 12.1) |
 | 4. Bloqueados: rascunhos específicos (15) | 100% | concluída; aguardam revisão do nutricionista |
 | 5. Relatório final e autorização | 100% | autorização recebida em 15/11 |
-| 6. Respostas de 15/11 e carga na produção | 80% | respostas aplicadas na base local; falta a carga, depois do deploy |
+| 6. Respostas de 15/11 e carga na produção | 100% | concluída em 15/11 |
 
-**Módulo Biblioteca Mestre: 100% na base local; a carga na produção é o último passo.**
+**Módulo Biblioteca Mestre: 100%, na base local e na produção.** Falta só a revisão dos 15 bloqueados pelo nutricionista, que é feita pelo próprio app.
 
 ## 12. Ajustes de 15/11
 
@@ -313,3 +313,27 @@ O nutricionista respondeu "a" às seis perguntas.
    Os dois exigem `BIBLIOTECA_PRODUCAO=CONFIRMO`.
 4. **Conferir na produção.** Devem existir 216 modelos novos (161 liberados, 15 bloqueados, 40 treinos) e os 4 ajustados.
 5. **Revisão dos bloqueados.** O nutricionista revisa os 15 bloqueados e clica em "Liberar para uso".
+
+### 12.5 Carga na produção (15/11)
+
+- **Deploy.** O usuário fez o deploy até fcaa62c, com a migração 038 aplicada.
+- **Conferência antes da carga.** Os 4 modelos manuais seguiam na revisão e com o conteúdo da cópia, e nunca tinham sido usados.
+- **Onde rodou.** A VPS não tem node, então a ferramenta rodou dentro do contêiner `nutri-app`:
+  - cópia temporária em `/tmp/bib`, com `scripts/`, `banco/biblioteca/` e links para `/app/lib` e `/app/node_modules`;
+  - `BIBLIOTECA_PRODUCAO=CONFIRMO` e `--producao`;
+  - os comandos foram enviados por `ssh nutri "bash -s"`, para evitar problemas de aspas no PowerShell.
+- **Passos, com aprovação do usuário:**
+  1. Ensaio `validar --todos`, só leitura, com a composição da produção: 216 sem erros e desvio máximo de 3%.
+  2. `importar --todos --autor nutri.dgcampos@gmail.com`: 216 importados, 0 já existentes, 0 com erro.
+  3. `protegidos.mjs aplicar`: 4 de 4 aplicados.
+  4. Conferência e remoção de `/tmp/bib`.
+- **Resultado na produção:**
+  - **Dietas com código:** 165 liberadas (161 da biblioteca e os 4 manuais) e 15 bloqueadas (BAR, CLI e MUL-005 a 009). As dietas da biblioteca entram sem autor, como modelos do sistema, igual à base local; a lista mostra todas aos nutricionistas.
+  - **Treinos:** 20 de musculação, 10 de corrida e 10 de ciclismo, todos com o nutricionista como autor e todos com observações ao aluno no plano.
+  - **Os 4 manuais:** EMG-001 com 1.282 kcal (−1,4%), FIS-BIK-007 com 2.094 (−0,3%), FIS-BIK-008 com 2.289 (−0,5%) e FIS-BIK-009 com 2.006 (+0,3%). O código foi gravado e a revisão subiu 1.
+  - **App:** saudável, `/login` responde 200 e não há erros no log.
+- **Desfazer, se for preciso:**
+  - `reverter` apaga os modelos que nunca foram usados;
+  - `protegidos.mjs restaurar` devolve o conteúdo original dos 4 manuais.
+
+  Os dois rodam do mesmo jeito, dentro do contêiner.
