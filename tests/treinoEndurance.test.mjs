@@ -115,3 +115,21 @@ test("zonas: ritmo no formato min:seg e faixas coerentes", () => {
   assert.equal(ok.zonas.ftp, 250);
   assert.deepEqual(ok.zonas.ritmo, [], "ritmo só na corrida");
 });
+
+test("observações gerais da planilha: validadas, vazias descartadas e sem vínculo do catálogo para o aluno", () => {
+  const modeloId = "0b6f7a52-6f2b-4c3e-9a51-2d1f0c8e4a11";
+  const bruto = {
+    ciclo: { fase: "Base", inicio: null },
+    semanas: [{ sessoes: [sessao("seg")] }],
+    observacoes: [{ id: "a", titulo: "Hidratação", texto: "Leve água.", modeloId }, { titulo: " ", texto: "" }],
+  };
+  const v = validarPlanoEndurance(bruto, "corrida");
+  assert.ok("plano" in v);
+  assert.equal(v.plano.observacoes.length, 1);
+  assert.equal(v.plano.observacoes[0].modeloId, modeloId);
+  assert.equal(planoEnduranceParaAluno(v.plano).observacoes[0].modeloId, undefined);
+  const semObs = validarPlanoEndurance({ ...bruto, observacoes: [] }, "corrida");
+  assert.equal("observacoes" in semObs.plano, false);
+  const demais = validarPlanoEndurance({ ...bruto, observacoes: Array.from({ length: 21 }, () => ({ titulo: "x", texto: "y" })) }, "corrida");
+  assert.ok("erro" in demais);
+});

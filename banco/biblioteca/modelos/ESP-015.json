@@ -18,21 +18,21 @@
       "taco": "53"
      },
      "nome": "Pão, trigo, francês",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
       "taco": "488"
      },
      "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
-     "gramas": 95
+     "gramas": 90
     },
     {
      "alimento": {
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 95
+     "gramas": 90
     }
    ]
   },
@@ -44,7 +44,7 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 140
+     "gramas": 135
     },
     {
      "alimento": {
@@ -63,7 +63,7 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 225
+     "gramas": 220
     },
     {
      "alimento": {
@@ -77,14 +77,14 @@
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 115
+     "gramas": 110
     },
     {
      "alimento": {
       "taco": "70"
      },
      "nome": "Abobrinha, italiana, cozida",
-     "gramas": 90
+     "gramas": 85
     },
     {
      "alimento": {
@@ -103,7 +103,7 @@
       "taco": "53"
      },
      "nome": "Pão, trigo, francês",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -117,7 +117,7 @@
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 160
+     "gramas": 155
     }
    ]
   },
@@ -129,14 +129,14 @@
       "taco": "91"
      },
      "nome": "Batata, inglesa, cozida",
-     "gramas": 270
+     "gramas": 260
     },
     {
      "alimento": {
       "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
      },
      "nome": "Filé de tilápia grelhada",
-     "gramas": 115
+     "gramas": 110
     },
     {
      "alimento": {
@@ -162,7 +162,7 @@
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 195
+     "gramas": 190
     },
     {
      "alimento": {
@@ -208,15 +208,30 @@
   "orientacoes": "ESP"
  },
  "ajuste": {
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.044,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.044,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1.044,
+     "energia": 1.045
+    },
+    "kcal_base": 2107,
+    "kcal_calculada": 2202,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.969,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1.044,
-   "energia": 1.045
+   "legumes": 0.969,
+   "proteina": 0.969,
+   "energia": 0.969
   },
-  "kcal_base": 2107,
-  "kcal_calculada": 2202,
-  "em": "2026-11-14"
+  "kcal_base": 2270,
+  "kcal_calculada": 2191,
+  "em": "2026-11-15"
  }
 }

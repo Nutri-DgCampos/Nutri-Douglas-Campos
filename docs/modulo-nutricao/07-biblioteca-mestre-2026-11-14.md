@@ -223,23 +223,93 @@ node scripts/biblioteca/biblioteca.mjs reverter EMG-003
 
 Os textos desses modelos só citam diurético e restrição hídrica para proibi-los. Nada foi alterado: a V3 exige aprovação antes de reconciliar.
 
-## 10. Perguntas para o cliente e pendências
+## 10. Perguntas para o cliente: respostas de 15/11
 
-1. **Protegidos:** ajustar os quatro modelos manuais aos valores nominais ou manter como estão?
-2. **ALI-001 "Vegetariana":** foi montado como vegetariano estrito, sem nada de origem animal, porque a ALI-002 já é ovolactovegetariana. Confirmar.
-3. **Proteína no fisiculturismo:** confirmar o piso de 2,0 g/kg do peso de referência.
-4. **Pão de forma branco:** foi trocado por pão francês, como decidido, mas o nutricionista também cadastrou "pão de forma branco tradicional". Qual dos dois usar?
-5. **Corrida e ciclismo:** essas planilhas não têm campo de orientações gerais ao aluno. Hoje as orientações vão no texto ao educador, como "Para repassar ao aluno". Criar o campo no editor é uma proposta de tela.
-6. **Implantação:** a migração 038 entra pelo `deploy.sh`. A carga dos 216 modelos na produção só acontece com autorização expressa. Comando: `importar --todos --producao` com `BIBLIOTECA_PRODUCAO=CONFIRMO`, rodado de dentro da VPS ou por túnel. O roteiro será combinado na hora.
+O nutricionista respondeu "a" às seis perguntas.
+
+| # | Pergunta | Resposta | O que foi feito |
+|---|---|---|---|
+| 1 | Os 4 modelos manuais estão abaixo do valor do nome | Ajustar as porções até o valor do nome | Ajuste preparado; aplicação na carga (seção 12.3) |
+| 2 | ALI-001 como vegetariana estrita | Confirmado | Nada a mudar |
+| 3 | Piso de proteína de 2,0 g/kg no fisiculturismo | Confirmado | Nada a mudar |
+| 4 | Pão de forma branco | Pão francês | Nada a mudar (já era assim) |
+| 5 | Orientações ao aluno em corrida e ciclismo | O aluno vê direto no app | Campo criado (seção 12.1) |
+| 6 | Autorização para colocar os modelos no sistema oficial | Autorizado | Execução a combinar com o usuário, depois do deploy da 038 (seção 12.4) |
 
 ## 11. Andamento
 
 | Fase | % da fase | Situação |
 |---|---|---|
 | 1. Infraestrutura, importador, validador e pilotos | 100% | concluída |
-| 2. Dietas liberadas (161) | 100% | concluída |
-| 3. Treinos (40) | 100% | concluída |
+| 2. Dietas liberadas (161) | 100% | concluída; 88 reajustadas em 15/11 (seção 12.2) |
+| 3. Treinos (40) | 100% | concluída; corrida e ciclismo com observações ao aluno (seção 12.1) |
 | 4. Bloqueados: rascunhos específicos (15) | 100% | concluída; aguardam revisão do nutricionista |
-| 5. Relatório final e pedido de autorização | 100% | relatório entregue; produção aguarda autorização |
+| 5. Relatório final e autorização | 100% | autorização recebida em 15/11 |
+| 6. Respostas de 15/11 e carga na produção | 80% | respostas aplicadas na base local; falta a carga, depois do deploy |
 
-**Módulo Biblioteca Mestre: 100% na base local.** A carga na produção depende de autorização e das respostas da seção 10.
+**Módulo Biblioteca Mestre: 100% na base local; a carga na produção é o último passo.**
+
+## 12. Ajustes de 15/11
+
+### 12.1 Observações ao aluno em corrida e ciclismo (resposta 5)
+
+- **Mesmo formato da musculação.** A planilha de corrida e ciclismo ganhou observações gerais, iguais às do treino de musculação: título, texto, até 20 e busca no catálogo do profissional. Fica em `plano.observacoes`; não há migração.
+- **Validação.** `validarPlanoEndurance` usa a mesma regra da musculação (`validarObservacoesDoTreino` em `lib/treinoEditor.ts`).
+- **Para o aluno.** O aluno não recebe o vínculo com o catálogo (`observacoesParaAluno`).
+- **Editor.** O bloco "Observações do treino" fica abaixo da grade da semana, com o mesmo componente da musculação.
+- **"Usar modelo" com Substituir.** As observações do modelo entram; se o modelo não tiver nenhuma, ficam as do rascunho.
+- **Aluno.** No "Meu treino", o bloco "Observações do treino de corrida" (ou de ciclismo) aparece abaixo do planejado da semana. Aparece enquanto a planilha vigente estiver no ciclo e respeita o bloqueio por plano vencido (`orientacoesDasPlanilhas` em `lib/servidor/treinoAtividades.ts`).
+- **PDF.** Seção "Observações do treino" no fim da planilha.
+- **Biblioteca.** As orientações ao aluno dos 20 programas COR e CIC saíram do texto ao educador ("Para repassar ao aluno") e foram para as observações do plano. Os 20 foram reimportados na base local.
+- **Testes.** Unitário em `tests/treinoEndurance.test.mjs`. Navegação em `treinoT4c` (editor, Meu treino e PDF, que precisa do pypdf) e em `biblioteca1114` (COR-001 e CIC-001).
+
+### 12.2 Leite desnatado UHT (TACO 457) e reajuste de 88 dietas
+
+- **Origem.** Na produção, o nutricionista completou à mão, em 08/11, a energia e os macronutrientes do "Leite, de vaca, desnatado, UHT". Ficou com 35 kcal, proteína 3,4 g, carboidrato 4,9 g e lipídio 0,2 g, com origem "manual".
+- **Na base local.** A base local (e `banco/importacao/taco.sql`) não tinha esses valores, então o leite entrava com 0 kcal.
+- **Conferência.** A comparação de toda a composição TACO entre a produção e a base local mostrou que essa é a única diferença. Os 4 valores foram copiados para a base local, com a mesma origem "manual".
+- **Efeito.** Com o leite contado, 88 das 176 dietas passaram da faixa de ±3% da meta (até 8,1%). As 88 foram reajustadas com `ajustar --motivo`, que guarda o ajuste anterior em `ajuste.historico`, e reimportadas na base local.
+- **Resultado.** As 216 validam sem erro, todas até 3% da meta, e 33 têm avisos.
+- **Valores informados antes.** Os números dos 4 protegidos passados ao nutricionista em 14/11 também saíram baixos por causa do leite. Os valores reais estão na tabela da seção 12.3.
+
+### 12.3 Ajuste dos 4 modelos manuais (resposta 1)
+
+**Regra.** Proteínas, gorduras, legumes, laticínios e bebidas ficam como o nutricionista montou. Só as fontes de carboidrato mudam, até a meta ±1,5%.
+
+- **Fonte de carboidrato:** pelo menos 50% da energia vem do carboidrato e o alimento tem pelo menos 50 kcal/100 g. Entram pães, arroz, feijão, aveia, batata-doce, banana e geleia.
+- **Arredondamento:** gramas em passos de 5 g; medida caseira em unidades inteiras.
+
+| Modelo | Antes | Depois | Meta | Proteína (g/kg, 60 kg) | Porções alteradas |
+|---|---|---|---|---|---|
+| EMG-001 | 1.183 kcal | 1.282 kcal | 1.300 | — | 4 |
+| FIS-BIK-007 | 2.024 kcal | 2.094 kcal | 2.100 | 2,08 → 2,11 | 7 |
+| FIS-BIK-008 | 1.993 kcal | 2.289 kcal | 2.300 | 1,99 → 2,12 | 9 |
+| FIS-BIK-009 | 1.751 kcal | 2.006 kcal | 2.000 | 2,12 → 2,21 | 7 |
+
+- **Arquivos.** O detalhe item a item está em `banco/biblioteca/protegidos/<CÓDIGO>.json`, com o conteúdo original, o novo, o cálculo e as mudanças. No relatório, os 4 aparecem como "protegido, ajuste preparado".
+- **Ferramenta.** `scripts/biblioteca/protegidos.mjs`:
+  - **preparar** calcula sem gravar em banco.
+  - **aplicar** troca o conteúdo só se o modelo ainda estiver na revisão e com o conteúdo da cópia de 15/11. Também grava o código, soma 1 na revisão e registra o ajuste em `biblioteca`.
+  - **restaurar** volta ao original.
+  - Banco que não seja local exige `--producao` e `BIBLIOTECA_PRODUCAO=CONFIRMO`.
+- **Teste na base local.** Foi feito com cópias temporárias dos 4 modelos, já removidas. O teste cobriu:
+  - aplicar uma vez;
+  - recusa ao repetir;
+  - restaurar;
+  - recusa por revisão diferente;
+  - recusa de banco externo sem a confirmação.
+- **Observações para o nutricionista** (sem alteração):
+  - FIS-BIK-008 e FIS-BIK-009 usam "Geléia, mocotó, natural". Ele pode querer a geleia de frutas que cadastrou.
+  - FIS-BIK-009 tem duas refeições "Pré-palco"; a segunda tem uma linha vazia.
+
+### 12.4 Carga na produção (autorizada na resposta 6; execução a combinar)
+
+1. **Deploy.** O deploy do usuário leva as migrações 035 a 038 e os commits desde cfaf513. Confirmar que a 038 está aplicada.
+2. **Conferir os 4 modelos manuais.** Ler na produção, só leitura, se os 4 continuam na revisão e com o conteúdo da cópia: EMG-001 na revisão 4, FIS-BIK-007 na 1, FIS-BIK-008 na 2 e FIS-BIK-009 na 1. Se algum mudou, preparar de novo a partir da cópia nova.
+3. **Rodar os comandos.** Com o projeto disponível, de dentro da VPS ou por túnel:
+   - `importar --todos --producao --autor <e-mail do nutricionista>`;
+   - `protegidos.mjs aplicar --producao`.
+
+   Os dois exigem `BIBLIOTECA_PRODUCAO=CONFIRMO`.
+4. **Conferir na produção.** Devem existir 216 modelos novos (161 liberados, 15 bloqueados, 40 treinos) e os 4 ajustados.
+5. **Revisão dos bloqueados.** O nutricionista revisa os 15 bloqueados e clica em "Liberar para uso".

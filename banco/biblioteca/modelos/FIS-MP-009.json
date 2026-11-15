@@ -18,21 +18,21 @@
       "taco": "53"
      },
      "nome": "Pão, trigo, francês",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "488"
      },
      "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
-     "gramas": 115
+     "gramas": 110
     },
     {
      "alimento": {
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 110
+     "gramas": 105
     }
    ]
   },
@@ -44,14 +44,14 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 175
+     "gramas": 170
     },
     {
      "alimento": {
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 85
+     "gramas": 80
     }
    ]
   },
@@ -63,28 +63,28 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 275
+     "gramas": 265
     },
     {
      "alimento": {
       "taco": "561"
      },
      "nome": "Feijão, carioca, cozido",
-     "gramas": 80
+     "gramas": 75
     },
     {
      "alimento": {
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 135
+     "gramas": 130
     },
     {
      "alimento": {
       "taco": "70"
      },
      "nome": "Abobrinha, italiana, cozida",
-     "gramas": 105
+     "gramas": 100
     },
     {
      "alimento": {
@@ -103,7 +103,7 @@
       "taco": "53"
      },
      "nome": "Pão, trigo, francês",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
@@ -117,7 +117,7 @@
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 190
+     "gramas": 185
     }
    ]
   },
@@ -129,21 +129,21 @@
       "taco": "91"
      },
      "nome": "Batata, inglesa, cozida",
-     "gramas": 335
+     "gramas": 325
     },
     {
      "alimento": {
       "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
      },
      "nome": "Filé de tilápia grelhada",
-     "gramas": 135
+     "gramas": 130
     },
     {
      "alimento": {
       "taco": "109"
      },
      "nome": "Cenoura, cozida",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -162,7 +162,7 @@
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 230
+     "gramas": 220
     },
     {
      "alimento": {
@@ -212,17 +212,34 @@
   "orientacoes": "FIS"
  },
  "ajuste": {
-  "proteina_g_kg": 2.01,
+  "proteina_g_kg": 2.02,
   "piso_proteina_g_kg": 2,
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.057,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "proteina_g_kg": 2.01,
+    "piso_proteina_g_kg": 2,
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.057,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1.057,
+     "energia": 1.058
+    },
+    "kcal_base": 2556,
+    "kcal_calculada": 2711,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.967,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1.057,
-   "energia": 1.058
+   "legumes": 0.967,
+   "proteina": 0.967,
+   "energia": 0.967
   },
-  "kcal_base": 2556,
-  "kcal_calculada": 2711,
-  "em": "2026-11-14"
+  "kcal_base": 2791,
+  "kcal_calculada": 2691,
+  "em": "2026-11-15"
  }
 }

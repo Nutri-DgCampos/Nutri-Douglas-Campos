@@ -25,14 +25,14 @@
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 200
+     "gramas": 195
     },
     {
      "alimento": {
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 130
+     "gramas": 125
     }
    ]
   },
@@ -44,7 +44,7 @@
       "taco": "222"
      },
      "nome": "Maçã Fuji",
-     "gramas": 185
+     "gramas": 180
     },
     {
      "alimento": {
@@ -63,28 +63,28 @@
       "taco": "1"
      },
      "nome": "Arroz, integral, cozido",
-     "gramas": 140
+     "gramas": 135
     },
     {
      "alimento": {
       "taco": "577"
      },
      "nome": "Lentilha cozida",
-     "gramas": 140
+     "gramas": 135
     },
     {
      "alimento": {
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "100"
      },
      "nome": "Brócolis, cozido",
-     "gramas": 80
+     "gramas": 75
     },
     {
      "alimento": {
@@ -98,7 +98,7 @@
       "taco": "260"
      },
      "nome": "Azeite, de oliva, extra virgem",
-     "gramas": 14
+     "gramas": 13
     }
    ]
   },
@@ -110,21 +110,21 @@
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 170
+     "gramas": 165
     },
     {
      "alimento": {
       "taco": "594"
      },
      "nome": "Linhaça",
-     "gramas": 14
+     "gramas": 13
     },
     {
      "alimento": {
       "taco": "226"
      },
      "nome": "Mamão, Papaia, cru",
-     "gramas": 140
+     "gramas": 135
     }
    ]
   },
@@ -136,21 +136,21 @@
       "taco": "1"
      },
      "nome": "Arroz, integral, cozido",
-     "gramas": 115
+     "gramas": 110
     },
     {
      "alimento": {
       "taco": "317"
      },
      "nome": "Salmão grelhado",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "70"
      },
      "nome": "Abobrinha, italiana, cozida",
-     "gramas": 80
+     "gramas": 75
     },
     {
      "alimento": {
@@ -209,15 +209,30 @@
   "orientacoes": "CLI"
  },
  "ajuste": {
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.265,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.265,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1,
+     "energia": 1.421
+    },
+    "kcal_base": 1423,
+    "kcal_calculada": 1799,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.963,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1,
-   "energia": 1.421
+   "legumes": 0.963,
+   "proteina": 0.963,
+   "energia": 0.963
   },
-  "kcal_base": 1423,
-  "kcal_calculada": 1799,
-  "em": "2026-11-14"
+  "kcal_base": 1869,
+  "kcal_calculada": 1803,
+  "em": "2026-11-15"
  }
 }

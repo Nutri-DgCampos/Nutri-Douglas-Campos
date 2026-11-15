@@ -18,7 +18,7 @@
       "taco": "52"
      },
      "nome": "Pão, trigo, forma, integral",
-     "gramas": 65
+     "gramas": 60
     },
     {
      "alimento": {
@@ -32,7 +32,7 @@
       "taco": "488"
      },
      "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
-     "gramas": 50
+     "gramas": 45
     }
    ]
   },
@@ -44,14 +44,14 @@
       "taco": "214"
      },
      "nome": "Laranja pêra",
-     "gramas": 225
+     "gramas": 210
     },
     {
      "alimento": {
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 170
+     "gramas": 160
     },
     {
      "alimento": {
@@ -70,42 +70,42 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 140
+     "gramas": 130
     },
     {
      "alimento": {
       "taco": "561"
      },
      "nome": "Feijão, carioca, cozido",
-     "gramas": 115
+     "gramas": 105
     },
     {
      "alimento": {
       "taco": "377"
      },
      "nome": "Carne, bovina, patinho, sem gordura, grelhado",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "116"
      },
      "nome": "Couve refogada",
-     "gramas": 40
+     "gramas": 35
     },
     {
      "alimento": {
       "taco": "157"
      },
      "nome": "Tomate, com semente, cru",
-     "gramas": 60
+     "gramas": 55
     },
     {
      "alimento": {
       "taco": "260"
      },
      "nome": "Azeite, de oliva, extra virgem",
-     "gramas": 10
+     "gramas": 9
     }
    ]
   },
@@ -117,21 +117,21 @@
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 115
+     "gramas": 105
     },
     {
      "alimento": {
       "taco": "589"
      },
      "nome": "Castanha-do-Brasil",
-     "gramas": 10
+     "gramas": 9
     },
     {
      "alimento": {
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 200
+     "gramas": 185
     }
    ]
   },
@@ -143,7 +143,7 @@
       "taco": "52"
      },
      "nome": "Pão, trigo, forma, integral",
-     "gramas": 65
+     "gramas": 60
     },
     {
      "alimento": {
@@ -157,7 +157,7 @@
       "taco": "226"
      },
      "nome": "Mamão, Papaia, cru",
-     "gramas": 150
+     "gramas": 140
     }
    ]
   },
@@ -169,35 +169,35 @@
       "taco": "88"
      },
      "nome": "Batata, doce, cozida",
-     "gramas": 140
+     "gramas": 130
     },
     {
      "alimento": {
       "taco": "317"
      },
      "nome": "Salmão grelhado",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "100"
      },
      "nome": "Brócolis, cozido",
-     "gramas": 80
+     "gramas": 75
     },
     {
      "alimento": {
       "taco": "109"
      },
      "nome": "Cenoura, cozida",
-     "gramas": 50
+     "gramas": 45
     },
     {
      "alimento": {
       "taco": "260"
      },
      "nome": "Azeite, de oliva, extra virgem",
-     "gramas": 10
+     "gramas": 9
     }
    ]
   },
@@ -209,7 +209,7 @@
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 200
+     "gramas": 185
     },
     {
      "alimento": {
@@ -256,15 +256,30 @@
   "orientacoes": "GESTACAO"
  },
  "ajuste": {
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.141,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.141,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1,
+     "energia": 1.251
+    },
+    "kcal_base": 1928,
+    "kcal_calculada": 2218,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.933,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1,
-   "energia": 1.251
+   "legumes": 0.933,
+   "proteina": 0.933,
+   "energia": 0.933
   },
-  "kcal_base": 1928,
-  "kcal_calculada": 2218,
-  "em": "2026-11-14"
+  "kcal_base": 2358,
+  "kcal_calculada": 2208,
+  "em": "2026-11-15"
  }
 }

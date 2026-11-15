@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { avisar, pedirConfirmacao } from "@/lib/avisos";
-import type { PlanoDeTreino } from "@/lib/treino";
+import type { ObservacaoDoTreino } from "@/lib/treino";
 import { MAX_OBSERVACOES } from "@/lib/treinoEditor";
 
 type DoCatalogo = { id: string; titulo: string; texto: string };
@@ -14,15 +14,18 @@ type DoCatalogo = { id: string; titulo: string; texto: string };
 // Observações gerais do treino (SPEC complementar 06/11, item 2), no mesmo
 // padrão das "Observações da dieta": busca no catálogo do profissional,
 // inclusão (cópia editável) e "+ Observação" para escrever na hora. Ficam no
-// plano: cada versão enviada guarda as suas, e o volume não muda.
-export default function ObservacoesDoTreino({
+// plano: cada versão enviada guarda as suas, e o volume não muda. Servem à
+// musculação e às planilhas de corrida e ciclismo.
+type ComObservacoes = { observacoes?: ObservacaoDoTreino[] };
+
+export default function ObservacoesDoTreino<P extends ComObservacoes>({
   plano,
   somenteLeitura,
   onAlterar,
 }: {
-  plano: PlanoDeTreino;
+  plano: P;
   somenteLeitura: boolean;
-  onAlterar: (alterar: (plano: PlanoDeTreino) => void) => void;
+  onAlterar: (alterar: (plano: P) => void) => void;
 }) {
   const lista = plano.observacoes ?? [];
   const [busca, setBusca] = useState<string | DoCatalogo>("");

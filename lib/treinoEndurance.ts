@@ -1,4 +1,5 @@
-import { DIAS, type ChaveDia } from "./treino.ts";
+import { DIAS, type ChaveDia, type ObservacaoDoTreino } from "./treino.ts";
+import { observacoesParaAluno, validarObservacoesDoTreino } from "./treinoEditor.ts";
 
 // Editores de corrida e ciclismo (T4c, VIS-04 e VIS-05). Usado no navegador
 // e no servidor.
@@ -65,6 +66,8 @@ export type SemanaEndurance = { sessoes: SessaoEndurance[] };
 export type PlanoEndurance = {
   ciclo: { fase: string | null; inicio: string | null }; // inicio = domingo da semana 1
   semanas: SemanaEndurance[];
+  // Observações gerais que o aluno vê (mesmo formato da musculação).
+  observacoes?: ObservacaoDoTreino[];
 };
 
 const CHAVES = DIAS.map((d) => d.chave as string);
@@ -142,7 +145,11 @@ export function validarPlanoEndurance(valor: unknown, modalidade: ModalidadeEndu
       if (lista.length > MAX_SESSOES_SEMANA) throw new Invalido(`No máximo ${MAX_SESSOES_SEMANA} sessões por semana.`);
       return { sessoes: lista.map((s) => sessao(s, modalidade)) };
     });
-    return { plano: { ciclo: { fase: texto(c.fase, 60), inicio }, semanas } };
+    const obs = validarObservacoesDoTreino(p.observacoes);
+    if ("erro" in obs) throw new Invalido(obs.erro);
+    const plano: PlanoEndurance = { ciclo: { fase: texto(c.fase, 60), inicio }, semanas };
+    if (obs.observacoes.length) plano.observacoes = obs.observacoes;
+    return { plano };
   } catch (erro) {
     if (erro instanceof Invalido) return { erro: erro.message };
     throw erro;
@@ -325,10 +332,13 @@ export function semanaDoCiclo(plano: PlanoEndurance, dataISO: string) {
 export const referenciaDaSessao = (semana: number, indice: number) => semana * 100 + indice;
 export const sessaoDaReferencia = (referencia: number) => ({ semana: Math.floor(referencia / 100), indice: referencia % 100 });
 
-// O que o aluno recebe: sem notas privadas e sem a Opção oculta.
+// O que o aluno recebe: sem notas privadas, sem a Opção oculta e sem o
+// vínculo das observações com o catálogo.
 export function planoEnduranceParaAluno(plano: PlanoEndurance): PlanoEndurance {
+  const { observacoes, ...resto } = plano;
   return {
-    ...plano,
+    ...resto,
+    ...(observacoes?.length ? { observacoes: observacoesParaAluno(observacoes) } : {}),
     semanas: plano.semanas.map((w) => ({
       sessoes: w.sessoes.map((s) => ({ ...s, notas: null, alternativa: s.alternativa?.visivel ? s.alternativa : null })),
     })),

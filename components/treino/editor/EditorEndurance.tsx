@@ -34,6 +34,7 @@ import {
   type ZonasDoAluno,
 } from "@/lib/treinoEndurance";
 import { JanelaIa, JanelaImportar, JanelaSalvarModelo, type Sugestao } from "./JanelasDoEditor";
+import ObservacoesDoTreino from "./ObservacoesDoTreino";
 
 // Editores de corrida (VIS-04) e ciclismo (VIS-05), T4c. Mesmo padrão do
 // editor de musculação: o que se edita é o rascunho; "Enviar ao paciente"
@@ -364,7 +365,11 @@ export default function EditorEndurance({
 
   function aplicarPlano(novo: PlanoEndurance, modo: "substituir" | "acrescentar", titulo?: string) {
     alterar((d) => {
-      if (modo === "substituir") d.plano = { ciclo: { ...d.plano.ciclo, fase: novo.ciclo.fase ?? d.plano.ciclo.fase }, semanas: structuredClone(novo.semanas) };
+      if (modo === "substituir") {
+        // As observações da planilha ficam, salvo se o plano novo trouxer as suas.
+        const observacoes = novo.observacoes?.length ? novo.observacoes : d.plano.observacoes;
+        d.plano = { ciclo: { ...d.plano.ciclo, fase: novo.ciclo.fase ?? d.plano.ciclo.fase }, semanas: structuredClone(novo.semanas), ...(observacoes?.length ? { observacoes: structuredClone(observacoes) } : {}) };
+      }
       else d.plano.semanas = [...d.plano.semanas, ...structuredClone(novo.semanas)].slice(0, MAX_SEMANAS);
       if (titulo && !d.titulo.trim()) d.titulo = titulo;
     });
@@ -704,6 +709,8 @@ export default function EditorEndurance({
               ) : null}
             </div>
           </section>
+
+          <ObservacoesDoTreino plano={plano} somenteLeitura={somenteLeitura} onAlterar={(mudanca) => alterar((d) => mudanca(d.plano))} />
 
           <div className="sticky bottom-0 z-10 -mx-1 flex flex-wrap gap-2 border-t border-gray-200 bg-white/95 px-1 py-3 backdrop-blur">
             <Button type="button" icon="pi pi-save" label="Salvar" onClick={salvar} disabled={somenteLeitura} />

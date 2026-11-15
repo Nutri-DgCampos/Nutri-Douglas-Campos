@@ -147,6 +147,19 @@ export function DocumentoEndurance({ dados, identidade }: { dados: DadosDoPdfEnd
         );
       })}
 
+      {/* Observações gerais da planilha (resposta 5 do nutricionista, 15/11). */}
+      {dados.plano.observacoes?.length ? (
+        <View>
+          <Text style={estilos.semana}>Observações do treino</Text>
+          {dados.plano.observacoes.map((o, i) => (
+            <View key={o.id} wrap={false} style={{ marginBottom: 4 }}>
+              <Text style={estilos.negrito}>{`${i + 1}. ${o.titulo}`}</Text>
+              {o.texto ? <Text style={{ color: "#374151", lineHeight: 1.35 }}>{o.texto}</Text> : null}
+            </View>
+          ))}
+        </View>
+      ) : null}
+
       <Text style={estilos.aviso}>
         Em caso de dor forte ou repentina, dor no peito, falta de ar, tontura ou desmaio, interrompa o treino e procure atendimento médico.
       </Text>

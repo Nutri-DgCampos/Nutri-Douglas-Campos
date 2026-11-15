@@ -25,14 +25,14 @@
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 225
+     "gramas": 215
     },
     {
      "alimento": {
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 100
+     "gramas": 95
     }
    ]
   },
@@ -63,28 +63,28 @@
       "taco": "1"
      },
      "nome": "Arroz, integral, cozido",
-     "gramas": 170
+     "gramas": 165
     },
     {
      "alimento": {
       "taco": "561"
      },
      "nome": "Feijão, carioca, cozido",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "377"
      },
      "nome": "Carne, bovina, patinho, sem gordura, grelhado",
-     "gramas": 135
+     "gramas": 130
     },
     {
      "alimento": {
       "taco": "109"
      },
      "nome": "Cenoura, cozida",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -103,14 +103,14 @@
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 175
+     "gramas": 170
     },
     {
      "alimento": {
       "taco": "226"
      },
      "nome": "Mamão, Papaia, cru",
-     "gramas": 135
+     "gramas": 130
     }
    ]
   },
@@ -122,21 +122,21 @@
       "id": "563d32f7-b39b-454c-9c9a-8cf2be645345"
      },
      "nome": "Macarrão cozido",
-     "gramas": 180
+     "gramas": 175
     },
     {
      "alimento": {
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 125
+     "gramas": 120
     },
     {
      "alimento": {
       "taco": "157"
      },
      "nome": "Tomate, com semente, cru",
-     "gramas": 90
+     "gramas": 85
     },
     {
      "alimento": {
@@ -182,17 +182,34 @@
   "orientacoes": "FIS"
  },
  "ajuste": {
-  "proteina_g_kg": 2.01,
+  "proteina_g_kg": 2.05,
   "piso_proteina_g_kg": 2,
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.134,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "proteina_g_kg": 2.01,
+    "piso_proteina_g_kg": 2,
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.134,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1.134,
+     "energia": 1.139
+    },
+    "kcal_base": 1720,
+    "kcal_calculada": 1941,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.966,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1.134,
-   "energia": 1.139
+   "legumes": 0.966,
+   "proteina": 0.966,
+   "energia": 0.966
   },
-  "kcal_base": 1720,
-  "kcal_calculada": 1941,
-  "em": "2026-11-14"
+  "kcal_base": 2019,
+  "kcal_calculada": 1968,
+  "em": "2026-11-15"
  }
 }

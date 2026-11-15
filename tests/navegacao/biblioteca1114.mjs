@@ -188,6 +188,12 @@ const plano = sql("select plano::text from treino_modelos where codigo = 'MUS-00
 conferir("musculação sem carga predefinida", !/"carga_kg":\s*\d/.test(plano), null);
 conferir("musculação com orientações ao aluno no plano", plano.includes("Sinais de alerta"), null);
 conferir("orientações ao educador fora do plano", !plano.includes("Perfil e objetivo"), null);
+// Corrida e ciclismo (resposta 5 do nutricionista, 15/11): orientações ao aluno
+// nas observações do plano, não mais no texto ao educador.
+for (const codigo of ["COR-001", "CIC-001"]) {
+  const linha = JSON.parse(sql(`select json_build_object('n', jsonb_array_length(plano->'observacoes'), 'educador', orientacoes_profissional)::text from treino_modelos where codigo = '${codigo}';`));
+  conferir(`${codigo}: orientações ao aluno nas observações do plano`, linha.n >= 3 && !linha.educador.includes("Para repassar ao aluno"), linha.n);
+}
 
 // --- Celular ---------------------------------------------------------------------------------
 const cel = await sessao("teste.nutri@local.test", "teste-nutri-123", 390);

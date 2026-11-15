@@ -18,7 +18,7 @@
       "taco": "52"
      },
      "nome": "Pão, trigo, forma, integral",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -32,7 +32,7 @@
       "taco": "226"
      },
      "nome": "Mamão, Papaia, cru",
-     "gramas": 165
+     "gramas": 160
     }
    ]
   },
@@ -44,7 +44,7 @@
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 200
+     "gramas": 195
     },
     {
      "alimento": {
@@ -63,28 +63,28 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 205
+     "gramas": 200
     },
     {
      "alimento": {
       "taco": "561"
      },
      "nome": "Feijão, carioca, cozido",
-     "gramas": 120
+     "gramas": 115
     },
     {
      "alimento": {
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 145
+     "gramas": 140
     },
     {
      "alimento": {
       "taco": "100"
      },
      "nome": "Brócolis, cozido",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -103,14 +103,14 @@
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 120
+     "gramas": 115
     },
     {
      "alimento": {
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 215
+     "gramas": 210
     }
    ]
   },
@@ -122,21 +122,21 @@
       "taco": "88"
      },
      "nome": "Batata, doce, cozida",
-     "gramas": 275
+     "gramas": 265
     },
     {
      "alimento": {
       "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
      },
      "nome": "Filé de tilápia grelhada",
-     "gramas": 145
+     "gramas": 140
     },
     {
      "alimento": {
       "taco": "70"
      },
      "nome": "Abobrinha, italiana, cozida",
-     "gramas": 95
+     "gramas": 90
     },
     {
      "alimento": {
@@ -155,7 +155,7 @@
       "taco": "52"
      },
      "nome": "Pão, trigo, forma, integral",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -169,7 +169,7 @@
       "taco": "226"
      },
      "nome": "Mamão, Papaia, cru",
-     "gramas": 165
+     "gramas": 160
     }
    ]
   }
@@ -211,15 +211,33 @@
   "refeicoes_acrescentadas": [
    "Ceia (cópia de Café da manhã)"
   ],
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.357,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "refeicoes_acrescentadas": [
+     "Ceia (cópia de Café da manhã)"
+    ],
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.357,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1.25,
+     "energia": 1.418
+    },
+    "kcal_base": 1732,
+    "kcal_calculada": 2354,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.967,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1.25,
-   "energia": 1.418
+   "legumes": 0.967,
+   "proteina": 0.967,
+   "energia": 0.967
   },
-  "kcal_base": 1732,
-  "kcal_calculada": 2354,
-  "em": "2026-11-14"
+  "kcal_base": 2429,
+  "kcal_calculada": 2357,
+  "em": "2026-11-15"
  }
 }

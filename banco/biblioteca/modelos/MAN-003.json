@@ -25,14 +25,14 @@
       "taco": "488"
      },
      "nome": "Ovo, de galinha, inteiro, cozido/10minutos",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 85
+     "gramas": 80
     }
    ]
   },
@@ -63,7 +63,7 @@
       "taco": "3"
      },
      "nome": "Arroz, tipo 1, cozido",
-     "gramas": 145
+     "gramas": 140
     },
     {
      "alimento": {
@@ -77,14 +77,14 @@
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 105
+     "gramas": 100
     },
     {
      "alimento": {
       "taco": "70"
      },
      "nome": "Abobrinha, italiana, cozida",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -110,14 +110,14 @@
       "id": "42a7e870-3f74-46a6-a60a-631f376e714a"
      },
      "nome": "Geleia de frutas tradicional",
-     "gramas": 20
+     "gramas": 19
     },
     {
      "alimento": {
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 145
+     "gramas": 140
     }
    ]
   },
@@ -129,14 +129,14 @@
       "taco": "91"
      },
      "nome": "Batata, inglesa, cozida",
-     "gramas": 175
+     "gramas": 170
     },
     {
      "alimento": {
       "id": "0d502537-189a-47a7-9271-3b2aa6a5987c"
      },
      "nome": "Filé de tilápia grelhada",
-     "gramas": 105
+     "gramas": 100
     },
     {
      "alimento": {
@@ -162,7 +162,7 @@
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 175
+     "gramas": 170
     },
     {
      "alimento": {
@@ -206,15 +206,30 @@
   "orientacoes": "MAN"
  },
  "ajuste": {
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "metodo": "fator único sobre as gramas do cardápio-base",
+    "fator": 0.865,
+    "fatores": {
+     "legumes": 0.865,
+     "proteina": 0.865,
+     "energia": 0.865
+    },
+    "kcal_base": 1965,
+    "kcal_calculada": 1692,
+    "em": "2026-11-14"
+   }
+  ],
   "metodo": "fator único sobre as gramas do cardápio-base",
-  "fator": 0.865,
+  "fator": 0.97,
   "fatores": {
-   "legumes": 0.865,
-   "proteina": 0.865,
-   "energia": 0.865
+   "legumes": 0.97,
+   "proteina": 0.97,
+   "energia": 0.97
   },
-  "kcal_base": 1965,
-  "kcal_calculada": 1692,
-  "em": "2026-11-14"
+  "kcal_base": 1753,
+  "kcal_calculada": 1710,
+  "em": "2026-11-15"
  }
 }

@@ -1,0 +1,892 @@
+{
+ "codigo": "FIS-BIK-008",
+ "nome": "FIS-BIK-008 — Bikini — Peak Week D-2 a D-1 — 60 kg",
+ "id_producao": "82d2fc4b-7fd4-426e-960d-6616ecad82a4",
+ "revisao_esperada": 2,
+ "usos_na_copia": 0,
+ "atualizado_em_na_copia": "2026-11-08T21:21:15.048759+00:00",
+ "meta_kcal": 2300,
+ "regra": "Proteínas, gorduras, legumes, laticínios e bebidas mantidos; fontes de carboidrato ajustadas até a meta (±1,5%).",
+ "calculo": {
+  "antes": {
+   "kcal": 1993,
+   "proteinas": 119.6,
+   "carboidratos": 306.8,
+   "lipidios": 31.4,
+   "fibras": 26.6,
+   "proteina_g_kg": 1.99,
+   "carboidrato_g_kg": 5.11
+  },
+  "depois": {
+   "kcal": 2289.2,
+   "proteinas": 127,
+   "carboidratos": 369.5,
+   "lipidios": 33.5,
+   "fibras": 31.8,
+   "proteina_g_kg": 2.12,
+   "carboidrato_g_kg": 6.16
+  },
+  "desvio_percentual": -0.5
+ },
+ "mudancas": [
+  {
+   "refeicao": "Café da manhã",
+   "alimento": "pão de forma integral",
+   "antes": "75 g",
+   "depois": "90 g"
+  },
+  {
+   "refeicao": "Café da manhã",
+   "alimento": "Banana, prata, crua",
+   "antes": "100 g",
+   "depois": "125 g"
+  },
+  {
+   "refeicao": "Lanche da manhã",
+   "alimento": "Arroz, tipo 1, cozido",
+   "antes": "130 g",
+   "depois": "160 g"
+  },
+  {
+   "refeicao": "Almoço",
+   "alimento": "Arroz, tipo 1, cozido",
+   "antes": "200 g",
+   "depois": "245 g"
+  },
+  {
+   "refeicao": "Lanche da tarde",
+   "alimento": "pão de forma integral",
+   "antes": "75 g",
+   "depois": "90 g"
+  },
+  {
+   "refeicao": "Lanche da tarde",
+   "alimento": "Geléia, mocotó, natural",
+   "antes": "30 g",
+   "depois": "35 g"
+  },
+  {
+   "refeicao": "Jantar",
+   "alimento": "Arroz, tipo 1, cozido",
+   "antes": "180 g",
+   "depois": "220 g"
+  },
+  {
+   "refeicao": "Ceia",
+   "alimento": "Banana, prata, crua",
+   "antes": "100 g",
+   "depois": "125 g"
+  },
+  {
+   "refeicao": "Ceia",
+   "alimento": "Aveia, flocos, crua",
+   "antes": "20 g",
+   "depois": "25 g"
+  }
+ ],
+ "conteudo_original": {
+  "titulo": "Bikini — Peak Week — Etapa 2",
+  "esquema": 1,
+  "objetivo": "Otimização do glicogênio e volume muscular antes da competição",
+  "refeicoes": [
+   {
+    "id": "35933f43-3cd1-4447-acd1-df21ff6aecb9",
+    "nome": "Café da manhã",
+    "opcoes": [
+     {
+      "id": "412bdce2-8cce-41a6-b16a-f6edded1c1d4",
+      "itens": [
+       {
+        "id": "90e649c3-f063-45c7-af51-7e76f360a3ea",
+        "medida": {
+         "id": "23560bd3-82db-461d-ad87-93cf809a0612",
+         "plural": "unidades",
+         "singular": "unidade",
+         "quantidade": 25
+        },
+        "unidade": "g",
+        "alimentoId": "c774c440-71cb-48f5-8ac9-9a9344879a4d",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "pão de forma integral",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 75
+       },
+       {
+        "id": "68d5da6c-faa6-43fa-8813-3fc92422a7e6",
+        "medida": {
+         "id": "d36bb540-577d-4818-81c4-7c263582f2d3",
+         "plural": "unidades",
+         "singular": "unidade",
+         "quantidade": 50
+        },
+        "unidade": "g",
+        "alimentoId": "e77ff06c-547e-4fe9-9430-2e1367e09c88",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Ovo, de galinha, inteiro, cozido/10minutos",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 50
+       },
+       {
+        "id": "a7792da0-2b65-456d-87c2-c3c548f70313",
+        "medida": {
+         "id": "ef2b452c-4923-4886-add8-a318f0ab791e",
+         "plural": "unidades media",
+         "singular": "unidade media",
+         "quantidade": 100
+        },
+        "unidade": "g",
+        "alimentoId": "36dac5bb-41a3-4c11-a7a8-efe6e4266917",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Banana, prata, crua",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 100
+       }
+      ]
+     }
+    ],
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "412bdce2-8cce-41a6-b16a-f6edded1c1d4"
+   },
+   {
+    "id": "8c97a6a6-aa5e-4927-865d-e250f8869c68",
+    "nome": "Lanche da manhã",
+    "opcoes": [
+     {
+      "id": "c8ef6eeb-f95f-4846-a794-f079109abd40",
+      "itens": [
+       {
+        "id": "4a22eae7-5f07-4d6c-9ed8-4671bd7263cb",
+        "medida": {
+         "id": "5efac504-786f-4337-b7c6-a5f6ab6e12a8",
+         "plural": "colheres de sopa chea",
+         "singular": "colher de sopa cheia",
+         "quantidade": 25
+        },
+        "unidade": "g",
+        "alimentoId": "ea1313c3-2cfd-46e0-b0cd-e97a7d8cc4a8",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Arroz, tipo 1, cozido",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 130
+       },
+       {
+        "id": "ecc5a00e-d999-4c86-9d27-a1b81393dc3c",
+        "medida": {
+         "id": "a120edcd-3076-4f1c-9c37-3fed302a9619",
+         "plural": "files medio",
+         "singular": "file medio",
+         "quantidade": 100
+        },
+        "unidade": "g",
+        "alimentoId": "73b4a8bb-2dd1-4295-90a7-cc81c23c9813",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Frango, peito, sem pele, grelhado",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 60
+       }
+      ]
+     }
+    ],
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "c8ef6eeb-f95f-4846-a794-f079109abd40"
+   },
+   {
+    "id": "68158317-aafd-47d5-8014-6c6ab22756d4",
+    "nome": "Almoço",
+    "opcoes": [
+     {
+      "id": "1c103c7b-df5a-4550-9aa2-b95064748213",
+      "itens": [
+       {
+        "id": "ca0599fd-2ef3-46d0-bd61-fc4c4ac6f562",
+        "medida": {
+         "id": "5efac504-786f-4337-b7c6-a5f6ab6e12a8",
+         "plural": "colheres de sopa chea",
+         "singular": "colher de sopa cheia",
+         "quantidade": 25
+        },
+        "unidade": "g",
+        "alimentoId": "ea1313c3-2cfd-46e0-b0cd-e97a7d8cc4a8",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Arroz, tipo 1, cozido",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 200
+       },
+       {
+        "id": "fd707df7-3b5b-44b8-b2f7-5f67112296f2",
+        "medida": {
+         "id": "a120edcd-3076-4f1c-9c37-3fed302a9619",
+         "plural": "files medio",
+         "singular": "file medio",
+         "quantidade": 100
+        },
+        "unidade": "g",
+        "alimentoId": "73b4a8bb-2dd1-4295-90a7-cc81c23c9813",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Frango, peito, sem pele, grelhado",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 90
+       },
+       {
+        "id": "bbe76526-66b2-42f3-9811-238cad15622b",
+        "medida": null,
+        "unidade": "g",
+        "alimentoId": "a87b5e76-48b0-4df3-b6a9-9307b438049a",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Abobrinha, italiana, cozida",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 80
+       },
+       {
+        "id": "03f498cb-e0ea-459d-84ac-826c4d076060",
+        "medida": {
+         "id": "6ddcd24f-cd60-4aee-9192-c18696865dd5",
+         "plural": "colheres de cha",
+         "singular": "colher de cha",
+         "quantidade": 5
+        },
+        "unidade": "g",
+        "alimentoId": "f2141ced-436e-4cf0-a138-191b98cb617b",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Azeite, de oliva, extra virgem",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 5
+       }
+      ]
+     }
+    ],
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "1c103c7b-df5a-4550-9aa2-b95064748213"
+   },
+   {
+    "id": "f880890a-b69e-465f-b982-003f1297549c",
+    "nome": "Lanche da tarde",
+    "opcoes": [
+     {
+      "id": "e3a055ee-ff88-4744-8cb0-925c6b410ef3",
+      "itens": [
+       {
+        "id": "0e099d9d-b97c-46e2-8f4f-6f92fdb19ee6",
+        "medida": {
+         "id": "23560bd3-82db-461d-ad87-93cf809a0612",
+         "plural": "unidades",
+         "singular": "unidade",
+         "quantidade": 25
+        },
+        "unidade": "g",
+        "alimentoId": "c774c440-71cb-48f5-8ac9-9a9344879a4d",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "pão de forma integral",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 75
+       },
+       {
+        "id": "3228da07-55b9-4c9b-b5b2-98c45217f7e5",
+        "medida": null,
+        "unidade": "g",
+        "alimentoId": "131bc38e-81f2-4561-a188-1cec500b7c67",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Geléia, mocotó, natural",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 30
+       },
+       {
+        "id": "98d878b2-d7c3-43fe-9880-42353889a3a7",
+        "medida": null,
+        "unidade": "g",
+        "alimentoId": "dc9f1e11-8d14-4389-a154-e1aab2a287c8",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Iogurte, natural, desnatado",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 170
+       }
+      ]
+     }
+    ],
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "e3a055ee-ff88-4744-8cb0-925c6b410ef3"
+   },
+   {
+    "id": "18dc27c1-95f5-43fc-823a-067a6c2958cf",
+    "nome": "Jantar",
+    "opcoes": [
+     {
+      "id": "17d0e773-6cf0-47a3-85a9-f290c1ef6536",
+      "itens": [
+       {
+        "id": "3c0a54ca-dce1-4fcb-b575-696b2d8b38a9",
+        "medida": {
+         "id": "5efac504-786f-4337-b7c6-a5f6ab6e12a8",
+         "plural": "colheres de sopa chea",
+         "singular": "colher de sopa cheia",
+         "quantidade": 25
+        },
+        "unidade": "g",
+        "alimentoId": "ea1313c3-2cfd-46e0-b0cd-e97a7d8cc4a8",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Arroz, tipo 1, cozido",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 180
+       },
+       {
+        "id": "3e1bdac5-059e-43d3-a851-2431edcae84b",
+        "medida": null,
+        "unidade": "g",
+        "alimentoId": "bc85bfa3-4065-43c0-8156-8b7394931f19",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Merluza, filé, cru",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 100
+       },
+       {
+        "id": "e04734ba-49fe-42c1-9d03-bf7fb64314fe",
+        "medida": null,
+        "unidade": "g",
+        "alimentoId": "00a79933-ecba-482a-a203-da455307d7ab",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Cenoura, cozida",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 60
+       },
+       {
+        "id": "dc06b432-1c9a-47f3-ad25-042548252fb6",
+        "medida": {
+         "id": "6ddcd24f-cd60-4aee-9192-c18696865dd5",
+         "plural": "colheres de cha",
+         "singular": "colher de cha",
+         "quantidade": 5
+        },
+        "unidade": "g",
+        "alimentoId": "f2141ced-436e-4cf0-a138-191b98cb617b",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Azeite, de oliva, extra virgem",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 5
+       }
+      ]
+     }
+    ],
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "17d0e773-6cf0-47a3-85a9-f290c1ef6536"
+   },
+   {
+    "id": "ae65eb08-51dc-470d-8835-16223fd15668",
+    "nome": "Ceia",
+    "opcoes": [
+     {
+      "id": "04e3c85d-312b-4dd2-a748-fb8f1c3c3604",
+      "itens": [
+       {
+        "id": "3da49020-b5e7-4dd6-a5d1-8af40c407270",
+        "medida": {
+         "id": "ef2b452c-4923-4886-add8-a318f0ab791e",
+         "plural": "unidades media",
+         "singular": "unidade media",
+         "quantidade": 100
+        },
+        "unidade": "g",
+        "alimentoId": "36dac5bb-41a3-4c11-a7a8-efe6e4266917",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Banana, prata, crua",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 100
+       },
+       {
+        "id": "3abd58a6-567d-4ece-a3eb-dcb5a8cf241e",
+        "medida": {
+         "id": "73df874e-03b6-46f5-b15f-bc3fd7faa479",
+         "plural": "colheres de sopa cheia",
+         "singular": "colher sopa cheia",
+         "quantidade": 15
+        },
+        "unidade": "g",
+        "alimentoId": "a75a4641-d92b-4b22-9752-df71a4a943e1",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Aveia, flocos, crua",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 20
+       },
+       {
+        "id": "790ca255-abb6-4802-baa3-7abb9b0dff95",
+        "medida": null,
+        "unidade": "g",
+        "alimentoId": "907b836a-e54d-43f4-9274-ff0e3586c6b7",
+        "referencia": false,
+        "nomeExibido": null,
+        "nomeOriginal": "Leite, de vaca, desnatado, UHT",
+        "numeroMedidas": null,
+        "substituicoes": [],
+        "quantidadeAjustada": 200
+       }
+      ]
+     }
+    ],
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "04e3c85d-312b-4dd2-a748-fb8f1c3c3604"
+   }
+  ],
+  "hidratacao": {
+   "mlPorKg": 35,
+   "observacoes": "A hidratação deve ser mantida de forma constante durante o dia. Evite permanecer muitas horas sem ingerir líquidos e, posteriormente, consumir grandes quantidades de água de uma só vez. Isso favorece uma melhor absorção e utilização dos líquidos pelo organismo."
+  },
+  "observacoes": [
+   {
+    "id": "1e03f560-2943-436d-b482-0a71d1018b97",
+    "texto": "### PEAK WEEK — BIKINI — ETAPA 2 (D-2 A D-1)\n\n**Referência:** atleta Bikini, 60 kg. Objetivo: otimizar a disponibilidade de glicogênio, preservar o volume muscular e minimizar desconfortos digestivos.\n\n**ORIENTAÇÕES À ATLETA**\n1. Consumir somente alimentos habituais e bem tolerados. Não experimentar suplementos ou preparações novas.\n2. Manter a hidratação distribuída ao longo do dia. Não reduzir água ou sal por conta própria.\n3. Observar peso ao despertar, aparência muscular, distensão abdominal e coloração da urina.\n4. Urina escura ou redução da frequência urinária: comunicar ao nutricionista e verificar se a ingestão hídrica está adequada.\n5. Informar imediatamente náuseas, diarreia, tontura, fraqueza ou cãibras persistentes.\n\n**ORIENTAÇÕES AO NUTRICIONISTA**\n1. **Musculatura com aspecto plano:** avaliar ingestão de carboidratos, treinamento, peso e resposta da etapa anterior. Considerar ajuste individualizado de carboidratos somente após essa avaliação.\n2. **Distensão abdominal:** avaliar fibras, lactose, volume das refeições e alimentos fermentáveis. Priorizar opções já testadas.\n3. **Peso aumentando:** verificar se a variação é compatível com reposição de glicogênio e água associada; não interpretar automaticamente como ganho de gordura.\n4. **Urina concentrada:** avaliar hidratação, perdas pelo suor e sintomas. Não utilizar restrição hídrica para modificar a aparência.\n5. **Sódio:** manter ingestão habitual e consistente, sem cortes ou sobrecargas extremos.\n6. Registrar a resposta da atleta para orientar a alimentação no dia da competição.\n\n**ALERTA:** confusão, desmaio, vômitos persistentes ou redução importante da urina exigem avaliação médica urgente. Não tentar corrigir esses quadros com grandes volumes de água ou eletrólitos sem avaliação.",
+    "titulo": "1- Atenção:",
+    "modeloId": "ca7226f5-7edc-4e35-90ab-cdc0cff5cccc"
+   }
+  ],
+  "pesoReferencia": {
+   "data": null,
+   "valor": null,
+   "origem": null
+  },
+  "nutrientesAcompanhados": []
+ },
+ "conteudo_novo": {
+  "esquema": 1,
+  "titulo": "Bikini — Peak Week — Etapa 2",
+  "objetivo": "Otimização do glicogênio e volume muscular antes da competição",
+  "refeicoes": [
+   {
+    "id": "35933f43-3cd1-4447-acd1-df21ff6aecb9",
+    "nome": "Café da manhã",
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "412bdce2-8cce-41a6-b16a-f6edded1c1d4",
+    "opcoes": [
+     {
+      "id": "412bdce2-8cce-41a6-b16a-f6edded1c1d4",
+      "itens": [
+       {
+        "id": "90e649c3-f063-45c7-af51-7e76f360a3ea",
+        "alimentoId": "c774c440-71cb-48f5-8ac9-9a9344879a4d",
+        "nomeOriginal": "pão de forma integral",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "23560bd3-82db-461d-ad87-93cf809a0612",
+         "singular": "unidade",
+         "plural": "unidades",
+         "quantidade": 25
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 90,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "68d5da6c-faa6-43fa-8813-3fc92422a7e6",
+        "alimentoId": "e77ff06c-547e-4fe9-9430-2e1367e09c88",
+        "nomeOriginal": "Ovo, de galinha, inteiro, cozido/10minutos",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "d36bb540-577d-4818-81c4-7c263582f2d3",
+         "singular": "unidade",
+         "plural": "unidades",
+         "quantidade": 50
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 50,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "a7792da0-2b65-456d-87c2-c3c548f70313",
+        "alimentoId": "36dac5bb-41a3-4c11-a7a8-efe6e4266917",
+        "nomeOriginal": "Banana, prata, crua",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "ef2b452c-4923-4886-add8-a318f0ab791e",
+         "singular": "unidade media",
+         "plural": "unidades media",
+         "quantidade": 100
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 125,
+        "substituicoes": [],
+        "referencia": false
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "8c97a6a6-aa5e-4927-865d-e250f8869c68",
+    "nome": "Lanche da manhã",
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "c8ef6eeb-f95f-4846-a794-f079109abd40",
+    "opcoes": [
+     {
+      "id": "c8ef6eeb-f95f-4846-a794-f079109abd40",
+      "itens": [
+       {
+        "id": "4a22eae7-5f07-4d6c-9ed8-4671bd7263cb",
+        "alimentoId": "ea1313c3-2cfd-46e0-b0cd-e97a7d8cc4a8",
+        "nomeOriginal": "Arroz, tipo 1, cozido",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "5efac504-786f-4337-b7c6-a5f6ab6e12a8",
+         "singular": "colher de sopa cheia",
+         "plural": "colheres de sopa chea",
+         "quantidade": 25
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 160,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "ecc5a00e-d999-4c86-9d27-a1b81393dc3c",
+        "alimentoId": "73b4a8bb-2dd1-4295-90a7-cc81c23c9813",
+        "nomeOriginal": "Frango, peito, sem pele, grelhado",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "a120edcd-3076-4f1c-9c37-3fed302a9619",
+         "singular": "file medio",
+         "plural": "files medio",
+         "quantidade": 100
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 60,
+        "substituicoes": [],
+        "referencia": false
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "68158317-aafd-47d5-8014-6c6ab22756d4",
+    "nome": "Almoço",
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "1c103c7b-df5a-4550-9aa2-b95064748213",
+    "opcoes": [
+     {
+      "id": "1c103c7b-df5a-4550-9aa2-b95064748213",
+      "itens": [
+       {
+        "id": "ca0599fd-2ef3-46d0-bd61-fc4c4ac6f562",
+        "alimentoId": "ea1313c3-2cfd-46e0-b0cd-e97a7d8cc4a8",
+        "nomeOriginal": "Arroz, tipo 1, cozido",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "5efac504-786f-4337-b7c6-a5f6ab6e12a8",
+         "singular": "colher de sopa cheia",
+         "plural": "colheres de sopa chea",
+         "quantidade": 25
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 245,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "fd707df7-3b5b-44b8-b2f7-5f67112296f2",
+        "alimentoId": "73b4a8bb-2dd1-4295-90a7-cc81c23c9813",
+        "nomeOriginal": "Frango, peito, sem pele, grelhado",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "a120edcd-3076-4f1c-9c37-3fed302a9619",
+         "singular": "file medio",
+         "plural": "files medio",
+         "quantidade": 100
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 90,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "bbe76526-66b2-42f3-9811-238cad15622b",
+        "alimentoId": "a87b5e76-48b0-4df3-b6a9-9307b438049a",
+        "nomeOriginal": "Abobrinha, italiana, cozida",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": null,
+        "numeroMedidas": null,
+        "quantidadeAjustada": 80,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "03f498cb-e0ea-459d-84ac-826c4d076060",
+        "alimentoId": "f2141ced-436e-4cf0-a138-191b98cb617b",
+        "nomeOriginal": "Azeite, de oliva, extra virgem",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "6ddcd24f-cd60-4aee-9192-c18696865dd5",
+         "singular": "colher de cha",
+         "plural": "colheres de cha",
+         "quantidade": 5
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 5,
+        "substituicoes": [],
+        "referencia": false
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "f880890a-b69e-465f-b982-003f1297549c",
+    "nome": "Lanche da tarde",
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "e3a055ee-ff88-4744-8cb0-925c6b410ef3",
+    "opcoes": [
+     {
+      "id": "e3a055ee-ff88-4744-8cb0-925c6b410ef3",
+      "itens": [
+       {
+        "id": "0e099d9d-b97c-46e2-8f4f-6f92fdb19ee6",
+        "alimentoId": "c774c440-71cb-48f5-8ac9-9a9344879a4d",
+        "nomeOriginal": "pão de forma integral",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "23560bd3-82db-461d-ad87-93cf809a0612",
+         "singular": "unidade",
+         "plural": "unidades",
+         "quantidade": 25
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 90,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "3228da07-55b9-4c9b-b5b2-98c45217f7e5",
+        "alimentoId": "131bc38e-81f2-4561-a188-1cec500b7c67",
+        "nomeOriginal": "Geléia, mocotó, natural",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": null,
+        "numeroMedidas": null,
+        "quantidadeAjustada": 35,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "98d878b2-d7c3-43fe-9880-42353889a3a7",
+        "alimentoId": "dc9f1e11-8d14-4389-a154-e1aab2a287c8",
+        "nomeOriginal": "Iogurte, natural, desnatado",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": null,
+        "numeroMedidas": null,
+        "quantidadeAjustada": 170,
+        "substituicoes": [],
+        "referencia": false
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "18dc27c1-95f5-43fc-823a-067a6c2958cf",
+    "nome": "Jantar",
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "17d0e773-6cf0-47a3-85a9-f290c1ef6536",
+    "opcoes": [
+     {
+      "id": "17d0e773-6cf0-47a3-85a9-f290c1ef6536",
+      "itens": [
+       {
+        "id": "3c0a54ca-dce1-4fcb-b575-696b2d8b38a9",
+        "alimentoId": "ea1313c3-2cfd-46e0-b0cd-e97a7d8cc4a8",
+        "nomeOriginal": "Arroz, tipo 1, cozido",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "5efac504-786f-4337-b7c6-a5f6ab6e12a8",
+         "singular": "colher de sopa cheia",
+         "plural": "colheres de sopa chea",
+         "quantidade": 25
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 220,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "3e1bdac5-059e-43d3-a851-2431edcae84b",
+        "alimentoId": "bc85bfa3-4065-43c0-8156-8b7394931f19",
+        "nomeOriginal": "Merluza, filé, cru",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": null,
+        "numeroMedidas": null,
+        "quantidadeAjustada": 100,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "e04734ba-49fe-42c1-9d03-bf7fb64314fe",
+        "alimentoId": "00a79933-ecba-482a-a203-da455307d7ab",
+        "nomeOriginal": "Cenoura, cozida",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": null,
+        "numeroMedidas": null,
+        "quantidadeAjustada": 60,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "dc06b432-1c9a-47f3-ad25-042548252fb6",
+        "alimentoId": "f2141ced-436e-4cf0-a138-191b98cb617b",
+        "nomeOriginal": "Azeite, de oliva, extra virgem",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "6ddcd24f-cd60-4aee-9192-c18696865dd5",
+         "singular": "colher de cha",
+         "plural": "colheres de cha",
+         "quantidade": 5
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 5,
+        "substituicoes": [],
+        "referencia": false
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "ae65eb08-51dc-470d-8835-16223fd15668",
+    "nome": "Ceia",
+    "horario": null,
+    "observacao": null,
+    "opcaoReferencia": "04e3c85d-312b-4dd2-a748-fb8f1c3c3604",
+    "opcoes": [
+     {
+      "id": "04e3c85d-312b-4dd2-a748-fb8f1c3c3604",
+      "itens": [
+       {
+        "id": "3da49020-b5e7-4dd6-a5d1-8af40c407270",
+        "alimentoId": "36dac5bb-41a3-4c11-a7a8-efe6e4266917",
+        "nomeOriginal": "Banana, prata, crua",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "ef2b452c-4923-4886-add8-a318f0ab791e",
+         "singular": "unidade media",
+         "plural": "unidades media",
+         "quantidade": 100
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 125,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "3abd58a6-567d-4ece-a3eb-dcb5a8cf241e",
+        "alimentoId": "a75a4641-d92b-4b22-9752-df71a4a943e1",
+        "nomeOriginal": "Aveia, flocos, crua",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": {
+         "id": "73df874e-03b6-46f5-b15f-bc3fd7faa479",
+         "singular": "colher sopa cheia",
+         "plural": "colheres de sopa cheia",
+         "quantidade": 15
+        },
+        "numeroMedidas": null,
+        "quantidadeAjustada": 25,
+        "substituicoes": [],
+        "referencia": false
+       },
+       {
+        "id": "790ca255-abb6-4802-baa3-7abb9b0dff95",
+        "alimentoId": "907b836a-e54d-43f4-9274-ff0e3586c6b7",
+        "nomeOriginal": "Leite, de vaca, desnatado, UHT",
+        "nomeExibido": null,
+        "unidade": "g",
+        "medida": null,
+        "numeroMedidas": null,
+        "quantidadeAjustada": 200,
+        "substituicoes": [],
+        "referencia": false
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "observacoes": [
+   {
+    "id": "1e03f560-2943-436d-b482-0a71d1018b97",
+    "titulo": "1- Atenção:",
+    "texto": "### PEAK WEEK — BIKINI — ETAPA 2 (D-2 A D-1)\n\n**Referência:** atleta Bikini, 60 kg. Objetivo: otimizar a disponibilidade de glicogênio, preservar o volume muscular e minimizar desconfortos digestivos.\n\n**ORIENTAÇÕES À ATLETA**\n1. Consumir somente alimentos habituais e bem tolerados. Não experimentar suplementos ou preparações novas.\n2. Manter a hidratação distribuída ao longo do dia. Não reduzir água ou sal por conta própria.\n3. Observar peso ao despertar, aparência muscular, distensão abdominal e coloração da urina.\n4. Urina escura ou redução da frequência urinária: comunicar ao nutricionista e verificar se a ingestão hídrica está adequada.\n5. Informar imediatamente náuseas, diarreia, tontura, fraqueza ou cãibras persistentes.\n\n**ORIENTAÇÕES AO NUTRICIONISTA**\n1. **Musculatura com aspecto plano:** avaliar ingestão de carboidratos, treinamento, peso e resposta da etapa anterior. Considerar ajuste individualizado de carboidratos somente após essa avaliação.\n2. **Distensão abdominal:** avaliar fibras, lactose, volume das refeições e alimentos fermentáveis. Priorizar opções já testadas.\n3. **Peso aumentando:** verificar se a variação é compatível com reposição de glicogênio e água associada; não interpretar automaticamente como ganho de gordura.\n4. **Urina concentrada:** avaliar hidratação, perdas pelo suor e sintomas. Não utilizar restrição hídrica para modificar a aparência.\n5. **Sódio:** manter ingestão habitual e consistente, sem cortes ou sobrecargas extremos.\n6. Registrar a resposta da atleta para orientar a alimentação no dia da competição.\n\n**ALERTA:** confusão, desmaio, vômitos persistentes ou redução importante da urina exigem avaliação médica urgente. Não tentar corrigir esses quadros com grandes volumes de água ou eletrólitos sem avaliação.",
+    "modeloId": "ca7226f5-7edc-4e35-90ab-cdc0cff5cccc"
+   }
+  ],
+  "hidratacao": {
+   "mlPorKg": 35,
+   "observacoes": "A hidratação deve ser mantida de forma constante durante o dia. Evite permanecer muitas horas sem ingerir líquidos e, posteriormente, consumir grandes quantidades de água de uma só vez. Isso favorece uma melhor absorção e utilização dos líquidos pelo organismo."
+  },
+  "pesoReferencia": {
+   "valor": null,
+   "origem": null,
+   "data": null
+  },
+  "nutrientesAcompanhados": []
+ },
+ "preparado_em": "2026-11-15"
+}

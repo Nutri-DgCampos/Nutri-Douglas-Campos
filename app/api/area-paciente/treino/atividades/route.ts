@@ -8,6 +8,7 @@ import {
   atividadesDoAluno,
   caloriasInformadasNaSemana,
   equipamentosDoAluno,
+  orientacoesDasPlanilhas,
   primeiroDiaDeRegistro,
   salvarAtividade,
   sessoesPlanejadas,
@@ -19,12 +20,13 @@ export const runtime = "nodejs";
 async function situacao(pacienteId: string) {
   const hoje = hojeNoBrasil();
   const { bloqueados, total } = await bloqueiosDoAluno(pacienteId, hoje);
-  const [atividades, equipamentos, calorias, planejadas] = await Promise.all([
+  const [atividades, equipamentos, calorias, planejadas, orientacoes] = await Promise.all([
     // Histórico das últimas 8 semanas; edição só desde primeiroDia.
     atividadesDoAluno(pacienteId, somarDias(hoje, -56)),
     equipamentosDoAluno(pacienteId),
     caloriasInformadasNaSemana(pacienteId, hoje),
     sessoesPlanejadas(pacienteId, hoje, bloqueados),
+    orientacoesDasPlanilhas(pacienteId, hoje, bloqueados),
   ]);
   // Plano vencido (R9, S2): some o planejado de quem está vencido; sem
   // nenhum profissional liberado ("bloqueado"), nem registro avulso.
@@ -32,6 +34,7 @@ async function situacao(pacienteId: string) {
     atividades,
     equipamentos,
     planejadas,
+    orientacoes,
     bloqueado: total,
     caloriasInformadas: calorias,
     hoje,

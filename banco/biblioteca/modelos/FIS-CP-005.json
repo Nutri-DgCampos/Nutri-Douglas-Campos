@@ -18,21 +18,21 @@
       "taco": "7"
      },
      "nome": "Aveia, flocos, crua",
-     "gramas": 80
+     "gramas": 75
     },
     {
      "alimento": {
       "taco": "457"
      },
      "nome": "Leite, de vaca, desnatado, UHT",
-     "gramas": 295
+     "gramas": 285
     },
     {
      "alimento": {
       "taco": "182"
      },
      "nome": "Banana, prata, crua",
-     "gramas": 115
+     "gramas": 110
     }
    ]
   },
@@ -44,14 +44,14 @@
       "taco": "52"
      },
      "nome": "Pão, trigo, forma, integral",
-     "gramas": 100
+     "gramas": 95
     },
     {
      "alimento": {
       "taco": "461"
      },
      "nome": "Queijo, minas, frescal",
-     "gramas": 65
+     "gramas": 60
     }
    ]
   },
@@ -63,28 +63,28 @@
       "taco": "1"
      },
      "nome": "Arroz, integral, cozido",
-     "gramas": 260
+     "gramas": 250
     },
     {
      "alimento": {
       "taco": "561"
      },
      "nome": "Feijão, carioca, cozido",
-     "gramas": 115
+     "gramas": 110
     },
     {
      "alimento": {
       "taco": "377"
      },
      "nome": "Carne, bovina, patinho, sem gordura, grelhado",
-     "gramas": 175
+     "gramas": 170
     },
     {
      "alimento": {
       "taco": "109"
      },
      "nome": "Cenoura, cozida",
-     "gramas": 85
+     "gramas": 80
     },
     {
      "alimento": {
@@ -103,14 +103,14 @@
       "taco": "449"
      },
      "nome": "Iogurte, natural, desnatado",
-     "gramas": 235
+     "gramas": 225
     },
     {
      "alimento": {
       "taco": "226"
      },
      "nome": "Mamão, Papaia, cru",
-     "gramas": 155
+     "gramas": 150
     }
    ]
   },
@@ -122,21 +122,21 @@
       "id": "563d32f7-b39b-454c-9c9a-8cf2be645345"
      },
      "nome": "Macarrão cozido",
-     "gramas": 275
+     "gramas": 265
     },
     {
      "alimento": {
       "taco": "410"
      },
      "nome": "Frango, peito, sem pele, grelhado",
-     "gramas": 165
+     "gramas": 160
     },
     {
      "alimento": {
       "taco": "157"
      },
      "nome": "Tomate, com semente, cru",
-     "gramas": 90
+     "gramas": 85
     },
     {
      "alimento": {
@@ -182,17 +182,34 @@
   "orientacoes": "FIS"
  },
  "ajuste": {
-  "proteina_g_kg": 1.98,
+  "proteina_g_kg": 2.01,
   "piso_proteina_g_kg": 2,
-  "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
-  "fator": 1.335,
+  "motivo": "Leite desnatado UHT (TACO 457) completado pelo nutricionista em 08/11: 35 kcal, P 3,4, C 4,9, L 0,2",
+  "historico": [
+   {
+    "proteina_g_kg": 1.98,
+    "piso_proteina_g_kg": 2,
+    "metodo": "por grupo: legumes fixos, proteína até +25%, fontes de energia completam",
+    "fator": 1.335,
+    "fatores": {
+     "legumes": 1,
+     "proteina": 1.25,
+     "energia": 1.385
+    },
+    "kcal_base": 1985,
+    "kcal_calculada": 2664,
+    "em": "2026-11-14"
+   }
+  ],
+  "metodo": "fator único sobre as gramas do cardápio-base",
+  "fator": 0.958,
   "fatores": {
-   "legumes": 1,
-   "proteina": 1.25,
-   "energia": 1.385
+   "legumes": 0.958,
+   "proteina": 0.958,
+   "energia": 0.958
   },
-  "kcal_base": 1985,
-  "kcal_calculada": 2664,
-  "em": "2026-11-14"
+  "kcal_base": 2767,
+  "kcal_calculada": 2654,
+  "em": "2026-11-15"
  }
 }

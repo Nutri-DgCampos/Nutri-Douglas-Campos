@@ -50,7 +50,7 @@ const valorDe = (nome) => {
   return i >= 0 ? resto[i + 1] : null;
 };
 const autorEmail = valorDe("--autor");
-const listados = resto.filter((a, i) => !a.startsWith("--") && resto[i - 1] !== "--autor");
+const listados = resto.filter((a, i) => !a.startsWith("--") && !["--autor", "--motivo"].includes(resto[i - 1]));
 
 function lerCsv(caminho) {
   const texto = readFileSync(caminho, "utf8").replace(/^﻿/, "");
@@ -98,9 +98,9 @@ function lerModelo(codigo) {
   return JSON.parse(readFileSync(caminho, "utf8"));
 }
 
-function gravarJsonAtomico(caminho, objeto) {
+function gravarJsonAtomico(caminho, objeto, recuo = 1) {
   const tmp = `${caminho}.tmp`;
-  writeFileSync(tmp, JSON.stringify(objeto, null, 1) + "\n", "utf8");
+  writeFileSync(tmp, JSON.stringify(objeto, null, recuo) + "\n", "utf8");
   renameSync(tmp, caminho);
 }
 
@@ -219,16 +219,15 @@ function montarEndurance(m) {
         observacao: s.observacao ?? null, alternativa: null, notas: null,
       })),
     })),
+    // Observações gerais que o aluno vê (resposta 5 do nutricionista, 15/11).
+    observacoes: m.orientacoes_aluno.map((o) => ({ id: randomUUID(), titulo: o.titulo, texto: o.texto })),
   };
 }
 
-// Orientações ao profissional; em corrida e ciclismo (sem campo de
-// observações gerais no plano) as do aluno vão junto, para repassar.
+// Orientações ao profissional, com as referências técnicas. As do aluno vão
+// nas observações do plano (musculação, corrida e ciclismo).
 function orientacoesDoProfissional(m) {
   const partes = [m.orientacoes_profissional.trim()];
-  if (m.tipo === "corrida" || m.tipo === "ciclismo") {
-    partes.push("Para repassar ao aluno:\n" + m.orientacoes_aluno.map((o) => `• ${o.titulo}: ${o.texto}`).join("\n"));
-  }
   if (m.referencias?.length) partes.push("Referências técnicas:\n" + m.referencias.map((r) => `• ${r}`).join("\n"));
   return partes.join("\n\n");
 }
@@ -368,7 +367,7 @@ function marcar(codigo, dados) {
   const caminho = join(BIB, "controle.json");
   const controle = JSON.parse(readFileSync(caminho, "utf8"));
   controle.modelos[codigo] = { ...controle.modelos[codigo], ...dados, atualizado_em: new Date().toISOString() };
-  gravarJsonAtomico(caminho, controle);
+  gravarJsonAtomico(caminho, controle, 2); // mesmo recuo do arquivo versionado
 }
 
 // ---------------------------------------------------------------------------
@@ -504,9 +503,16 @@ async function cmdAjustar(pool) {
       protFinal = arred(protDe(info) / m.peso_referencia_kg, 2);
     }
     const kcal = kcalDe(info);
+    // Reajuste guarda o ajuste anterior (refeições acrescentadas continuam
+    // registradas); o motivo vem de --motivo.
+    const anterior = m.ajuste;
+    const todasAcrescentadas = [...(anterior?.refeicoes_acrescentadas ?? []), ...acrescentadas];
+    const historico = anterior ? [...(anterior.historico ?? []), { ...anterior, historico: undefined }] : [];
     m.ajuste = {
       ...(protFinal !== null ? { proteina_g_kg: protFinal, piso_proteina_g_kg: piso } : {}),
-      ...(acrescentadas.length ? { refeicoes_acrescentadas: acrescentadas } : {}),
+      ...(todasAcrescentadas.length ? { refeicoes_acrescentadas: todasAcrescentadas } : {}),
+      ...(valorDe("--motivo") ? { motivo: valorDe("--motivo") } : {}),
+      ...(historico.length ? { historico } : {}),
       metodo: subir ? "por grupo: legumes fixos, proteína até +25%, fontes de energia completam" : "fator único sobre as gramas do cardápio-base",
       fator: arred(meta / inicial, 3),
       fatores: { legumes: arred(fatores.legumes, 3), proteina: arred(fatores.proteina, 3), energia: arred(fatores.energia, 3) },
@@ -616,7 +622,11 @@ async function cmdRelatorio(pool) {
     const cat = catalogo[c];
     if (decisoes.protegidos.includes(c)) {
       cont.protegido++;
-      linhas.push(`| ${c} | protegido | já existe na produção (cadastro manual) | — | — |`);
+      const ajuste = join(BIB, "protegidos", `${c}.json`);
+      if (existsSync(ajuste)) {
+        const p = JSON.parse(readFileSync(ajuste, "utf8"));
+        linhas.push(`| ${c} | protegido, ajuste preparado | produção (cadastro manual); aplicar com scripts/biblioteca/protegidos.mjs | ${Math.round(p.calculo.antes.kcal)} → ${Math.round(p.calculo.depois.kcal)} kcal (meta ${p.meta_kcal}) | ${p.mudancas.length} porções de carboidrato |`);
+      } else linhas.push(`| ${c} | protegido | já existe na produção (cadastro manual) | — | — |`);
       continue;
     }
     const item = r[c];

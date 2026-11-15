@@ -162,6 +162,20 @@ function observacoesDoPlano(valor: unknown): ObservacaoDoTreino[] {
     .filter((o) => o.titulo || o.texto);
 }
 
+// Mesmas regras para as planilhas de corrida e ciclismo (Biblioteca Mestre,
+// resposta 5 do nutricionista em 15/11): observações gerais que o aluno vê.
+export function validarObservacoesDoTreino(valor: unknown): { observacoes: ObservacaoDoTreino[] } | { erro: string } {
+  try {
+    return { observacoes: observacoesDoPlano(valor) };
+  } catch (erro) {
+    if (erro instanceof PlanoInvalido) return { erro: erro.message };
+    throw erro;
+  }
+}
+
+// O aluno não recebe o vínculo com o catálogo do profissional.
+export const observacoesParaAluno = (lista: ObservacaoDoTreino[] | undefined) => (lista ?? []).map(({ id, titulo, texto }) => ({ id, titulo, texto }));
+
 // Limpa o plano vindo do editor. Devolve o plano ou a mensagem do problema.
 export function validarPlanoDoEditor(valor: unknown): { plano: PlanoDeTreino } | { erro: string } {
   try {

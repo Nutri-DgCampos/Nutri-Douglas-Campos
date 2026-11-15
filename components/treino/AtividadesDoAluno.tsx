@@ -36,7 +36,8 @@ const CHAVE_DA_COPIA = "corridas-e-pedais";
 
 type AtividadeNaTela = Atividade & { id: string; equipamento: string | null };
 type Planejada = SessaoEndurance & { modalidade: Modalidade; prescricao_id: string; referencia: number; data: string; titulo: string | null };
-type Dados = { atividades: AtividadeNaTela[]; equipamentos: Equipamento[]; planejadas: Planejada[]; hoje: string; primeiroDia: string; bloqueado?: boolean };
+type Orientacoes = { prescricao_id: string; modalidade: Modalidade; titulo: string | null; observacoes: { id: string; titulo: string; texto: string }[] };
+type Dados = { atividades: AtividadeNaTela[]; equipamentos: Equipamento[]; planejadas: Planejada[]; orientacoes?: Orientacoes[]; hoje: string; primeiroDia: string; bloqueado?: boolean };
 
 const ROTULO_DA_SITUACAO = Object.fromEntries(SITUACOES.map((s) => [s.valor, s.rotulo]));
 const dataCurta = (iso: string) => iso.split("-").reverse().slice(0, 2).join("/");
@@ -144,7 +145,7 @@ export default function AtividadesDoAluno({
       return;
     }
     const r = resultado.dados;
-    const novo = { ...dados, atividades: r.atividades, equipamentos: r.equipamentos, planejadas: r.planejadas ?? dados.planejadas };
+    const novo = { ...dados, atividades: r.atividades, equipamentos: r.equipamentos, planejadas: r.planejadas ?? dados.planejadas, orientacoes: r.orientacoes ?? dados.orientacoes };
     setDados(novo);
     void guardarDados(CHAVE_DA_COPIA, novo);
     setEditando(null);
@@ -252,6 +253,21 @@ export default function AtividadesDoAluno({
           </ul>
         </div>
       ) : null}
+
+      {/* Observações gerais das planilhas (resposta 5 do nutricionista, 15/11). */}
+      {dados.orientacoes?.map((o) => (
+        <div key={o.prescricao_id} className="mt-3 rounded-xl border border-gray-200 p-3" aria-label={`Observações do treino de ${o.modalidade === "corrida" ? "corrida" : "ciclismo"}`}>
+          <h3 className="text-sm font-bold text-gray-900">Observações do treino de {o.modalidade === "corrida" ? "corrida" : "ciclismo"}</h3>
+          <ol className="mt-1 space-y-2 text-sm text-gray-700">
+            {o.observacoes.map((x) => (
+              <li key={x.id}>
+                {x.titulo ? <p className="font-semibold text-gray-900">{x.titulo}</p> : null}
+                {x.texto ? <p className="whitespace-pre-wrap">{x.texto}</p> : null}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
 
       {noLimite.map((e) => (
         <p key={e.id} className="mt-3 rounded-xl bg-atencao-50 px-3 py-2 text-sm text-atencao-700" role="status">

@@ -31,17 +31,17 @@
     "ALI-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "b4c911b89d30781533ddd0872f4ae06daf3af575d95a5bcbd42eef9dbc5fe610",
+      "hash": "49eacd7ad19263211507cac7718eb24d5a1d2cc2a086a97b87aae5f984ef70a2",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.505Z",
+      "atualizado_em": "2026-11-15T15:33:37.582Z",
       "situacao": "liberado"
     },
     "ALI-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "beed1865b7f1bbfcbc881a11292526ecaa4ad4bf34a6894a9114c453e31e0d72",
+      "hash": "b34db208b130eca54550d3b31feb7e54239bb96fc13e9acb70f4f42242d28093",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.507Z",
+      "atualizado_em": "2026-11-15T15:33:37.592Z",
       "situacao": "liberado"
     },
     "ALI-006": {
@@ -97,7 +97,7 @@
       "bloqueio_clinico_original": false,
       "hash": "84c659b7c7881c02066ee35c3e89f8f488cfdbf166e96df69160533baddafb5c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.518Z",
+      "atualizado_em": "2026-11-15T15:29:25.185Z",
       "situacao": null
     },
     "CIC-002": {
@@ -105,7 +105,7 @@
       "bloqueio_clinico_original": false,
       "hash": "302a9c1a210017f5b200ff11a753016e69537d9d68e00722e211f9cd2b952dee",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.520Z",
+      "atualizado_em": "2026-11-15T15:29:25.194Z",
       "situacao": null
     },
     "CIC-003": {
@@ -113,7 +113,7 @@
       "bloqueio_clinico_original": false,
       "hash": "99126ac3e7f6935bd6eae6166c70f27ce3633eaa49af18209633f29fd1343712",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.522Z",
+      "atualizado_em": "2026-11-15T15:29:25.202Z",
       "situacao": null
     },
     "CIC-004": {
@@ -121,7 +121,7 @@
       "bloqueio_clinico_original": false,
       "hash": "5c5120180a30cdaae862ae7332d540c64a8450bf405d6a6e591b03aa38889769",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.524Z",
+      "atualizado_em": "2026-11-15T15:29:25.211Z",
       "situacao": null
     },
     "CIC-005": {
@@ -129,7 +129,7 @@
       "bloqueio_clinico_original": false,
       "hash": "a3196526ab2c5a509af4c3fa5d2f43bb430177b5e784458ccd68727b33560b62",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.525Z",
+      "atualizado_em": "2026-11-15T15:29:25.219Z",
       "situacao": null
     },
     "CIC-006": {
@@ -137,7 +137,7 @@
       "bloqueio_clinico_original": false,
       "hash": "2b07ebcca33a0dd051b08a5793fcffa33e914dae5ac4b31504b99263336f73b2",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.528Z",
+      "atualizado_em": "2026-11-15T15:29:25.227Z",
       "situacao": null
     },
     "CIC-007": {
@@ -145,7 +145,7 @@
       "bloqueio_clinico_original": false,
       "hash": "bfec6a6094ebeb2404d17fe3ce04681787972ed771e01c987e730f1401b7dda9",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.530Z",
+      "atualizado_em": "2026-11-15T15:29:25.236Z",
       "situacao": null
     },
     "CIC-008": {
@@ -153,7 +153,7 @@
       "bloqueio_clinico_original": false,
       "hash": "cac9c25c1601da2f1152e75f99117efa9a7f5d2efbbe30696515b20f0a7780ee",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.532Z",
+      "atualizado_em": "2026-11-15T15:29:25.245Z",
       "situacao": null
     },
     "CIC-009": {
@@ -161,7 +161,7 @@
       "bloqueio_clinico_original": false,
       "hash": "e9fa6dd3de08b9aaa61f80d1fa966be4c9e374303ef9b3c013a1e88749ac63dd",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.533Z",
+      "atualizado_em": "2026-11-15T15:29:25.253Z",
       "situacao": null
     },
     "CIC-010": {
@@ -169,7 +169,7 @@
       "bloqueio_clinico_original": false,
       "hash": "d4c82cdb27b55a4876946f66e8846f48a4b431a748c5747c03188b9f94e87c0f",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.535Z",
+      "atualizado_em": "2026-11-15T15:29:25.263Z",
       "situacao": null
     },
     "CLI-001": {
@@ -191,17 +191,17 @@
     "CLI-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "70fcd5b56fa2c5ab93a5055e344c42457db92eef2a7076dd5e56f3d4c7ba8643",
+      "hash": "8c7a5e2b4fe322f08ed4c86df8bbaafa6e819d9f6b1a5479d9a23b20be625573",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.540Z",
+      "atualizado_em": "2026-11-15T15:33:37.600Z",
       "situacao": "bloqueado"
     },
     "CLI-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "f94accd4246a6e6273f83452ebe9fd28d71b1b77513cae093951cde389c6ce9f",
+      "hash": "05d494de8a3404342b47d6ef251045b7908e78c15e645a9cd1860f3a1ab644bb",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.542Z",
+      "atualizado_em": "2026-11-15T15:33:37.608Z",
       "situacao": "bloqueado"
     },
     "CLI-005": {
@@ -217,7 +217,7 @@
       "bloqueio_clinico_original": false,
       "hash": "16f4f12eb917d7017eb05ecde7ab653e7df58fb09c9e849fb358a1b319b98a92",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.545Z",
+      "atualizado_em": "2026-11-15T15:29:25.099Z",
       "situacao": null
     },
     "COR-002": {
@@ -225,7 +225,7 @@
       "bloqueio_clinico_original": false,
       "hash": "5100968147f7c448f3049b93cccde021451cf259a359ddaefae3db7e1daeb0ca",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.546Z",
+      "atualizado_em": "2026-11-15T15:29:25.109Z",
       "situacao": null
     },
     "COR-003": {
@@ -233,7 +233,7 @@
       "bloqueio_clinico_original": false,
       "hash": "8b3da25873c32df21fe00c31f0fe599d4097e83168258c10cffa9270c25cb5ac",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.548Z",
+      "atualizado_em": "2026-11-15T15:29:25.118Z",
       "situacao": null
     },
     "COR-004": {
@@ -241,7 +241,7 @@
       "bloqueio_clinico_original": false,
       "hash": "e65e44aa1727ef9207fa5e2ac3623d678379f951138fee5de7e84e1248098f2d",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.549Z",
+      "atualizado_em": "2026-11-15T15:29:25.127Z",
       "situacao": null
     },
     "COR-005": {
@@ -249,7 +249,7 @@
       "bloqueio_clinico_original": false,
       "hash": "35d8888a03f9dec8276f6aed0ac795f8f1dde9cc629fbfc7b11e1b1849a68e4f",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.551Z",
+      "atualizado_em": "2026-11-15T15:29:25.136Z",
       "situacao": null
     },
     "COR-006": {
@@ -257,7 +257,7 @@
       "bloqueio_clinico_original": false,
       "hash": "624d2b595f2eadfb0ac70b9975ec4001756d111beab92d680ff62254193889d8",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.553Z",
+      "atualizado_em": "2026-11-15T15:29:25.144Z",
       "situacao": null
     },
     "COR-007": {
@@ -265,7 +265,7 @@
       "bloqueio_clinico_original": false,
       "hash": "f8be4e865b46015e9cb7b1fe70b9aa509760f6a16477cc6775966a886a76ba0e",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.555Z",
+      "atualizado_em": "2026-11-15T15:29:25.152Z",
       "situacao": null
     },
     "COR-008": {
@@ -273,7 +273,7 @@
       "bloqueio_clinico_original": false,
       "hash": "7116e8a6908b1cf6743d4fae4ea22df486734e4200c03b1268b7df51932db9e4",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.556Z",
+      "atualizado_em": "2026-11-15T15:29:25.162Z",
       "situacao": null
     },
     "COR-009": {
@@ -281,7 +281,7 @@
       "bloqueio_clinico_original": false,
       "hash": "21c08f581ec8a75a8fcd60ca6a7f7cbff132b1a4107de3d39604585d231b176c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.558Z",
+      "atualizado_em": "2026-11-15T15:29:25.169Z",
       "situacao": null
     },
     "COR-010": {
@@ -289,13 +289,14 @@
       "bloqueio_clinico_original": false,
       "hash": "45070694a0a901b6207b85ea74834701af892e0a5973fafb5ebccbdf2bfd8b3c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.560Z",
+      "atualizado_em": "2026-11-15T15:29:25.178Z",
       "situacao": null
     },
     "EMG-001": {
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
-      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+      "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/EMG-001.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
+      "ajuste": "preparado"
     },
     "EMG-002": {
       "status": "importado_homologacao",
@@ -316,17 +317,17 @@
     "EMG-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "00e45f040ec424e959673d2188100de0b66a80b73a27e9a87ead3bbbe6d5f7f0",
+      "hash": "2e16a417b7528e5860d07d4ceed2abaa7c32accba4574b3183accfb367daf166",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.564Z",
+      "atualizado_em": "2026-11-15T15:33:37.615Z",
       "situacao": "liberado"
     },
     "EMG-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "cf31f27670ed5b580eb0d8c457ae97d2a641dadff94c014f63a0f97d77e4b018",
+      "hash": "29e70e3c588b20f50cf4f2af0fe70843dd5ba6e1d628b3afc27441b89d48f9f5",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.566Z",
+      "atualizado_em": "2026-11-15T15:33:37.623Z",
       "situacao": "liberado"
     },
     "EMG-006": {
@@ -340,25 +341,25 @@
     "EMG-007": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "6e3d0cc3fb1f771e877040b25163797d19c6b1ace071d601cc47f31d61575035",
+      "hash": "9dc70a4ef89380ad5c274e6d19ceff076ba6f067eaa06cacc89acf2aab22f6e3",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.569Z",
+      "atualizado_em": "2026-11-15T15:33:37.631Z",
       "situacao": "liberado"
     },
     "EMG-008": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "5a9e38c8bb48f4681bd0269e1bbb4e87847424f28c1e00dbe6e34859083a4f57",
+      "hash": "9c82824d5fd70e372c738712efe1d88dce0c44ecf07f698dd063a41d13f6f36c",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.571Z",
+      "atualizado_em": "2026-11-15T15:33:37.639Z",
       "situacao": "liberado"
     },
     "EMG-009": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "293234626114fc3f73624fa2b9bdff99445a070ae3f93e19a416f15323b4e8ed",
+      "hash": "d48c78b8dd92ad6572729c6336115c6d9723c7851b161ef025cb17c8f6c4780e",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.573Z",
+      "atualizado_em": "2026-11-15T15:33:37.648Z",
       "situacao": "liberado"
     },
     "EMG-010": {
@@ -380,17 +381,17 @@
     "EMG-012": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "f97e8e82a88bf0e52eaa08827ec412f023d586abc90bc99357340d4ea3cf1b13",
+      "hash": "f1c85a022986c6c400739bbc02db397b3f5bb057d3ddfb2cd73ae5612c128228",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.578Z",
+      "atualizado_em": "2026-11-15T15:33:37.656Z",
       "situacao": "liberado"
     },
     "EMG-013": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "599ee7a0ada611228afbe3fc98cb4387b82e7f794e0ba6c25dde7c6b8c7a95a0",
+      "hash": "df34074412feb7a34b4899a136683bb0180dcd03c67546281216de4010d1ce8a",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.580Z",
+      "atualizado_em": "2026-11-15T15:33:37.664Z",
       "situacao": "liberado"
     },
     "EMG-014": {
@@ -412,17 +413,17 @@
     "EMG-016": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "bc177ef21b4f7fad212b6c4127a5c604bfb791f72269f1435ffaa2046b8f1697",
+      "hash": "1c7cf65ad27aaeb3a3d79d16836cf05bf1cba4ee9af291517a4c4ed244e2c4a7",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.585Z",
+      "atualizado_em": "2026-11-15T15:33:37.674Z",
       "situacao": "liberado"
     },
     "EMG-017": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "677bff15e062cee57a70349f9451ee975387365f964e1211f8bbaabd9b7ac4d0",
+      "hash": "81a4db7f9ad8473a3d1c4bf7b21bcf90e0d639f67c9a78d0b6a5c88bbaeba38b",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.587Z",
+      "atualizado_em": "2026-11-15T15:33:37.682Z",
       "situacao": "liberado"
     },
     "EMG-018": {
@@ -436,25 +437,25 @@
     "EMG-019": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "e0c1787a792c360d8005016b52341fb2b601c96f872e346af9a7b035c1b5d152",
+      "hash": "1583d73aff2d1e35a4193cb1cab93bc7c0ae35abb6cd35916908c2af867eed50",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.591Z",
+      "atualizado_em": "2026-11-15T15:33:37.689Z",
       "situacao": "liberado"
     },
     "EMG-020": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "da33c5c33ceb20da88ae64815f5e0e73b72a35eda81549b62379ebe284ae4fa3",
+      "hash": "9f25edd258dd215c98246f06a9cbc22604c7bcf07340d72ff847443525a06cea",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.592Z",
+      "atualizado_em": "2026-11-15T15:33:37.698Z",
       "situacao": "liberado"
     },
     "EMG-021": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "0ea88f4521711bde9c5a9853a41b098ad35ff883cc616a07e2a7971bc235b6f3",
+      "hash": "ee014db82b148ead94abf0d192c7d70a65baeb2d2a0e467e0be2cc0ef60856bc",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.594Z",
+      "atualizado_em": "2026-11-15T15:33:37.709Z",
       "situacao": "liberado"
     },
     "EMG-022": {
@@ -468,17 +469,17 @@
     "EMG-023": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d60d129f68c7f444f89d06dde7dfb0d178ebbd8ef97bec91154439df9fbc8749",
+      "hash": "1382f4fc173bb18f8cec6b2cc52326669559728dd4f1d66240572245777ec5f5",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.597Z",
+      "atualizado_em": "2026-11-15T15:33:37.720Z",
       "situacao": "liberado"
     },
     "ESP-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "e49e9071fb656d7f873e69613bf44fd2fa9776b628e6179a174db6b6bd9e065d",
+      "hash": "5f17774142dab760e6e1d8f10b42d784e9b96b03bb5bf37f7274e6864d6a194c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.599Z",
+      "atualizado_em": "2026-11-15T15:33:37.728Z",
       "situacao": "liberado"
     },
     "ESP-002": {
@@ -492,25 +493,25 @@
     "ESP-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "759333998db4f7a8415fbfc34baf3ec237a854fd336b0b1b91ca34365082e98e",
+      "hash": "fb0c5904b1e9673b89b47601ac657e931bb05f589a81e04f24dc175f7cab120c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.603Z",
+      "atualizado_em": "2026-11-15T15:33:37.735Z",
       "situacao": "liberado"
     },
     "ESP-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "a4512b932db97571bb12a1966c3b80dca1cc2dce93b1be8c312b622c2c7d5c3d",
+      "hash": "34e9a78f32c3bfc90cd708543bc8c19340bc5689d6ecf26303cd43a45866c402",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.605Z",
+      "atualizado_em": "2026-11-15T15:33:37.743Z",
       "situacao": "liberado"
     },
     "ESP-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "e51aeb903d2a0d0f3856e1b9edcda999ee83fc701a08230cd5f04bc572e83a0a",
+      "hash": "6761de401b7f3b797a73e257be22deceb5c4ad75a5c152e6f52489391e3387d2",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.606Z",
+      "atualizado_em": "2026-11-15T15:33:37.751Z",
       "situacao": "liberado"
     },
     "ESP-006": {
@@ -540,9 +541,9 @@
     "ESP-009": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d4d75eb1d029bfbb6973ecaddb243af9f97550623c401c11f46feffdd188f182",
+      "hash": "f445e6f286dff30909fb11406db55eed896dbea16a6d9ffabe3276352c6129fe",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.613Z",
+      "atualizado_em": "2026-11-15T15:33:37.759Z",
       "situacao": "liberado"
     },
     "ESP-010": {
@@ -564,9 +565,9 @@
     "ESP-012": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "5d44886d49a20a11ea8c1543f6ff02d9c4762663ccab91540da5090c2db14dfb",
+      "hash": "06de0dcbeaaf41e8cb2b86fa8c76593e4e327b8aaba59e686a786899e50b88aa",
       "avisos": 2,
-      "atualizado_em": "2026-11-14T23:36:17.618Z",
+      "atualizado_em": "2026-11-15T15:33:37.767Z",
       "situacao": "liberado"
     },
     "ESP-013": {
@@ -588,17 +589,17 @@
     "ESP-015": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "18991eaa14fafae401a4cbeb6973f9f544ac34be0c10408046c1a42c88b12533",
+      "hash": "e5658bc8e36a7355ec80122e18d6828d609815779597f0f7a62598bfab2dcbd0",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.624Z",
+      "atualizado_em": "2026-11-15T15:33:37.774Z",
       "situacao": "liberado"
     },
     "ESP-016": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d0295688b29cbfbdbace94c2ebaace3b23dee751614c4ee3dbbef408e64383d3",
+      "hash": "644372205d86ea1bb474332064237c5f9d6f1e1084309c2257719935c573890a",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.626Z",
+      "atualizado_em": "2026-11-15T15:33:37.781Z",
       "situacao": "liberado"
     },
     "FIS-BB-001": {
@@ -620,25 +621,25 @@
     "FIS-BB-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "f7f98b43df019ad1fda9b2596748caf6fcbe625d2b8b6da0ec3b08793c9416e4",
+      "hash": "c09067346f56d98c941f78d2da31609deb317889fb4e1cf9dc044269886963d2",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.631Z",
+      "atualizado_em": "2026-11-15T15:33:37.788Z",
       "situacao": "liberado"
     },
     "FIS-BB-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d4869c687435bfc5dca867827741b6b752761d81db324ea8aded5bbbe3b23f4f",
+      "hash": "9535b3f1c1adb313c6b5f1055d68f37447053b699697f4a9ebc127bc363bfa25",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.632Z",
+      "atualizado_em": "2026-11-15T15:33:37.796Z",
       "situacao": "liberado"
     },
     "FIS-BB-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "ac6d09e777465498add44cd1259a63ee9c6d13ea685c82fe80666f59249e984a",
+      "hash": "b5d012048d3bca2bfcc5aef0b9e3dec996ab5a25bf71bc4f0073391ad30dd354",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.634Z",
+      "atualizado_em": "2026-11-15T15:33:37.803Z",
       "situacao": "liberado"
     },
     "FIS-BB-006": {
@@ -652,9 +653,9 @@
     "FIS-BB-007": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "014fd249d26f0152bdec49faec50ff3d6b1b14251567eb55d5bbf0c594779b86",
+      "hash": "9bb013a83fd1735233d97f888760eeb8442099f90cc0492608403c3bf4817f52",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.638Z",
+      "atualizado_em": "2026-11-15T15:33:37.812Z",
       "situacao": "liberado"
     },
     "FIS-BB-008": {
@@ -668,9 +669,9 @@
     "FIS-BB-009": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "7c352038e99bc46eb9d3bbae68414098618f9821dcf1537eb9e1e87a939d3cfe",
-      "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.641Z",
+      "hash": "b06ed82a26c106b493ccb32c25abbf1f0e76815dd2fea9967156ed01dae07db5",
+      "avisos": 0,
+      "atualizado_em": "2026-11-15T15:33:37.819Z",
       "situacao": "liberado"
     },
     "FIS-BB-010": {
@@ -684,9 +685,9 @@
     "FIS-BIK-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "8e76d137f30761b95bb841a73e6edf94f78ca1a8b194ddb9fd02ad6c9fb5be13",
+      "hash": "4d7c4acf7abe67ab77a5dac625eea0a02513793c0e1f7af95174f62b540221bd",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.645Z",
+      "atualizado_em": "2026-11-15T15:33:37.826Z",
       "situacao": "liberado"
     },
     "FIS-BIK-002": {
@@ -708,17 +709,17 @@
     "FIS-BIK-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "39cc028852b0a71a68ffd5a7bb8dfbd443533bd9787f2152a739161abfd24502",
+      "hash": "6351651a0c346e09e82d9ee00dbf6621faff8847a7366c7b310e055f6af44336",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.649Z",
+      "atualizado_em": "2026-11-15T15:33:37.834Z",
       "situacao": "liberado"
     },
     "FIS-BIK-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "24741c158c6e90dc133ac64d68d77594880330dcf28de8fbdd709d223e5e5129",
+      "hash": "73d8138e735d49e1465af8e6281d4df7591aff37703e369aa087ea9e752300e6",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.651Z",
+      "atualizado_em": "2026-11-15T15:33:37.841Z",
       "situacao": "liberado"
     },
     "FIS-BIK-006": {
@@ -732,17 +733,20 @@
     "FIS-BIK-007": {
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
-      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+      "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/FIS-BIK-007.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
+      "ajuste": "preparado"
     },
     "FIS-BIK-008": {
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
-      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+      "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/FIS-BIK-008.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
+      "ajuste": "preparado"
     },
     "FIS-BIK-009": {
       "status": "protegido_existente",
       "bloqueio_clinico_original": false,
-      "observacao": "Existe na produção (cadastrado à mão, código no início do nome); não é gerado nem importado."
+      "observacao": "Existe na produção (cadastrado à mão). Resposta 1 do nutricionista (15/11): ajustar as porções até a meta. Ajuste preparado em banco/biblioteca/protegidos/FIS-BIK-009.json; aplicar na carga (scripts/biblioteca/protegidos.mjs aplicar).",
+      "ajuste": "preparado"
     },
     "FIS-BIK-010": {
       "status": "importado_homologacao",
@@ -771,25 +775,25 @@
     "FIS-CP-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "9b1901c1692262c6edc3b26e9a4667e4cc5e041f976d19ba5f2bf2695a7b7730",
+      "hash": "92f46ade630850de61401a803ead1264970f3449c36ceb8b22b07556e63dce0e",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.659Z",
+      "atualizado_em": "2026-11-15T15:33:37.848Z",
       "situacao": "liberado"
     },
     "FIS-CP-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "61ffc6f0005633ff423214ba2a93efe0b561fca4790008267ac086360f465676",
+      "hash": "f5ddf9028296c6dcc60e97055fa2bf9421e1a5a6c8f7c73da4de82e27c751425",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.661Z",
+      "atualizado_em": "2026-11-15T15:33:37.857Z",
       "situacao": "liberado"
     },
     "FIS-CP-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "f41679b34195f0bb286c8446a82240709ea2693c5c12eb978518140d443bcb8a",
+      "hash": "112d9bbc0e58a2c78ac1feb56873d04e976460593e9a49ac7a98d32011366bff",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.662Z",
+      "atualizado_em": "2026-11-15T15:33:37.864Z",
       "situacao": "liberado"
     },
     "FIS-CP-006": {
@@ -835,9 +839,9 @@
     "FIS-FIG-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "7b6cf40c35314d33123ccef8a39b0c6eb433c73b234fb2fcce51a8b92b8a5d08",
+      "hash": "0b537cd0cab52342bddb27c8445d737761279609486b599566de7f13776a4e4a",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.673Z",
+      "atualizado_em": "2026-11-15T15:33:37.872Z",
       "situacao": "liberado"
     },
     "FIS-FIG-002": {
@@ -851,25 +855,25 @@
     "FIS-FIG-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "9bbd9734832a2d15fe3b74f5a9a138450655fa80d2cdade56f2ea4d104c52baa",
+      "hash": "81f9ad616514f0d5e8cff5b6c5d1782508192e83296fcff62838551ce5301493",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.676Z",
+      "atualizado_em": "2026-11-15T15:33:37.883Z",
       "situacao": "liberado"
     },
     "FIS-FIG-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "24c5155fc2fcdfab0463a429668a82f5a01e8982841d2c8792ef7d93a4615082",
+      "hash": "4cb4131092abba71d3ce3d28121ebf3cc503b7a97799c53f3ec346aebba46144",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.677Z",
+      "atualizado_em": "2026-11-15T15:33:37.891Z",
       "situacao": "liberado"
     },
     "FIS-FIG-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "ba00e1fdf0f019be146429c8d99f8f56ef00aa11717269538fa1667fd98bb698",
+      "hash": "a4ebe457c85e2d9db74d6d5d8e1f7acba8419b325fe2e72ec6500faed087bb6b",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.679Z",
+      "atualizado_em": "2026-11-15T15:33:37.899Z",
       "situacao": "liberado"
     },
     "FIS-FIG-006": {
@@ -891,9 +895,9 @@
     "FIS-FIG-008": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "b933bb0bcbd85b3e874688fb2fd8d215695b188d8cebf045d144765365beb972",
+      "hash": "2b53e70939989c53bc326af646f9fa37db2cc01e74fab75ad1242623e9e60887",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.684Z",
+      "atualizado_em": "2026-11-15T15:33:37.907Z",
       "situacao": "liberado"
     },
     "FIS-FIG-009": {
@@ -915,9 +919,9 @@
     "FIS-MP-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "332d931cbf027007de69e55c179e569884328a1c92e9a1c085c178cae6658228",
+      "hash": "658b060e92533c22280c4cb96981f7515253eed062a5329f129371afadf591cf",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.689Z",
+      "atualizado_em": "2026-11-15T15:33:37.915Z",
       "situacao": "liberado"
     },
     "FIS-MP-002": {
@@ -939,17 +943,17 @@
     "FIS-MP-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "ee696070604c4a22635ef0fc187a77effe0ab61b0984f6835dfab1a7b9fe2a1f",
+      "hash": "0e0e16529fbd75b02424104641202605536a41bcf10beb24c077fc9a11ac6581",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.694Z",
+      "atualizado_em": "2026-11-15T15:33:37.923Z",
       "situacao": "liberado"
     },
     "FIS-MP-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "6fc26ff96d7b92a837a2db9f662e2c2c4d4c5bb09b38de4ddd626d41c0fcc211",
+      "hash": "97c42ea2d622e3386e3a9d6fe8d267b6fb2507c1641b43b4dda7cc80feb6aef3",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.696Z",
+      "atualizado_em": "2026-11-15T15:33:37.931Z",
       "situacao": "liberado"
     },
     "FIS-MP-006": {
@@ -963,25 +967,25 @@
     "FIS-MP-007": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "40f69fdb91e0efebb0329607291e6d910b95f10d3a5d522be6da24a4b21df8b0",
+      "hash": "99756ea3e5038b8bbef62ea1c2da240d9a11a2e79f955b409ea9263dff779c97",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.699Z",
+      "atualizado_em": "2026-11-15T15:33:37.940Z",
       "situacao": "liberado"
     },
     "FIS-MP-008": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "5c62b4ae6267d1a1ce812b97e71cd5350b588f5e46ec6529040501b9c79a431b",
+      "hash": "dc5c6a0eab423cb989658ae080b4a6f97e20cdec7fcc83c4dec905d916898585",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.701Z",
+      "atualizado_em": "2026-11-15T15:33:37.948Z",
       "situacao": "liberado"
     },
     "FIS-MP-009": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "b40b81c62d55342c86c642978b8614baddc92ad046f89ecc817346a0e197ca41",
+      "hash": "76c89a40e52bf7832bbfb36d0bb1d46f9498323abdd6ba1375a1c7b4fa074fa4",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.703Z",
+      "atualizado_em": "2026-11-15T15:33:37.955Z",
       "situacao": "liberado"
     },
     "FIS-MP-010": {
@@ -995,9 +999,9 @@
     "FIS-WEL-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "f7f941e1dad37cf6c6a03231620724b33a760f3100cdca37cd049fb05e91bde5",
+      "hash": "3ba1b27d587fdf0a2fc278f145e363fc08536ef30eb3c943a598a5aacfdf4976",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.707Z",
+      "atualizado_em": "2026-11-15T15:33:37.964Z",
       "situacao": "liberado"
     },
     "FIS-WEL-002": {
@@ -1019,17 +1023,17 @@
     "FIS-WEL-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "ea07ad4a7165de4d6157bc7c3f1da1daa6ba8fbeee36f6dbe268a9b7bfab70d5",
+      "hash": "98bbdc80d8f540195d1900e24bdd4758770bbab876d161c6f0b5707d4889fa73",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.712Z",
+      "atualizado_em": "2026-11-15T15:33:37.972Z",
       "situacao": "liberado"
     },
     "FIS-WEL-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "df2bd7cdf9051d1b4c5d8529158cc9e5df09d6226759c043994fa71add5998f7",
+      "hash": "92972c6a1a01909cb8818f5f1f78be96bfc6ac12efe9fb272a448a3493674962",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.714Z",
+      "atualizado_em": "2026-11-15T15:33:37.981Z",
       "situacao": "liberado"
     },
     "FIS-WEL-006": {
@@ -1043,9 +1047,9 @@
     "FIS-WEL-007": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "3e3c45f591df85df7db64b88d77635d81f2bcd7f1885c578935125011ecaaed7",
+      "hash": "85bf0975703d9107264da5212397e5aec0f0eb17a1c4a05406af0ebd7c09a207",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.717Z",
+      "atualizado_em": "2026-11-15T15:33:37.989Z",
       "situacao": "liberado"
     },
     "FIS-WEL-008": {
@@ -1075,9 +1079,9 @@
     "GAS-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "20464ff5ccabca2955d19d82230bac97987d15a4172e1f08b6c340d1fe787a8e",
+      "hash": "94ff6ecf51651392dc0bdf6cb93bef212bb7a6324d8bdaeac8cb82f2ff236764",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.725Z",
+      "atualizado_em": "2026-11-15T15:33:37.996Z",
       "situacao": "liberado"
     },
     "GAS-002": {
@@ -1091,25 +1095,25 @@
     "GAS-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "7bf6220c0eda23841e569296bef8e909d83faba060e407e9c5bf2cf3902cc5ce",
+      "hash": "3c2a6613e774dd2ab0d83da3fcec6ddc6b70736829b9c2475d486d2f7d64ce21",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.728Z",
+      "atualizado_em": "2026-11-15T15:33:38.003Z",
       "situacao": "liberado"
     },
     "GAS-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "6a98af6c27fab00818dd2aaaa35f6e93e94b4e0f1f946b20e438e843ec52c468",
+      "hash": "9a614d9ac6b2e7bb3875ddcfc6fc6a75c6fa4371807073150300769af7bb099d",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.730Z",
+      "atualizado_em": "2026-11-15T15:33:38.012Z",
       "situacao": "liberado"
     },
     "GAS-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "3da84d75da4ad41b2b9b25b58379a93b808685d3e2fd96b8dc1faffc900cfd13",
+      "hash": "1f6cf235b1f27d77c09f87f030b966b6d21bd0b38ce5f04fb6bbe1cf5bf64cc1",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.732Z",
+      "atualizado_em": "2026-11-15T15:33:38.020Z",
       "situacao": "liberado"
     },
     "GAS-006": {
@@ -1131,17 +1135,17 @@
     "GAS-008": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "504b6e3cd646d73dcdf6da0731e41388b97e549de35c606e472b5cc21a3bb5be",
+      "hash": "34984f652ffb7e614715087d0ec19d7e67ae74d92e68fe5ec5f6c5bffe8be48a",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.738Z",
+      "atualizado_em": "2026-11-15T15:33:38.028Z",
       "situacao": "liberado"
     },
     "HIP-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "284c7fbf6b53daf1cf9f3fe02f93ccab37c25471f46b77581d6d41ea40cee916",
+      "hash": "7e882e9e5dddaa7ff3ebb169c52d473bfe43e220d0904e56621ca893fdfa4612",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.740Z",
+      "atualizado_em": "2026-11-15T15:33:38.036Z",
       "situacao": "liberado"
     },
     "HIP-002": {
@@ -1155,25 +1159,25 @@
     "HIP-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "170c59b7dab80f8ded94447036731028dfaa90e6394db7a18003a4038add7fdc",
+      "hash": "b6a826c4661935f16edc0adb405b523839971ac0235e3efe9ea9c327fa7d078b",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.744Z",
+      "atualizado_em": "2026-11-15T15:33:38.043Z",
       "situacao": "liberado"
     },
     "HIP-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "1f5e27ee9205e4622b735625c23c90e9f24ab92d9caa9b22951c66545f5c8cfe",
+      "hash": "c461bef4da138c4829b80cd4136d52fad17007fc70a51a9270d75a6228c568c5",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.746Z",
+      "atualizado_em": "2026-11-15T15:33:38.050Z",
       "situacao": "liberado"
     },
     "HIP-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d7aca3896d3871522884f8b69c8a555a4dc12569d8ae355ba5454c67c7fd4597",
+      "hash": "a2b9773c61e663d6ffb394666ba9fcd0834e8eb677344aaeed823a9019895d04",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.748Z",
+      "atualizado_em": "2026-11-15T15:33:38.057Z",
       "situacao": "liberado"
     },
     "HIP-006": {
@@ -1235,9 +1239,9 @@
     "HIP-013": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "7f7d6ed375f31a5f31e64614f3d08721540588b08534e88a4864fb35a426907e",
+      "hash": "4d72f6e8d59d4fb85e3f569f77db97277b403bb80bf5956f0373b6c8fd18f690",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.762Z",
+      "atualizado_em": "2026-11-15T15:33:38.064Z",
       "situacao": "liberado"
     },
     "HIP-014": {
@@ -1267,9 +1271,9 @@
     "HIP-017": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d8fd8b0efc9a87c2f2c31c26e7b9bd9fbd7319a203b6ab5ad805fa1f4213c21b",
+      "hash": "c40da101844cdc5c3ae4498113681b9c143326bc889f1eb2bcc122ccc4fe2df4",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.770Z",
+      "atualizado_em": "2026-11-15T15:33:38.072Z",
       "situacao": "liberado"
     },
     "HIP-018": {
@@ -1323,9 +1327,9 @@
     "IDA-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "bee36f796eaa0fface5fd20ff1b0a5df91f583d584b253609cc9c76b235a28ca",
+      "hash": "6f0c77ac18328f9ef4d783f4ed51930bce5137460913c666ffacf9caece4a819",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.782Z",
+      "atualizado_em": "2026-11-15T15:33:38.080Z",
       "situacao": "liberado"
     },
     "IDA-002": {
@@ -1339,33 +1343,33 @@
     "IDA-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "9dee652085effb824cf40107439fca57b67629733b8b662c1462e3bd7b991420",
+      "hash": "f649360d0cfd7438a791516b99a6bf63a928736c098c0075a1c1e2ba449343db",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.788Z",
+      "atualizado_em": "2026-11-15T15:33:38.088Z",
       "situacao": "liberado"
     },
     "IDA-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "91cc29c05533c76ba993bbdcce5f2138a3a1d03b93f4ae2a6507fe5bb2cd35e0",
+      "hash": "a8fbe93b3dfc3fcc98142d956e26f488f3d775cd22e3fc1bd1ca68b75e16cfda",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.790Z",
+      "atualizado_em": "2026-11-15T15:33:38.096Z",
       "situacao": "liberado"
     },
     "IDA-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "b74427132b3aff3b639c20749f215cd992960519e9c0d00aa45b7cf3b950ce7e",
+      "hash": "47f74901b025b37623cfef3a3cd171609d6a6f48e1434247bd92e1defe66b427",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.792Z",
+      "atualizado_em": "2026-11-15T15:33:38.106Z",
       "situacao": "liberado"
     },
     "MAN-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "476f134767e1e83466ee2b519d2d93a26e2a0d32573445420e8356383722f9b4",
+      "hash": "1bf8305f3c508878b2d6e1b7ae31a421f33de4574b795403d1213a380bd9a758",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.793Z",
+      "atualizado_em": "2026-11-15T15:33:38.114Z",
       "situacao": "liberado"
     },
     "MAN-002": {
@@ -1379,33 +1383,33 @@
     "MAN-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "544ee06f384302c58a95ce7518b5e64608ed8108916acb99dc88d6324a892960",
+      "hash": "42d329242f5f6e15ec6581f10cc2dee197d196d3c40bfc37c54bf8aaaca2bd8c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.797Z",
+      "atualizado_em": "2026-11-15T15:33:38.121Z",
       "situacao": "liberado"
     },
     "MAN-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "7bb98822e39673796115f217529a6f896f809ff076a7435725ddac1491e7d4aa",
+      "hash": "4275f4ec3f1a926f1223b5f1fe2bd70345190ba52be1d2c7a7a44e8358497274",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.799Z",
+      "atualizado_em": "2026-11-15T15:33:38.130Z",
       "situacao": "liberado"
     },
     "MAN-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "ba37d5afbb4063cdd3860f6c37021d4368fd83be5ff59595f81d35ab101f3d65",
+      "hash": "2b012ce5bd194f1a6e963f22ff9be7bc01d718b2b5149852b09f8d20fe563d1d",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.801Z",
+      "atualizado_em": "2026-11-15T15:33:38.137Z",
       "situacao": "liberado"
     },
     "MET-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "8357a4f7c07c18c4128dd6127eeabfcc3a9b3355db9a89c38ce528d668c5ff6e",
+      "hash": "f3e4f023843ccd39d5a90dfce8188e1ecab976662163de2b0be798ccc490e65e",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.803Z",
+      "atualizado_em": "2026-11-15T15:33:38.146Z",
       "situacao": "liberado"
     },
     "MET-002": {
@@ -1419,25 +1423,25 @@
     "MET-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "e20f9b4c3aa7f5acc1bd279cbcec0dd0b4c11c944acf532158fac846f07926d4",
+      "hash": "1d18aa6b2bec6ea6fe24415d5b061e453acd5c4e8b44ec9f93cb614716383e08",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.806Z",
+      "atualizado_em": "2026-11-15T15:33:38.153Z",
       "situacao": "liberado"
     },
     "MET-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "14e07fe41c8e4106ce018eaddec6d43973b5f29cf84f2a935f5af812eaf2cad7",
+      "hash": "c847efc4ae6cde5036d85511392ec002dd0e757adbda4d3e6409f38993d2b3df",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.808Z",
+      "atualizado_em": "2026-11-15T15:33:38.163Z",
       "situacao": "liberado"
     },
     "MET-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "d69f4ce505c6e23ecae2d582009d43a88ff4076153d9db0426a54a6de2e7598f",
+      "hash": "36248ef12b187d350915555d2e4f501e42fd68dca311c1b9bee811fdebf3bd1e",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.809Z",
+      "atualizado_em": "2026-11-15T15:33:38.170Z",
       "situacao": "liberado"
     },
     "MET-006": {
@@ -1459,17 +1463,17 @@
     "MET-008": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "867e4b54b98d78e0f5e804b5910dcf478629ad4098386f6d50a1d1c31216bf20",
+      "hash": "ed6cb0ab6ea26198b801d7143196ec3900e3978b842418684bae6c9074bfcfcb",
       "avisos": 1,
-      "atualizado_em": "2026-11-14T23:36:17.814Z",
+      "atualizado_em": "2026-11-15T15:33:38.180Z",
       "situacao": "liberado"
     },
     "MET-009": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "75926f35ce9982f1722d09077f416b8844ad18e9a8658689c82fd3cecb6650a3",
+      "hash": "9fd156f7da59ac7d60f181f4a0825153bd3d646c57b9c20c744425bba75c8878",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.816Z",
+      "atualizado_em": "2026-11-15T15:33:38.188Z",
       "situacao": "liberado"
     },
     "MET-010": {
@@ -1483,9 +1487,9 @@
     "MUL-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "17eb5f1ce2a81825790c769c2f955715a140162ce7472c1fb21e759b7b7d359e",
+      "hash": "3449f40c7c516da98f2c9f241dd13ccbfd644b4f81a7b3699f8c42c101596c45",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.820Z",
+      "atualizado_em": "2026-11-15T15:33:38.196Z",
       "situacao": "liberado"
     },
     "MUL-002": {
@@ -1499,57 +1503,57 @@
     "MUL-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "1289715c1af395e18a7c49f2631489832983059596523115c229a3016096655b",
+      "hash": "db5831274cf083defd1c519d49e1fcadffd00c3a83144f96abd0b380dbabe451",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.823Z",
+      "atualizado_em": "2026-11-15T15:33:38.203Z",
       "situacao": "liberado"
     },
     "MUL-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "df7fd90791d5ab5c0b02362679ce7cb7e8604ae395d1fb31b3dcb53651b02418",
+      "hash": "ae38ae011bb457c33042ae699b27a4aec62515577fb821181e514cfce5960645",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.825Z",
+      "atualizado_em": "2026-11-15T15:33:38.212Z",
       "situacao": "liberado"
     },
     "MUL-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "31aaf5475fb19304b20a6af6297d7484deccca40bccc18b2356f825c6d503f6d",
+      "hash": "abcc02e955e480454e1babc2e59e99dd6f50e0c9111646d5c67651b67c06ca6e",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.827Z",
+      "atualizado_em": "2026-11-15T15:33:38.220Z",
       "situacao": "bloqueado"
     },
     "MUL-006": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "651e998d8d500239c9a5cae5b9ecbe76f9c98c1c2b932fe3c4a315e371ea22fb",
+      "hash": "2cd1a8c48a6fe6535e90797ed6120c8b0778c6e6ea19761bc1f80be4e731d91f",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.828Z",
+      "atualizado_em": "2026-11-15T15:33:38.230Z",
       "situacao": "bloqueado"
     },
     "MUL-007": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "45b9d1f9f894b227f2438f22b50c958603cef7f917c22daa6e61f8638386d4d9",
+      "hash": "1b358d2ed4c1decfa7ea886105f377b9b98183e586c5b5d0a872aa19eb67b014",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.830Z",
+      "atualizado_em": "2026-11-15T15:33:38.237Z",
       "situacao": "bloqueado"
     },
     "MUL-008": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "042bc0c183bfa912793dbf3e3d23d8b1860ed58465191df75b3b9f1bdb805089",
+      "hash": "dc494f5a98112adfdd8e57f578e3ab9e958b07effef63b73c06c649af59bec0c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.831Z",
+      "atualizado_em": "2026-11-15T15:33:38.246Z",
       "situacao": "bloqueado"
     },
     "MUL-009": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": true,
-      "hash": "55f64624d5f58bd47b36e23f311ceb624000a3bc3efb8aa4afce468a26c7aa10",
+      "hash": "1607bb3f183a478421707a060c40941e752f634213bbc6b7646d61f51f1d82dd",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.833Z",
+      "atualizado_em": "2026-11-15T15:33:38.254Z",
       "situacao": "bloqueado"
     },
     "MUS-001": {
@@ -1715,9 +1719,9 @@
     "ROT-001": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "05e3627309f23bc2832a3cddfd00b7f4a652109b3fc9f5c2cd30ffb100f2d88a",
+      "hash": "fe17b254f9078cca99ba9b601e2dcdbcaf3f923abd84d3127826dfde29ef194c",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.869Z",
+      "atualizado_em": "2026-11-15T15:33:38.262Z",
       "situacao": "liberado"
     },
     "ROT-002": {
@@ -1731,33 +1735,33 @@
     "ROT-003": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "81b7d93de7bc62ef44b2cd2e82cd1d5b73071e8e3975ee393663b5010c503659",
+      "hash": "641e29fef71bf0e45f9ef540ea12066a13e22d6c80bdb47f9675c373e4889882",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.873Z",
+      "atualizado_em": "2026-11-15T15:33:38.269Z",
       "situacao": "liberado"
     },
     "ROT-004": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "8d1599540cd05df4a1c5fb15bb29c91589e039c8085c5bcc045de2c43ac0b1b4",
+      "hash": "df3b131b03cffb544c440003654932461d6f0742ddd6f839857d10e17204da8b",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.874Z",
+      "atualizado_em": "2026-11-15T15:33:38.277Z",
       "situacao": "liberado"
     },
     "ROT-005": {
       "status": "importado_homologacao",
       "bloqueio_clinico_original": false,
-      "hash": "1cb543a723d4c507ce609169dcd6636b36435c2d02182df7c80897d4993a4728",
+      "hash": "ddc9c40528b3a9e952645ddb0c9e6d1e04c8c90c6e9e11a4fee18d58f58e3e99",
       "avisos": 0,
-      "atualizado_em": "2026-11-14T23:36:17.876Z",
+      "atualizado_em": "2026-11-15T15:33:38.284Z",
       "situacao": "liberado"
     }
   },
   "ultimo_lote": {
-    "nome": "fases 2 a 4: 161 dietas liberadas, 40 treinos, 15 bloqueados",
-    "em": "2026-11-14"
+    "nome": "15/11: leite desnatado UHT completado (88 dietas reajustadas e reimportadas), observações do aluno em corrida/ciclismo (20 reimportados), ajuste dos 4 protegidos preparado",
+    "em": "2026-11-15"
   },
   "proximo_lote": null,
-  "producao_autorizada": false,
-  "situacao_geral": "216 modelos novos validados e importados na base local (15 bloqueados) + 4 protegidos existentes na produção = 220. Produção: aguardando autorização expressa."
+  "producao_autorizada": true,
+  "situacao_geral": "216 modelos novos validados e importados na base local (15 bloqueados) + 4 protegidos com ajuste preparado = 220. Produção: autorizada pelo nutricionista em 15/11 (resposta 6); execução a combinar com o usuário, depois do deploy da 038."
 }

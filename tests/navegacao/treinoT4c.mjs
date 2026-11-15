@@ -3,7 +3,8 @@
 // as zonas (Coggan no ciclismo), envia ao aluno; o aluno vê as sessões da
 // semana no "Meu treino" e registra a partir delas. Confere os totais
 // corrigidos dos mockups (34 km; 230 km, TSS 415, 2.150 m), PDF, IA
-// simulada, importação, modelos e permissões.
+// simulada, importação, modelos e permissões. Observações gerais da planilha
+// (15/11) no editor, no Meu treino e no PDF; precisa do pypdf (LEIA-ME.md).
 // Ver LEIA-ME.md para rodar (com --limpar).
 import { chromium } from "playwright-core";
 import { execSync } from "node:child_process";
@@ -130,6 +131,13 @@ conferir("zonas salvas", sql(`select zonas->'fc'->1->>'min' || '|' || (zonas->'r
 await e.pagina.getByRole("tab", { name: /Planilha semanal/ }).click();
 await e.pagina.waitForTimeout(800);
 
+// Observações gerais da planilha (resposta 5 do nutricionista, 15/11).
+await e.pagina.locator('section[aria-label="Observações do treino"]').getByRole("button", { name: "Observação", exact: true }).click();
+await e.pagina.getByLabel("Título da observação 1").fill("Hidratação no treino");
+await e.pagina.getByLabel("Texto da observação 1").fill("Leve água nos treinos acima de 45 minutos.");
+await e.pagina.waitForTimeout(3000);
+conferir("observação da planilha gravada no rascunho", sql(`select plano->'observacoes'->0->>'titulo' from treino_prescricoes where programa_id = '${CORRIDA}' and status = 'rascunho';`) === "Hidratação no treino", null);
+
 // Enviar.
 await e.pagina.getByRole("button", { name: "Enviar ao paciente" }).click();
 await e.pagina.waitForTimeout(800);
@@ -174,6 +182,13 @@ for (const [id, nome] of [[CORRIDA, "corrida"], [CICLISMO, "ciclismo"]]) {
   const pdf = await api(e.pagina, `/api/treino/programas/${id}/pdf?versao=1&detalhado=1`);
   conferir(`PDF detalhado da ${nome}`, pdf.status === 200 && pdf.tipo.includes("pdf"), pdf.status);
 }
+const pdfCorrida = await e.pagina.evaluate(async (id) => {
+  const r = await fetch(`/api/treino/programas/${id}/pdf?versao=1`);
+  return Array.from(new Uint8Array(await r.arrayBuffer()));
+}, CORRIDA);
+fs.writeFileSync(path.join(PASTA, "t4c-corrida.pdf"), Buffer.from(pdfCorrida));
+const textoPdf = execSync(`python -c "import sys,pypdf; print(chr(10).join(p.extract_text() for p in pypdf.PdfReader(sys.argv[1]).pages))" "${path.join(PASTA, "t4c-corrida.pdf")}"`, { encoding: "utf8", env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+conferir("PDF da corrida traz as observações do treino", textoPdf.includes("Observações do treino") && textoPdf.includes("Hidratação no treino"), textoPdf.slice(-400));
 const ia = await api(e.pagina, `/api/treino/programas/${CORRIDA}/ia`, "POST", { pedido: "4 semanas de base" });
 conferir("IA sugere planilha de corrida (sem TSS), com avisos", ia.status === 200 && ia.corpo.sugestao.plano.semanas[0].sessoes.length === 2 && ia.corpo.sugestao.avisos.length > 0, ia);
 const importado = await e.pagina.evaluate(async (id) => {
@@ -200,10 +215,13 @@ const situacao = await api(a.pagina, "/api/area-paciente/treino/atividades");
 const planejadas = situacao.corpo.planejadas;
 conferir("aluno vê as sessões de corrida e ciclismo desta semana", planejadas.filter((p) => p.modalidade === "corrida").length === 2 && planejadas.filter((p) => p.modalidade === "ciclismo").length === 5, planejadas.map((p) => [p.modalidade, p.dia]));
 conferir("aluno não recebe as notas privadas", !JSON.stringify(situacao.corpo).includes("nota privada"), null);
+const orientacoes = situacao.corpo.orientacoes ?? [];
+conferir("aluno recebe as observações da planilha de corrida (sem vínculo do catálogo)", orientacoes.length === 1 && orientacoes[0].modalidade === "corrida" && orientacoes[0].observacoes[0].texto.includes("45 minutos") && !("modeloId" in orientacoes[0].observacoes[0]), orientacoes);
 const deDomingo = planejadas.find((p) => p.modalidade === "corrida" && p.dia === "dom");
 await a.pagina.goto(`${B}/area-paciente/treino`, { waitUntil: "networkidle" });
 await a.pagina.waitForTimeout(1500);
 conferir("Meu treino mostra o planejado da semana", (await a.pagina.getByText("Planejado para esta semana").count()) === 1, null);
+conferir("Meu treino mostra as observações do treino de corrida", (await a.pagina.getByText("Observações do treino de corrida").count()) === 1 && (await a.pagina.getByText("Leve água nos treinos acima de 45 minutos.").count()) === 1, null);
 await a.pagina.screenshot({ path: path.join(PASTA, "t4c-aluno.png"), fullPage: true });
 const registro = await api(a.pagina, "/api/area-paciente/treino/atividades", "PUT", {
   chave_cliente: crypto.randomUUID(),

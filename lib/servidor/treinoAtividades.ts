@@ -1,5 +1,5 @@
 import { hojeNoBrasil, somarDias } from "@/lib/cronograma";
-import { domingoDaSemana } from "@/lib/treino";
+import { domingoDaSemana, type ObservacaoDoTreino } from "@/lib/treino";
 import { ALERTA_TENIS_PADRAO_KM, CATEGORIAS_DE_BICICLETA, validarAtividade, type Atividade, type Consumo, type Equipamento } from "@/lib/treinoAtividades";
 import {
   ordenarSessoesDaSemana,
@@ -305,7 +305,7 @@ const DESDE_DOMINGO: Record<string, number> = { dom: 0, seg: 1, ter: 2, qua: 3, 
 // Planilhas vigentes (a versão publicada mais recente de cada modalidade) e
 // as sessões da semana da data. O aluno não recebe notas nem a Opção oculta.
 // Sem as planilhas dos profissionais com o plano vencido (T8, S2).
-export async function sessoesPlanejadas(patientId: string, hoje = hojeNoBrasil(), bloqueados: string[] = []): Promise<SessaoPlanejada[]> {
+async function planilhasVigentes(patientId: string, bloqueados: string[]) {
   const r = await obterPool().query<{ id: string; modalidade: ModalidadeEndurance; titulo: string | null; plano: PlanoEndurance }>(
     `select distinct on (modalidade) id, modalidade, titulo, plano from public.treino_prescricoes
       where patient_id = $1 and status = 'publicada' and modalidade in ('corrida', 'ciclismo') and arquivada_em is null
@@ -313,8 +313,26 @@ export async function sessoesPlanejadas(patientId: string, hoje = hojeNoBrasil()
       order by modalidade, publicada_em desc, criada_em desc`,
     [patientId, bloqueados]
   );
+  return r.rows;
+}
+
+export type OrientacoesDaPlanilha = { prescricao_id: string; modalidade: ModalidadeEndurance; titulo: string | null; observacoes: ObservacaoDoTreino[] };
+
+// Observações gerais das planilhas vigentes cujo ciclo inclui a data
+// (resposta 5 do nutricionista, 15/11), com as mesmas regras de bloqueio.
+export async function orientacoesDasPlanilhas(patientId: string, hoje = hojeNoBrasil(), bloqueados: string[] = []): Promise<OrientacoesDaPlanilha[]> {
+  const lista: OrientacoesDaPlanilha[] = [];
+  for (const p of await planilhasVigentes(patientId, bloqueados)) {
+    if (semanaDoCiclo(p.plano, hoje) === null) continue;
+    const { observacoes } = planoEnduranceParaAluno(p.plano);
+    if (observacoes?.length) lista.push({ prescricao_id: p.id, modalidade: p.modalidade, titulo: p.titulo, observacoes });
+  }
+  return lista;
+}
+
+export async function sessoesPlanejadas(patientId: string, hoje = hojeNoBrasil(), bloqueados: string[] = []): Promise<SessaoPlanejada[]> {
   const lista: SessaoPlanejada[] = [];
-  for (const p of r.rows) {
+  for (const p of await planilhasVigentes(patientId, bloqueados)) {
     const semana = semanaDoCiclo(p.plano, hoje);
     if (semana === null) continue;
     const plano = planoEnduranceParaAluno(p.plano);
