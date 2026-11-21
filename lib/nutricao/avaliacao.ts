@@ -910,6 +910,12 @@ export const PERIMETRIA = {
   braco_esquerdo: "Braço esquerdo relaxado",
   coxa_direita: "Coxa direita medial",
   coxa_esquerda: "Coxa esquerda medial",
+  // Opcionais (nutricionista, 21/11/2026): coleta no maior perímetro. Não
+  // determinam sozinhos gordura ou músculo; ausentes continuam ausentes.
+  antebraco_direito: "Antebraço direito (maior perímetro)",
+  antebraco_esquerdo: "Antebraço esquerdo (maior perímetro)",
+  panturrilha_direita: "Panturrilha direita (maior perímetro)",
+  panturrilha_esquerda: "Panturrilha esquerda (maior perímetro)",
 } as const;
 
 export type Regiao = keyof typeof PERIMETRIA;
@@ -934,7 +940,26 @@ export const SETAS_PERIMETRIA: Record<Regiao, [number, number, number, number]> 
   braco_esquerdo: [480, 432, 498, 7],
   coxa_direita: [880, 150, 272, 8],
   coxa_esquerda: [880, 290, 412, 9],
+  antebraco_direito: [595, 30, 132, 10],
+  antebraco_esquerdo: [595, 404, 512, 11],
+  panturrilha_direita: [1140, 108, 238, 12],
+  panturrilha_esquerda: [1140, 306, 420, 13],
 };
+
+/** Perímetros opcionais: só aparecem (tabelas e figura) quando há valor. */
+export const PERIMETRIA_OPCIONAL: readonly Regiao[] = ["antebraco_direito", "antebraco_esquerdo", "panturrilha_direita", "panturrilha_esquerda"];
+
+/**
+ * Regiões exibidas: as fixas e, dos opcionais, o par (direito e esquerdo)
+ * que tiver valor em alguma das perimetrias informadas. Avaliações sem esses
+ * campos continuam com a mesma tabela e a mesma figura de antes.
+ */
+export function regioesDaPerimetria(perimetrias: (Partial<Record<Regiao, number | null>> | null | undefined)[]): Regiao[] {
+  const comValor = (k: Regiao) => perimetrias.some((p) => typeof p?.[k] === "number" && (p[k] as number) > 0);
+  const pares: [Regiao, Regiao][] = [["antebraco_direito", "antebraco_esquerdo"], ["panturrilha_direita", "panturrilha_esquerda"]];
+  const opcionais = new Set(pares.filter(([a, b]) => comValor(a) || comValor(b)).flat());
+  return (Object.keys(PERIMETRIA) as Regiao[]).filter((k) => !PERIMETRIA_OPCIONAL.includes(k) || opcionais.has(k));
+}
 
 // Recorte da figura usado na tela e no PDF (x, y, largura, altura).
 export const RECORTE_SILHUETA = [20, 150, 520, 1300] as const;

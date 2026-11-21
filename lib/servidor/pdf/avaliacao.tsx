@@ -14,6 +14,7 @@ import {
   PROTOCOLOS_TMB,
   RECORTE_SILHUETA,
   SETAS_PERIMETRIA,
+  regioesDaPerimetria,
   dobrasDoProtocolo,
   evolucaoDaRegiao,
   faixaDoNaf,
@@ -122,7 +123,7 @@ function Avatares({ sexo, indice, largura = LARGURA }: { sexo: Sexo; indice: num
 }
 
 // Figura de frente com as setas da perimetria (mesmas posições e cores da tela).
-function AvatarPerimetria({ sexo, evolucoes, largura }: { sexo: Sexo; evolucoes: Record<Regiao, Evolucao>; largura: number }) {
+function AvatarPerimetria({ sexo, evolucoes, largura, regioes }: { sexo: Sexo; evolucoes: Record<Regiao, Evolucao>; largura: number; regioes: Regiao[] }) {
   const [x0, y0, w0, h0] = RECORTE_SILHUETA;
   const escala = largura / w0;
   const altura = h0 * escala;
@@ -133,7 +134,7 @@ function AvatarPerimetria({ sexo, evolucoes, largura }: { sexo: Sexo; evolucoes:
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <Image src={arquivo} style={{ position: "absolute", left: -x0 * escala, top: -y0 * escala, width: 1024 * escala, height: 1536 * escala }} />
       <Svg viewBox={RECORTE_SILHUETA.join(" ")} style={{ position: "absolute", left: 0, top: 0, width: largura, height: altura }}>
-        {(Object.keys(SETAS_PERIMETRIA) as Regiao[]).flatMap((regiao) => {
+        {regioes.flatMap((regiao) => {
           const [y, x1, x2] = SETAS_PERIMETRIA[regiao];
           const cor = CORES_EVOLUCAO[evolucoes[regiao]];
           return [
@@ -143,7 +144,7 @@ function AvatarPerimetria({ sexo, evolucoes, largura }: { sexo: Sexo; evolucoes:
           ];
         })}
       </Svg>
-      {(Object.keys(SETAS_PERIMETRIA) as Regiao[]).map((regiao) => {
+      {regioes.map((regiao) => {
         const [y, x1, x2, numero] = SETAS_PERIMETRIA[regiao];
         const d = 11;
         return (
@@ -235,7 +236,7 @@ export function DocumentoDaAvaliacao({ dados, identidade }: { dados: DadosDoPdfA
 
   const protocoloDobras = doc.dobras.protocolo && paciente.sexo ? PROTOCOLOS_DOBRAS[doc.dobras.protocolo].porSexo[paciente.sexo] : null;
   const sitios = doc.dobras.protocolo && paciente.sexo ? dobrasDoProtocolo(doc.dobras.protocolo, paciente.sexo, doc.dobras.versaoSlaughter) : [];
-  const regioes = Object.keys(PERIMETRIA) as Regiao[];
+  const regioes = regioesDaPerimetria([doc.perimetria, ...dados.historico.map((p) => p.perimetria)]);
   const evolucoes = Object.fromEntries(
     regioes.map((k) => [k, evolucaoDaRegiao(doc.perimetria[k], anteriores.map((p) => p.perimetria?.[k]))])
   ) as Record<Regiao, ReturnType<typeof evolucaoDaRegiao>>;
@@ -363,6 +364,7 @@ export function DocumentoDaAvaliacao({ dados, identidade }: { dados: DadosDoPdfA
               <AvatarPerimetria
                 sexo={paciente.sexo}
                 largura={100}
+                regioes={regioes}
                 evolucoes={Object.fromEntries(regioes.map((k) => [k, evolucoes[k].evolucao])) as Record<Regiao, Evolucao>}
               />
             ) : null}

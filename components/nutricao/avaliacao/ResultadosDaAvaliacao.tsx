@@ -15,6 +15,7 @@ import {
   PROTOCOLOS_DOBRAS,
   RECORTE_SILHUETA,
   SETAS_PERIMETRIA,
+  regioesDaPerimetria,
   dobrasDoProtocolo,
   evolucaoDaRegiao,
   type CampoBio,
@@ -53,7 +54,7 @@ const CORES = CORES_EVOLUCAO;
 const SETAS = SETAS_PERIMETRIA;
 const TEXTO_EVOLUCAO: Record<Evolucao, string> = { diminuiu: "diminuiu", aumentou: "aumentou", igual: "igual", sem_comparacao: "sem comparação" };
 
-function AvatarPerimetria({ sexo, evolucoes }: { sexo: Sexo; evolucoes: Record<Regiao, Evolucao> }) {
+function AvatarPerimetria({ sexo, evolucoes, regioes }: { sexo: Sexo; evolucoes: Record<Regiao, Evolucao>; regioes: Regiao[] }) {
   const imagem = sexo === "feminino" ? "/nutricao/avatares/silhueta-feminina.png" : "/nutricao/avatares/silhueta-masculina.png";
   return (
     <svg viewBox={RECORTE_SILHUETA.join(" ")} className="h-auto w-full max-w-[18rem]" role="img" aria-label="Avatar com a evolução da perimetria">
@@ -65,7 +66,7 @@ function AvatarPerimetria({ sexo, evolucoes }: { sexo: Sexo; evolucoes: Record<R
         ))}
       </defs>
       <image href={imagem} x="0" y="0" width="1024" height="1536" />
-      {(Object.keys(SETAS) as Regiao[]).map((regiao) => {
+      {regioes.map((regiao) => {
         const [y, x1, x2, numero] = SETAS[regiao];
         const ev = evolucoes[regiao];
         const cor = CORES[ev];
@@ -175,6 +176,7 @@ export default function ResultadosDaAvaliacao({
   const evolucoes = Object.fromEntries(
     (Object.keys(PERIMETRIA) as Regiao[]).map((k) => [k, evolucaoDaRegiao(doc.perimetria[k], anteriores.map((p) => p.perimetria?.[k])).evolucao])
   ) as Record<Regiao, Evolucao>;
+  const regioes = regioesDaPerimetria([doc.perimetria, ...dados.historico.map((p) => p.perimetria)]);
   const protocolo = doc.dobras.protocolo && paciente.sexo ? PROTOCOLOS_DOBRAS[doc.dobras.protocolo].porSexo[paciente.sexo] : null;
   const sitios = doc.dobras.protocolo && paciente.sexo ? dobrasDoProtocolo(doc.dobras.protocolo, paciente.sexo, doc.dobras.versaoSlaughter) : [];
   const camposBio = (Object.keys(CAMPOS_BIOIMPEDANCIA) as CampoBio[]).filter((k) => doc.bioimpedancia.valores[k] !== null && doc.bioimpedancia.valores[k] !== undefined);
@@ -292,10 +294,10 @@ export default function ResultadosDaAvaliacao({
         <section className="cartao p-4">
           <h2 className="mb-3 text-lg font-bold text-gray-900">Perimetria</h2>
           <div className="grid gap-4 sm:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-            {paciente.sexo ? <AvatarPerimetria sexo={paciente.sexo} evolucoes={evolucoes} /> : <p className="text-sm text-gray-500">Cadastre o sexo para ver o avatar.</p>}
+            {paciente.sexo ? <AvatarPerimetria sexo={paciente.sexo} evolucoes={evolucoes} regioes={regioes} /> : <p className="text-sm text-gray-500">Cadastre o sexo para ver o avatar.</p>}
             <table className="w-full self-start text-sm tabular-nums">
               <tbody>
-                {(Object.keys(PERIMETRIA) as Regiao[]).map((k) => {
+                {regioes.map((k) => {
                   const ev = evolucaoDaRegiao(doc.perimetria[k], anteriores.map((p) => p.perimetria?.[k]));
                   return (
                     <tr key={k} className="border-t border-gray-100">
@@ -352,7 +354,7 @@ export default function ResultadosDaAvaliacao({
               </tr>
             </thead>
             <tbody>
-              {(Object.keys(PERIMETRIA) as Regiao[]).map((k, i) => (
+              {regioes.map((k, i) => (
                 <tr key={k} className={i % 2 ? "bg-gray-50" : "bg-white"}>
                   <td className={`sticky left-0 px-3 py-1.5 text-gray-700 ${i % 2 ? "bg-gray-50" : "bg-white"}`}>{PERIMETRIA[k]}</td>
                   {historico.map((p) => (

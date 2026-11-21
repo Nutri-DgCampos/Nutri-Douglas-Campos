@@ -16,6 +16,7 @@ import {
   REGIOES,
   type Base,
   type Modelo,
+  type Segmento,
   type Vista,
 } from "./regioes.ts";
 
@@ -46,6 +47,23 @@ export function vetorDeCoeficientes(c: Coeficientes, nucleo: boolean): Float64Ar
     v[k] = valor;
   });
   return v;
+}
+
+/**
+ * Camada dos braços: o giro a partir do ombro é o maior que alguma faixa do
+ * tronco exigir para crescer sem passar pelo braço (somar os giros abriria
+ * os braços demais). Tronco diminuindo não gira o braço.
+ */
+export function aplicarGiro(campos: CamposDaVista, coef: Float64Array): Float64Array {
+  if (!campos.giros) return coef;
+  let giro = 0;
+  campos.bases.forEach((b, k) => {
+    const theta = campos.giros![b];
+    if (theta) giro = Math.max(giro, coef[k] * theta);
+  });
+  const novo = Float64Array.from(coef);
+  novo[campos.bases.indexOf("giroDoBraco")] = giro;
+  return novo;
 }
 
 // ------------------------------------------------------------- deformação
@@ -143,6 +161,7 @@ function gradeInversa(campos: CamposDaVista, coef: Float64Array): GradeInversa {
  * fonte; coordenadas normalizadas permitem usar a fonte grande ou a reduzida.
  */
 export function deformar(fonte: ImagemRGBA, campos: CamposDaVista, coef: Float64Array, largura: number, altura: number): ImagemRGBA {
+  coef = aplicarGiro(campos, coef);
   const saida = novaImagem(largura, altura);
   const entrada = fonte.dados, out = saida.dados;
   const W = fonte.largura, H = fonte.altura;
@@ -227,12 +246,6 @@ export function recortarCamada(modelo: Modelo, vista: Vista, camada: "pele" | "m
 /** Corpo (atrás) e braços (na frente) de uma mesma fonte. */
 export type CamadaSeparada = { corpo: ImagemRGBA; braco: ImagemRGBA };
 
-/**
- * Quanto o corpo é completado por baixo do braço, em pixels de referência:
- * só onde a fonte tinha pixel (o braço) e perto do corpo visível. Ao afinar
- * o braço aparece o tronco que estava atrás dele, e não o fundo.
- */
-const COMPLEMENTO_SOB_O_BRACO = 14;
 /** Erosão (px de referência) que separa braço e tronco onde só se tocam. */
 const EROSAO_DO_BRACO = 3;
 
@@ -263,7 +276,13 @@ function mascaraDoBraco(modelo: Modelo, vista: Vista, fonte: ImagemRGBA): Uint8A
   const W = fonte.largura, H = fonte.altura, d = fonte.dados;
   const sx = W / REF_LARGURA, sy = H / REF_ALTURA;
   const c = REGIOES[modelo][vista];
-  const poligono = rasterizar(c.protecaoBracos, W, H, sx, sy);
+  // O polígono do protótipo nem sempre cobre todo o braço (o antebraço passa
+  // da borda em alguns pontos, como as pontas dos dedos): usa-se o polígono
+  // dilatado em 14 px.
+  const original = rasterizar(c.protecaoBracos, W, H, sx, sy);
+  const afastamento = distanciaAoAlvo(original, W, H).distancia;
+  const poligono = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) poligono[i] = afastamento[i] <= 14 * sx ? 1 : 0;
   const erosao = EROSAO_DO_BRACO * sx;
   const transparente = new Uint8Array(W * H), foraDoBraco = new Uint8Array(W * H);
   for (let i = 0; i < W * H; i++) {
@@ -279,7 +298,25 @@ function mascaraDoBraco(modelo: Modelo, vista: Vista, fonte: ImagemRGBA): Uint8A
       const i = Math.round((y0 + (y1 - y0) * t) * sy) * W + Math.round((x0 + (x1 - x0) * t) * sx);
       if (nucleoBraco[i] > erosao && !braco[i]) { braco[i] = 1; pilha.push(i); }
     }
-  propagar(braco, pilha, (j) => nucleoBraco[j] > erosao, W);
+  // perto do eixo: braço e antebraço até 1,15 × a meia largura (o braço
+  // sobe 30% além do início, para levar a calota do ombro); a mão continua o
+  // antebraço por 70% do comprimento, com raio maior
+  const eixos: Segmento[] = [];
+  const n = c.eixosDosBracos.length / 2;
+  c.eixosDosBracos.forEach(([a, b, r], k) => {
+    const inicio: [number, number] = k < n ? [a[0] - (b[0] - a[0]) * 0.3, a[1] - (b[1] - a[1]) * 0.3] : a;
+    eixos.push([inicio, b, r * 1.15]);
+  });
+  for (const [a, b, r] of c.eixosDosBracos.slice(n)) eixos.push([b, [b[0] + (b[0] - a[0]) * 0.7, b[1] + (b[1] - a[1]) * 0.7], r * 2]);
+  const pertoDoEixo = (j: number) => {
+    const px = (j % W) / sx, py = Math.floor(j / W) / sy;
+    for (const [[x0, y0], [x1, y1], r] of eixos) {
+      const vx = x1 - x0, vy = y1 - y0, t = Math.max(0, Math.min(1, ((px - x0) * vx + (py - y0) * vy) / (vx * vx + vy * vy)));
+      if (Math.hypot(px - x0 - vx * t, py - y0 - vy * t) <= r) return true;
+    }
+    return false;
+  };
+  propagar(braco, pilha, (j) => nucleoBraco[j] > erosao && pertoDoEixo(j), W);
 
   const corpo = new Uint8Array(W * H);
   for (let i = 0; i < W * H; i++) if (!poligono[i] && !transparente[i]) { corpo[i] = 1; pilha.push(i); }
@@ -305,7 +342,7 @@ function mascaraDoBraco(modelo: Modelo, vista: Vista, fonte: ImagemRGBA): Uint8A
 export function prepararCamada(modelo: Modelo, vista: Vista, camada: "pele" | "musculo" | "gordura", imagem: ImagemRGBA): CamadaSeparada {
   const fonte = recortarCamada(modelo, vista, camada, imagem);
   const W = fonte.largura, H = fonte.altura, d = fonte.dados;
-  const sx = W / REF_LARGURA, sy = H / REF_ALTURA;
+  const sx = W / REF_LARGURA;
   const mascara = mascaraDoBraco(modelo, vista, fonte);
   const corpo = novaImagem(W, H), braco = novaImagem(W, H);
   const visivel = new Uint8Array(W * H);
@@ -314,18 +351,130 @@ export function prepararCamada(modelo: Modelo, vista: Vista, camada: "pele" | "m
     alvo[i * 4] = d[i * 4]; alvo[i * 4 + 1] = d[i * 4 + 1]; alvo[i * 4 + 2] = d[i * 4 + 2]; alvo[i * 4 + 3] = d[i * 4 + 3];
     if (!mascara[i] && d[i * 4 + 3] > 200) visivel[i] = 1;
   }
-  // Na isométrica o braço fica na frente das costas. Na pele, braço e tronco
-  // só se fundem na axila; abaixo dela há um vão, e completar o tronco ali
-  // deixaria uma faixa solta quando o tronco muda.
-  const ateY = vista === "iso" ? H : REGIOES[modelo][vista].tronco[0] * sy;
-  const { distancia, maisProximo } = distanciaAoAlvo(visivel, W, H);
-  const limite = COMPLEMENTO_SOB_O_BRACO * sx;
+  // Contorno do tronco escondido atrás do braço, por lado. A região é um
+  // intervalo contínuo de linhas: do topo do braço até a axila (mais uma
+  // folga). Abaixo da axila há vão e o contorno do tronco é visível; acima,
+  // ele é interpolado entre o ponto em que braço e tronco se encontram no
+  // topo e o contorno conhecido logo abaixo da axila, depois suavizado. O
+  // complemento ocupa até esse contorno, com borda esfumada, e quando o braço
+  // se afasta aparece a continuação do tronco, sem dentes nem recortes.
+  const c = REGIOES[modelo][vista];
+  const cx = Math.round(c.tronco[4] * sx), sy = H / REF_ALTURA;
+  const fimDoVisivel = (y: number, passo: 1 | -1) => {
+    let x = cx;
+    if (!visivel[y * W + x]) return -1;
+    while (x + passo >= 0 && x + passo < W && visivel[y * W + x + passo]) x += passo;
+    return x;
+  };
+  const contornos: { lado: 1 | -1; y0: number; y1: number; c: Float64Array }[] = [];
+  c.bracos.forEach(([[bx]], k) => {
+    const lado: 1 | -1 = bx * sx >= cx ? 1 : -1;
+    const ehDoLado = (x: number) => (lado > 0 ? x >= cx : x < cx);
+    let y0 = -1;
+    for (let y = 0; y < H && y0 < 0; y++)
+      for (let x = 0; x < W; x++) if (mascara[y * W + x] && ehDoLado(x)) { y0 = y; break; }
+    if (y0 < 0) return;
+    const axila = Math.round(c.axilas[k] * sy), y1 = Math.min(H - 1, axila);
+    // contorno conhecido: primeira linha abaixo da axila em que o tronco termina no fundo
+    let yc = -1, vc = -1;
+    for (let y = axila; y < Math.min(H, axila + Math.round(60 * sy)); y++) {
+      const x = fimDoVisivel(y, lado);
+      if (x < 0) continue;
+      const seguinte = x + lado;
+      if (seguinte >= 0 && seguinte < W && !mascara[y * W + seguinte] && d[(y * W + seguinte) * 4 + 3] < 128) { yc = y; vc = Math.abs(x - cx); break; }
+    }
+    const xTopo = fimDoVisivel(y0, lado), vTopo = xTopo < 0 ? 0 : Math.abs(xTopo - cx);
+    if (vc < 0) vc = vTopo;
+    const bruto = new Float64Array(y1 - y0 + 1);
+    for (let y = y0; y <= y1; y++) {
+      const t = yc > y0 ? Math.min(1, (y - y0) / (yc - y0)) : 1;
+      const xv = fimDoVisivel(y, lado), visto = xv < 0 ? 0 : Math.abs(xv - cx);
+      bruto[y - y0] = Math.max(visto, vTopo + (vc - vTopo) * t);
+    }
+    const suave = new Float64Array(bruto.length), sigma = 6 * sy;
+    for (let i = 0; i < bruto.length; i++) {
+      let soma = 0, pesos = 0;
+      for (let k2 = Math.max(0, i - Math.ceil(3 * sigma)); k2 <= Math.min(bruto.length - 1, i + Math.ceil(3 * sigma)); k2++) {
+        const w = Math.exp(-0.5 * ((k2 - i) / sigma) ** 2);
+        soma += bruto[k2] * w;
+        pesos += w;
+      }
+      suave[i] = soma / pesos;
+    }
+    contornos.push({ lado, y0, y1, c: suave });
+  });
+  const { distancia: aoCorpo, maisProximo } = distanciaAoAlvo(visivel, W, H);
+  // Emenda: o corpo passa por baixo do braço em toda a divisa. Na pele, 3 px
+  // (evita que o fundo vaze entre as camadas reamostradas). Na isométrica o
+  // braço fica sobre as costas e o núcleo recua até a meia dobra máxima (cerca
+  // de 12 px): ali deve aparecer o tronco sob a gordura, e não o fundo.
+  // Cor do tronco escondido: reflexo do pixel do braço através da borda do
+  // tronco, 4 px além dela (pula o vinco escuro entre braço e tronco, que o
+  // pixel mais próximo copiaria e espalharia).
+  // Média de três reflexos (4, 7 e 10 px além da borda) para não formar listras.
+  const cor = new Float64Array(4);
+  const amostra = (i: number) => {
+    const j = maisProximo[i], xi = i % W, yi = (i - xi) / W, xj = j % W, yj = (j - xj) / W;
+    const dx = xj - xi, dy = yj - yi, n = Math.hypot(dx, dy) || 1;
+    cor.fill(0);
+    let usados = 0;
+    for (const extra of [4, 7, 10]) {
+      const salto = n + extra * sx;
+      const xr = Math.round(xj + (dx / n) * salto), yr = Math.round(yj + (dy / n) * salto), k = yr * W + xr;
+      if (xr < 0 || yr < 0 || xr >= W || yr >= H || !visivel[k]) continue;
+      for (let c2 = 0; c2 < 4; c2++) cor[c2] += d[k * 4 + c2];
+      usados++;
+    }
+    if (!usados) for (let c2 = 0; c2 < 4; c2++) cor[c2] = d[j * 4 + c2];
+    else for (let c2 = 0; c2 < 4; c2++) cor[c2] /= usados;
+    return cor;
+  };
+  const complementado = new Uint8Array(W * H);
+  const pintar = (i: number, cobertura = 1) => {
+    const c3 = amostra(i);
+    corpo.dados[i * 4] = c3[0]; corpo.dados[i * 4 + 1] = c3[1]; corpo.dados[i * 4 + 2] = c3[2]; corpo.dados[i * 4 + 3] = c3[3] * cobertura;
+    complementado[i] = 1;
+  };
+  // 12 px só nas linhas da axila (onde o braço cobre as costas); fora delas,
+  // abaixo da axila há vão e 3 px bastam para a emenda.
+  const naAxila = (x: number, y: number) =>
+    vista === "iso" && contornos.some((k) => (k.lado > 0 ? x >= cx : x < cx) && y >= k.y0 && y <= k.y1);
   for (let i = 0; i < W * H; i++) {
-    if (i / W > ateY) break;
-    if (!mascara[i] || d[i * 4 + 3] < 250 || distancia[i] > limite || maisProximo[i] < 0) continue;
-    const j = maisProximo[i] * 4;
-    corpo.dados[i * 4] = d[j]; corpo.dados[i * 4 + 1] = d[j + 1]; corpo.dados[i * 4 + 2] = d[j + 2]; corpo.dados[i * 4 + 3] = d[j + 3];
+    if (!mascara[i] || d[i * 4 + 3] < 250 || maisProximo[i] < 0) continue;
+    const x = i % W, y = (i - x) / W;
+    if (aoCorpo[i] > (naAxila(x, y) ? 12 : 3) * sx) continue;
+    pintar(i);
   }
+  const esfumado = 2 * sx;
+  for (const { lado, y0, y1, c: contorno } of contornos)
+    for (let y = y0; y <= y1; y++)
+      for (let x = 0; x < W; x++) {
+        if (lado > 0 ? x < cx : x >= cx) continue;
+        const i = y * W + x, dist = Math.abs(x - cx);
+        if (!mascara[i] || d[i * 4 + 3] < 250 || maisProximo[i] < 0) continue;
+        const fundo = Math.min(1, (y1 - y) / (14 * sy));
+        const cobertura = Math.min(1, Math.max(0, (contorno[y - y0] - dist) / esfumado + 0.5)) * fundo;
+        if (cobertura <= 0) continue;
+        if (complementado[i] && corpo.dados[i * 4 + 3] >= 250) continue;
+        pintar(i, cobertura);
+      }
+  // desfoque leve (5 × 5) só nos pixels complementados
+  const r2 = Math.max(1, Math.round(2 * sx)), copia = new Uint8ClampedArray(corpo.dados);
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      if (!complementado[i]) continue;
+      const soma = [0, 0, 0];
+      let n2 = 0;
+      for (let yy = Math.max(0, y - r2); yy <= Math.min(H - 1, y + r2); yy++)
+        for (let xx = Math.max(0, x - r2); xx <= Math.min(W - 1, x + r2); xx++) {
+          const k = yy * W + xx;
+          if (copia[k * 4 + 3] < 200) continue;
+          soma[0] += copia[k * 4]; soma[1] += copia[k * 4 + 1]; soma[2] += copia[k * 4 + 2];
+          n2++;
+        }
+      if (n2) for (let c2 = 0; c2 < 3; c2++) corpo.dados[i * 4 + c2] = soma[c2] / n2;
+    }
   return { corpo, braco };
 }
 

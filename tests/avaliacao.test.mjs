@@ -13,6 +13,8 @@ import {
   evolucaoDaRegiao,
   gastoDaAtividade,
   referenciaDeGordura,
+  regioesDaPerimetria,
+  SETAS_PERIMETRIA,
 } from "../lib/nutricao/avaliacao.ts";
 
 const homem = { sexo: "masculino", idade: 35, peso: 80, alturaCm: 180 };
@@ -138,4 +140,16 @@ test("Perimetria: compara com a última medida válida anterior", () => {
   assert.equal(evolucaoDaRegiao(90, [90]).evolucao, "igual");
   assert.equal(evolucaoDaRegiao(90, []).evolucao, "sem_comparacao");
   assert.equal(evolucaoDaRegiao(null, [90]).evolucao, "sem_comparacao");
+});
+
+test("Perimetria: antebraço e panturrilha (opcionais) só aparecem com valor, em par", () => {
+  const fixas = ["deltoide", "torax", "cintura", "abdomen", "quadril", "braco_direito", "braco_esquerdo", "coxa_direita", "coxa_esquerda"];
+  assert.deepEqual(regioesDaPerimetria([{ cintura: 90 }, {}]), fixas);
+  assert.deepEqual(regioesDaPerimetria([{ panturrilha_esquerda: 0 }]), fixas, "zero conta como ausente");
+  const comAntebraco = regioesDaPerimetria([{}, { antebraco_esquerdo: 28 }]);
+  assert.ok(comAntebraco.includes("antebraco_direito") && comAntebraco.includes("antebraco_esquerdo"));
+  assert.ok(!comAntebraco.includes("panturrilha_direita"));
+  // setas novas numeradas de 10 a 13, sem mudar as existentes
+  assert.deepEqual(["antebraco_direito", "antebraco_esquerdo", "panturrilha_direita", "panturrilha_esquerda"].map((k) => SETAS_PERIMETRIA[k][3]), [10, 11, 12, 13]);
+  assert.equal(SETAS_PERIMETRIA.coxa_esquerda[3], 9);
 });

@@ -55,7 +55,7 @@ A causa é a transição de 6 px que comprimia o tronco contra o braço. Na vers
 A separação usa os polígonos do protótipo, com três ajustes:
 - uma erosão leve, que rompe contatos finos (cotovelo na cintura, dedos na coxa);
 - propagação a partir do eixo do braço e a partir do corpo;
-- complemento do tronco sob o braço, na isométrica e acima da cintura na pele.
+- complemento do tronco sob o braço (revisto na versão 2, §4.2).
 
 ### 3.2. Regiões novas (SPEC §7.2)
 
@@ -88,30 +88,174 @@ Dentro delas, nenhuma célula da malha inverte (jacobiano > 0,02) no corpo, em c
 | Tórax | 70–140 cm |
 | Dobras | 2–50 mm |
 
-## 4. Pendente de aprovação do nutricionista
+## 4. Revisão do nutricionista (21/11) e versão 2
 
-Arquivo: `Downloads/Nova feature/folha-de-conferencia-avatares-v1.pdf`, com 20 páginas: capa, estado de referência, combinações extremas e uma página por região.
+### 4.1. Valores aprovados
 
-- Neutros propostos: deltoide 115 cm (M) e 100 cm (F); tórax 100 cm (M) e 90 cm (F).
-- Dobra de referência visual da panturrilha: 12 mm (M) e 18 mm (F).
-- Espessura projetada (antebraços e ombros): metade da tricipital de referência, 4,5 mm.
-- Aspecto de cada região nova e as faixas suportadas.
+São calibração do desenho, nunca medidas clínicas do paciente:
 
-Limite conhecido: cintura ou abdômen muito altos com o tórax no neutro formam um degrau logo abaixo do peito, na isométrica feminina. A folha mostra a região isolada; na prática as medidas sobem juntas.
+| Valor | Masculino | Feminino |
+|---|---|---|
+| Deltoide neutro | 115 cm | 100 cm |
+| Tórax neutro | 100 cm | 90 cm |
+| Dobra de referência da panturrilha | 12 mm | 18 mm |
+| Espessura ilustrativa inicial de antebraços e ombros | 4,5 mm | 4,5 mm |
 
-## 5. Andamento
+Os 4,5 mm são a metade da **espessura ilustrada** de 9 mm da tricipital de 18 mm, e não a metade da dobra de 18 mm. Ficam sempre identificados como referência ou projeção, porque não há dobra local medida.
+
+### 4.2. Correções feitas
+
+**Axilas e junção entre braço e tronco**
+- O braço fica restrito ao próprio eixo, até 1,15 × a meia largura medida nos pixels. Os polígonos do protótipo invadiam o peito e as costas.
+- Na axila, o braço acompanha a borda interna real do tronco, nos dois sentidos, e não muda do lado interno.
+- Abaixo da axila, o braço gira a partir do ombro só o necessário para o tronco crescer. Vale o maior giro que alguma faixa do tronco exigir.
+- O tronco escondido atrás do braço é completado até um contorno interpolado e suavizado. A cor vem espelhada do próprio tronco, sem copiar o vinco escuro, e a borda é esfumada.
+
+**Volume do braço independente do tronco**
+- Na camada do braço, cintura, abdômen e tórax só deslocam ou giram o braço, sem mudar a largura.
+- Um teste confere que o deslocamento é igual ao longo de cada linha.
+
+**Degraus e saliências entre regiões**
+- Novo `lib/avatar/limites.ts`: limite de coerência entre regiões vizinhas, como diferença máxima de ln(medida ÷ neutro).
+
+| Vizinhas | Diferença máxima |
+|---|---|
+| Deltoide–braço | 0,25 |
+| Braço–antebraço | 0,25 |
+| Deltoide–tórax | 0,3 |
+| Tórax–cintura | 0,3 |
+| Cintura–abdômen | 0,2 |
+| Abdômen–quadril | 0,25 |
+| Quadril–coxa | 0,3 |
+| Coxa–panturrilha | 0,3 |
+
+- Uma região medida cede o mínimo necessário. Uma região não medida cede quase tudo e vira projeção.
+- A medida clínica não muda. O limite aplicado fica registrado por região (`faixa` ou `coerencia`).
+
+**Cotovelo e joelho**
+- Braço–antebraço e coxa–panturrilha formam uma cadeia e dividem a articulação.
+- Na articulação, a contração é perpendicular à bissetriz, o que evita nós e dobras atrás do joelho.
+
+**Combinações diferentes**
+- O teste da malha cobre:
+  - cada medida isolada, com as vizinhas ausentes e com as vizinhas no neutro;
+  - seis perfis mistos;
+  - tudo no mínimo e tudo no máximo.
+- Vale para os dois modelos e as duas vistas. Nenhuma célula da malha inverte no corpo.
+
+**Braço feminino**
+- O recorte aprovado continua o mesmo, testado nas duas camadas.
+
+### 4.3. Perímetros opcionais novos
+
+São antebraço direito e esquerdo e panturrilha direita e esquerda, sempre no maior perímetro. Entram em `PERIMETRIA` com as setas 10 a 13 na figura numerada. O desenho usa o lado direito. Campo vazio continua vazio. O perímetro não determina sozinho gordura nem músculo.
+
+Neutros propostos, pendentes de aprovação:
+
+| Perímetro | Masculino | Feminino |
+|---|---|---|
+| Antebraço | 30 cm | 25 cm |
+| Panturrilha | 38 cm | 35 cm |
+
+### 4.4. Camada de gordura
+
+A medição mostrou a faixa nos membros 2 a 4 vezes mais fina que a meia dobra. A escala vinha do raio do segmento do protótipo, e não da largura visível. Agora, no contorno visível, a espessura é meia dobra × (2 × meia largura medida ÷ diâmetro do perímetro neutro).
+
+Medido nas imagens de exportação (esperado: 9 e 18 mm):
+
+| Membro | Dobra 18 mm | Dobra 36 mm |
+|---|---|---|
+| Braço masculino | 8,2 | 17,7 |
+| Braço feminino | 9,1 | 17,1 |
+| Coxa masculina | 8,9 | 17,7 |
+| Coxa feminina | 8,4 | 16,1 |
+
+Com o perímetro fixo, uma dobra maior engrossa a faixa e reduz o núcleo, e um teste confere isso. No PDF, 9 mm equivalem a cerca de 0,6 pt na figura de 115 pt de largura: ali a gordura é percebida pela cor da camada, e não pela espessura.
+
+### 4.5. Faixas do desenho (versão 2)
+
+| Medida | Masculino | Feminino |
+|---|---|---|
+| Braço | 20–50 | 20–43 |
+| Antebraço | 18–40 | 16–36 |
+| Deltoide | 80–150 | 80–150 |
+| Tórax | 70–140 | 70–140 |
+| Cintura | 55–125 | 55–125 |
+| Abdômen | 60–135 | 60–135 |
+| Quadril | 80–130 | 80–130 |
+| Coxa | 40–80 | 40–75 |
+| Panturrilha | 25–55 | 25–52 |
+| Dobras | 2–50 mm | 2–50 mm |
+
+### 4.6. Folha versão 2
+
+Arquivo: `Downloads/Nova feature/folha-de-conferencia-avatares-v2.pdf`, com 25 páginas:
+- capa;
+- estado de referência;
+- transparência a 85, 65 e 49% no tamanho do PDF, com a mesma geometria;
+- exemplo do bloco do PDF;
+- camada de gordura;
+- combinações, com 5 perfis por modelo;
+- os 9 perímetros, do mínimo ao máximo, com o limite aplicado anotado;
+- as 9 dobras.
+
+## 5. Fase 3: proposta de leitura das medidas e da regra para dobras ausentes
+
+Leitura do documento, sem alterá-lo:
+
+**Perímetros**
+- `deltoide`, `torax`, `cintura`, `abdomen`, `quadril`, `braco_direito`, `antebraco_direito`, `coxa_direita` e `panturrilha_direita`.
+- O lado esquerdo nunca é usado no desenho.
+
+**Dobras (`dobras.valores`)**
+
+| Campo do documento | Sítio no desenho |
+|---|---|
+| `triceps` | tricipital |
+| `bicipital` | bicipital |
+| `peitoral` | peitoral |
+| `axilar_media` | axilar |
+| `subescapular` | subescapular |
+| `supra_iliaca` | suprailíaca |
+| `abdominal` | abdominal |
+| `coxa` | coxa |
+| `panturrilha_medial` | panturrilha |
+
+Valores zero, negativos ou não numéricos contam como ausentes.
+
+**Percentual**
+- O resultado clínico já selecionado: `resultados.percentualGordura` e o método.
+
+Regras, determinísticas e versionadas:
+
+1. **Perímetros:** os medidos passam pelos limites visuais (§4.2). Os ausentes ficam como referência, ou como projeção quando o limite de coerência os aproxima das vizinhas medidas.
+2. **Dobra medida:** usa a meia dobra, limitada a 2–50 mm.
+3. **Dobra ausente, com pelo menos uma dobra medida:** fator r = média de (dobra medida ÷ dobra de referência) sobre as dobras medidas, limitado entre 0,5 e 1,8. A projetada é a referência × r.
+4. **Sem dobras, com percentual:** r = percentual ÷ percentual de referência do desenho, com os mesmos limites. O protótipo usava 20% (M) e 28% (F) como o percentual que a figura de referência representa. É calibração do desenho, ainda a aprovar, e não constante clínica.
+5. **Sem dobras e sem percentual:** tudo fica como referência.
+6. **Antebraços e ombros:** 4,5 mm × r, sempre como projeção ou referência.
+7. **Registro:** para cada região, guardar a origem (medido, projetado ou referência), o valor usado, o motivo da projeção e os limites aplicados.
+
+Perguntas ao nutricionista:
+- Aprova a regra 3 (dobras medidas orientam as ausentes), com o limite de 0,5 a 1,8?
+- Aprova 20% (M) e 28% (F) como percentual de referência do desenho (regra 4)?
+- Havendo dobras e percentual, as dobras têm prioridade?
+- Aprova os neutros de antebraço e panturrilha (§4.3) e os limites de coerência (§4.2)?
+- Qual transparência padrão no PDF: 85, 65 ou 49%?
+
+## 6. Andamento
 
 | Fase | Situação |
 |---|---|
 | 1. Motor compartilhado | 100% |
-| 2. Regiões novas, máscaras e folha de conferência | 90% (falta o aceite do nutricionista) |
-| 3. Leitura das medidas, proveniência e projeção | 0% |
+| 2. Regiões, máscaras e conferência visual | 90% (folha v2 aguardando aceite) |
+| 3. Leitura das medidas, proveniência e projeção | 15% (limites visuais e proposta; faltam as regras aprovadas) |
 | 4. Tela de resultados e transparência | 0% |
 | 5. Salvamento por revisão, geração no servidor e permissões | 0% |
 | 6. PDF | 0% |
 | 7. Comparação histórica | 0% |
 | 8. Aceite e regressão | 0% |
 
-Módulo: cerca de 30%.
+Módulo: cerca de 33%.
 
 Olhos e lábios (SPEC §8.6): a camada de gordura do pacote já traz esses pontos transparentes, então o músculo aparece por baixo. Um teste confere que, com a gordura opaca, esses pixels mostram o músculo e não o fundo.

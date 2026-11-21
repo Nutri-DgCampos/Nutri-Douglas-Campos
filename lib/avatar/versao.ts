@@ -4,11 +4,11 @@
 
 export const VERSAO_AVATAR = {
   /** Motor de deformação e composição (motor.ts, campos.ts). */
-  renderizador: "1",
+  renderizador: "2",
   /** Fontes aprovadas no pacote de 19/11/2026 (SHA-256 conferido). */
   materiais: "2026-11-19",
   /** Regiões, neutros e faixas (regioes.ts). */
-  regioes: "1",
+  regioes: "2",
 } as const;
 
 export const ROTULO_VERSAO_AVATAR = `r${VERSAO_AVATAR.renderizador}-m${VERSAO_AVATAR.materiais}-g${VERSAO_AVATAR.regioes}`;

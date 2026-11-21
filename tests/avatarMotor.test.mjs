@@ -5,7 +5,8 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { inflateSync } from "node:zlib";
 import { basesDoPrototipo, gerarCampos } from "../lib/avatar/campos.ts";
-import { comporVista, deformar, FUNDO, novaImagem, prepararCamada, recortarCamada, vetorDeCoeficientes } from "../lib/avatar/motor.ts";
+import { aplicarGiro, comporVista, deformar, FUNDO, novaImagem, prepararCamada, recortarCamada, vetorDeCoeficientes } from "../lib/avatar/motor.ts";
+import { aplicarLimitesVisuais, PERIMETROS, VIZINHOS } from "../lib/avatar/limites.ts";
 import { rasterizar } from "../lib/avatar/raster.ts";
 import { BASES, BASES_DE_DOBRA, FAIXAS_DE_PERIMETRO, FAIXA_DE_DOBRA, PERIMETROS_NEUTROS, REGIOES } from "../lib/avatar/regioes.ts";
 import { FONTES_TELA } from "../lib/avatar/versao.ts";
@@ -40,26 +41,99 @@ test("as oito bases do protótipo são reproduzidas (erro médio < 0,01 px)", ()
     }
 });
 
-test("tricipital + bicipital iguais reproduzem o braço aprovado; camadas não se misturam", () => {
-  for (const modelo of MODELOS) {
-    const { corpo, bracos } = gerarCampos(modelo, "iso");
-    const legado = basesDoPrototipo(modelo, "iso", { camadas: true }).tricipital;
-    const nb = BASES.length, t = indice("tricipital"), b = indice("bicipital");
-    for (let p = 0; p < N; p++)
-      for (const eixo of [0, 1]) {
-        const soma = bracos.dados[(p * nb + t) * 2 + eixo] + bracos.dados[(p * nb + b) * 2 + eixo];
-        assert.ok(Math.abs(soma - (eixo ? legado.y[p] : legado.x[p])) < 1e-4);
+test("o tronco não muda o volume do braço: na camada dos braços ele só translada ou gira", () => {
+  for (const modelo of MODELOS)
+    for (const vista of VISTAS) {
+      const { corpo, bracos } = gerarCampos(modelo, vista);
+      const nb = BASES.length, gw = 101;
+      const cx = REGIOES[modelo][vista].tronco[4];
+      for (const base of ["cintura", "abdomen", "quadril", "torax", "giroDoBraco"]) {
+        const k = indice(base);
+        // dentro de cada lado, o deslocamento não varia ao longo da linha (sem escalar o braço)
+        for (let j = 0; j < 135; j++)
+          for (let i = 0; i < gw - 1; i++) {
+            const x0 = (i * 599) / 100, x1 = ((i + 1) * 599) / 100;
+            if (Math.sign(x0 - cx) !== Math.sign(x1 - cx)) continue;
+            const a = bracos.dados[((j * gw + i) * nb + k) * 2], b = bracos.dados[((j * gw + i + 1) * nb + k) * 2];
+            assert.ok(Math.abs(a - b) < 1e-6, `${modelo}/${vista}/${base}: o braço seria escalado`);
+          }
       }
-    // Tronco nunca age no braço, e braço nunca age no tronco (SPEC §8.4).
-    const zerado = (campos, base) => {
-      const k = indice(base);
-      for (let p = 0; p < N; p++) if (campos.dados[(p * nb + k) * 2] !== 0 || campos.dados[(p * nb + k) * 2 + 1] !== 0) return false;
-      return true;
-    };
-    for (const base of ["cintura", "abdomen", "quadril", "coxa", "torax", "abdominal", "suprailiaca", "peitoral", "axilar", "subescapular", "coxaDobra", "panturrilha"])
-      assert.ok(zerado(bracos, base), `${modelo}: ${base} agiria no braço`);
-    for (const base of ["braco", "tricipital", "bicipital"]) assert.ok(zerado(corpo, base), `${modelo}: ${base} agiria no tronco`);
+      // braço, antebraço e dobras do braço nunca agem no corpo; dobras do tronco nunca agem no braço
+      const zerado = (campos, base) => {
+        const k = indice(base);
+        for (let p = 0; p < N; p++) if (campos.dados[(p * nb + k) * 2] !== 0 || campos.dados[(p * nb + k) * 2 + 1] !== 0) return false;
+        return true;
+      };
+      for (const base of ["braco", "antebraco", "tricipital", "bicipital", "giroDoBraco"]) assert.ok(zerado(corpo, base), `${modelo}/${vista}: ${base} agiria no tronco`);
+      for (const base of ["coxa", "panturrilha", "abdominal", "suprailiaca", "peitoral", "axilar", "subescapular", "coxaDobra", "panturrilhaDobra"])
+        assert.ok(zerado(bracos, base), `${modelo}/${vista}: ${base} agiria no braço`);
+    }
+});
+
+test("camada de gordura: no contorno, meia dobra × escala local; dobra maior com perímetro fixo engrossa a faixa e reduz o núcleo", async () => {
+  for (const modelo of MODELOS) {
+    const ler = (k) => lerPng(caminhoDaFonte(FONTES_TELA[modelo][k]));
+    const mus = prepararCamada(modelo, "iso", "musculo", await ler("musculo"));
+    const gor = prepararCamada(modelo, "iso", "gordura", await ler("gordura"));
+    const gm = REGIOES[modelo].iso.gorduraDosMembros, neutro = PERIMETROS_NEUTROS[modelo];
+    const casos = [
+      ["braço", "bracos", "braco", gm.bracos[0], neutro.braco, (d) => ({ tricipital: d / 2, bicipital: d / 2 })],
+      ["coxa", "corpo", "corpo", gm.pernas[1], neutro.coxa, (d) => ({ coxaDobra: d / 2 })],
+      ["panturrilha", "corpo", "corpo", gm.panturrilhas[1], neutro.panturrilha, (d) => ({ panturrilhaDobra: d / 2 })],
+    ];
+    for (const [nome, chaveCampos, parte, [[sx, sy], [ex, ey], h], perimetro, coefDe] of casos) {
+      const campos = gerarCampos(modelo, "iso")[chaveCampos];
+      const px = (sx + ex) / 2, py = (sy + ey) / 2, comp = Math.hypot(ex - sx, ey - sy), nx = -(ey - sy) / comp, ny = (ex - sx) / comp;
+      const extensao = (im, sinal) => {
+        let s = 0;
+        while (s < 3 * h) {
+          const x = Math.round(px + nx * sinal * (s + 0.25)), y = Math.round(py + ny * sinal * (s + 0.25));
+          if (im.dados[(y * 600 + x) * 4 + 3] <= 128) break;
+          s += 0.25;
+        }
+        return s;
+      };
+      const escala = (2 * h) / ((perimetro * 10) / Math.PI);
+      const contorno = deformar(gor[parte], campos, vetorDeCoeficientes({}, false), 600, 802);
+      const medir = (dobra) => {
+        const nucleo = deformar(mus[parte], campos, vetorDeCoeficientes(coefDe(dobra), true), 600, 802);
+        const faixas = [-1, 1].map((s) => extensao(contorno, s) - extensao(nucleo, s)).filter((f) => f < 2.5 * h);
+        return { faixa: Math.max(...faixas) / escala, nucleo: Math.min(extensao(nucleo, -1), extensao(nucleo, 1)) };
+      };
+      const a = medir(18), b = medir(36);
+      assert.ok(a.faixa > 9 * 0.75 && a.faixa < 9 * 1.2, `${modelo} ${nome}: faixa ${a.faixa.toFixed(1)} mm para dobra de 18 mm (esperado ≈ 9)`);
+      assert.ok(b.faixa / a.faixa > 1.7 && b.faixa / a.faixa < 2.3, `${modelo} ${nome}: dobra dobrada → faixa ×${(b.faixa / a.faixa).toFixed(2)}`);
+      assert.ok(b.nucleo < a.nucleo, `${modelo} ${nome}: núcleo deve diminuir`);
+    }
   }
+});
+
+test("limites visuais: faixa, coerência entre vizinhos e origem, sem tocar a medida clínica", () => {
+  const neutro = PERIMETROS_NEUTROS.m;
+  // sem dado: referência
+  const vazio = aplicarLimitesVisuais("m", {});
+  for (const r of PERIMETROS) {
+    assert.equal(vazio.regioes[r].origem, "referencia");
+    assert.equal(vazio.regioes[r].desenhado, neutro[r]);
+  }
+  // fora da faixa: limite aplicado, medida preservada
+  const alto = aplicarLimitesVisuais("m", { cintura: 160 });
+  assert.equal(alto.regioes.cintura.medido, 160);
+  assert.ok(alto.regioes.cintura.limites.includes("faixa"));
+  assert.ok(alto.regioes.cintura.desenhado <= 125);
+  // zero, negativo e não numérico contam como ausentes
+  for (const v of [0, -5, Number.NaN]) assert.equal(aplicarLimitesVisuais("m", { braco: v }).regioes.braco.medido, null);
+  // vizinhos medidos no neutro: a cintura isolada é aproximada até o máximo representável
+  const isolada = aplicarLimitesVisuais("m", { ...neutro, cintura: 125 });
+  for (const [a, b, max] of VIZINHOS) assert.ok(Math.abs(isolada.coeficientes[a] - isolada.coeficientes[b]) <= max + 1e-6, `${a}–${b}`);
+  assert.ok(isolada.regioes.cintura.limites.includes("coerencia"));
+  assert.equal(isolada.regioes.cintura.medido, 125);
+  // sem vizinhos medidos, eles são projetados e a medida quase não cede
+  const solta = aplicarLimitesVisuais("m", { cintura: 120 });
+  assert.equal(solta.regioes.abdomen.origem, "projetado");
+  assert.ok(solta.regioes.cintura.desenhado >= 118);
+  // determinístico
+  assert.deepEqual(aplicarLimitesVisuais("f", { abdomen: 130, quadril: 82 }), aplicarLimitesVisuais("f", { abdomen: 130, quadril: 82 }));
 });
 
 test("na pele as dobras não deformam nada (só a isométrica tem núcleo)", () => {
@@ -99,8 +173,8 @@ async function mascarasDaVista(modelo, vista) {
     for (let y = 0; y < 802; y++)
       for (let x = 0; x < 600; x++)
         if (base[y * 600 + x])
-          for (let dy = -6; dy <= 6; dy += 2)
-            for (let dx = -6; dx <= 6; dx += 2) {
+          for (let dy = -3; dy <= 3; dy++)
+            for (let dx = -3; dx <= 3; dx++) {
               const X = x + dx, Y = y + dy;
               if (X >= 0 && Y >= 0 && X < 600 && Y < 802) dilatada[Y * 600 + X] = 1;
             }
@@ -130,25 +204,35 @@ function dobrasNoCorpo(campos, coef, mascara) {
   return n;
 }
 
-test("a malha não dobra dentro do corpo nos limites suportados, isolados e combinados", async () => {
+test("a malha não dobra dentro do corpo: cada medida isolada, combinações diferentes e extremos", async () => {
+  const perfis = {
+    m: [{ torax: 110, cintura: 118, abdomen: 122, quadril: 112, coxa: 62, braco: 36, antebraco: 31 }, { deltoide: 130, torax: 108, cintura: 82, braco: 40, antebraco: 32, coxa: 64, panturrilha: 40 }, { deltoide: 135, braco: 26 }],
+    f: [{ torax: 92, cintura: 78, abdomen: 92, quadril: 120, coxa: 68, panturrilha: 40 }, { torax: 80, cintura: 62, abdomen: 70, quadril: 88, coxa: 48, braco: 24, antebraco: 21, panturrilha: 31 }, { cintura: 110 }],
+  };
   for (const modelo of MODELOS)
     for (const vista of VISTAS) {
       const campos = gerarCampos(modelo, vista), m = await mascarasDaVista(modelo, vista);
-      const conferir = (c, rotulo) => {
+      const faixas = FAIXAS_DE_PERIMETRO[modelo], neutro = PERIMETROS_NEUTROS[modelo];
+      const conferir = (medidas, dobras, rotulo) => {
+        const c = { ...aplicarLimitesVisuais(modelo, medidas).coeficientes, ...dobras };
         for (const parte of ["corpo", "bracos"]) {
-          const n = dobrasNoCorpo(campos[parte], vetorDeCoeficientes(c, true), m[parte]);
+          const coef = aplicarGiro(campos[parte], vetorDeCoeficientes(c, true));
+          const n = dobrasNoCorpo(campos[parte], coef, m[parte]);
           assert.equal(n, 0, `${modelo}/${vista}/${parte} ${rotulo}: ${n} células dobradas`);
         }
       };
-      const faixas = FAIXAS_DE_PERIMETRO[modelo], neutro = PERIMETROS_NEUTROS[modelo];
       for (const [k, [min, max]] of Object.entries(faixas))
-        for (const v of [min, max]) conferir({ [k]: Math.log(v / neutro[k]) }, `${k}=${v}`);
-      for (const base of BASES_DE_DOBRA) conferir({ [base]: FAIXA_DE_DOBRA[1] / 2 }, `${base} máxima`);
+        for (const v of [min, max]) {
+          conferir({ [k]: v }, {}, `${k}=${v} (vizinhos ausentes)`);
+          conferir({ ...neutro, [k]: v }, {}, `${k}=${v} (vizinhos no neutro)`);
+        }
+      for (const base of BASES_DE_DOBRA) conferir({}, { [base]: FAIXA_DE_DOBRA[1] / 2 }, `${base} máxima`);
+      perfis[modelo].forEach((perfil, i) => conferir(perfil, {}, `perfil ${i + 1}`));
       for (const q of [0, 1]) {
-        const c = {};
-        for (const [k, f] of Object.entries(faixas)) c[k] = Math.log(f[q] / neutro[k]);
-        for (const base of BASES_DE_DOBRA) c[base] = FAIXA_DE_DOBRA[q] / 2;
-        conferir(c, q ? "tudo no máximo" : "tudo no mínimo");
+        const medidas = {}, dobras = {};
+        for (const [k, f] of Object.entries(faixas)) medidas[k] = f[q];
+        for (const base of BASES_DE_DOBRA) dobras[base] = FAIXA_DE_DOBRA[q] / 2;
+        conferir(medidas, dobras, q ? "tudo no máximo" : "tudo no mínimo");
       }
     }
 });

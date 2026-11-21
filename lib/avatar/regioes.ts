@@ -30,13 +30,15 @@ export type Segmento = [Ponto, Ponto, number];
  */
 export const BASES = [
   // forma
-  "braco", "cintura", "abdomen", "quadril", "coxa", "deltoide", "torax",
+  "braco", "antebraco", "cintura", "abdomen", "quadril", "coxa", "panturrilha", "deltoide", "torax",
+  // giro do braço a partir do ombro: o motor calcula o coeficiente (não é medida)
+  "giroDoBraco",
   // dobra (espessura em mm)
   "tricipital", "bicipital", "abdominal", "coxaDobra", "peitoral",
-  "axilar", "subescapular", "suprailiaca", "panturrilha", "projetada",
+  "axilar", "subescapular", "suprailiaca", "panturrilhaDobra", "projetada",
 ] as const;
 export type Base = (typeof BASES)[number];
-export const BASES_DE_FORMA: readonly Base[] = ["braco", "cintura", "abdomen", "quadril", "coxa", "deltoide", "torax"];
+export const BASES_DE_FORMA: readonly Base[] = ["braco", "antebraco", "cintura", "abdomen", "quadril", "coxa", "panturrilha", "deltoide", "torax", "giroDoBraco"];
 export const BASES_DE_DOBRA: readonly Base[] = BASES.filter((b) => !BASES_DE_FORMA.includes(b));
 
 /** Faixa do tronco do protótipo: topo, cintura, abdômen, quadril, cx, rx, cy, ry. */
@@ -64,6 +66,11 @@ export type ConfigDaVista = {
    * espessura projetada dos ombros.
    */
   deltoides: [number, number, number, number][];
+  /**
+   * Linha (y) em que começa o vão entre cada braço e o tronco na fonte
+   * (medido nos pixels); acima dela braço e tronco se tocam (axila).
+   */
+  axilas: number[];
   /** Lado anterior de cada braço: +1 = lado de n positivo do segmento. */
   anteriorDosBracos: (1 | -1)[];
   /** Peitorais: centro e raios (só isométrica). */
@@ -74,8 +81,22 @@ export type ConfigDaVista = {
   suprailiaca?: [number, number, number, number];
   /** Lado posterior visível do tronco na isométrica (+1 = x > cx). */
   ladoPosterior?: 1 | -1;
-  panturrilhas?: Segmento[];
-  antebracos?: Segmento[];
+  /** Panturrilhas e antebraços: perímetro opcional (forma) e, na isométrica, dobra e espessura projetada. */
+  panturrilhas: Segmento[];
+  antebracos: Segmento[];
+  /**
+   * Isométrica: eixos centrados na silhueta e meia largura visível (raio),
+   * medidos nos pixels das fontes. Dão a escala local da camada de gordura:
+   * a espessura no contorno é meia dobra × (2 × meia largura / diâmetro do
+   * perímetro neutro).
+   */
+  gorduraDosMembros?: { bracos: Segmento[]; antebracos: Segmento[]; pernas: Segmento[]; panturrilhas: Segmento[] };
+  /**
+   * Eixos do braço e do antebraço com a meia largura visível (medidos nos
+   * pixels). A camada do braço fica restrita a 1,15 × essa meia largura do
+   * eixo (mais a mão): os polígonos do protótipo invadem peito e costas.
+   */
+  eixosDosBracos: Segmento[];
 };
 
 const espelhar = (pontos: Ponto[]): Ponto[] => pontos.map(([x, y]) => [599 - x, y]);
@@ -96,7 +117,11 @@ export const REGIOES: Record<Modelo, Record<Vista, ConfigDaVista>> = {
       cotovelo: 293,
       ombro: 172, linhaTorax: 216, meiaLarguraTorax: 80,
       deltoides: [[210, 185, 38, 42], [389, 185, 38, 42]],
+      axilas: [243, 243],
+      eixosDosBracos: [[[217, 194], [200, 294], 21], [[381, 193], [395, 294], 19], [[199, 300], [186, 385], 17], [[397, 301], [411, 385], 17]],
       anteriorDosBracos: [1, -1],
+      antebracos: [[[198, 300], [186, 385], 17], [[401, 300], [413, 385], 17]],
+      panturrilhas: [[[235, 545], [217, 705], 27], [[364, 545], [382, 705], 27]],
     },
     iso: {
       tronco: [251, 325, 351, 390, 283, 60, 338, 82],
@@ -107,14 +132,22 @@ export const REGIOES: Record<Modelo, Record<Vista, ConfigDaVista>> = {
       cotovelo: 279,
       ombro: 168, linhaTorax: 220, meiaLarguraTorax: 55,
       deltoides: [[368, 168, 38, 40], [232, 168, 22, 20]],
+      axilas: [257],
+      eixosDosBracos: [[[364, 171], [392, 278], 22], [[393, 281], [395, 368], 19]],
       anteriorDosBracos: [1],
       peitoral: [268, 210, 48, 30],
       axilar: [215, 240, 275, 305],
       subescapular: [170, 195, 225, 250],
       suprailiaca: [292, 312, 340, 362],
       ladoPosterior: 1,
-      panturrilhas: [[[222, 565], [250, 700], 28], [[352, 560], [404, 700], 27]],
-      antebracos: [[[390, 281], [394, 368], 19]],
+      panturrilhas: [[[209, 546], [258, 699], 24], [[352, 547], [411, 697], 22]],
+      antebracos: [[[393, 281], [395, 368], 19]],
+      gorduraDosMembros: {
+        bracos: [[[364, 171], [392, 278], 22]],
+        antebracos: [[[393, 281], [395, 368], 19]],
+        pernas: [[[238, 425], [193, 551], 38], [[295, 427], [337, 553], 35]],
+        panturrilhas: [[[209, 546], [258, 699], 24], [[352, 547], [411, 697], 22]],
+      },
     },
   },
   f: {
@@ -127,7 +160,11 @@ export const REGIOES: Record<Modelo, Record<Vista, ConfigDaVista>> = {
       cotovelo: 293,
       ombro: 170, linhaTorax: 216, meiaLarguraTorax: 72,
       deltoides: [[218, 185, 32, 38], [381, 185, 32, 38]],
+      axilas: [246, 245],
+      eixosDosBracos: [[[226, 192], [217, 292], 15], [[373, 192], [381, 293], 15], [[215, 300], [199, 385], 15], [[384, 300], [399, 385], 14]],
       anteriorDosBracos: [1, -1],
+      antebracos: [[[214, 300], [200, 385], 14], [[385, 300], [399, 385], 14]],
+      panturrilhas: [[[258, 545], [256, 705], 24], [[341, 545], [343, 705], 24]],
     },
     iso: {
       tronco: [215, 279, 300, 355, 277, 48, 290, 70],
@@ -138,29 +175,40 @@ export const REGIOES: Record<Modelo, Record<Vista, ConfigDaVista>> = {
       cotovelo: 271,
       ombro: 158, linhaTorax: 205, meiaLarguraTorax: 52,
       deltoides: [[352, 160, 32, 34], [226, 162, 18, 16]],
+      axilas: [220],
+      eixosDosBracos: [[[346, 162], [382, 270], 21], [[378, 272], [386, 355], 17]],
       anteriorDosBracos: [1],
       peitoral: [255, 205, 45, 28],
       axilar: [205, 228, 258, 285],
       subescapular: [160, 182, 210, 232],
       suprailiaca: [262, 280, 305, 325],
       ladoPosterior: 1,
-      panturrilhas: [[[213, 530], [245, 690], 26], [[350, 530], [392, 690], 24]],
-      antebracos: [[[378, 272], [385, 352], 15]],
+      panturrilhas: [[[203, 518], [247, 685], 23], [[346, 513], [393, 684], 23]],
+      antebracos: [[[378, 272], [386, 355], 17]],
+      gorduraDosMembros: {
+        bracos: [[[346, 162], [382, 270], 21]],
+        antebracos: [[[378, 272], [386, 355], 17]],
+        pernas: [[[241, 386], [193, 510], 36], [[302, 382], [332, 517], 34]],
+        panturrilhas: [[[203, 518], [247, 685], 23], [[346, 513], [393, 684], 23]],
+      },
     },
   },
 };
 
 /**
  * Perímetros (cm) em que a figura fica igual à fonte: o "neutro" do desenho.
- * Braço, cintura, abdômen, quadril e coxa vêm do protótipo aprovado;
- * deltoide e tórax são PROPOSTA da versão 1, a conferir na folha de aprovação.
+ * São calibração do desenho, nunca medidas clínicas do paciente.
+ * - Braço, cintura, abdômen, quadril e coxa: protótipo aprovado.
+ * - Deltoide e tórax: aprovados pelo nutricionista em 21/11/2026.
+ * - Antebraço e panturrilha: PROPOSTA (perímetros opcionais incluídos em
+ *   21/11/2026), a conferir na folha de aprovação.
  */
-export const PERIMETROS_NEUTROS: Record<Modelo, Record<"braco" | "cintura" | "abdomen" | "quadril" | "coxa" | "deltoide" | "torax", number>> = {
-  m: { braco: 35, cintura: 90, abdomen: 100, quadril: 105, coxa: 60, deltoide: 115, torax: 100 },
-  f: { braco: 30, cintura: 75, abdomen: 85, quadril: 100, coxa: 55, deltoide: 100, torax: 90 },
+export const PERIMETROS_NEUTROS: Record<Modelo, Record<"braco" | "antebraco" | "cintura" | "abdomen" | "quadril" | "coxa" | "panturrilha" | "deltoide" | "torax", number>> = {
+  m: { braco: 35, antebraco: 30, cintura: 90, abdomen: 100, quadril: 105, coxa: 60, panturrilha: 38, deltoide: 115, torax: 100 },
+  f: { braco: 30, antebraco: 25, cintura: 75, abdomen: 85, quadril: 100, coxa: 55, panturrilha: 35, deltoide: 100, torax: 90 },
 };
 
-type Perimetro = keyof (typeof PERIMETROS_NEUTROS)["m"];
+export type Perimetro = keyof (typeof PERIMETROS_NEUTROS)["m"];
 
 /**
  * Faixas suportadas pelo desenho, por modelo: dentro delas a malha não dobra
@@ -169,8 +217,8 @@ type Perimetro = keyof (typeof PERIMETROS_NEUTROS)["m"];
  * medida clínica não muda.
  */
 export const FAIXAS_DE_PERIMETRO: Record<Modelo, Record<Perimetro, [number, number]>> = {
-  m: { braco: [20, 50], cintura: [55, 125], abdomen: [60, 135], quadril: [80, 130], coxa: [40, 80], deltoide: [80, 150], torax: [70, 140] },
-  f: { braco: [20, 43], cintura: [55, 125], abdomen: [60, 135], quadril: [80, 130], coxa: [40, 75], deltoide: [80, 150], torax: [70, 140] },
+  m: { braco: [20, 50], antebraco: [18, 40], cintura: [55, 125], abdomen: [60, 135], quadril: [80, 130], coxa: [40, 80], panturrilha: [25, 55], deltoide: [80, 150], torax: [70, 140] },
+  f: { braco: [20, 43], antebraco: [16, 36], cintura: [55, 125], abdomen: [60, 135], quadril: [80, 130], coxa: [40, 75], panturrilha: [25, 52], deltoide: [80, 150], torax: [70, 140] },
 };
 /** Dobra (mm) suportada pelo desenho; a espessura ilustrada é a metade. */
 export const FAIXA_DE_DOBRA: [number, number] = [2, 50];
@@ -181,8 +229,9 @@ export type SitioVisual = "peitoral" | "axilar" | "tricipital" | "bicipital" | "
  * Dobras (mm) do estado visual de referência: a figura "típica" usada quando
  * não há dado algum e como base das projeções. As sete primeiras vêm do
  * protótipo aprovado (fluxo-referencia.js). Bicipital repete a tricipital,
- * o que mantém o braço exatamente como aprovado; panturrilha é PROPOSTA da
- * versão 1. Não são valores clínicos nem metas.
+ * o que mantém o braço exatamente como aprovado. Panturrilha: 12 mm (M) e
+ * 18 mm (F), aprovada pelo nutricionista em 21/11/2026. São calibração do
+ * desenho, não valores clínicos nem metas.
  */
 export const DOBRAS_DE_REFERENCIA: Record<Modelo, Record<SitioVisual, number>> = {
   m: { peitoral: 12, axilar: 14, tricipital: 18, bicipital: 18, subescapular: 20, suprailiaca: 20, abdominal: 20, coxa: 25, panturrilha: 12 },
@@ -190,9 +239,11 @@ export const DOBRAS_DE_REFERENCIA: Record<Modelo, Record<SitioVisual, number>> =
 };
 
 /**
- * Espessura ilustrativa (mm) das regiões sem dobra própria (antebraços e
- * calotas dos ombros) no estado de referência: metade da espessura
- * tricipital de referência. PROPOSTA da versão 1.
+ * Espessura ilustrativa inicial (mm) das regiões sem dobra própria
+ * (antebraços e calotas dos ombros): 4,5 mm, aprovada em 21/11/2026.
+ * É a metade da ESPESSURA ILUSTRADA da tricipital de referência (dobra de
+ * 18 mm → 9 mm ilustrados → 4,5 mm), não a metade da dobra. Fica sempre
+ * identificada como referência ou projeção: não há dobra local medida.
  */
 export const ESPESSURA_PROJETADA_DE_REFERENCIA: Record<Modelo, number> = {
   m: DOBRAS_DE_REFERENCIA.m.tricipital / 4,
